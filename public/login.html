@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="bs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login — Oglasnik.ba</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        body {
+            background: #f7f7f9;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        .auth-wrap {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 20px;
+        }
+        .auth-box {
+            background: white;
+            border-radius: 16px;
+            border: 1px solid #e5e7eb;
+            padding: 40px;
+            width: 100%;
+            max-width: 420px;
+        }
+        .auth-logo {
+            text-align: center;
+            font-size: 24px;
+            font-weight: 700;
+            color: #3C3489;
+            margin-bottom: 8px;
+        }
+        .auth-sub {
+            text-align: center;
+            font-size: 14px;
+            color: #6b7280;
+            margin-bottom: 32px;
+        }
+        .tabs {
+            display: flex;
+            border-bottom: 1px solid #e5e7eb;
+            margin-bottom: 28px;
+        }
+        .tab-btn {
+            flex: 1;
+            padding: 10px;
+            text-align: center;
+            font-size: 14px;
+            font-weight: 600;
+            color: #6b7280;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            margin-bottom: -1px;
+        }
+        .tab-btn.active {
+            color: #3C3489;
+            border-bottom-color: #3C3489;
+        }
+        .form-group {
+            margin-bottom: 16px;
+        }
+        .form-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 6px;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 12px 14px;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 14px;
+            outline: none;
+            box-sizing: border-box;
+        }
+        .form-group input:focus {
+            border-color: #3C3489;
+        }
+        .auth-btn {
+            width: 100%;
+            padding: 13px;
+            background: #3C3489;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 8px;
+        }
+        .auth-btn:hover {
+            background: #2D2870;
+        }
+        .auth-poruka {
+            margin-top: 14px;
+            text-align: center;
+            font-size: 14px;
+            font-weight: 600;
+        }
+        .divider {
+            text-align: center;
+            font-size: 13px;
+            color: #9ca3af;
+            margin: 20px 0;
+            position: relative;
+        }
+        .divider::before, .divider::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            width: 42%;
+            height: 1px;
+            background: #e5e7eb;
+        }
+        .divider::before { left: 0; }
+        .divider::after { right: 0; }
+    </style>
+</head>
+<body>
+
+<nav>
+    <div class="logo">🔍 Oglasnik.ba</div>
+    <a href="/" style="color:#6b7280; text-decoration:none; font-size:14px;">← Nazad</a>
+</nav>
+
+<div class="auth-wrap">
+    <div class="auth-box">
+        <div class="auth-logo">🔍 Oglasnik.ba</div>
+        <div class="auth-sub">Prijavi se i prati oglase koje voliš</div>
+
+        <div class="tabs">
+            <div class="tab-btn active" onclick="switchTab('login')">Prijava</div>
+            <div class="tab-btn" onclick="switchTab('register')">Registracija</div>
+        </div>
+
+        <!-- LOGIN FORMA -->
+        <div id="loginForma">
+            <div class="form-group">
+                <label>Email adresa</label>
+                <input type="email" id="loginEmail" placeholder="tvoj@email.com" />
+            </div>
+            <div class="form-group">
+                <label>Lozinka</label>
+                <input type="password" id="loginLozinka" placeholder="••••••••" />
+            </div>
+            <button class="auth-btn" onclick="login()">Prijavi se</button>
+            <div class="auth-poruka" id="loginPoruka"></div>
+        </div>
+
+        <!-- REGISTER FORMA -->
+        <div id="registerForma" style="display:none;">
+            <div class="form-group">
+                <label>Ime i prezime</label>
+                <input type="text" id="regIme" placeholder="Npr. Adnan Čović" />
+            </div>
+            <div class="form-group">
+                <label>Email adresa</label>
+                <input type="email" id="regEmail" placeholder="tvoj@email.com" />
+            </div>
+            <div class="form-group">
+                <label>Lozinka</label>
+                <input type="password" id="regLozinka" placeholder="Minimum 6 karaktera" />
+            </div>
+            <button class="auth-btn" onclick="register()">Napravi account</button>
+            <div class="auth-poruka" id="registerPoruka"></div>
+        </div>
+
+    </div>
+</div>
+
+<script>
+function switchTab(tab) {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    event.target.classList.add('active');
+    document.getElementById('loginForma').style.display = tab === 'login' ? 'block' : 'none';
+    document.getElementById('registerForma').style.display = tab === 'register' ? 'block' : 'none';
+}
+
+async function login() {
+    const email = document.getElementById('loginEmail').value;
+    const lozinka = document.getElementById('loginLozinka').value;
+    const poruka = document.getElementById('loginPoruka');
+
+    if (!email || !lozinka) {
+        poruka.style.color = 'red';
+        poruka.textContent = 'Popunite sva polja!';
+        return;
+    }
+
+    const res = await fetch('/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, lozinka })
+    });
+
+    const data = await res.json();
+    if (data.uspjeh) {
+        poruka.style.color = '#1D9E75';
+        poruka.textContent = '✅ Uspješno! Preusmjeravam...';
+        setTimeout(() => window.location.href = '/oglasi.html', 1000);
+    } else {
+        poruka.style.color = 'red';
+        poruka.textContent = '❌ ' + data.poruka;
+    }
+}
+
+async function register() {
+    const ime = document.getElementById('regIme').value;
+    const email = document.getElementById('regEmail').value;
+    const lozinka = document.getElementById('regLozinka').value;
+    const poruka = document.getElementById('registerPoruka');
+
+    if (!ime || !email || !lozinka) {
+        poruka.style.color = 'red';
+        poruka.textContent = 'Popunite sva polja!';
+        return;
+    }
+
+    if (lozinka.length < 6) {
+        poruka.style.color = 'red';
+        poruka.textContent = 'Lozinka mora imati minimum 6 karaktera!';
+        return;
+    }
+
+    const res = await fetch('/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ime, email, lozinka })
+    });
+
+    const data = await res.json();
+    if (data.uspjeh) {
+        poruka.style.color = '#1D9E75';
+        poruka.textContent = '✅ Account kreiran! Preusmjeravam...';
+        setTimeout(() => window.location.href = '/oglasi.html', 1000);
+    } else {
+        poruka.style.color = 'red';
+        poruka.textContent = '❌ ' + data.poruka;
+    }
+}
+</script>
+</body>
+</html>

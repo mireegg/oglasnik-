@@ -1,0 +1,6 @@
+node_modules/
+korisnici.json
+prijave.json
+oglasi.json
+olx_html.html
+.env

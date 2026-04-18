@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="bs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard — Oglasnik.ba</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        body { background: #f7f7f9; }
+        .dashboard-wrap {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 32px;
+        }
+        .dashboard-header h1 {
+            font-size: 24px;
+            font-weight: 700;
+            color: #111827;
+        }
+        .dashboard-header p {
+            font-size: 14px;
+            color: #6b7280;
+            margin-top: 4px;
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin-bottom: 32px;
+        }
+        .stat-card {
+            background: white;
+            border-radius: 12px;
+            border: 1px solid #e5e7eb;
+            padding: 20px;
+        }
+        .stat-card .broj {
+            font-size: 32px;
+            font-weight: 700;
+            color: #3C3489;
+        }
+        .stat-card .label {
+            font-size: 13px;
+            color: #6b7280;
+            margin-top: 4px;
+        }
+        .section-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #111827;
+            margin-bottom: 16px;
+        }
+        .pracenja-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 16px;
+            margin-bottom: 32px;
+        }
+        .pracenje-card {
+            background: white;
+            border-radius: 12px;
+            border: 1px solid #e5e7eb;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .pracenje-info h3 {
+            font-size: 15px;
+            font-weight: 600;
+            color: #111827;
+            margin-bottom: 4px;
+        }
+        .pracenje-info p {
+            font-size: 13px;
+            color: #6b7280;
+        }
+        .pracenje-status {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 6px;
+        }
+        .status-dot {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+        .dot-green { background: #1D9E75; }
+        .dot-grey { background: #9ca3af; }
+        .novi-badge {
+            background: #EEEDFE;
+            color: #3C3489;
+            font-size: 11px;
+            font-weight: 600;
+            padding: 3px 10px;
+            border-radius: 20px;
+        }
+        .dodaj-pracenje {
+            background: white;
+            border-radius: 12px;
+            border: 2px dashed #e5e7eb;
+            padding: 24px;
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            margin-bottom: 32px;
+        }
+        .dodaj-pracenje input {
+            flex: 1;
+            padding: 10px 14px;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 14px;
+            outline: none;
+        }
+        .dodaj-pracenje input:focus {
+            border-color: #3C3489;
+        }
+        .notif-lista {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .notif-item {
+            background: white;
+            border-radius: 10px;
+            border: 1px solid #e5e7eb;
+            padding: 16px;
+            display: flex;
+            gap: 14px;
+            align-items: center;
+        }
+        .notif-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+        .notif-text h4 {
+            font-size: 14px;
+            font-weight: 600;
+            color: #111827;
+            margin-bottom: 2px;
+        }
+        .notif-text p {
+            font-size: 13px;
+            color: #6b7280;
+        }
+        .notif-time {
+            margin-left: auto;
+            font-size: 12px;
+            color: #9ca3af;
+            white-space: nowrap;
+        }
+    </style>
+</head>
+<body>
+
+<nav>
+    <div class="logo">🔍 Oglasnik.ba</div>
+    <div style="display:flex; gap:12px; align-items:center;">
+        <a href="/oglasi.html" style="color:#6b7280; text-decoration:none; font-size:14px;">Oglasi</a>
+        <span style="font-size:14px; color:#111827; font-weight:600;" id="korisnikIme">Korisnik</span>
+        <button class="btn-primary" onclick="odjava()">Odjava</button>
+    </div>
+</nav>
+
+<div class="dashboard-wrap">
+
+    <div class="dashboard-header">
+        <div>
+            <h1>Dobro jutro, <span id="headerIme">Korisnik</span>! 👋</h1>
+            <p>Evo šta se dešava sa tvojim praćenjima danas.</p>
+        </div>
+        <a href="/oglasi.html"><button class="btn-primary">+ Pretraži oglase</button></a>
+    </div>
+
+    <!-- STATISTIKE -->
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="broj">3</div>
+            <div class="label">Aktivna praćenja</div>
+        </div>
+        <div class="stat-card">
+            <div class="broj">12</div>
+            <div class="label">Novih oglasa danas</div>
+        </div>
+        <div class="stat-card">
+            <div class="broj">5</div>
+            <div class="label">Upozorenja AI-a</div>
+        </div>
+        <div class="stat-card">
+            <div class="broj">48</div>
+            <div class="label">Oglasa pregledano</div>
+        </div>
+    </div>
+
+    <!-- DODAJ PRACENJE -->
+    <div class="section-title">Moja praćenja</div>
+    <div class="dodaj-pracenje">
+        <input type="text" id="novoPracenje" placeholder="Šta želiš pratiti? Npr. iPhone 15, Golf 6, PS5..." />
+        <button class="btn-primary" onclick="dodajPracenje()">+ Dodaj praćenje</button>
+    </div>
+
+    <!-- LISTA PRACENJA -->
+    <div class="pracenja-grid" id="pracenjaGrid">
+        <div class="pracenje-card">
+            <div class="pracenje-info">
+                <h3>💻 Laptop do 600 KM</h3>
+                <p>Sarajevo · Sve platforme</p>
+            </div>
+            <div class="pracenje-status">
+                <div class="status-dot"><div class="dot dot-green"></div> Aktivno</div>
+                <span class="novi-badge">3 nova</span>
+            </div>
+        </div>
+        <div class="pracenje-card">
+            <div class="pracenje-info">
+                <h3>🚗 Golf 6 do 12.000 KM</h3>
+                <p>Cijela BiH · Sve platforme</p>
+            </div>
+            <div class="pracenje-status">
+                <div class="status-dot"><div class="dot dot-green"></div> Aktivno</div>
+                <span class="novi-badge">1 novi</span>
+            </div>
+        </div>
+        <div class="pracenje-card">
+            <div class="pracenje-info">
+                <h3>🏠 Stan Sarajevo do 900 KM</h3>
+                <p>Sarajevo · Sve platforme</p>
+            </div>
+            <div class="pracenje-status">
+                <div class="status-dot"><div class="dot dot-grey"></div> Nema novih</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- NOTIFIKACIJE -->
+    <div class="section-title">Posljednje obavijesti</div>
+    <div class="notif-lista">
+        <div class="notif-item">
+            <div class="notif-icon" style="background:#EEEDFE;">💻</div>
+            <div class="notif-text">
+                <h4>Nov oglas: HP Laptop 580 KM — Sarajevo</h4>
+                <p>Odgovara traženju "Laptop do 600 KM" · OLX · AI score: 91</p>
+            </div>
+            <div class="notif-time">prije 12 min</div>
+        </div>
+        <div class="notif-item">
+            <div class="notif-icon" style="background:#EAF3DE;">🚗</div>
+            <div class="notif-text">
+                <h4>Cijena pala: Golf 6 2011 — 9.800 KM (bilo 10.500)</h4>
+                <p>Odgovara traženju "Golf 6 do 12.000 KM" · Njuškalo</p>
+            </div>
+            <div class="notif-time">prije 1h</div>
+        </div>
+        <div class="notif-item">
+            <div class="notif-icon" style="background:#FCEBEB;">⚠️</div>
+            <div class="notif-text">
+                <h4>Upozorenje: Sumnjiv oglas za stan na Grbavici</h4>
+                <p>AI je detektovao da oglas koristi iste slike kao drugi oglas</p>
+            </div>
+            <div class="notif-time">prije 3h</div>
+        </div>
+    </div>
+
+</div>
+
+<script>
+// Ucitavamo ime korisnika iz localStorage
+const korisnik = JSON.parse(localStorage.getItem('korisnik') || '{}');
+if (korisnik.ime) {
+    document.getElementById('korisnikIme').textContent = korisnik.ime;
+    document.getElementById('headerIme').textContent = korisnik.ime.split(' ')[0];
+}
+
+function dodajPracenje() {
+    const input = document.getElementById('novoPracenje');
+    const tekst = input.value.trim();
+    if (!tekst) return;
+
+    const grid = document.getElementById('pracenjaGrid');
+    const card = document.createElement('div');
+    card.className = 'pracenje-card';
+    card.innerHTML = `
+        <div class="pracenje-info">
+            <h3>🔍 ${tekst}</h3>
+            <p>Cijela BiH · Sve platforme</p>
+        </div>
+        <div class="pracenje-status">
+            <div class="status-dot"><div class="dot dot-green"></div> Aktivno</div>
+            <span class="novi-badge">0 novih</span>
+        </div>
+    `;
+    grid.appendChild(card);
+    input.value = '';
+}
+
+function odjava() {
+    localStorage.removeItem('korisnik');
+    window.location.href = '/login.html';
+}
+</script>
+</body>
+</html>

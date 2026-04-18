@@ -1,0 +1,179 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', sans-serif;
+}
+
+body {
+    background: #f7f7f9;
+    color: #111827;
+}
+
+/* NAV */
+nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 60px;
+    background: white;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.logo {
+    font-size: 22px;
+    font-weight: 700;
+    color: #3C3489;
+}
+
+/* BUTTONS */
+.btn-primary {
+    background: #3C3489;
+    color: white;
+    border: none;
+    padding: 10px 24px;
+    border-radius: 8px;
+    font-size: 15px;
+    cursor: pointer;
+}
+
+.btn-primary:hover {
+    background: #2D2870;
+}
+
+.btn-large {
+    padding: 16px 36px;
+    font-size: 18px;
+    margin-top: 24px;
+}
+
+/* HERO */
+.hero {
+    text-align: center;
+    padding: 100px 60px;
+    background: linear-gradient(135deg, #3C3489, #534AB7);
+    color: white;
+}
+
+.hero h1 {
+    font-size: 48px;
+    font-weight: 700;
+    margin-bottom: 16px;
+    line-height: 1.2;
+}
+
+.hero p {
+    font-size: 18px;
+    opacity: 0.85;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+/* STATS */
+.stats {
+    display: flex;
+    justify-content: center;
+    gap: 60px;
+    padding: 60px;
+    background: white;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.stat {
+    text-align: center;
+}
+
+.stat h2 {
+    font-size: 42px;
+    font-weight: 700;
+    color: #3C3489;
+}
+
+.stat p {
+    font-size: 15px;
+    color: #6b7280;
+    margin-top: 4px;
+}
+
+/* FEATURES */
+.features {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 24px;
+    padding: 60px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.feature {
+    background: white;
+    border-radius: 12px;
+    padding: 28px;
+    border: 1px solid #e5e7eb;
+}
+
+.feature .icon {
+    font-size: 32px;
+    margin-bottom: 14px;
+}
+
+.feature h3 {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: #111827;
+}
+
+.feature p {
+    font-size: 14px;
+    color: #6b7280;
+    line-height: 1.6;
+}/* SIGNUP */
+.signup {
+    text-align: center;
+    padding: 80px 60px;
+    background: white;
+    border-top: 1px solid #e5e7eb;
+}
+
+.signup h2 {
+    font-size: 32px;
+    font-weight: 700;
+    color: #111827;
+    margin-bottom: 12px;
+}
+
+.signup p {
+    font-size: 16px;
+    color: #6b7280;
+    margin-bottom: 32px;
+}
+
+.signup-form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    max-width: 400px;
+    margin: 0 auto;
+}
+
+.signup-form input {
+    width: 100%;
+    padding: 14px 18px;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    font-size: 15px;
+    outline: none;
+}
+
+.signup-form input:focus {
+    border-color: #3C3489;
+}
+
+#poruka {
+    margin-top: 16px;
+    font-size: 15px;
+    font-weight: 600;
+    color: #1D9E75;
+}
