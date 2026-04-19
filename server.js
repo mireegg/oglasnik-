@@ -147,8 +147,8 @@ app.post('/ai-analiza', async (req, res) => {
 
     const options = {
         hostname: 'generativelanguage.googleapis.com',
-path: '/v1beta/models/gemini-1.5-flash-latest:generateContent?key='        method: 'POST',
-        headers: {
+path: '/v1beta/models/gemini-1.5-flash-latest:generateContent?key=' + process.env.GEMINI_API_KEY,
+        method: 'POST',        headers: {
             'Content-Type': 'application/json',
             'Content-Length': Buffer.byteLength(body)
         }
