@@ -285,47 +285,42 @@
 </div>
 
 <script>
-document.addEventListener('DOMContentLoaded', () => {
-    const korisnik = JSON.parse(localStorage.getItem('korisnik') || '{}');
-    if (korisnik.ime) {
-        document.getElementById('korisnikIme').textContent = korisnik.ime;
-        document.getElementById('headerIme').textContent = korisnik.ime.split(' ')[0];
-    } else {
-        window.location.href = '/login.html';
-    }
-    ucitajPracenja();
-});
+function odjava() {
+    localStorage.removeItem('korisnik');
+    window.location.href = '/login.html';
+}
 
 async function ucitajPracenja() {
-    const korisnik = JSON.parse(localStorage.getItem('korisnik') || '{}');
+    var korisnik = JSON.parse(localStorage.getItem('korisnik') || '{}');
     if (!korisnik.email) return;
-    const res = await fetch('/moja-pracenja?email=' + korisnik.email);
-    const pracenja = await res.json();
+    var res = await fetch('/moja-pracenja?email=' + korisnik.email);
+    var pracenja = await res.json();
     if (pracenja.length === 0) return;
-    const grid = document.getElementById('pracenjaGrid');
+    var grid = document.getElementById('pracenjaGrid');
     grid.innerHTML = '';
-    pracenja.forEach(p => {
-        const card = document.createElement('div');
+    for (var i = 0; i < pracenja.length; i++) {
+        var p = pracenja[i];
+        var card = document.createElement('div');
         card.className = 'pracenje-card';
         card.innerHTML = '<div class="pracenje-info"><h3>' + p.pretraga + '</h3><p>Cijela BiH - Sve platforme</p></div><div class="pracenje-status"><div class="status-dot"><div class="dot dot-green"></div> Aktivno</div><button onclick="obrisiPracenje(' + p.id + ', this)" style="background:none;border:none;color:#E24B4A;cursor:pointer;font-size:12px;margin-top:4px;">Ukloni</button></div>';
         grid.appendChild(card);
-    });
+    }
 }
 
 async function dodajPracenje() {
-    const input = document.getElementById('novoPracenje');
-    const tekst = input.value.trim();
+    var input = document.getElementById('novoPracenje');
+    var tekst = input.value.trim();
     if (!tekst) return;
-    const korisnik = JSON.parse(localStorage.getItem('korisnik') || '{}');
+    var korisnik = JSON.parse(localStorage.getItem('korisnik') || '{}');
     await fetch('/pracenje', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: korisnik.email, pretraga: tekst })
     });
-    const grid = document.getElementById('pracenjaGrid');
-    const card = document.createElement('div');
+    var grid = document.getElementById('pracenjaGrid');
+    var card = document.createElement('div');
     card.className = 'pracenje-card';
-    card.innerHTML = '<div class="pracenje-info"><h3>' + tekst + '</h3><p>Cijela BiH - Sve platforme</p></div><div class="pracenje-status"><div class="status-dot"><div class="dot dot-green"></div> Aktivno</div><button onclick="obrisiPracenje(0, this)" style="background:none;border:none;color:#E24B4A;cursor:pointer;font-size:12px;margin-top:4px;">Ukloni</button></div>';
+    card.innerHTML = '<div class="pracenje-info"><h3>' + tekst + '</h3><p>Cijela BiH - Sve platforme</p></div><div class="pracenje-status"><div class="status-dot"><div class="dot dot-green"></div> Aktivno</div></div>';
     grid.appendChild(card);
     input.value = '';
 }
@@ -335,11 +330,14 @@ async function obrisiPracenje(id, btn) {
     btn.closest('.pracenje-card').remove();
 }
 
-function odjava() {
-    localStorage.removeItem('korisnik');
+var korisnik = JSON.parse(localStorage.getItem('korisnik') || '{}');
+if (korisnik.ime) {
+    document.getElementById('korisnikIme').textContent = korisnik.ime;
+    document.getElementById('headerIme').textContent = korisnik.ime.split(' ')[0];
+} else {
     window.location.href = '/login.html';
 }
-}
+ucitajPracenja();
 </script>
 </body>
 </html>
