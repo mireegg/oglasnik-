@@ -202,11 +202,11 @@ async function login() {
     const data = await res.json();
     if (data.uspjeh) {
         poruka.style.color = '#1D9E75';
-        poruka.textContent = '✅ Uspješno! Preusmjeravam...';
-        setTimeout(() => window.location.href = '/oglasi.html', 1000);
+        poruka.textContent = ' Uspješno! Preusmjeravam...';
+        setTimeout(() => window.location.href = '/dashboard.html', 1000);
     } else {
         poruka.style.color = 'red';
-        poruka.textContent = '❌ ' + data.poruka;
+        poruka.textContent = ' ' + data.poruka;
     }
 }
 
@@ -237,11 +237,12 @@ async function register() {
     const data = await res.json();
     if (data.uspjeh) {
         poruka.style.color = '#1D9E75';
-        poruka.textContent = '✅ Account kreiran! Preusmjeravam...';
-        setTimeout(() => window.location.href = '/oglasi.html', 1000);
+        poruka.textContent = data.poruka;
+        localStorage.setItem('korisnik', JSON.stringify(data.korisnik));
+        setTimeout(() => window.location.href = '/dashboard.html', 1000);
     } else {
         poruka.style.color = 'red';
-        poruka.textContent = '❌ ' + data.poruka;
+        poruka.textContent = data.poruka;
     }
 }
 </script>
