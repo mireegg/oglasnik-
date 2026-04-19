@@ -143,8 +143,7 @@ app.get('/api/oglasi', async (req, res) => {
 
     const options = {
         hostname: 'api.olx.ba',
-        path: '/listings?limit=20&search=' + encodeURIComponent(pretraga),
-        method: 'GET',
+path: '/listings?limit=20&keyword=' + encodeURIComponent(pretraga),        method: 'GET',
         headers: {
             'Authorization': 'Bearer ' + token,
             'Accept': 'application/json'

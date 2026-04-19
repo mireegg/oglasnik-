@@ -32,8 +32,7 @@ function prikaziOglase(oglasi) {
     grid.innerHTML = oglasi.map(o => {
         const scoreColor = o.score >= 75 ? '#639922' : o.score >= 50 ? '#BA7517' : '#A32D2D';
         return `
-        <div class="oglas-card" onclick="window.open('#', '_blank')">
-            <div class="oglas-slika">${o.emoji}</div>
+onclick="window.open('https://www.olx.ba/oglas/' + o.slug + '', '_blank')"            <div class="oglas-slika">${o.emoji}</div>
             <div class="oglas-body">
                 <div class="oglas-naslov">${o.naslov}</div>
                 <div class="oglas-cijena">${o.cijenaStr}</div>
