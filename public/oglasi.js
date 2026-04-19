@@ -30,27 +30,20 @@ function prikaziOglase(oglasi) {
     }
 
     grid.innerHTML = oglasi.map(o => {
-        const scoreColor = o.score >= 75 ? '#639922' : o.score >= 50 ? '#BA7517' : '#A32D2D';
-        return `
-onclick="window.open('https://www.olx.ba/oglas/' + o.slug + '', '_blank')"            <div class="oglas-slika">${o.emoji}</div>
-            <div class="oglas-body">
-                <div class="oglas-naslov">${o.naslov}</div>
-                <div class="oglas-cijena">${o.cijenaStr}</div>
-                <div class="oglas-meta">
-                    <span class="oglas-lokacija">📍 ${o.lokacija} · ${o.datum}</span>
-                    <span class="oglas-platforma platforma-${o.platforma}">${o.platforma.toUpperCase()}</span>
-                </div>
-                <div class="ai-score">
-                    <span class="ai-tag ai-${o.aiTag}">${o.aiLabel}</span>
-                    <div class="score-bar-wrap">
-                        <div class="score-bar-fill" style="width:${o.score}%; background:${scoreColor};"></div>
-                    </div>
-                    <span class="score-label" style="color:${scoreColor};">${o.score}</span>
-                </div>
-            </div>
-        </div>
-        `;
-    }).join('');
+    const scoreColor = o.score >= 75 ? '#639922' : o.score >= 50 ? '#BA7517' : '#A32D2D';
+    const card = '<div class="oglas-card" onclick="window.open(\'https://www.olx.ba/\' + \'' + o.link + '\', \'_blank\')">' +
+        '<div class="oglas-slika">' + o.emoji + '</div>' +
+        '<div class="oglas-body">' +
+        '<div class="oglas-naslov">' + o.naslov + '</div>' +
+        '<div class="oglas-cijena">' + o.cijenaStr + '</div>' +
+        '<div class="oglas-meta"><span class="oglas-lokacija">' + o.lokacija + ' · ' + o.datum + '</span>' +
+        '<span class="oglas-platforma platforma-' + o.platforma + '">' + o.platforma.toUpperCase() + '</span></div>' +
+        '<div class="ai-score"><span class="ai-tag ai-' + o.aiTag + '">' + o.aiLabel + '</span>' +
+        '<div class="score-bar-wrap"><div class="score-bar-fill" style="width:' + o.score + '%;background:' + scoreColor + ';"></div></div>' +
+        '<span class="score-label" style="color:' + scoreColor + ';">' + o.score + '</span></div>' +
+        '</div></div>';
+    return card;
+}).join('');
 }
 
 function pretrazi() {
