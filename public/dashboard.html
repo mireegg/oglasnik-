@@ -300,15 +300,10 @@ async function ucitajPracenja() {
     pracenja.forEach(p => {
         const card = document.createElement('div');
         card.className = 'pracenje-card';
-        card.innerHTML = `
-            <div class="pracenje-info">
-                <h3>🔍 ${p.pretraga}</h3>
-                <p>Cijela BiH · Sve platforme</p>
-            </div>
-            <div class="pracenje-status">
-                <div class="status-dot"><div class="dot dot-green"></div> Aktivno</div>
-                <span class="novi-badge">0 novih</span>
-            </div>
+      async function obrisiPracenje(id, btn) {
+    await fetch('/pracenje/' + id, { method: 'DELETE' });
+    btn.closest('.pracenje-card').remove();
+}
         `;
         grid.appendChild(card);
     });

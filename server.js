@@ -118,6 +118,11 @@ app.post('/pracenje', async (req, res) => {
     );
     res.json({ uspjeh: true });
 });
+app.delete('/pracenje/:id', async (req, res) => {
+    const { id } = req.params;
+    await pool.query('DELETE FROM pracenja WHERE id = $1', [id]);
+    res.json({ uspjeh: true });
+});
 
 app.get('/moja-pracenja', async (req, res) => {
     const { email } = req.query;
