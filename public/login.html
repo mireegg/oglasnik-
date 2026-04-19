@@ -201,6 +201,7 @@ async function login() {
 
     const data = await res.json();
     if (data.uspjeh) {
+        localStorage.setItem('korisnik', JSON.stringify(data.korisnik));
         poruka.style.color = '#1D9E75';
         poruka.textContent = ' Uspješno! Preusmjeravam...';
         setTimeout(() => window.location.href = '/dashboard.html', 1000);
