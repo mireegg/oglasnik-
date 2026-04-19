@@ -7,11 +7,12 @@
     <link rel="stylesheet" href="style.css">
     <style>
         .search-bar {
-            display: flex;
+            display: flex; 
             gap: 10px;
             padding: 30px 60px;
             background: white;
             border-bottom: 1px solid #e5e7eb;
+            <button class="btn-primary" onclick="aiAnaliza()" style="white-space:nowrap;">AI Analiza</button>
         }
         .search-bar input {
             flex: 1;
@@ -50,6 +51,10 @@
             padding: 16px 60px;
             font-size: 14px;
             color: #6b7280;
+            <div id="ai-analiza-box" style="display:none; margin: 0 60px 20px; background: #EEEDFE; border-radius: 12px; padding: 20px; border-left: 4px solid #3C3489;">
+    <div style="font-weight: 600; color: #3C3489; margin-bottom: 10px;">AI Analiza</div>
+    <div id="ai-analiza-tekst" style="font-size: 14px; color: #26215C; line-height: 1.7; white-space: pre-wrap;"></div>
+</div>v>
         }
         .oglasi-grid {
             display: grid;

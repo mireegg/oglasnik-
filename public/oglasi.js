@@ -146,4 +146,25 @@ window.onload = () => prikaziOglase(demoOglasi);
 
 document.addEventListener('keydown', e => {
     if (e.key === 'Enter') pretrazi();
+    async function aiAnaliza() {
+    const box = document.getElementById('ai-analiza-box');
+    const tekst = document.getElementById('ai-analiza-tekst');
+    const query = document.getElementById('searchInput').value.trim();
+    
+    box.style.display = 'block';
+    tekst.textContent = 'AI analizira oglase...';
+
+    const res = await fetch('/ai-analiza', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ oglasi: demoOglasi.slice(0, 5), pretraga: query || 'vozila' })
+    });
+
+    const data = await res.json();
+    if (data.uspjeh) {
+        tekst.textContent = data.analiza;
+    } else {
+        tekst.textContent = 'Greska pri analizi. Pokusaj ponovo.';
+    }
+}
 });
