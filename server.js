@@ -135,4 +135,36 @@ app.get('/moja-pracenja', async (req, res) => {
 
 app.listen(PORT, () => {
     console.log('Server radi na http://localhost:' + PORT);
+    const https = require('https');
+
+app.get('/api/oglasi', async (req, res) => {
+    const pretraga = req.query.q || '';
+    const token = process.env.OLX_TOKEN;
+
+    const options = {
+        hostname: 'api.olx.ba',
+        path: '/listings?limit=20&search=' + encodeURIComponent(pretraga),
+        method: 'GET',
+        headers: {
+            'Authorization': 'Bearer ' + token,
+            'Accept': 'application/json'
+        }
+    };
+
+    const apiReq = https.request(options, apiRes => {
+        let body = '';
+        apiRes.on('data', chunk => body += chunk);
+        apiRes.on('end', () => {
+            try {
+                const data = JSON.parse(body);
+                res.json(data);
+            } catch(e) {
+                res.json({ error: 'Greska pri parsiranju' });
+            }
+        });
+    });
+
+    apiReq.on('error', e => res.json({ error: e.message }));
+    apiReq.end();
+});
 });
