@@ -145,11 +145,9 @@ async function pretraziOLX(query) {
 
 function pretrazi() {
     const query = document.getElementById('searchInput').value.trim();
-    if (query) {
-        pretraziOLX(query);
-    } else {
-        prikaziOglase(demoOglasi);
-    }
+    if (!query) return;
+    window.open('https://www.olx.ba/pretraga?keywords=' + encodeURIComponent(query), '_blank');
+}
 }
 
 window.onload = () => prikaziOglase(demoOglasi);
