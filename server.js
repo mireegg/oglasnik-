@@ -205,4 +205,3 @@ path: '/listings?limit=20&keyword=' + encodeURIComponent(pretraga),        metho
     apiReq.on('error', e => res.json({ error: e.message }));
     apiReq.end();
 });
-});
