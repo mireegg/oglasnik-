@@ -285,18 +285,60 @@
 </div>
 
 <script>
-// Ucitavamo ime korisnika iz localStorage
+async function ucitajPracenja() {
+    const korisnik = JSON.parse(localStorage.getItem('korisnik') || '{}');
+    if (!korisnik.email) return;
+
+    const res = await fetch('/moja-pracenja?email=' + korisnik.email);
+    const pracenja = await res.json();
+
+    if (pracenja.length === 0) return;
+
+    const grid = document.getElementById('pracenjaGrid');
+    grid.innerHTML = '';
+
+    pracenja.forEach(p => {
+        const card = document.createElement('div');
+        card.className = 'pracenje-card';
+        card.innerHTML = `
+            <div class="pracenje-info">
+                <h3>🔍 ${p.pretraga}</h3>
+                <p>Cijela BiH · Sve platforme</p>
+            </div>
+            <div class="pracenje-status">
+                <div class="status-dot"><div class="dot dot-green"></div> Aktivno</div>
+                <span class="novi-badge">0 novih</span>
+            </div>
+        `;
+        grid.appendChild(card);
+    });
+}
+
 const korisnik = JSON.parse(localStorage.getItem('korisnik') || '{}');
 if (korisnik.ime) {
     document.getElementById('korisnikIme').textContent = korisnik.ime;
     document.getElementById('headerIme').textContent = korisnik.ime.split(' ')[0];
+} else {
+    window.location.href = '/login.html';
 }
 
-function dodajPracenje() {
+ucitajPracenja();
+
+async function dodajPracenje() {
     const input = document.getElementById('novoPracenje');
     const tekst = input.value.trim();
     if (!tekst) return;
 
+    const korisnik = JSON.parse(localStorage.getItem('korisnik') || '{}');
+    
+    // Cuvamo u bazu
+    await fetch('/pracenje', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: korisnik.email, pretraga: tekst })
+    });
+
+    // Dodajemo na ekran
     const grid = document.getElementById('pracenjaGrid');
     const card = document.createElement('div');
     card.className = 'pracenje-card';
@@ -312,6 +354,34 @@ function dodajPracenje() {
     `;
     grid.appendChild(card);
     input.value = '';
+}async function ucitajPracenja() {
+    const korisnik = JSON.parse(localStorage.getItem('korisnik') || '{}');
+    if (!korisnik.email) return;
+
+    const res = await fetch('/moja-pracenja?email=' + korisnik.email);
+    const pracenja = await res.json();
+
+    if (pracenja.length === 0) return;
+
+    const grid = document.getElementById('pracenjaGrid');
+    grid.innerHTML = '';
+
+    pracenja.forEach(p => {
+        const card = document.createElement('div');
+        card.className = 'pracenje-card';
+        card.innerHTML = `
+            <div class="pracenje-info">
+                <h3>🔍 ${p.pretraga}</h3>
+                <p>Cijela BiH · Sve platforme</p>
+            </div>
+            <div class="pracenje-status">
+                <div class="status-dot"><div class="dot dot-green"></div> Aktivno</div>
+                <span class="novi-badge">0 novih</span>
+            </div>
+        `;
+        grid.appendChild(card);
+    });
+}
 }
 
 function odjava() {
