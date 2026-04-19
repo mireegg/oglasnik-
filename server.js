@@ -160,8 +160,9 @@ app.post('/ai-analiza', async (req, res) => {
         apiRes.on('data', chunk => data += chunk);
         apiRes.on('end', () => {
             try {
-                const parsed = JSON.parse(data);
-                const tekst = parsed.candidates[0].content.parts[0].text;
+                console.log('Gemini odgovor:', data);
+const parsed = JSON.parse(data);
+const tekst = parsed.candidates[0].content.parts[0].text;
                 res.json({ uspjeh: true, analiza: tekst });
             } catch(e) {
                 res.json({ uspjeh: false, poruka: 'Greska pri analizi' });
