@@ -146,14 +146,14 @@ app.post('/ai-analiza', async (req, res) => {
     });
 
     const options = {
-        hostname: 'generativelanguage.googleapis.com',
-path: '/v1beta/models/gemini-2.0-flash-lite:generateContent?key='        method: 'POST',
-        headers: {            'Content-Type': 'application/json',
-            'Content-Length': Buffer.byteLength(body)
-        }
-    };
-
-    const apiReq = https.request(options, apiRes => {
+    hostname: 'generativelanguage.googleapis.com',
+    path: '/v1beta/models/gemini-2.0-flash-lite:generateContent?key=' + process.env.GEMINI_API_KEY,
+    method: 'POST',
+    headers: {
+        'Content-Type': 'application/json',
+        'Content-Length': Buffer.byteLength(body)
+    }
+};
         let data = '';
         apiRes.on('data', chunk => data += chunk);
         apiRes.on('end', () => {
