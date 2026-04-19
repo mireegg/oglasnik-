@@ -187,7 +187,7 @@
 
     <div class="dashboard-header">
         <div>
-            <h1>Dobro jutro, <span id="headerIme">Korisnik</span>! 👋</h1>
+            <h1>Dobro jutro, <span id="headerIme"></span>! 👋</h1>
             <p>Evo šta se dešava sa tvojim praćenjima danas.</p>
         </div>
         <a href="/oglasi.html"><button class="btn-primary">+ Pretraži oglase</button></a>
@@ -314,15 +314,16 @@ async function ucitajPracenja() {
     });
 }
 
-const korisnik = JSON.parse(localStorage.getItem('korisnik') || '{}');
-if (korisnik.ime) {
-    document.getElementById('korisnikIme').textContent = korisnik.ime;
-    document.getElementById('headerIme').textContent = korisnik.ime.split(' ')[0];
-} else {
-    window.location.href = '/login.html';
-}
-
-ucitajPracenja();
+document.addEventListener('DOMContentLoaded', () => {
+    const korisnik = JSON.parse(localStorage.getItem('korisnik') || '{}');
+    if (korisnik.ime) {
+        document.getElementById('korisnikIme').textContent = korisnik.ime;
+        document.getElementById('headerIme').textContent = korisnik.ime.split(' ')[0];
+    } else {
+        window.location.href = '/login.html';
+    }
+    ucitajPracenja();
+});
 
 async function dodajPracenje() {
     const input = document.getElementById('novoPracenje');
@@ -381,7 +382,6 @@ async function dodajPracenje() {
         `;
         grid.appendChild(card);
     });
-}
 }
 
 function odjava() {
