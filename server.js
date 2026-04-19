@@ -132,7 +132,47 @@ app.get('/moja-pracenja', async (req, res) => {
     );
     res.json(result.rows);
 });
+const https = require('https');
 
+app.post('/ai-analiza', async (req, res) => {
+    const { oglasi, pretraga } = req.body;
+    
+    const prompt = 'Analiziraj ove oglase za: ' + pretraga + '\n\n' +
+        oglasi.map((o, i) => (i+1) + '. ' + o.naslov + ' - ' + o.cijena + ' - ' + o.lokacija).join('\n') +
+        '\n\nZa svaki oglas kratko reci:\n- Je li cijena fer?\n- Preporuka (preporucujem/izbjegavaj/ok)\n- Jedan razlog zasto\n\nBudi kratak i konkretan. Odgovori na bosanskom jeziku.';
+
+    const body = JSON.stringify({
+        contents: [{ parts: [{ text: prompt }] }]
+    });
+
+    const options = {
+        hostname: 'generativelanguage.googleapis.com',
+        path: '/v1beta/models/gemini-1.5-flash:generateContent?key=' + process.env.GEMINI_API_KEY,
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Content-Length': Buffer.byteLength(body)
+        }
+    };
+
+    const apiReq = https.request(options, apiRes => {
+        let data = '';
+        apiRes.on('data', chunk => data += chunk);
+        apiRes.on('end', () => {
+            try {
+                const parsed = JSON.parse(data);
+                const tekst = parsed.candidates[0].content.parts[0].text;
+                res.json({ uspjeh: true, analiza: tekst });
+            } catch(e) {
+                res.json({ uspjeh: false, poruka: 'Greska pri analizi' });
+            }
+        });
+    });
+
+    apiReq.on('error', e => res.json({ uspjeh: false, poruka: e.message }));
+    apiReq.write(body);
+    apiReq.end();
+});
 app.listen(PORT, () => {
     console.log('Server radi na http://localhost:' + PORT);
     const https = require('https');
