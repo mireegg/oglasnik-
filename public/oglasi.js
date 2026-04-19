@@ -113,9 +113,48 @@ function primijeniSortiranje(oglasi) {
 }
 
 // Ucitavamo oglase kad se stranica otvori
+async function pretraziOLX(query) {
+    const grid = document.getElementById('oglasiGrid');
+    const info = document.getElementById('rezultatiInfo');
+    grid.innerHTML = '<div class="loader">Pretrazujem OLX...</div>';
+    
+    const res = await fetch('/api/oglasi?q=' + encodeURIComponent(query));
+    const data = await res.json();
+    
+    if (!data.data || data.data.length === 0) {
+        grid.innerHTML = '<div class="loader">Nema rezultata.</div>';
+        return;
+    }
+
+    info.textContent = 'Pronadeno ' + data.data.length + ' oglasa na OLX.ba';
+    
+    grid.innerHTML = data.data.map(o => {
+        const cijena = o.display_price || 'Na upit';
+        const slika = o.images && o.images[0] ? o.images[0] : null;
+        const grad = o.cities && o.cities[0] ? o.cities[0].name : '';
+        
+        return '<div class="oglas-card" onclick="window.open(\'https://www.olx.ba/oglas/' + o.slug + '\', \'_blank\')">' +
+            '<div class="oglas-slika">' + (slika ? '<img src="' + slika + '" style="width:100%;height:100%;object-fit:cover;">' : '') + '</div>' +
+            '<div class="oglas-body">' +
+            '<div class="oglas-naslov">' + o.title + '</div>' +
+            '<div class="oglas-cijena">' + cijena + '</div>' +
+            '<div class="oglas-meta"><span class="oglas-lokacija">' + grad + '</span>' +
+            '<span class="oglas-platforma platforma-olx">OLX</span></div>' +
+            '</div></div>';
+    }).join('');
+}
+
+function pretrazi() {
+    const query = document.getElementById('searchInput').value.trim();
+    if (query) {
+        pretraziOLX(query);
+    } else {
+        prikaziOglase(demoOglasi);
+    }
+}
+
 window.onload = () => prikaziOglase(demoOglasi);
 
-// Enter tipka pokrace pretragu
 document.addEventListener('keydown', e => {
     if (e.key === 'Enter') pretrazi();
 });
