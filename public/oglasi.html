@@ -197,20 +197,19 @@
     <div class="loader">⏳ Učitavam oglase...</div>
 </div>
 
+<script src="oglasi.js"></script>
+<script>
 async function aiAnaliza() {
     var box = document.getElementById('ai-analiza-box');
     var tekst = document.getElementById('ai-analiza-tekst');
     var query = document.getElementById('searchInput').value.trim();
-    
     box.style.display = 'block';
     tekst.textContent = 'AI analizira oglase...';
-
     var res = await fetch('/ai-analiza', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ oglasi: demoOglasi.slice(0, 5), pretraga: query || 'vozila' })
     });
-
     var data = await res.json();
     if (data.uspjeh) {
         tekst.textContent = data.analiza;
@@ -218,8 +217,6 @@ async function aiAnaliza() {
         tekst.textContent = 'Greska pri analizi. Pokusaj ponovo.';
     }
 }
-<script src="oglasi.js"
-    async function aiAnaliza() {
-></script>
+</script>
 </body>
 </html>
