@@ -148,7 +148,6 @@ function pretrazi() {
     if (!query) return;
     window.open('https://www.olx.ba/pretraga?keywords=' + encodeURIComponent(query), '_blank');
 }
-}
 
 window.onload = () => prikaziOglase(demoOglasi);
 
