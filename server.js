@@ -85,13 +85,21 @@ app.post('/ai-analiza', async (req, res) => {
         oglasi.map((o, i) => (i+1) + '. ' + o.naslov + ' - ' + o.cijena + ' - ' + o.lokacija).join('\n') +
         '\n\nZa svaki oglas kratko reci:\n- Je li cijena fer?\n- Preporuka\n- Jedan razlog zasto\n\nBudi kratak. Odgovori na bosanskom jeziku.';
 
-    const body = JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] });
+    const body = JSON.stringify({
+        model: 'gpt-3.5-turbo',
+        messages: [{ role: 'user', content: prompt }],
+        max_tokens: 500
+    });
 
     const options = {
-        hostname: 'generativelanguage.googleapis.com',
-        path: '/v1beta/models/gemini-2.0-flash-lite:generateContent?key=' + process.env.GEMINI_API_KEY,
+        hostname: 'api.openai.com',
+        path: '/v1/chat/completions',
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Content-Length': Buffer.byteLength(body) }
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + process.env.OPENAI_API_KEY,
+            'Content-Length': Buffer.byteLength(body)
+        }
     };
 
     const apiReq = https.request(options, apiRes => {
@@ -99,11 +107,11 @@ app.post('/ai-analiza', async (req, res) => {
         apiRes.on('data', chunk => data += chunk);
         apiRes.on('end', () => {
             try {
-                console.log('Gemini odgovor:', data);
                 const parsed = JSON.parse(data);
-                const tekst = parsed.candidates[0].content.parts[0].text;
+                const tekst = parsed.choices[0].message.content;
                 res.json({ uspjeh: true, analiza: tekst });
             } catch(e) {
+                console.log('OpenAI odgovor:', data);
                 res.json({ uspjeh: false, poruka: 'Greska pri analizi' });
             }
         });
