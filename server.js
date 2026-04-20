@@ -95,7 +95,7 @@ app.post('/ai-analiza', async (req, res) => {
         'Pisi na bosanskom jeziku. Budi konkretan i koristan.';
 
     const body = JSON.stringify({
-        model: 'llama-3.1-8b-instant',
+        model: 'llama-3.3-70b-versatile',
         messages: [{ role: 'user', content: prompt }],
         max_tokens: 1000
     });
