@@ -86,18 +86,18 @@ app.post('/ai-analiza', async (req, res) => {
         '\n\nZa svaki oglas kratko reci:\n- Je li cijena fer?\n- Preporuka\n- Jedan razlog zasto\n\nBudi kratak. Odgovori na bosanskom jeziku.';
 
     const body = JSON.stringify({
-        model: 'gpt-3.5-turbo',
+        model: 'llama3-8b-8192',
         messages: [{ role: 'user', content: prompt }],
         max_tokens: 500
     });
 
     const options = {
-        hostname: 'api.openai.com',
-        path: '/v1/chat/completions',
+        hostname: 'api.groq.com',
+        path: '/openai/v1/chat/completions',
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
-            'Authorization': 'Bearer ' + process.env.OPENAI_API_KEY,
+            'Authorization': 'Bearer ' + process.env.GROQ_API_KEY,
             'Content-Length': Buffer.byteLength(body)
         }
     };
@@ -111,7 +111,7 @@ app.post('/ai-analiza', async (req, res) => {
                 const tekst = parsed.choices[0].message.content;
                 res.json({ uspjeh: true, analiza: tekst });
             } catch(e) {
-                console.log('OpenAI odgovor:', data);
+                console.log('Groq odgovor:', data);
                 res.json({ uspjeh: false, poruka: 'Greska pri analizi' });
             }
         });
