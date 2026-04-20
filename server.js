@@ -36,7 +36,7 @@ app.get('/', (req, res) => {
 app.post('/prijava', async (req, res) => {
     const { ime, email, telefon } = req.body;
     await pool.query('INSERT INTO prijave (ime, email, telefon) VALUES ($1, $2, $3)', [ime, email, telefon]);
-    transporter.sendMail({ from: process.env.EMAIL_USER, to: email, subject: 'Dobro dosli na Oglasnik.ba!', html: '<h2>Zdravo ' + ime + '!</h2><p>Uspjesno ste se prijavili.</p>' }).catch(e => console.log(e.message));
+    transporter.sendMail({ from: process.env.EMAIL_USER, to: email, subject: 'Dobro dosli na Oglix!', html: '<h2>Zdravo ' + ime + '!</h2><p>Uspjesno ste se prijavili.</p>' }).catch(e => console.log(e.message));
     res.json({ uspjeh: true });
 });
 
@@ -44,7 +44,7 @@ app.post('/register', async (req, res) => {
     const { ime, email, lozinka } = req.body;
     try {
         await pool.query('INSERT INTO korisnici (ime, email, lozinka) VALUES ($1, $2, $3)', [ime, email, lozinka]);
-        transporter.sendMail({ from: process.env.EMAIL_USER, to: email, subject: 'Dobro dosli na Oglasnik.ba!', html: '<h2>Zdravo ' + ime + '!</h2><p>Vas account je kreiran.</p>' }).catch(e => console.log(e.message));
+        transporter.sendMail({ from: process.env.EMAIL_USER, to: email, subject: 'Dobro dosli na Oglix!', html: '<h2>Zdravo ' + ime + '!</h2><p>Vas account je kreiran.</p>' }).catch(e => console.log(e.message));
         res.json({ uspjeh: true });
     } catch(e) {
         res.json({ uspjeh: false, poruka: e.code === '23505' ? 'Email vec postoji!' : 'Greska pri registraciji!' });
