@@ -515,7 +515,7 @@
 </div>
 
 <script>
-var korisnik = JSON.parse(localStorage.getItem('oglixKorisnik') || 'null');
+var korisnik = JSON.parse(localStorage.getItem('korisnik') || 'null');
 
 if (!korisnik) {
     window.location.href = '/login.html';
@@ -534,7 +534,7 @@ if (korisnik) {
 }
 
 function odjava() {
-    localStorage.removeItem('oglixKorisnik');
+localStorage.removeItem('korisnik');
     window.location.href = '/login.html';
 }
 
