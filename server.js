@@ -82,22 +82,34 @@ app.get('/moja-pracenja', async (req, res) => {
 app.post('/ai-analiza', async (req, res) => {
     const { oglasi, pretraga } = req.body;
 
-    const prompt = 'Ti si ekspert za kupovinu automobila u Bosni i Hercegovini. Kupac trazi: "' + pretraga + '"\n\n' +
-        'Evo oglasa koje je pronasao:\n\n' +
-        oglasi.map((o, i) => (i+1) + '. OGLAS:\n   Naziv: ' + o.naslov + '\n   Cijena: ' + o.cijenaStr + '\n   Lokacija: ' + o.lokacija + '\n   Detalji: ' + (o.detalji || 'nema detalja') + '\n   Platforma: ' + o.platforma.toUpperCase()).join('\n\n') +
-        '\n\nZa svaki oglas analiziraj:\n' +
-        '1. Procjena cijene: fer/previsoka/preniska i zasto\n' +
-        '2. Stanje i kilometraza: komentar\n' +
-        '3. Oprema: sta ima a sta nedostaje\n' +
-        '4. Preporuka: PREPORUCUJEM / OK / IZBJEGAVAJ\n' +
-        '5. AI Score: broj od 1-100\n\n' +
-        'Na kraju napisi ZAKLJUCAK: koji oglas je najbolja kupovina i zasto, te na sta kupac treba obratiti paznju.\n\n' +
-        'Pisi na bosanskom jeziku. Budi konkretan i koristan.';
+    const prompt = `Ti si iskusan auto-ekspert i savjetnik za kupovinu vozila u Bosni i Hercegovini. 
+Kupac trazi: "${pretraga}"
+
+Evo oglasa koje je pronasao:
+
+${oglasi.map((o, i) => `${i+1}. OGLAS:
+   Naziv: ${o.naslov}
+   Cijena: ${o.cijenaStr}
+   Lokacija: ${o.lokacija}
+   Detalji: ${o.detalji || 'nema detalja'}
+   Platforma: ${o.platforma.toUpperCase()}`).join('\n\n')}
+
+Za svaki oglas analiziraj sljedece:
+1. CIJENA: Da li je cijena fer, previsoka ili preniska u odnosu na tržište BiH? Navedi konkretan razlog.
+2. KILOMETRAZA: Procijeni da li je kilometraza normalna za godiste vozila.
+3. OPREMA: Koja vazna oprema je ukljucena, a sta nedostaje?
+4. PREPORUKA: PREPORUCUJEM / OK / IZBJEGAVAJ
+5. AI SCORE: Daj ocjenu od 1 do 100.
+
+Na kraju napisi:
+ZAKLJUCAK: Koji oglas je najisplativija kupovina i zasto? Na sta kupac posebno treba obratiti paznju prije kupovine?
+
+Pisi na bosanskom/hrvatskom jeziku. Budi konkretan, jasan i koristan kupcu.`;
 
     const body = JSON.stringify({
         model: 'llama-3.3-70b-versatile',
         messages: [{ role: 'user', content: prompt }],
-        max_tokens: 1000
+        max_tokens: 1500
     });
 
     const options = {
