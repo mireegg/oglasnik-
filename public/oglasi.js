@@ -89,8 +89,7 @@ function prikaziOglase(oglasi) {
     grid.innerHTML = oglasi.map(o => {
         const scoreColor = o.score >= 75 ? '#639922' : o.score >= 50 ? '#BA7517' : '#A32D2D';
         return '<div class="oglas-card">' +
-            '<div class="oglas-slika">' + o.emoji + '</div>' +
-            '<div class="oglas-body">' +
+'<div class="oglas-slika">' + (o.slika ? '<img src="' + o.slika + '" style="width:100%;height:100%;object-fit:cover;border-radius:12px 12px 0 0;">' : '🚗') + '</div>' +            '<div class="oglas-body">' +
             '<div class="oglas-naslov">' + o.naslov + '</div>' +
             '<div class="oglas-cijena">' + o.cijenaStr + '</div>' +
             '<div class="oglas-meta"><span class="oglas-lokacija">📍 ' + o.lokacija + ' · ' + o.datum + '</span>' +
