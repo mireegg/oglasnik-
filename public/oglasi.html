@@ -735,7 +735,7 @@
   <aside class="sidebar">
     <div class="sidebar-header">
       <span class="sidebar-title">Filteri</span>
-      <button class="reset-btn">Resetuj sve</button>
+      <button class="reset-btn" onclick="prikaziOglase(demoOglasi); document.getElementById('searchInput').value='';">Resetuj sve</button>
     </div>
 
     <div class="filter-section">
@@ -832,42 +832,53 @@
 <script src="oglasi.js"></script>
 <script>
 function prikaziOglase(oglasi) {
-    const grid = document.getElementById('oglasiGrid');
-    const broj = document.getElementById('rezultatiBroj');
+    var grid = document.getElementById('oglasiGrid');
+    var broj = document.getElementById('rezultatiBroj');
     broj.textContent = oglasi.length;
 
     if (oglasi.length === 0) {
-        grid.innerHTML = '<div style="padding:40px;text-align:center;color:#aaa;">Nema rezultata.</div>';
+        grid.innerHTML = '<div style="padding:40px;text-align:center;color:#aaa;grid-column:1/-1;">Nema rezultata.</div>';
         return;
     }
 
-    const badgeClass = { olx: 'badge-olx', njuskalo: 'badge-njuskalo', facebook: 'badge-fb' };
-    const scoreColor = s => s >= 75 ? '#639922' : s >= 50 ? '#BA7517' : '#A32D2D';
+    var badgeClass = { olx: 'badge-olx', njuskalo: 'badge-njuskalo', facebook: 'badge-fb' };
+    var scoreColor = function(s) { return s >= 75 ? '#639922' : s >= 50 ? '#BA7517' : '#A32D2D'; };
 
-    grid.innerHTML = oglasi.map(o => `
-        <div class="card">
-            <div class="card-img">
-                ${o.slika ? '<img src="' + o.slika + '" alt="' + o.naslov + '">' : '<svg width="56" height="56" viewBox="0 0 56 56" fill="none"><ellipse cx="28" cy="36" rx="18" ry="10" stroke="#aaa" stroke-width="2"/><path d="M10 36 Q10 20 28 17 Q46 20 46 36" stroke="#aaa" stroke-width="2" fill="none"/></svg>'}
-            </div>
-            <div class="card-body">
-                <span class="source-badge ${badgeClass[o.platforma] || 'badge-olx'}">${o.platforma.toUpperCase()}</span>
-                <div class="card-title">${o.naslov}</div>
-                <div class="card-price">${o.cijenaStr}</div>
-                <div class="card-meta">📍 ${o.lokacija} · ${o.datum}</div>
-                <div class="card-score">
-                    <span class="score-tag tag-${o.aiTag}">${o.aiLabel}</span>
-                    <div class="score-bar-wrap"><div class="score-bar-fill" style="width:${o.score}%;background:${scoreColor(o.score)};"></div></div>
-                    <span style="font-size:11px;font-weight:600;color:${scoreColor(o.score)};">${o.score}</span>
-                </div>
-            </div>
-        </div>
-    `).join('');
+    grid.innerHTML = oglasi.map(function(o) {
+        return '<div class="card">' +
+            '<div class="card-img">' +
+            (o.slika ? '<img src="' + o.slika + '" alt="' + o.naslov + '">' : '<svg width="56" height="56" viewBox="0 0 56 56" fill="none"><ellipse cx="28" cy="36" rx="18" ry="10" stroke="#aaa" stroke-width="2"/><path d="M10 36 Q10 20 28 17 Q46 20 46 36" stroke="#aaa" stroke-width="2" fill="none"/></svg>') +
+            '</div>' +
+            '<div class="card-body">' +
+            '<span class="source-badge ' + (badgeClass[o.platforma] || 'badge-olx') + '">' + o.platforma.toUpperCase() + '</span>' +
+            '<div class="card-title">' + o.naslov + '</div>' +
+            '<div class="card-price">' + o.cijenaStr + '</div>' +
+            '<div class="card-meta">📍 ' + o.lokacija + ' · ' + o.datum + '</div>' +
+            '<div class="card-score">' +
+            '<span class="score-tag tag-' + o.aiTag + '">' + o.aiLabel + '</span>' +
+            '<div class="score-bar-wrap"><div class="score-bar-fill" style="width:' + o.score + '%;background:' + scoreColor(o.score) + ';"></div></div>' +
+            '<span style="font-size:11px;font-weight:600;color:' + scoreColor(o.score) + ';">' + o.score + '</span>' +
+            '</div></div></div>';
+    }).join('');
 }
 
 function pretrazi() {
-    const query = document.getElementById('searchInput').value.trim();
-    if (!query) return;
-    window.open('https://www.olx.ba/pretraga?keywords=' + encodeURIComponent(query), '_blank');
+    var query = document.getElementById('searchInput').value.trim().toLowerCase();
+    if (!query) {
+        prikaziOglase(demoOglasi);
+        return;
+    }
+    var filtrirani = demoOglasi.filter(function(o) {
+        return o.naslov.toLowerCase().includes(query) ||
+            (o.detalji && o.detalji.toLowerCase().includes(query)) ||
+            o.lokacija.toLowerCase().includes(query);
+    });
+    if (filtrirani.length === 0) {
+        document.getElementById('oglasiGrid').innerHTML = '<div style="padding:40px;text-align:center;color:#aaa;grid-column:1/-1;">Nema rezultata za "' + query + '".<br><br><a href="https://www.olx.ba/pretraga?keywords=' + encodeURIComponent(query) + '" target="_blank" style="color:#e65c00;">Pretraži na OLX.ba →</a></div>';
+        document.getElementById('rezultatiBroj').textContent = '0';
+        return;
+    }
+    prikaziOglase(filtrirani);
 }
 
 function quickSearch(term) {
@@ -878,9 +889,9 @@ function quickSearch(term) {
 function sortirajSelect(tip) {
     var oglasi = [...demoOglasi];
     switch(tip) {
-        case 'cijena_asc': oglasi.sort((a, b) => a.cijena - b.cijena); break;
-        case 'cijena_desc': oglasi.sort((a, b) => b.cijena - a.cijena); break;
-        case 'score': oglasi.sort((a, b) => b.score - a.score); break;
+        case 'cijena_asc': oglasi.sort(function(a, b) { return a.cijena - b.cijena; }); break;
+        case 'cijena_desc': oglasi.sort(function(a, b) { return b.cijena - a.cijena; }); break;
+        case 'score': oglasi.sort(function(a, b) { return b.score - a.score; }); break;
     }
     prikaziOglase(oglasi);
 }
@@ -893,36 +904,41 @@ async function aiAnaliza() {
     tekst.textContent = 'AI analizira oglase...';
     box.scrollIntoView({ behavior: 'smooth' });
 
+    var trenutniOglasi = query ? demoOglasi.filter(function(o) {
+        return o.naslov.toLowerCase().includes(query.toLowerCase()) ||
+            (o.detalji && o.detalji.toLowerCase().includes(query.toLowerCase()));
+    }) : demoOglasi;
+
     var res = await fetch('/ai-analiza', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ oglasi: demoOglasi.slice(0, 5), pretraga: query || 'vozila' })
+        body: JSON.stringify({ oglasi: trenutniOglasi.slice(0, 5), pretraga: query || 'vozila' })
     });
 
     var data = await res.json();
     tekst.textContent = data.uspjeh ? data.analiza : 'Greska pri analizi. Pokusaj ponovo.';
 }
 
-document.querySelectorAll('.pill').forEach(p => {
-    p.addEventListener('click', () => {
-        document.querySelectorAll('.pill').forEach(x => x.classList.remove('active'));
+document.querySelectorAll('.pill').forEach(function(p) {
+    p.addEventListener('click', function() {
+        document.querySelectorAll('.pill').forEach(function(x) { x.classList.remove('active'); });
         p.classList.add('active');
     });
 });
 
-document.querySelectorAll('.fchip').forEach(c => {
-    c.addEventListener('click', () => {
+document.querySelectorAll('.fchip').forEach(function(c) {
+    c.addEventListener('click', function() {
         var group = c.closest('.filter-chips');
-        group.querySelectorAll('.fchip').forEach(x => x.classList.remove('active'));
+        group.querySelectorAll('.fchip').forEach(function(x) { x.classList.remove('active'); });
         c.classList.add('active');
     });
 });
 
-document.getElementById('searchInput').addEventListener('keydown', e => {
+document.getElementById('searchInput').addEventListener('keydown', function(e) {
     if (e.key === 'Enter') pretrazi();
 });
 
-window.onload = () => prikaziOglase(demoOglasi);
+window.onload = function() { prikaziOglase(demoOglasi); };
 </script>
 </body>
 </html>
