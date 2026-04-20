@@ -86,7 +86,7 @@ app.post('/ai-analiza', async (req, res) => {
         '\n\nZa svaki oglas kratko reci:\n- Je li cijena fer?\n- Preporuka\n- Jedan razlog zasto\n\nBudi kratak. Odgovori na bosanskom jeziku.';
 
     const body = JSON.stringify({
-        model: 'llama3-8b-8192',
+model: 'llama-3.1-8b-instant',
         messages: [{ role: 'user', content: prompt }],
         max_tokens: 500
     });
