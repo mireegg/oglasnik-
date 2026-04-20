@@ -1,225 +1,928 @@
 <!DOCTYPE html>
 <html lang="bs">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Oglasi — Oglix</title>
-    <link rel="stylesheet" href="style.css">
-    <style>
-        .search-bar { 
-            display: flex; 
-            gap: 10px;
-            padding: 30px 60px;
-            background: white;
-            border-bottom: 1px solid #e5e7eb;
-        }
-        .search-bar input {
-            flex: 1;
-            padding: 12px 18px;
-            border: 1px solid #e5e7eb;
-            border-radius: 8px;
-            font-size: 15px;
-            outline: none;
-        }
-        .search-bar input:focus {
-            border-color: #3C3489;
-        }
-        .filters {
-            display: flex;
-            gap: 10px;
-            padding: 16px 60px;
-            background: #f7f7f9;
-            border-bottom: 1px solid #e5e7eb;
-            flex-wrap: wrap;
-        }
-        .filter-btn {
-            padding: 6px 16px;
-            border: 1px solid #e5e7eb;
-            border-radius: 20px;
-            background: white;
-            cursor: pointer;
-            font-size: 13px;
-            color: #6b7280;
-        }
-        .filter-btn.active {
-            background: #3C3489;
-            color: white;
-            border-color: #3C3489;
-        }
-        .rezultati-info {
-            padding: 16px 60px;
-            font-size: 14px;
-            color: #6b7280;
-    <div style="font-weight: 600; color: #3C3489; margin-bottom: 10px;">AI Analiza</div>
-    <div id="ai-analiza-tekst" style="font-size: 14px; color: #26215C; line-height: 1.7; white-space: pre-wrap;"></div>
-</div>
-        }
-        .oglasi-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 20px;
-            padding: 20px 60px 60px;
-            max-width: 1400px;
-            margin: 0 auto;
-        }
-        .oglas-card {
-            background: white;
-            border-radius: 12px;
-            border: 1px solid #e5e7eb;
-            overflow: hidden;
-            transition: transform 0.2s;
-            cursor: pointer;
-        }
-        .oglas-card:hover {
-            transform: translateY(-2px);
-            border-color: #3C3489;
-        }
-        .oglas-slika {
-            width: 100%;
-            height: 180px;
-            background: #f7f7f9;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 48px;
-        }
-        .oglas-body {
-            padding: 14px;
-        }
-        .oglas-naslov {
-            font-size: 14px;
-            font-weight: 600;
-            color: #111827;
-            margin-bottom: 6px;
-            line-height: 1.4;
-        }
-        .oglas-cijena {
-            font-size: 18px;
-            font-weight: 700;
-            color: #3C3489;
-            margin-bottom: 8px;
-        }
-        .oglas-meta {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .oglas-lokacija {
-            font-size: 12px;
-            color: #6b7280;
-        }
-        .oglas-platforma {
-            font-size: 11px;
-            padding: 2px 8px;
-            border-radius: 20px;
-            font-weight: 600;
-        }
-        .platforma-olx { background: #EEEDFE; color: #3C3489; }
-        .platforma-njuskalo { background: #FAECE7; color: #712B13; }
-        .platforma-facebook { background: #E6F1FB; color: #0C447C; }
-        .ai-score {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            margin-top: 8px;
-            padding-top: 8px;
-            border-top: 1px solid #f3f4f6;
-        }
-        .score-bar-wrap {
-            flex: 1;
-            height: 4px;
-            background: #f3f4f6;
-            border-radius: 2px;
-        }
-        .score-bar-fill {
-            height: 4px;
-            border-radius: 2px;
-        }
-        .score-label {
-            font-size: 11px;
-            font-weight: 600;
-        }
-        .ai-tag {
-            font-size: 11px;
-            padding: 2px 8px;
-            border-radius: 20px;
-            font-weight: 500;
-        }
-        .ai-good { background: #EAF3DE; color: #27500A; }
-        .ai-warn { background: #FAEEDA; color: #633806; }
-        .ai-bad { background: #FCEBEB; color: #791F1F; }
-        .loader {
-            text-align: center;
-            padding: 60px;
-            color: #6b7280;
-            font-size: 16px;
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Oglix — Svi oglasi u BiH</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --orange: #e65c00;
+    --orange-light: #ff7a1f;
+    --orange-dim: #fff0e6;
+    --bg: #f7f5f2;
+    --surface: #ffffff;
+    --border: rgba(0,0,0,0.08);
+    --border-hover: rgba(0,0,0,0.18);
+    --text: #1a1a1a;
+    --text-muted: #777;
+    --text-faint: #aaa;
+    --radius-sm: 8px;
+    --radius-md: 12px;
+    --radius-lg: 18px;
+    --radius-pill: 100px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    font-size: 15px;
+    line-height: 1.5;
+  }
+
+  a { text-decoration: none; color: inherit; }
+
+  nav {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 0 32px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  .logo {
+    font-family: 'Syne', sans-serif;
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    color: var(--text);
+  }
+  .logo span { color: var(--orange); }
+
+  .nav-links {
+    display: flex;
+    align-items: center;
+    gap: 28px;
+  }
+  .nav-links a {
+    font-size: 14px;
+    color: var(--text-muted);
+    font-weight: 400;
+  }
+
+  .nav-right {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+  }
+
+  .nav-btn {
+    background: var(--orange);
+    color: white;
+    border: none;
+    border-radius: var(--radius-pill);
+    padding: 9px 20px;
+    font-size: 14px;
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 500;
+    cursor: pointer;
+  }
+  .nav-btn:hover { background: var(--orange-light); }
+
+  .nav-btn-ghost {
+    background: transparent;
+    color: var(--text-muted);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-pill);
+    padding: 9px 20px;
+    font-size: 14px;
+    font-family: 'DM Sans', sans-serif;
+    cursor: pointer;
+  }
+
+  .hero {
+    padding: 52px 32px 36px;
+    max-width: 760px;
+    margin: 0 auto;
+    text-align: center;
+  }
+
+  .hero-kicker {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--orange);
+    background: var(--orange-dim);
+    padding: 5px 14px;
+    border-radius: var(--radius-pill);
+    margin-bottom: 20px;
+    letter-spacing: 0.03em;
+  }
+
+  .hero h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: 44px;
+    font-weight: 700;
+    line-height: 1.1;
+    letter-spacing: -1.5px;
+    color: var(--text);
+    margin-bottom: 12px;
+  }
+
+  .hero h1 em {
+    font-style: normal;
+    color: var(--orange);
+  }
+
+  .hero p {
+    font-size: 15px;
+    color: var(--text-muted);
+    margin-bottom: 28px;
+    font-weight: 300;
+  }
+
+  .search-wrap {
+    display: flex;
+    gap: 10px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 8px;
+    margin-bottom: 14px;
+    box-shadow: 0 2px 20px rgba(0,0,0,0.06);
+  }
+
+  .search-icon {
+    display: flex;
+    align-items: center;
+    padding: 0 4px 0 10px;
+    color: var(--text-faint);
+  }
+
+  .search-input {
+    flex: 1;
+    border: none;
+    outline: none;
+    font-size: 15px;
+    font-family: 'DM Sans', sans-serif;
+    color: var(--text);
+    background: transparent;
+  }
+  .search-input::placeholder { color: var(--text-faint); }
+
+  .search-divider {
+    width: 1px;
+    background: var(--border);
+    margin: 4px 0;
+  }
+
+  .location-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 0 16px;
+    font-size: 14px;
+    color: var(--text-muted);
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+    white-space: nowrap;
+  }
+
+  .search-btn {
+    background: var(--orange);
+    color: white;
+    border: none;
+    border-radius: var(--radius-md);
+    padding: 12px 24px;
+    font-size: 15px;
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 500;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+  .search-btn:hover { background: var(--orange-light); }
+
+  .ai-btn {
+    background: #111;
+    color: white;
+    border: none;
+    border-radius: var(--radius-md);
+    padding: 12px 20px;
+    font-size: 14px;
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 500;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+  .ai-btn:hover { background: #333; }
+
+  .source-pills {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+
+  .pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 16px;
+    border-radius: var(--radius-pill);
+    border: 1px solid var(--border);
+    font-size: 13px;
+    color: var(--text-muted);
+    background: var(--surface);
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .pill.active { background: var(--text); color: white; border-color: var(--text); }
+
+  .pill-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .popular {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    font-size: 13px;
+    color: var(--text-faint);
+    margin-top: 10px;
+  }
+
+  .popular-tag {
+    color: var(--text-muted);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 4px 12px;
+    border-radius: var(--radius-pill);
+    cursor: pointer;
+    font-size: 13px;
+  }
+  .popular-tag:hover { color: var(--orange); border-color: var(--orange); }
+
+  .stats-bar {
+    background: var(--surface);
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    padding: 16px 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 40px;
+    font-size: 13px;
+    color: var(--text-muted);
+  }
+
+  .stat { display: flex; align-items: center; gap: 8px; }
+  .stat-num {
+    font-family: 'Syne', sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--text);
+  }
+
+  .main {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 32px;
+    display: grid;
+    grid-template-columns: 260px 1fr;
+    gap: 28px;
+    align-items: start;
+  }
+
+  .sidebar {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 22px;
+    position: sticky;
+    top: 80px;
+  }
+
+  .sidebar-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+  }
+
+  .sidebar-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+  }
+
+  .reset-btn {
+    font-size: 12px;
+    color: var(--orange);
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+    padding: 0;
+  }
+
+  .filter-section {
+    margin-bottom: 22px;
+    padding-bottom: 22px;
+    border-bottom: 1px solid var(--border);
+  }
+  .filter-section:last-of-type {
+    border-bottom: none;
+    margin-bottom: 0;
+    padding-bottom: 0;
+  }
+
+  .filter-label {
+    font-size: 11px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    color: var(--text-faint);
+    margin-bottom: 12px;
+  }
+
+  .check-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 5px 0;
+    cursor: pointer;
+    font-size: 13px;
+    color: var(--text);
+  }
+
+  .check-item input[type=checkbox] {
+    accent-color: var(--orange);
+    width: 15px;
+    height: 15px;
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+
+  .check-count {
+    margin-left: auto;
+    font-size: 11px;
+    color: var(--text-faint);
+    background: var(--bg);
+    padding: 1px 7px;
+    border-radius: 20px;
+  }
+
+  .source-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .price-inputs {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+
+  .price-input {
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 8px 10px;
+    font-size: 13px;
+    font-family: 'DM Sans', sans-serif;
+    color: var(--text);
+    background: var(--bg);
+    outline: none;
+    width: 100%;
+  }
+  .price-input:focus { border-color: var(--orange); }
+
+  .filter-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .fchip {
+    font-size: 12px;
+    padding: 5px 12px;
+    border-radius: var(--radius-pill);
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    background: var(--bg);
+    cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+  }
+  .fchip.active { background: var(--orange); color: white; border-color: var(--orange); }
+
+  .filter-select {
+    width: 100%;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 9px 10px;
+    font-size: 13px;
+    font-family: 'DM Sans', sans-serif;
+    color: var(--text);
+    background: var(--bg);
+    outline: none;
+    cursor: pointer;
+  }
+
+  .apply-btn {
+    width: 100%;
+    background: var(--orange);
+    color: white;
+    border: none;
+    border-radius: var(--radius-md);
+    padding: 12px;
+    font-size: 14px;
+    font-weight: 500;
+    font-family: 'DM Sans', sans-serif;
+    cursor: pointer;
+    margin-top: 18px;
+  }
+  .apply-btn:hover { background: var(--orange-light); }
+
+  .results-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+  }
+
+  .results-count {
+    font-size: 14px;
+    color: var(--text-muted);
+  }
+  .results-count strong { color: var(--text); }
+
+  .sort-select {
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 7px 10px;
+    font-size: 13px;
+    font-family: 'DM Sans', sans-serif;
+    color: var(--text);
+    background: var(--surface);
+    outline: none;
+    cursor: pointer;
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 14px;
+  }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    cursor: pointer;
+    transition: border-color 0.15s, transform 0.15s;
+  }
+  .card:hover {
+    border-color: var(--border-hover);
+    transform: translateY(-2px);
+  }
+
+  .card-img {
+    aspect-ratio: 4/3;
+    background: var(--bg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .card-img img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .card-body { padding: 12px 14px 14px; }
+
+  .source-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 10px;
+    font-weight: 500;
+    padding: 3px 8px;
+    border-radius: var(--radius-pill);
+    margin-bottom: 7px;
+  }
+  .badge-olx { background: #e8f5e9; color: #1b5e20; }
+  .badge-fb { background: #e3f2fd; color: #0d47a1; }
+  .badge-njuskalo { background: #fff3e0; color: #bf360c; }
+  .badge-halo { background: #f3e5f5; color: #4a148c; }
+
+  .card-title {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text);
+    margin-bottom: 6px;
+    line-height: 1.35;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .card-price {
+    font-family: 'Syne', sans-serif;
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--orange);
+    margin-bottom: 4px;
+  }
+
+  .card-meta {
+    font-size: 11px;
+    color: var(--text-faint);
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin-bottom: 8px;
+  }
+
+  .card-score {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .score-bar-wrap {
+    flex: 1;
+    height: 3px;
+    background: #f0f0f0;
+    border-radius: 2px;
+  }
+
+  .score-bar-fill {
+    height: 3px;
+    border-radius: 2px;
+  }
+
+  .score-tag {
+    font-size: 10px;
+    padding: 2px 7px;
+    border-radius: 10px;
+    font-weight: 600;
+  }
+  .tag-good { background: #EAF3DE; color: #27500A; }
+  .tag-warn { background: #FAEEDA; color: #633806; }
+  .tag-bad { background: #FCEBEB; color: #791F1F; }
+
+  .ai-box {
+    margin-bottom: 20px;
+    background: #111;
+    border-radius: var(--radius-lg);
+    padding: 18px 20px;
+  }
+
+  .ai-box-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--orange);
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .ai-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--orange);
+  }
+
+  .ai-box-text {
+    font-size: 13px;
+    color: #aaa;
+    line-height: 1.7;
+    white-space: pre-wrap;
+  }
+
+  .load-more {
+    text-align: center;
+    margin-top: 28px;
+  }
+
+  .load-btn {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-pill);
+    padding: 12px 36px;
+    font-size: 14px;
+    font-family: 'DM Sans', sans-serif;
+    color: var(--text-muted);
+    cursor: pointer;
+  }
+  .load-btn:hover { border-color: var(--border-hover); color: var(--text); }
+
+  footer {
+    margin-top: 60px;
+    border-top: 1px solid var(--border);
+    background: var(--surface);
+    padding: 32px;
+    text-align: center;
+    font-size: 13px;
+    color: var(--text-faint);
+  }
+
+  footer .footer-logo {
+    font-family: 'Syne', sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 8px;
+  }
+  footer .footer-logo span { color: var(--orange); }
+
+  @media (max-width: 768px) {
+    nav { padding: 0 16px; }
+    .nav-links { display: none; }
+    .hero { padding: 40px 16px 32px; }
+    .hero h1 { font-size: 32px; }
+    .main { grid-template-columns: 1fr; padding: 16px; }
+    .sidebar { display: none; }
+    .stats-bar { gap: 20px; flex-wrap: wrap; }
+  }
+</style>
 </head>
 <body>
 
 <nav>
-    <div class="logo">🔍 Oglix</div>
-    <div style="display:flex; gap:12px; align-items:center;">
-        <a href="/" style="color:#6b7280; text-decoration:none; font-size:14px;">Naslovna</a>
-        <button class="btn-primary">Moj profil</button>
-    </div>
+  <div class="logo">oglix<span>.ba</span></div>
+  <div class="nav-links">
+    <a href="#">Kategorije</a>
+    <a href="#">Kako radi?</a>
+    <a href="/dashboard.html">Dashboard</a>
+  </div>
+  <div class="nav-right">
+    <button class="nav-btn-ghost" onclick="window.location.href='/login.html'">Prijava</button>
+    <button class="nav-btn" onclick="window.location.href='/login.html'">Registracija</button>
+  </div>
 </nav>
 
-<div class="search-bar">
-    <input type="text" id="searchInput" placeholder="Pretraži sve oglase u BiH... npr. iPhone 15, Golf 6, sofa..." />
-    <button class="btn-primary" onclick="pretrazi()">Pretraži</button>
-    <div class="search-bar">
-    <input type="text" id="searchInput" ... />
-    <button class="btn-primary" onclick="pretrazi()">Pretraži</button>
-    <button class="btn-primary" onclick="aiAnaliza()" style="white-space:nowrap; background:#534AB7;">AI Analiza</button>
-</div>
-<div id="ai-analiza-box" style="display:none; margin: 20px 60px; background: #EEEDFE; border-radius: 12px; padding: 20px; border-left: 4px solid #3C3489;">
-    <div style="font-weight: 600; color: #3C3489; margin-bottom: 10px;">AI Analiza</div>
-    <div id="ai-analiza-tekst" style="font-size: 14px; color: #26215C; line-height: 1.7; white-space: pre-wrap;"></div>
-</div>
+<section class="hero">
+  <div class="hero-kicker">
+    <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><circle cx="5" cy="5" r="4" fill="#e65c00"/></svg>
+    Svi oglasi u BiH — na jednom mjestu
+  </div>
+  <h1>Pronađi šta tražiš.<br><em>Brže nego ikad.</em></h1>
+  <p>Pretražujemo OLX, Facebook Marketplace, Njuškalo i Halooglasi u realnom vremenu.</p>
+
+  <div class="search-wrap">
+    <div class="search-icon">
+      <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><circle cx="8" cy="8" r="5.5" stroke="currentColor" stroke-width="1.5"/><line x1="12.5" y1="12.5" x2="16" y2="16" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+    </div>
+    <input class="search-input" id="searchInput" type="text" placeholder="Šta tražiš? npr. Golf 7 DSG, iPhone 15, sofa...">
+    <div class="search-divider"></div>
+    <button class="location-btn">
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="5.5" r="2.5" stroke="currentColor" stroke-width="1.2"/><path d="M2 13c0-2.76 2.24-5 5-5s5 2.24 5 5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+      Sarajevo
+    </button>
+    <button class="ai-btn" onclick="aiAnaliza()">AI Analiza</button>
+    <button class="search-btn" onclick="pretrazi()">Traži</button>
+  </div>
+
+  <div class="source-pills">
+    <div class="pill active">Svi izvori</div>
+    <div class="pill"><span class="pill-dot" style="background:#43a047;"></span> OLX.ba</div>
+    <div class="pill"><span class="pill-dot" style="background:#1976d2;"></span> Facebook</div>
+    <div class="pill"><span class="pill-dot" style="background:#f57c00;"></span> Njuškalo</div>
+    <div class="pill"><span class="pill-dot" style="background:#8e24aa;"></span> Halooglasi</div>
+  </div>
+
+  <div class="popular">
+    <span>Popularno:</span>
+    <span class="popular-tag" onclick="quickSearch('Golf 7')">Golf 7</span>
+    <span class="popular-tag" onclick="quickSearch('iPhone 15')">iPhone 15</span>
+    <span class="popular-tag" onclick="quickSearch('PS5')">PS5</span>
+    <span class="popular-tag" onclick="quickSearch('stan Sarajevo')">stan Sarajevo</span>
+    <span class="popular-tag" onclick="quickSearch('laptop')">laptop</span>
+  </div>
+</section>
+
+<div class="stats-bar">
+  <div class="stat"><span class="stat-num">1M+</span><span>aktivnih oglasa</span></div>
+  <div class="stat" style="color:var(--border);font-size:20px;">|</div>
+  <div class="stat"><span class="stat-num">4</span><span>izvora istovremeno</span></div>
+  <div class="stat" style="color:var(--border);font-size:20px;">|</div>
+  <div class="stat"><span class="stat-num">AI</span><span>analiza i poređenje</span></div>
+  <div class="stat" style="color:var(--border);font-size:20px;">|</div>
+  <div class="stat"><span class="stat-num">besplatno</span><span>za kupce</span></div>
 </div>
 
-<div class="filters">
-    <span style="font-size:13px; color:#6b7280; align-self:center;">Platforma:</span>
-    <button class="filter-btn active" onclick="filterPlatforma(this, 'sve')">Sve</button>
-    <button class="filter-btn" onclick="filterPlatforma(this, 'olx')">OLX</button>
-    <button class="filter-btn" onclick="filterPlatforma(this, 'njuskalo')">Njuškalo</button>
-    <button class="filter-btn" onclick="filterPlatforma(this, 'facebook')">Facebook</button>
-    
-    <span style="font-size:13px; color:#6b7280; align-self:center; margin-left:16px;">Sortiraj:</span>
-    <button class="filter-btn active" onclick="sortiraj(this, 'novo')">Najnovije</button>
-    <button class="filter-btn" onclick="sortiraj(this, 'cijena_asc')">Cijena ↑</button>
-    <button class="filter-btn" onclick="sortiraj(this, 'cijena_desc')">Cijena ↓</button>
-    <button class="filter-btn" onclick="sortiraj(this, 'score')">AI Score ↓</button>
+<div class="main">
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <span class="sidebar-title">Filteri</span>
+      <button class="reset-btn">Resetuj sve</button>
+    </div>
+
+    <div class="filter-section">
+      <div class="filter-label">Izvor</div>
+      <label class="check-item"><input type="checkbox" checked><span class="source-dot" style="background:#43a047;"></span>OLX.ba<span class="check-count">18.420</span></label>
+      <label class="check-item"><input type="checkbox" checked><span class="source-dot" style="background:#1976d2;"></span>Facebook<span class="check-count">14.302</span></label>
+      <label class="check-item"><input type="checkbox"><span class="source-dot" style="background:#f57c00;"></span>Njuškalo<span class="check-count">8.718</span></label>
+      <label class="check-item"><input type="checkbox"><span class="source-dot" style="background:#8e24aa;"></span>Halooglasi<span class="check-count">5.844</span></label>
+    </div>
+
+    <div class="filter-section">
+      <div class="filter-label">Kategorija</div>
+      <label class="check-item"><input type="checkbox"> Automobili <span class="check-count">9.340</span></label>
+      <label class="check-item"><input type="checkbox" checked> Elektronika <span class="check-count">7.124</span></label>
+      <label class="check-item"><input type="checkbox"> Nekretnine <span class="check-count">3.892</span></label>
+      <label class="check-item"><input type="checkbox"> Namještaj <span class="check-count">2.840</span></label>
+      <label class="check-item"><input type="checkbox"> Odjeća <span class="check-count">2.018</span></label>
+    </div>
+
+    <div class="filter-section">
+      <div class="filter-label">Cijena (KM)</div>
+      <div class="price-inputs">
+        <input class="price-input" type="number" placeholder="Od">
+        <input class="price-input" type="number" placeholder="Do">
+      </div>
+      <input type="range" min="0" max="50000" value="25000" style="width:100%;accent-color:var(--orange);">
+    </div>
+
+    <div class="filter-section">
+      <div class="filter-label">Stanje</div>
+      <div class="filter-chips">
+        <span class="fchip active">Sve</span>
+        <span class="fchip">Novo</span>
+        <span class="fchip">Polovno</span>
+      </div>
+    </div>
+
+    <div class="filter-section">
+      <div class="filter-label">Lokacija</div>
+      <select class="filter-select">
+        <option>Cijela BiH</option>
+        <option>Sarajevo</option>
+        <option>Banja Luka</option>
+        <option>Mostar</option>
+        <option>Tuzla</option>
+        <option>Zenica</option>
+        <option>Živinice</option>
+      </select>
+    </div>
+
+    <div class="filter-section">
+      <div class="filter-label">Datum objave</div>
+      <div class="filter-chips">
+        <span class="fchip">Danas</span>
+        <span class="fchip active">Sedmica</span>
+        <span class="fchip">Mjesec</span>
+        <span class="fchip">Sve</span>
+      </div>
+    </div>
+
+    <button class="apply-btn">Primijeni filtere</button>
+  </aside>
+
+  <div>
+    <div id="ai-analiza-box" style="display:none;" class="ai-box">
+      <div class="ai-box-title"><div class="ai-dot"></div> Oglix AI Analiza</div>
+      <div class="ai-box-text" id="ai-analiza-tekst">Analiziram oglase...</div>
+    </div>
+
+    <div class="results-header">
+      <div class="results-count">Pronađeno <strong id="rezultatiBroj">5</strong> oglasa</div>
+      <select class="sort-select" onchange="sortirajSelect(this.value)">
+        <option value="novo">Najnoviji</option>
+        <option value="cijena_asc">Najjeftiniji</option>
+        <option value="cijena_desc">Najskuplji</option>
+        <option value="score">AI Score</option>
+      </select>
+    </div>
+
+    <div class="grid" id="oglasiGrid"></div>
+
+    <div class="load-more">
+      <button class="load-btn">Učitaj još oglasa</button>
+    </div>
+  </div>
 </div>
 
-<div class="rezultati-info" id="rezultatiInfo">Učitavam oglase...</div>
-
-<div class="oglasi-grid" id="oglasiGrid">
-    <div class="loader">⏳ Učitavam oglase...</div>
-</div>
+<footer>
+  <div class="footer-logo">oglix<span>.ba</span></div>
+  <p>Agregator oglasa za Bosnu i Hercegovinu · Nisu naši oglasi, mi ih samo skupljamo.</p>
+  <p style="margin-top:8px;">© 2026 oglix.ba</p>
+</footer>
 
 <script src="oglasi.js"></script>
 <script>
+function prikaziOglase(oglasi) {
+    const grid = document.getElementById('oglasiGrid');
+    const broj = document.getElementById('rezultatiBroj');
+    broj.textContent = oglasi.length;
+
+    if (oglasi.length === 0) {
+        grid.innerHTML = '<div style="padding:40px;text-align:center;color:#aaa;">Nema rezultata.</div>';
+        return;
+    }
+
+    const badgeClass = { olx: 'badge-olx', njuskalo: 'badge-njuskalo', facebook: 'badge-fb' };
+    const scoreColor = s => s >= 75 ? '#639922' : s >= 50 ? '#BA7517' : '#A32D2D';
+
+    grid.innerHTML = oglasi.map(o => `
+        <div class="card">
+            <div class="card-img">
+                ${o.slika ? '<img src="' + o.slika + '" alt="' + o.naslov + '">' : '<svg width="56" height="56" viewBox="0 0 56 56" fill="none"><ellipse cx="28" cy="36" rx="18" ry="10" stroke="#aaa" stroke-width="2"/><path d="M10 36 Q10 20 28 17 Q46 20 46 36" stroke="#aaa" stroke-width="2" fill="none"/></svg>'}
+            </div>
+            <div class="card-body">
+                <span class="source-badge ${badgeClass[o.platforma] || 'badge-olx'}">${o.platforma.toUpperCase()}</span>
+                <div class="card-title">${o.naslov}</div>
+                <div class="card-price">${o.cijenaStr}</div>
+                <div class="card-meta">📍 ${o.lokacija} · ${o.datum}</div>
+                <div class="card-score">
+                    <span class="score-tag tag-${o.aiTag}">${o.aiLabel}</span>
+                    <div class="score-bar-wrap"><div class="score-bar-fill" style="width:${o.score}%;background:${scoreColor(o.score)};"></div></div>
+                    <span style="font-size:11px;font-weight:600;color:${scoreColor(o.score)};">${o.score}</span>
+                </div>
+            </div>
+        </div>
+    `).join('');
+}
+
+function pretrazi() {
+    const query = document.getElementById('searchInput').value.trim();
+    if (!query) return;
+    window.open('https://www.olx.ba/pretraga?keywords=' + encodeURIComponent(query), '_blank');
+}
+
+function quickSearch(term) {
+    document.getElementById('searchInput').value = term;
+    pretrazi();
+}
+
+function sortirajSelect(tip) {
+    var oglasi = [...demoOglasi];
+    switch(tip) {
+        case 'cijena_asc': oglasi.sort((a, b) => a.cijena - b.cijena); break;
+        case 'cijena_desc': oglasi.sort((a, b) => b.cijena - a.cijena); break;
+        case 'score': oglasi.sort((a, b) => b.score - a.score); break;
+    }
+    prikaziOglase(oglasi);
+}
+
 async function aiAnaliza() {
     var box = document.getElementById('ai-analiza-box');
     var tekst = document.getElementById('ai-analiza-tekst');
     var query = document.getElementById('searchInput').value.trim();
     box.style.display = 'block';
     tekst.textContent = 'AI analizira oglase...';
+    box.scrollIntoView({ behavior: 'smooth' });
+
     var res = await fetch('/ai-analiza', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ oglasi: demoOglasi.slice(0, 5), pretraga: query || 'vozila' })
     });
+
     var data = await res.json();
-    if (data.uspjeh) {
-        tekst.textContent = data.analiza;
-    } else {
-        tekst.textContent = 'Greska pri analizi. Pokusaj ponovo.';
-    }
+    tekst.textContent = data.uspjeh ? data.analiza : 'Greska pri analizi. Pokusaj ponovo.';
 }
+
+document.querySelectorAll('.pill').forEach(p => {
+    p.addEventListener('click', () => {
+        document.querySelectorAll('.pill').forEach(x => x.classList.remove('active'));
+        p.classList.add('active');
+    });
+});
+
+document.querySelectorAll('.fchip').forEach(c => {
+    c.addEventListener('click', () => {
+        var group = c.closest('.filter-chips');
+        group.querySelectorAll('.fchip').forEach(x => x.classList.remove('active'));
+        c.classList.add('active');
+    });
+});
+
+document.getElementById('searchInput').addEventListener('keydown', e => {
+    if (e.key === 'Enter') pretrazi();
+});
+
+window.onload = () => prikaziOglase(demoOglasi);
 </script>
 </body>
 </html>
