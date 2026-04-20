@@ -1,251 +1,360 @@
 <!DOCTYPE html>
 <html lang="bs">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login — Oglix</title>
-    <link rel="stylesheet" href="style.css">
-    <style>
-        body {
-            background: #f7f7f9;
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
-        }
-        .auth-wrap {
-            flex: 1;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 40px 20px;
-        }
-        .auth-box {
-            background: white;
-            border-radius: 16px;
-            border: 1px solid #e5e7eb;
-            padding: 40px;
-            width: 100%;
-            max-width: 420px;
-        }
-        .auth-logo {
-            text-align: center;
-            font-size: 24px;
-            font-weight: 700;
-            color: #3C3489;
-            margin-bottom: 8px;
-        }
-        .auth-sub {
-            text-align: center;
-            font-size: 14px;
-            color: #6b7280;
-            margin-bottom: 32px;
-        }
-        .tabs {
-            display: flex;
-            border-bottom: 1px solid #e5e7eb;
-            margin-bottom: 28px;
-        }
-        .tab-btn {
-            flex: 1;
-            padding: 10px;
-            text-align: center;
-            font-size: 14px;
-            font-weight: 600;
-            color: #6b7280;
-            cursor: pointer;
-            border-bottom: 2px solid transparent;
-            margin-bottom: -1px;
-        }
-        .tab-btn.active {
-            color: #3C3489;
-            border-bottom-color: #3C3489;
-        }
-        .form-group {
-            margin-bottom: 16px;
-        }
-        .form-group label {
-            display: block;
-            font-size: 13px;
-            font-weight: 600;
-            color: #374151;
-            margin-bottom: 6px;
-        }
-        .form-group input {
-            width: 100%;
-            padding: 12px 14px;
-            border: 1px solid #e5e7eb;
-            border-radius: 8px;
-            font-size: 14px;
-            outline: none;
-            box-sizing: border-box;
-        }
-        .form-group input:focus {
-            border-color: #3C3489;
-        }
-        .auth-btn {
-            width: 100%;
-            padding: 13px;
-            background: #3C3489;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-size: 15px;
-            font-weight: 600;
-            cursor: pointer;
-            margin-top: 8px;
-        }
-        .auth-btn:hover {
-            background: #2D2870;
-        }
-        .auth-poruka {
-            margin-top: 14px;
-            text-align: center;
-            font-size: 14px;
-            font-weight: 600;
-        }
-        .divider {
-            text-align: center;
-            font-size: 13px;
-            color: #9ca3af;
-            margin: 20px 0;
-            position: relative;
-        }
-        .divider::before, .divider::after {
-            content: '';
-            position: absolute;
-            top: 50%;
-            width: 42%;
-            height: 1px;
-            background: #e5e7eb;
-        }
-        .divider::before { left: 0; }
-        .divider::after { right: 0; }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Prijava — Oglix</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --orange: #e65c00;
+    --orange-light: #ff7a1f;
+    --orange-dim: #fff0e6;
+    --bg: #f7f5f2;
+    --surface: #ffffff;
+    --border: rgba(0,0,0,0.08);
+    --text: #1a1a1a;
+    --text-muted: #777;
+    --text-faint: #aaa;
+    --radius-sm: 8px;
+    --radius-md: 12px;
+    --radius-lg: 18px;
+    --radius-pill: 100px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  nav {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 0 32px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .logo {
+    font-family: 'Syne', sans-serif;
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    color: var(--text);
+    cursor: pointer;
+  }
+  .logo span { color: var(--orange); }
+
+  .nav-back {
+    font-size: 14px;
+    color: var(--text-muted);
+    cursor: pointer;
+    text-decoration: none;
+  }
+  .nav-back:hover { color: var(--text); }
+
+  .auth-wrap {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+  }
+
+  .auth-box {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 40px;
+    width: 100%;
+    max-width: 420px;
+  }
+
+  .auth-logo {
+    text-align: center;
+    font-family: 'Syne', sans-serif;
+    font-size: 26px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 6px;
+    letter-spacing: -0.5px;
+  }
+  .auth-logo span { color: var(--orange); }
+
+  .auth-sub {
+    text-align: center;
+    font-size: 14px;
+    color: var(--text-muted);
+    margin-bottom: 28px;
+    font-weight: 300;
+  }
+
+  .tabs {
+    display: flex;
+    background: var(--bg);
+    border-radius: var(--radius-md);
+    padding: 4px;
+    margin-bottom: 28px;
+    gap: 4px;
+  }
+
+  .tab-btn {
+    flex: 1;
+    padding: 9px;
+    text-align: center;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-muted);
+    cursor: pointer;
+    border-radius: var(--radius-sm);
+    transition: all 0.15s;
+    font-family: 'DM Sans', sans-serif;
+    border: none;
+    background: transparent;
+  }
+
+  .tab-btn.active {
+    background: var(--surface);
+    color: var(--text);
+    border: 1px solid var(--border);
+  }
+
+  .form-group {
+    margin-bottom: 14px;
+  }
+
+  .form-group label {
+    display: block;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-muted);
+    margin-bottom: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .form-group input {
+    width: 100%;
+    padding: 12px 14px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    font-size: 14px;
+    font-family: 'DM Sans', sans-serif;
+    color: var(--text);
+    background: var(--bg);
+    outline: none;
+    transition: border-color 0.15s;
+  }
+
+  .form-group input:focus {
+    border-color: var(--orange);
+    background: var(--surface);
+  }
+
+  .auth-btn {
+    width: 100%;
+    padding: 13px;
+    background: var(--orange);
+    color: white;
+    border: none;
+    border-radius: var(--radius-md);
+    font-size: 15px;
+    font-weight: 500;
+    font-family: 'DM Sans', sans-serif;
+    cursor: pointer;
+    margin-top: 8px;
+    transition: background 0.15s;
+  }
+  .auth-btn:hover { background: var(--orange-light); }
+
+  .auth-poruka {
+    margin-top: 12px;
+    text-align: center;
+    font-size: 13px;
+    font-weight: 500;
+    min-height: 20px;
+  }
+
+  .auth-footer {
+    text-align: center;
+    margin-top: 24px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border);
+    font-size: 13px;
+    color: var(--text-faint);
+  }
+
+  footer {
+    border-top: 1px solid var(--border);
+    background: var(--surface);
+    padding: 20px 32px;
+    text-align: center;
+    font-size: 13px;
+    color: var(--text-faint);
+  }
+
+  .footer-logo {
+    font-family: 'Syne', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 4px;
+  }
+  .footer-logo span { color: var(--orange); }
+</style>
 </head>
 <body>
 
 <nav>
-    <div class="logo">🔍 Oglix</div>
-    <a href="/" style="color:#6b7280; text-decoration:none; font-size:14px;">← Nazad</a>
+  <div class="logo" onclick="window.location.href='/oglasi.html'">oglix<span>.ba</span></div>
+  <a class="nav-back" href="/oglasi.html">← Nazad na pretragu</a>
 </nav>
 
 <div class="auth-wrap">
-    <div class="auth-box">
-        <div class="auth-logo">🔍 Oglix</div>
-        <div class="auth-sub">Prijavi se i prati oglase koje voliš</div>
+  <div class="auth-box">
+    <div class="auth-logo">oglix<span>.ba</span></div>
+    <div class="auth-sub">Prijavi se i prati oglase koje voliš</div>
 
-        <div class="tabs">
-            <div class="tab-btn active" onclick="switchTab('login')">Prijava</div>
-            <div class="tab-btn" onclick="switchTab('register')">Registracija</div>
-        </div>
-
-        <!-- LOGIN FORMA -->
-        <div id="loginForma">
-            <div class="form-group">
-                <label>Email adresa</label>
-                <input type="email" id="loginEmail" placeholder="tvoj@email.com" />
-            </div>
-            <div class="form-group">
-                <label>Lozinka</label>
-                <input type="password" id="loginLozinka" placeholder="••••••••" />
-            </div>
-            <button class="auth-btn" onclick="login()">Prijavi se</button>
-            <div class="auth-poruka" id="loginPoruka"></div>
-        </div>
-
-        <!-- REGISTER FORMA -->
-        <div id="registerForma" style="display:none;">
-            <div class="form-group">
-                <label>Ime i prezime</label>
-                <input type="text" id="regIme" placeholder="Npr. Adnan Čović" />
-            </div>
-            <div class="form-group">
-                <label>Email adresa</label>
-                <input type="email" id="regEmail" placeholder="tvoj@email.com" />
-            </div>
-            <div class="form-group">
-                <label>Lozinka</label>
-                <input type="password" id="regLozinka" placeholder="Minimum 6 karaktera" />
-            </div>
-            <button class="auth-btn" onclick="register()">Napravi account</button>
-            <div class="auth-poruka" id="registerPoruka"></div>
-        </div>
-
+    <div class="tabs">
+      <button class="tab-btn active" onclick="switchTab('login', this)">Prijava</button>
+      <button class="tab-btn" onclick="switchTab('register', this)">Registracija</button>
     </div>
+
+    <div id="loginForma">
+      <div class="form-group">
+        <label>Email adresa</label>
+        <input type="email" id="loginEmail" placeholder="tvoj@email.com" />
+      </div>
+      <div class="form-group">
+        <label>Lozinka</label>
+        <input type="password" id="loginLozinka" placeholder="••••••••" />
+      </div>
+      <button class="auth-btn" onclick="login()">Prijavi se</button>
+      <div class="auth-poruka" id="loginPoruka"></div>
+    </div>
+
+    <div id="registerForma" style="display:none;">
+      <div class="form-group">
+        <label>Ime i prezime</label>
+        <input type="text" id="regIme" placeholder="Npr. Mirza Cakanovic" />
+      </div>
+      <div class="form-group">
+        <label>Email adresa</label>
+        <input type="email" id="regEmail" placeholder="tvoj@email.com" />
+      </div>
+      <div class="form-group">
+        <label>Lozinka</label>
+        <input type="password" id="regLozinka" placeholder="Minimum 6 karaktera" />
+      </div>
+      <button class="auth-btn" onclick="register()">Napravi account</button>
+      <div class="auth-poruka" id="registerPoruka"></div>
+    </div>
+
+    <div class="auth-footer">
+      Nastavkom prihvataš naše uslove korištenja
+    </div>
+  </div>
 </div>
 
+<footer>
+  <div class="footer-logo">oglix<span>.ba</span></div>
+  <p>© 2026 oglix.ba</p>
+</footer>
+
 <script>
-function switchTab(tab) {
+function switchTab(tab, btn) {
     document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-    event.target.classList.add('active');
+    btn.classList.add('active');
     document.getElementById('loginForma').style.display = tab === 'login' ? 'block' : 'none';
     document.getElementById('registerForma').style.display = tab === 'register' ? 'block' : 'none';
 }
 
 async function login() {
-    const email = document.getElementById('loginEmail').value;
-    const lozinka = document.getElementById('loginLozinka').value;
-    const poruka = document.getElementById('loginPoruka');
+    var email = document.getElementById('loginEmail').value;
+    var lozinka = document.getElementById('loginLozinka').value;
+    var poruka = document.getElementById('loginPoruka');
 
     if (!email || !lozinka) {
-        poruka.style.color = 'red';
+        poruka.style.color = '#dc2626';
         poruka.textContent = 'Popunite sva polja!';
         return;
     }
 
-    const res = await fetch('/login', {
+    poruka.style.color = var(--text-muted);
+    poruka.textContent = 'Prijavljujem...';
+
+    var res = await fetch('/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, lozinka })
+        body: JSON.stringify({ email: email, lozinka: lozinka })
     });
 
-    const data = await res.json();
+    var data = await res.json();
     if (data.uspjeh) {
         localStorage.setItem('korisnik', JSON.stringify(data.korisnik));
-        poruka.style.color = '#1D9E75';
-        poruka.textContent = ' Uspješno! Preusmjeravam...';
+        poruka.style.color = '#16a34a';
+        poruka.textContent = 'Uspješno! Preusmjeravam...';
         setTimeout(() => window.location.href = '/dashboard.html', 1000);
     } else {
-        poruka.style.color = 'red';
-        poruka.textContent = ' ' + data.poruka;
+        poruka.style.color = '#dc2626';
+        poruka.textContent = data.poruka;
     }
 }
 
 async function register() {
-    const ime = document.getElementById('regIme').value;
-    const email = document.getElementById('regEmail').value;
-    const lozinka = document.getElementById('regLozinka').value;
-    const poruka = document.getElementById('registerPoruka');
+    var ime = document.getElementById('regIme').value;
+    var email = document.getElementById('regEmail').value;
+    var lozinka = document.getElementById('regLozinka').value;
+    var poruka = document.getElementById('registerPoruka');
 
     if (!ime || !email || !lozinka) {
-        poruka.style.color = 'red';
+        poruka.style.color = '#dc2626';
         poruka.textContent = 'Popunite sva polja!';
         return;
     }
 
     if (lozinka.length < 6) {
-        poruka.style.color = 'red';
+        poruka.style.color = '#dc2626';
         poruka.textContent = 'Lozinka mora imati minimum 6 karaktera!';
         return;
     }
 
-    const res = await fetch('/register', {
+    poruka.style.color = '#777';
+    poruka.textContent = 'Kreiram account...';
+
+    var res = await fetch('/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ime, email, lozinka })
+        body: JSON.stringify({ ime: ime, email: email, lozinka: lozinka })
     });
 
-    const data = await res.json();
+    var data = await res.json();
     if (data.uspjeh) {
-        poruka.style.color = '#1D9E75';
-        poruka.textContent = data.poruka;
         localStorage.setItem('korisnik', JSON.stringify(data.korisnik));
+        poruka.style.color = '#16a34a';
+        poruka.textContent = 'Account kreiran! Preusmjeravam...';
         setTimeout(() => window.location.href = '/dashboard.html', 1000);
     } else {
-        poruka.style.color = 'red';
+        poruka.style.color = '#dc2626';
         poruka.textContent = data.poruka;
     }
 }
+
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') {
+        var activeTab = document.querySelector('.tab-btn.active').textContent;
+        if (activeTab === 'Prijava') login();
+        else register();
+    }
+});
 </script>
 </body>
 </html>
