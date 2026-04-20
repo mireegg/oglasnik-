@@ -81,14 +81,21 @@ app.get('/moja-pracenja', async (req, res) => {
 
 app.post('/ai-analiza', async (req, res) => {
     const { oglasi, pretraga } = req.body;
-    const prompt = 'Analiziraj ove oglase za: ' + pretraga + '\n\n' +
-        oglasi.map((o, i) => (i+1) + '. ' + o.naslov + ' - ' + o.cijena + ' - ' + o.lokacija).join('\n') +
-        '\n\nZa svaki oglas kratko reci:\n- Je li cijena fer?\n- Preporuka\n- Jedan razlog zasto\n\nBudi kratak. Odgovori na bosanskom jeziku.';
+
+    const prompt = 'Ti si ekspert za analizu oglasa u Bosni i Hercegovini. Analiziraj ove oglase za: "' + pretraga + '"\n\n' +
+        oglasi.map((o, i) => (i+1) + '. Naziv: ' + o.naslov + '\n   Cijena: ' + o.cijenaStr + '\n   Lokacija: ' + o.lokacija + '\n   Platforma: ' + o.platforma.toUpperCase()).join('\n\n') +
+        '\n\nZa svaki oglas daj:\n' +
+        '1. Procjena cijene: (preniska/fer/previsoka) i zasto\n' +
+        '2. Preporuka: (PREPORUCUJEM/OK/IZBJEGAVAJ)\n' +
+        '3. Kljucni razlog u jednoj recenici\n' +
+        '4. AI Score: (broj od 1-100)\n\n' +
+        'Na kraju daj ZAKLJUCAK: koji oglas je najbolja ponuda i zasto.\n' +
+        'Budi konkretan, kratak i pisi na bosanskom jeziku.';
 
     const body = JSON.stringify({
-model: 'llama-3.1-8b-instant',
+        model: 'llama-3.1-8b-instant',
         messages: [{ role: 'user', content: prompt }],
-        max_tokens: 500
+        max_tokens: 800
     });
 
     const options = {
