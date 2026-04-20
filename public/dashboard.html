@@ -1,342 +1,605 @@
 <!DOCTYPE html>
 <html lang="bs">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard — Oglix</title>
-    <link rel="stylesheet" href="style.css">
-    <style>
-        body { background: #f7f7f9; }
-        .dashboard-wrap {
-            max-width: 1100px;
-            margin: 0 auto;
-            padding: 40px 20px;
-        }
-        .dashboard-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 32px;
-        }
-        .dashboard-header h1 {
-            font-size: 24px;
-            font-weight: 700;
-            color: #111827;
-        }
-        .dashboard-header p {
-            font-size: 14px;
-            color: #6b7280;
-            margin-top: 4px;
-        }
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 16px;
-            margin-bottom: 32px;
-        }
-        .stat-card {
-            background: white;
-            border-radius: 12px;
-            border: 1px solid #e5e7eb;
-            padding: 20px;
-        }
-        .stat-card .broj {
-            font-size: 32px;
-            font-weight: 700;
-            color: #3C3489;
-        }
-        .stat-card .label {
-            font-size: 13px;
-            color: #6b7280;
-            margin-top: 4px;
-        }
-        .section-title {
-            font-size: 18px;
-            font-weight: 700;
-            color: #111827;
-            margin-bottom: 16px;
-        }
-        .pracenja-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 16px;
-            margin-bottom: 32px;
-        }
-        .pracenje-card {
-            background: white;
-            border-radius: 12px;
-            border: 1px solid #e5e7eb;
-            padding: 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .pracenje-info h3 {
-            font-size: 15px;
-            font-weight: 600;
-            color: #111827;
-            margin-bottom: 4px;
-        }
-        .pracenje-info p {
-            font-size: 13px;
-            color: #6b7280;
-        }
-        .pracenje-status {
-            display: flex;
-            flex-direction: column;
-            align-items: flex-end;
-            gap: 6px;
-        }
-        .status-dot {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            font-size: 12px;
-            font-weight: 600;
-        }
-        .dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-        }
-        .dot-green { background: #1D9E75; }
-        .dot-grey { background: #9ca3af; }
-        .novi-badge {
-            background: #EEEDFE;
-            color: #3C3489;
-            font-size: 11px;
-            font-weight: 600;
-            padding: 3px 10px;
-            border-radius: 20px;
-        }
-        .dodaj-pracenje {
-            background: white;
-            border-radius: 12px;
-            border: 2px dashed #e5e7eb;
-            padding: 24px;
-            display: flex;
-            gap: 12px;
-            align-items: center;
-            margin-bottom: 32px;
-        }
-        .dodaj-pracenje input {
-            flex: 1;
-            padding: 10px 14px;
-            border: 1px solid #e5e7eb;
-            border-radius: 8px;
-            font-size: 14px;
-            outline: none;
-        }
-        .dodaj-pracenje input:focus {
-            border-color: #3C3489;
-        }
-        .notif-lista {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-        .notif-item {
-            background: white;
-            border-radius: 10px;
-            border: 1px solid #e5e7eb;
-            padding: 16px;
-            display: flex;
-            gap: 14px;
-            align-items: center;
-        }
-        .notif-icon {
-            width: 40px;
-            height: 40px;
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 18px;
-            flex-shrink: 0;
-        }
-        .notif-text h4 {
-            font-size: 14px;
-            font-weight: 600;
-            color: #111827;
-            margin-bottom: 2px;
-        }
-        .notif-text p {
-            font-size: 13px;
-            color: #6b7280;
-        }
-        .notif-time {
-            margin-left: auto;
-            font-size: 12px;
-            color: #9ca3af;
-            white-space: nowrap;
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Oglix — Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --orange: #e65c00;
+    --orange-light: #ff7a1f;
+    --orange-dim: #fff0e6;
+    --bg: #f7f5f2;
+    --surface: #ffffff;
+    --border: rgba(0,0,0,0.08);
+    --text: #1a1a1a;
+    --text-muted: #777;
+    --text-faint: #aaa;
+    --radius-sm: 8px;
+    --radius-md: 12px;
+    --radius-lg: 18px;
+    --radius-pill: 100px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+  }
+
+  nav {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 0 24px;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  .logo {
+    font-family: 'Syne', sans-serif;
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--text);
+    letter-spacing: -0.5px;
+    cursor: pointer;
+  }
+  .logo span { color: var(--orange); }
+
+  .nav-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: var(--orange);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    font-weight: 600;
+  }
+
+  .username {
+    font-size: 14px;
+    color: var(--text-muted);
+  }
+
+  .logout-btn {
+    font-size: 13px;
+    color: var(--text-faint);
+    cursor: pointer;
+    background: none;
+    border: none;
+    font-family: 'DM Sans', sans-serif;
+  }
+
+  .db-body {
+    display: grid;
+    grid-template-columns: 220px 1fr;
+    min-height: calc(100vh - 56px);
+  }
+
+  .sidebar {
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    padding: 20px 0;
+    position: sticky;
+    top: 56px;
+    height: calc(100vh - 56px);
+  }
+
+  .menu-section {
+    font-size: 10px;
+    font-weight: 600;
+    color: #ccc;
+    letter-spacing: 0.1em;
+    padding: 16px 20px 6px;
+    text-transform: uppercase;
+  }
+
+  .menu-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 20px;
+    font-size: 13px;
+    color: var(--text-muted);
+    cursor: pointer;
+    border-right: 2px solid transparent;
+    transition: all 0.15s;
+  }
+
+  .menu-item:hover { background: var(--bg); color: var(--text); }
+  .menu-item.active {
+    color: var(--orange);
+    background: var(--orange-dim);
+    border-right-color: var(--orange);
+    font-weight: 500;
+  }
+
+  .menu-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: currentColor;
+    flex-shrink: 0;
+  }
+
+  .main {
+    padding: 28px;
+  }
+
+  .db-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 24px;
+  }
+
+  .db-greeting {
+    font-family: 'Syne', sans-serif;
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 4px;
+  }
+
+  .db-sub { font-size: 13px; color: var(--text-faint); }
+
+  .cta-btn {
+    background: var(--orange);
+    color: #fff;
+    border: none;
+    border-radius: var(--radius-pill);
+    padding: 10px 20px;
+    font-size: 13px;
+    font-weight: 500;
+    font-family: 'DM Sans', sans-serif;
+    cursor: pointer;
+  }
+  .cta-btn:hover { background: var(--orange-light); }
+
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+
+  .stat-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 16px;
+  }
+
+  .stat-num {
+    font-family: 'Syne', sans-serif;
+    font-size: 26px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 2px;
+  }
+
+  .stat-label { font-size: 11px; color: var(--text-faint); }
+  .stat-change { font-size: 11px; color: #16a34a; margin-top: 4px; }
+
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+  }
+
+  .section-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 12px;
+  }
+
+  .pracenje-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .pracenje-item {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+    transition: border-color 0.15s;
+  }
+  .pracenje-item:hover { border-color: var(--orange); }
+
+  .pracenje-icon {
+    width: 38px;
+    height: 38px;
+    background: var(--orange-dim);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    flex-shrink: 0;
+  }
+
+  .pracenje-info { flex: 1; }
+  .pracenje-title { font-size: 13px; font-weight: 500; color: var(--text); margin-bottom: 2px; }
+  .pracenje-meta { font-size: 11px; color: var(--text-faint); }
+
+  .badge-orange {
+    background: var(--orange);
+    color: #fff;
+    font-size: 10px;
+    font-weight: 600;
+    padding: 3px 9px;
+    border-radius: var(--radius-pill);
+    white-space: nowrap;
+  }
+
+  .badge-grey {
+    background: #f0f0f0;
+    color: var(--text-faint);
+    font-size: 10px;
+    padding: 3px 9px;
+    border-radius: var(--radius-pill);
+    white-space: nowrap;
+  }
+
+  .notif-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .notif-item {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 12px 16px;
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+  }
+
+  .notif-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    margin-top: 4px;
+  }
+
+  .notif-text { font-size: 12px; color: var(--text); line-height: 1.5; flex: 1; }
+  .notif-time { font-size: 11px; color: var(--text-faint); white-space: nowrap; }
+
+  .add-pracenje-form {
+    display: none;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 16px;
+    margin-bottom: 16px;
+  }
+
+  .form-input {
+    width: 100%;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 10px 12px;
+    font-size: 14px;
+    font-family: 'DM Sans', sans-serif;
+    color: var(--text);
+    margin-bottom: 10px;
+    outline: none;
+  }
+  .form-input:focus { border-color: var(--orange); }
+
+  .form-btn {
+    background: var(--orange);
+    color: #fff;
+    border: none;
+    border-radius: var(--radius-sm);
+    padding: 10px 20px;
+    font-size: 13px;
+    font-family: 'DM Sans', sans-serif;
+    cursor: pointer;
+    margin-right: 8px;
+  }
+
+  .form-cancel {
+    background: none;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 10px 16px;
+    font-size: 13px;
+    font-family: 'DM Sans', sans-serif;
+    cursor: pointer;
+    color: var(--text-muted);
+  }
+
+  .loader-msg {
+    padding: 20px;
+    text-align: center;
+    color: var(--text-faint);
+    font-size: 13px;
+  }
+</style>
 </head>
 <body>
 
 <nav>
-    <div class="logo">🔍 Oglix</div>
-    <div style="display:flex; gap:12px; align-items:center;">
-        <a href="/oglasi.html" style="color:#6b7280; text-decoration:none; font-size:14px;">Oglasi</a>
-        <span style="font-size:14px; color:#111827; font-weight:600;" id="korisnikIme">Korisnik</span>
-        <button class="btn-primary" onclick="odjava()">Odjava</button>
-    </div>
+  <div class="logo" onclick="window.location.href='/oglasi.html'">oglix<span>.ba</span></div>
+  <div class="nav-right">
+    <span class="username" id="navIme">Korisnik</span>
+    <div class="avatar" id="navAvatar">?</div>
+    <button class="logout-btn" onclick="odjava()">Odjava</button>
+  </div>
 </nav>
 
-<div class="dashboard-wrap">
+<div class="db-body">
+  <div class="sidebar">
+    <div class="menu-section">Glavni</div>
+    <div class="menu-item active" onclick="pokaziSekciju('pregled')"><div class="menu-dot"></div> Pregled</div>
+    <div class="menu-item" onclick="pokaziSekciju('pracenja')"><div class="menu-dot"></div> Moja praćenja</div>
+    <div class="menu-item" onclick="pokaziSekciju('obavijesti')"><div class="menu-dot"></div> Obavijesti</div>
+    <div class="menu-section">Alati</div>
+    <div class="menu-item" onclick="window.location.href='/oglasi.html'"><div class="menu-dot"></div> Pretraži oglase</div>
+    <div class="menu-section">Račun</div>
+    <div class="menu-item" onclick="pokaziSekciju('postavke')"><div class="menu-dot"></div> Postavke</div>
+  </div>
 
-    <div class="dashboard-header">
+  <div class="main">
+
+    <div id="sekcija-pregled">
+      <div class="db-header">
         <div>
-            <h1>Dobro jutro, <span id="headerIme"></span>! 👋</h1>
-            <p>Evo šta se dešava sa tvojim praćenjima danas.</p>
+          <div class="db-greeting" id="pozdrav">Dobro jutro!</div>
+          <div class="db-sub">Evo šta se desilo dok si bio odsutan.</div>
         </div>
-        <a href="/oglasi.html"><button class="btn-primary">+ Pretraži oglase</button></a>
-    </div>
+        <button class="cta-btn" onclick="pokaziSekciju('pracenja')">+ Novo praćenje</button>
+      </div>
 
-    <!-- STATISTIKE -->
-    <div class="stats-grid">
+      <div class="stats-grid">
         <div class="stat-card">
-            <div class="broj">3</div>
-            <div class="label">Aktivna praćenja</div>
-        </div>
-        <div class="stat-card">
-            <div class="broj">12</div>
-            <div class="label">Novih oglasa danas</div>
+          <div class="stat-num" id="statPracenja">0</div>
+          <div class="stat-label">Aktivna praćenja</div>
         </div>
         <div class="stat-card">
-            <div class="broj">5</div>
-            <div class="label">Upozorenja AI-a</div>
+          <div class="stat-num">12</div>
+          <div class="stat-label">Novih oglasa danas</div>
+          <div class="stat-change">+5 od jucer</div>
         </div>
         <div class="stat-card">
-            <div class="broj">48</div>
-            <div class="label">Oglasa pregledano</div>
+          <div class="stat-num">2</div>
+          <div class="stat-label">AI upozorenja</div>
         </div>
+        <div class="stat-card">
+          <div class="stat-num">48</div>
+          <div class="stat-label">Oglasa pregledano</div>
+        </div>
+      </div>
+
+      <div class="two-col">
+        <div>
+          <div class="section-title">Moja praćenja</div>
+          <div class="pracenje-list" id="pregled-pracenja">
+            <div class="loader-msg">Učitavam praćenja...</div>
+          </div>
+        </div>
+        <div>
+          <div class="section-title">Posljednje obavijesti</div>
+          <div class="notif-list">
+            <div class="notif-item">
+              <div class="notif-dot" style="background:#e65c00;"></div>
+              <div class="notif-text">Nov oglas: Golf 7 CUP 2.0 TDI DSG — 24.999 KM · Sarajevo · OLX</div>
+              <div class="notif-time">12 min</div>
+            </div>
+            <div class="notif-item">
+              <div class="notif-dot" style="background:#16a34a;"></div>
+              <div class="notif-text">Cijena pala: Golf 7 GTI 25.900 → 24.500 KM · Mostar</div>
+              <div class="notif-time">1h</div>
+            </div>
+            <div class="notif-item">
+              <div class="notif-dot" style="background:#dc2626;"></div>
+              <div class="notif-text">AI upozorenje: Sumnjiv oglas — iste slike viđene drugdje</div>
+              <div class="notif-time">3h</div>
+            </div>
+            <div class="notif-item">
+              <div class="notif-dot" style="background:#e65c00;"></div>
+              <div class="notif-text">Nov oglas: iPhone 15 Pro 256GB — 2.200 KM · Sarajevo · Facebook</div>
+              <div class="notif-time">5h</div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
 
-    <!-- DODAJ PRACENJE -->
-    <div class="section-title">Moja praćenja</div>
-    <div class="dodaj-pracenje">
-        <input type="text" id="novoPracenje" placeholder="Šta želiš pratiti? Npr. iPhone 15, Golf 6, PS5..." />
-        <button class="btn-primary" onclick="dodajPracenje()">+ Dodaj praćenje</button>
+    <div id="sekcija-pracenja" style="display:none;">
+      <div class="db-header">
+        <div>
+          <div class="db-greeting">Moja praćenja</div>
+          <div class="db-sub">Dodaj pretragu i dobivaj obavijesti o novim oglasima.</div>
+        </div>
+        <button class="cta-btn" onclick="toggleForm()">+ Novo praćenje</button>
+      </div>
+
+      <div class="add-pracenje-form" id="addForm">
+        <input class="form-input" id="novaPretraga" placeholder="Npr. Golf 7 DSG do 25.000 KM..." />
+        <button class="form-btn" onclick="dodajPracenje()">Dodaj praćenje</button>
+        <button class="form-cancel" onclick="toggleForm()">Odustani</button>
+      </div>
+
+      <div class="pracenje-list" id="lista-pracenja">
+        <div class="loader-msg">Učitavam praćenja...</div>
+      </div>
     </div>
 
-    <!-- LISTA PRACENJA -->
-    <div class="pracenja-grid" id="pracenjaGrid">
-        <div class="pracenje-card">
-            <div class="pracenje-info">
-                <h3>💻 Laptop do 600 KM</h3>
-                <p>Sarajevo · Sve platforme</p>
-            </div>
-            <div class="pracenje-status">
-                <div class="status-dot"><div class="dot dot-green"></div> Aktivno</div>
-                <span class="novi-badge">3 nova</span>
-            </div>
+    <div id="sekcija-obavijesti" style="display:none;">
+      <div class="db-header">
+        <div>
+          <div class="db-greeting">Obavijesti</div>
+          <div class="db-sub">Sve obavijesti o tvojim praćenjima.</div>
         </div>
-        <div class="pracenje-card">
-            <div class="pracenje-info">
-                <h3>🚗 Golf 6 do 12.000 KM</h3>
-                <p>Cijela BiH · Sve platforme</p>
-            </div>
-            <div class="pracenje-status">
-                <div class="status-dot"><div class="dot dot-green"></div> Aktivno</div>
-                <span class="novi-badge">1 novi</span>
-            </div>
-        </div>
-        <div class="pracenje-card">
-            <div class="pracenje-info">
-                <h3>🏠 Stan Sarajevo do 900 KM</h3>
-                <p>Sarajevo · Sve platforme</p>
-            </div>
-            <div class="pracenje-status">
-                <div class="status-dot"><div class="dot dot-grey"></div> Nema novih</div>
-            </div>
-        </div>
-    </div>
-
-    <!-- NOTIFIKACIJE -->
-    <div class="section-title">Posljednje obavijesti</div>
-    <div class="notif-lista">
+      </div>
+      <div class="notif-list">
         <div class="notif-item">
-            <div class="notif-icon" style="background:#EEEDFE;">💻</div>
-            <div class="notif-text">
-                <h4>Nov oglas: HP Laptop 580 KM — Sarajevo</h4>
-                <p>Odgovara traženju "Laptop do 600 KM" · OLX · AI score: 91</p>
-            </div>
-            <div class="notif-time">prije 12 min</div>
+          <div class="notif-dot" style="background:#e65c00;"></div>
+          <div class="notif-text">Nov oglas: Golf 7 CUP 2.0 TDI DSG — 24.999 KM · Sarajevo · OLX</div>
+          <div class="notif-time">12 min</div>
         </div>
         <div class="notif-item">
-            <div class="notif-icon" style="background:#EAF3DE;">🚗</div>
-            <div class="notif-text">
-                <h4>Cijena pala: Golf 6 2011 — 9.800 KM (bilo 10.500)</h4>
-                <p>Odgovara traženju "Golf 6 do 12.000 KM" · Njuškalo</p>
-            </div>
-            <div class="notif-time">prije 1h</div>
+          <div class="notif-dot" style="background:#16a34a;"></div>
+          <div class="notif-text">Cijena pala: Golf 7 GTI 25.900 → 24.500 KM · Mostar</div>
+          <div class="notif-time">1h</div>
         </div>
         <div class="notif-item">
-            <div class="notif-icon" style="background:#FCEBEB;">⚠️</div>
-            <div class="notif-text">
-                <h4>Upozorenje: Sumnjiv oglas za stan na Grbavici</h4>
-                <p>AI je detektovao da oglas koristi iste slike kao drugi oglas</p>
-            </div>
-            <div class="notif-time">prije 3h</div>
+          <div class="notif-dot" style="background:#dc2626;"></div>
+          <div class="notif-text">AI upozorenje: Sumnjiv oglas — iste slike viđene drugdje</div>
+          <div class="notif-time">3h</div>
         </div>
+        <div class="notif-item">
+          <div class="notif-dot" style="background:#e65c00;"></div>
+          <div class="notif-text">Nov oglas: iPhone 15 Pro 256GB — 2.200 KM · Sarajevo · Facebook</div>
+          <div class="notif-time">5h</div>
+        </div>
+        <div class="notif-item">
+          <div class="notif-dot" style="background:#16a34a;"></div>
+          <div class="notif-text">Nov oglas: Stan Grbavica 65m2 — 850 KM/mj · Sarajevo</div>
+          <div class="notif-time">8h</div>
+        </div>
+      </div>
     </div>
 
+    <div id="sekcija-postavke" style="display:none;">
+      <div class="db-header">
+        <div>
+          <div class="db-greeting">Postavke</div>
+          <div class="db-sub">Upravljaj svojim accountom.</div>
+        </div>
+      </div>
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-md);padding:20px;">
+        <div style="margin-bottom:16px;">
+          <div style="font-size:12px;color:var(--text-faint);margin-bottom:6px;">Ime</div>
+          <input class="form-input" id="postavkeIme" style="margin-bottom:0;" />
+        </div>
+        <div style="margin-bottom:16px;">
+          <div style="font-size:12px;color:var(--text-faint);margin-bottom:6px;">Email</div>
+          <input class="form-input" id="postavkeEmail" style="margin-bottom:0;" readonly />
+        </div>
+        <button class="form-btn" onclick="alert('Sacuvano!')">Sačuvaj</button>
+      </div>
+    </div>
+
+  </div>
 </div>
 
 <script>
-function odjava() {
-    localStorage.removeItem('korisnik');
+var korisnik = JSON.parse(localStorage.getItem('oglixKorisnik') || 'null');
+
+if (!korisnik) {
     window.location.href = '/login.html';
 }
 
+document.getElementById('navIme').textContent = korisnik ? korisnik.ime : '';
+document.getElementById('navAvatar').textContent = korisnik ? korisnik.ime.charAt(0).toUpperCase() : '?';
+
+var sati = new Date().getHours();
+var pozdrav = sati < 12 ? 'Dobro jutro' : sati < 18 ? 'Dobar dan' : 'Dobro veče';
+document.getElementById('pozdrav').textContent = pozdrav + ', ' + (korisnik ? korisnik.ime.split(' ')[0] : '') + '!';
+
+if (korisnik) {
+    document.getElementById('postavkeIme').value = korisnik.ime;
+    document.getElementById('postavkeEmail').value = korisnik.email;
+}
+
+function odjava() {
+    localStorage.removeItem('oglixKorisnik');
+    window.location.href = '/login.html';
+}
+
+function pokaziSekciju(id) {
+    document.querySelectorAll('[id^="sekcija-"]').forEach(s => s.style.display = 'none');
+    document.getElementById('sekcija-' + id).style.display = 'block';
+    document.querySelectorAll('.menu-item').forEach(m => m.classList.remove('active'));
+    event.currentTarget.classList.add('active');
+    if (id === 'pracenja' || id === 'pregled') ucitajPracenja();
+}
+
+function toggleForm() {
+    var form = document.getElementById('addForm');
+    form.style.display = form.style.display === 'none' ? 'block' : 'none';
+}
+
 async function ucitajPracenja() {
-    var korisnik = JSON.parse(localStorage.getItem('korisnik') || '{}');
-    if (!korisnik.email) return;
-    var res = await fetch('/moja-pracenja?email=' + korisnik.email);
+    if (!korisnik) return;
+    var res = await fetch('/moja-pracenja?email=' + encodeURIComponent(korisnik.email));
     var pracenja = await res.json();
-    if (pracenja.length === 0) return;
-    var grid = document.getElementById('pracenjaGrid');
-    grid.innerHTML = '';
-    for (var i = 0; i < pracenja.length; i++) {
-        var p = pracenja[i];
-        var card = document.createElement('div');
-        card.className = 'pracenje-card';
-        card.innerHTML = '<div class="pracenje-info"><h3>' + p.pretraga + '</h3><p>Cijela BiH - Sve platforme</p></div><div class="pracenje-status"><div class="status-dot"><div class="dot dot-green"></div> Aktivno</div><button onclick="obrisiPracenje(' + p.id + ', this)" style="background:none;border:none;color:#E24B4A;cursor:pointer;font-size:12px;margin-top:4px;">Ukloni</button></div>';
-        grid.appendChild(card);
+
+    document.getElementById('statPracenja').textContent = pracenja.length;
+
+    var html = pracenja.length === 0
+        ? '<div class="loader-msg">Nemate aktivnih praćenja. Dodajte novo!</div>'
+        : pracenja.map(p => `
+            <div class="pracenje-item">
+                <div class="pracenje-icon">🔔</div>
+                <div class="pracenje-info">
+                    <div class="pracenje-title">${p.pretraga}</div>
+                    <div class="pracenje-meta">Dodano ${new Date(p.datum).toLocaleDateString('bs')}</div>
+                </div>
+                <span class="badge-grey" style="cursor:pointer;" onclick="obrisiPracenje(${p.id}, this)">Ukloni</span>
+            </div>
+        `).join('');
+
+    if (document.getElementById('lista-pracenja')) {
+        document.getElementById('lista-pracenja').innerHTML = html;
+    }
+    if (document.getElementById('pregled-pracenja')) {
+        document.getElementById('pregled-pracenja').innerHTML = html;
     }
 }
 
 async function dodajPracenje() {
-    var input = document.getElementById('novoPracenje');
-    var tekst = input.value.trim();
-    if (!tekst) return;
-    var korisnik = JSON.parse(localStorage.getItem('korisnik') || '{}');
+    var pretraga = document.getElementById('novaPretraga').value.trim();
+    if (!pretraga || !korisnik) return;
+
     await fetch('/pracenje', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: korisnik.email, pretraga: tekst })
+        body: JSON.stringify({ email: korisnik.email, pretraga: pretraga })
     });
-    var grid = document.getElementById('pracenjaGrid');
-    var card = document.createElement('div');
-    card.className = 'pracenje-card';
-    card.innerHTML = '<div class="pracenje-info"><h3>' + tekst + '</h3><p>Cijela BiH - Sve platforme</p></div><div class="pracenje-status"><div class="status-dot"><div class="dot dot-green"></div> Aktivno</div></div>';
-    grid.appendChild(card);
-    input.value = '';
+
+    document.getElementById('novaPretraga').value = '';
+    document.getElementById('addForm').style.display = 'none';
+    ucitajPracenja();
 }
 
-async function obrisiPracenje(id, btn) {
+async function obrisiPracenje(id, el) {
     await fetch('/pracenje/' + id, { method: 'DELETE' });
-    btn.closest('.pracenje-card').remove();
+    el.closest('.pracenje-item').remove();
+    ucitajPracenja();
 }
 
-var korisnik = JSON.parse(localStorage.getItem('korisnik') || '{}');
-if (korisnik.ime) {
-    document.getElementById('korisnikIme').textContent = korisnik.ime;
-    document.getElementById('headerIme').textContent = korisnik.ime.split(' ')[0];
-} else {
-    window.location.href = '/login.html';
-}
 ucitajPracenja();
 </script>
 </body>
