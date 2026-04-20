@@ -288,7 +288,7 @@ async function login() {
         return;
     }
 
-    poruka.style.color = var(--text-muted);
+poruka.style.color = '#777';
     poruka.textContent = 'Prijavljujem...';
 
     var res = await fetch('/login', {
