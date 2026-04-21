@@ -748,10 +748,9 @@
 
     <div class="filter-section">
   <div class="filter-label">Kategorija</div>
-  <label class="check-item"><input type="checkbox" id="katAuta"> Automobili <span class="check-count">8</span></label>
-  <label class="check-item"><input type="checkbox" id="katElektronika"> Elektronika <span class="check-count">11</span></label>
-  <label class="check-item"><input type="checkbox" id="katNekretnine"> Nekretnine <span class="check-count">5</span></label>
-  <label class="check-item"><input type="checkbox" id="katGaming"> PlayStation <span class="check-count">8</span></label>
+  <div id="kategorijeList">
+    <div style="color:#999;font-size:13px;">Učitavanje...</div>
+  </div>
 </div>
 
     <div class="filter-section">
@@ -1080,6 +1079,55 @@ async function ucitajJos() {
         console.log('Greška:', e.message);
     }
 }
+async function ucitajKategorije() {
+    try {
+        var res = await fetch('/api/kategorije');
+        var data = await res.json();
+        
+        if (!data.uspjeh || data.kategorije.length === 0) return;
+
+        var html = '';
+        data.kategorije.forEach(function(k) {
+            var ime = k.kategorija
+                .replace('vozila-', 'Vozila - ')
+                .replace('elektronika-', 'Elektronika - ')
+                .replace('gaming-', 'Gaming - ')
+                .replace('nekretnine', 'Nekretnine')
+                .replace('ostalo', 'Ostalo')
+                .replace('vozila', 'Vozila')
+                .replace('elektronika', 'Elektronika')
+                // Capitalize
+                .replace(/\b\w/g, function(l) { return l.toUpperCase(); });
+
+            html += `<label class="check-item">
+                <input type="checkbox" class="kat-checkbox" value="${k.kategorija}" onchange="filtrirajPoKategoriji()">
+                ${ime} <span class="check-count">${k.broj}</span>
+            </label>`;
+        });
+
+        document.getElementById('kategorijeList').innerHTML = html;
+    } catch(e) {
+        console.log('Greška kategorije:', e.message);
+    }
+}
+
+function filtrirajPoKategoriji() {
+    var odabrane = [];
+    document.querySelectorAll('.kat-checkbox:checked').forEach(function(cb) {
+        odabrane.push(cb.value);
+    });
+
+    if (odabrane.length === 0) {
+        prikaziOglase(trenutnoFiltrirani);
+        return;
+    }
+
+    var filtrirani = trenutnoFiltrirani.filter(function(o) {
+        return odabrane.includes(o.kategorija);
+    });
+
+    prikaziOglase(filtrirani);
+}
 
 // --- Init ---
 updateNavbar();
@@ -1106,7 +1154,10 @@ window.onload = async function() {
                     stanje: 'polovno',
                     detalji: o.naslov
                 };
+
+
             });
+
             trenutnoFiltrirani = liveOglasi;
             prikaziOglase(liveOglasi);
             console.log('Učitano', liveOglasi.length, 'live oglasa iz baze');
@@ -1117,6 +1168,8 @@ window.onload = async function() {
         console.log('Greška pri učitavanju:', e.message);
         prikaziOglase(demoOglasi);
     }
+    ucitajKategorije();
+    
 };</script>
 </body>
 </html>
