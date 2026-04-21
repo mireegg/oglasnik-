@@ -1,4 +1,5 @@
 const demoOglasi = [
+    // AUTOMOBILI
     {
         id: 1,
         kategorija: 'automobili',
@@ -6,14 +7,15 @@ const demoOglasi = [
         naslov: 'VW Golf 7 GTI 2013 DSG 169kw 230ks Automatik Performance',
         cijena: 25900,
         cijenaStr: '25.900 KM',
-        lokacija: 'BiH',
+        lokacija: 'Sarajevo',
         platforma: 'olx',
-slika: 'https://d4n0y8dshd77z.cloudfront.net/listings/75957072/lg/img-1776677957-c61703bfa573.JPEG',
+        slika: 'https://d4n0y8dshd77z.cloudfront.net/listings/75957072/lg/img-1776677957-c61703bfa573.JPEG',
         score: 72,
         aiTag: 'warn',
-        aiLabel: 'Visoka kilometraza',
+        aiLabel: 'Visoka km',
         datum: 'danas',
-        detalji: 'Benzin, 2013g, 242.600km, 2.0 benzin 169kw/230ks, DSG automatik, crna boja, GTI Performance, xenon/LED, Dynaudio ozvucenje, dvozonska klima, navigacija, grijanje sjedista, sportski ovjes, servisna knjiga, euro6, registrovan do 10/2026'
+        link: 'https://www.olx.ba/artikal/75957072',
+        detalji: 'Benzin, 2013g, 242.600km, DSG automatik, GTI Performance, xenon/LED, navigacija, servisna knjiga, euro6'
     },
     {
         id: 2,
@@ -22,129 +24,345 @@ slika: 'https://d4n0y8dshd77z.cloudfront.net/listings/75957072/lg/img-1776677957
         naslov: 'VW Golf 7.5 1.6 TDI 85kw DSG SOUND 2017/2018',
         cijena: 23999,
         cijenaStr: '23.999 KM',
-        lokacija: 'BiH',
+        lokacija: 'Banja Luka',
         platforma: 'olx',
         slika: 'https://d4n0y8dshd77z.cloudfront.net/listings/74907773/lg/img-1773046298-fce025e8eb97.jpg',
         score: 65,
         aiTag: 'warn',
-        aiLabel: 'Visoka kilometraza',
+        aiLabel: 'Visoka km',
         datum: 'danas',
-        detalji: 'Dizel, 2017g/2018 reg, 218.000km, 1.6 TDI 85kw, DSG automatik, crna boja, SOUND paket, LED svjetla, dvozonska klima, navigacija, grijanje sjedista, parking senzori, tempomat, servisna knjiga, 1 vlasnik, placeno sve do registracije, euro6'
+        link: 'https://www.olx.ba/artikal/74907773',
+        detalji: 'Dizel, 2017g, 218.000km, DSG automatik, SOUND paket, LED, navigacija, 1 vlasnik, euro6'
     },
     {
         id: 3,
         kategorija: 'automobili',
-        stanje: 'polovno',  
-        naslov: 'VW Golf 7 2.0 TDI 110kw 150ks DSG CUP 2014/2015 Uvoz DE',
+        stanje: 'polovno',
+        naslov: 'VW Golf 7 2.0 TDI 110kw 150ks DSG CUP 2014 Uvoz DE',
         cijena: 24999,
         cijenaStr: '24.999 KM',
-        lokacija: 'BiH',
+        lokacija: 'Mostar',
         platforma: 'olx',
         slika: 'https://d4n0y8dshd77z.cloudfront.net/listings/75321977/lg/img-1774458182-ed7c6a5ed28d.jpg',
         score: 88,
         aiTag: 'good',
-        aiLabel: 'Odlicna ponuda',
+        aiLabel: 'Odlična ponuda',
         datum: '25.03.2026',
-        detalji: 'Dizel, 2014g/2015 reg, 175.680km, 2.0 TDI 110kw/150ks, DSG automatik, crna boja, CUP paket, bixenon farovi, dvozonska klima, navigacija, grijanje sjedista, adaptivni tempomat, front assist, line assist, parking senzori naprijed i nazad, servisna knjiga digitalna, veliki servis uradjen, 1 vlasnik, uvoz iz Njemacke, placeno sve do registracije, euro6, garancija na papire i km'
+        link: 'https://www.olx.ba/artikal/75321977',
+        detalji: 'Dizel, 2014g, 175.680km, DSG automatik, CUP paket, bixenon, navigacija, 1 vlasnik, uvoz DE, euro6'
     },
     {
         id: 4,
         kategorija: 'automobili',
-        stanje: 'polovno',  
-        naslov: 'VW Golf 7 2.0 TDI 110kw DSG Bi-Xenon LED Navigacija Highline 2013',
+        stanje: 'polovno',
+        naslov: 'VW Golf 7 2.0 TDI 110kw DSG Bi-Xenon Highline 2013',
         cijena: 19550,
         cijenaStr: '19.550 KM',
-        lokacija: 'BiH',
+        lokacija: 'Tuzla',
         platforma: 'olx',
         slika: 'https://d4n0y8dshd77z.cloudfront.net/listings/75570411/lg/img-1775305134-01a07c5865ca.jpg',
         score: 55,
         aiTag: 'warn',
-        aiLabel: 'Visoka kilometraza',
+        aiLabel: 'Visoka km',
         datum: '04.04.2026',
-        detalji: 'Dizel, 2013g, 258.000km, 2.0 TDI 110kw, DSG automatik, crna boja, Highline oprema, xenon farovi, dvozonska klima, navigacija, grijanje i hladjenje sjedista, masaza sjedista, memorija sjedista, parking kamera i senzori, carplay, senzor mrtvog ugla, 2 vlasnika, zimske gume, euro5'
+        link: 'https://www.olx.ba/artikal/75570411',
+        detalji: 'Dizel, 2013g, 258.000km, DSG automatik, Highline, xenon, navigacija, kamera, euro5'
     },
     {
         id: 5,
         kategorija: 'automobili',
-        stanje: 'polovno',  
+        stanje: 'polovno',
         naslov: 'VW Golf 7 Bluemotion 1.6 TDI 81kw DSG 2015',
         cijena: 20800,
         cijenaStr: '20.800 KM',
-        lokacija: 'BiH',
+        lokacija: 'Zenica',
         platforma: 'olx',
         slika: 'https://d4n0y8dshd77z.cloudfront.net/listings/75672700/masked/img-1775659844-7a4327398e35.jpeg',
         score: 45,
         aiTag: 'warn',
-        aiLabel: 'Jako visoka kilometraza',
+        aiLabel: 'Jako visoka km',
         datum: '08.04.2026',
-        detalji: 'Dizel, 2015g, 273.497km, 1.6 TDI 81kw/110ks, DSG automatik, crna boja, Bluemotion, halogena svjetla, dvozonska klima, navigacija, grijanje sjedista, parking senzori, tempomat, senzor mrtvog ugla, ljetne gume, klasicni ovjes'
+        link: 'https://www.olx.ba/artikal/75672700',
+        detalji: 'Dizel, 2015g, 273.497km, DSG automatik, Bluemotion, klima, navigacija'
+    },
+    {
+        id: 6,
+        kategorija: 'automobili',
+        stanje: 'polovno',
+        naslov: 'Škoda Octavia 2.0 TDI 150ks DSG Style 2019',
+        cijena: 32500,
+        cijenaStr: '32.500 KM',
+        lokacija: 'Sarajevo',
+        platforma: 'facebook',
+        slika: 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c2/2017_Skoda_Octavia_SE_Technology_TDI_CR_%28facelift%2C_blue%29%2C_front_8.21.18.jpg/1200px-2017_Skoda_Octavia_SE_Technology_TDI_CR_%28facelift%2C_blue%29%2C_front_8.21.18.jpg',
+        score: 82,
+        aiTag: 'good',
+        aiLabel: 'Dobra cijena',
+        datum: 'danas',
+        link: 'https://www.facebook.com/marketplace',
+        detalji: 'Dizel, 2019g, 98.000km, DSG automatik, Style paket, LED, virtual cockpit, navigacija, 1 vlasnik'
+    },
+    {
+        id: 7,
+        kategorija: 'automobili',
+        stanje: 'polovno',
+        naslov: 'BMW 318d Sport Line 2018 Automatik',
+        cijena: 35900,
+        cijenaStr: '35.900 KM',
+        lokacija: 'Sarajevo',
+        platforma: 'njuskalo',
+        slika: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/44/2015_BMW_318i_%28F30%29_Sport_Line_sedan_%282015-10-16%29_01.jpg/1200px-2015_BMW_318i_%28F30%29_Sport_Line_sedan_%282015-10-16%29_01.jpg',
+        score: 78,
+        aiTag: 'good',
+        aiLabel: 'Solidna ponuda',
+        datum: '15.04.2026',
+        link: 'https://www.njuskalo.hr',
+        detalji: 'Dizel, 2018g, 145.000km, automatik, Sport Line, LED, navigacija, kamera, servisna knjiga'
+    },
+
+    // ELEKTRONIKA
+    {
+        id: 8,
+        kategorija: 'elektronika',
+        stanje: 'polovno',
+        naslov: 'iPhone 15 Pro 256GB Natural Titanium',
+        cijena: 1850,
+        cijenaStr: '1.850 KM',
+        lokacija: 'Sarajevo',
+        platforma: 'olx',
+        slika: 'https://store.storeimages.cdn-apple.com/4982/as-images.apple.com/is/iphone-15-pro-finish-select-202309-6-1inch-naturaltitanium?wid=5120&hei=2880&fmt=p-jpg',
+        score: 85,
+        aiTag: 'good',
+        aiLabel: 'Dobra cijena',
+        datum: 'danas',
+        link: 'https://www.olx.ba',
+        detalji: 'Kupljen u Austriji, u odličnom stanju, komplet sa kutijom i punjačem, baterija 94%'
+    },
+    {
+        id: 9,
+        kategorija: 'elektronika',
+        stanje: 'novo',
+        naslov: 'Samsung Galaxy S24 Ultra 512GB Titanium Black',
+        cijena: 2100,
+        cijenaStr: '2.100 KM',
+        lokacija: 'Banja Luka',
+        platforma: 'olx',
+        slika: 'https://images.samsung.com/is/image/samsung/p6pim/levant/2401/gallery/levant-galaxy-s24-ultra-s928-sm-s928bzkgeub-thumb-539573067',
+        score: 90,
+        aiTag: 'good',
+        aiLabel: 'Odlično stanje',
+        datum: 'danas',
+        link: 'https://www.olx.ba',
+        detalji: 'Novo, neotpakovano, račun iz BL elektronike, garancija 2 godine, sve boje dostupne'
+    },
+    {
+        id: 10,
+        kategorija: 'elektronika',
+        stanje: 'polovno',
+        naslov: 'PlayStation 5 Disc Edition + 2 joysticka + 5 igrica',
+        cijena: 850,
+        cijenaStr: '850 KM',
+        lokacija: 'Tuzla',
+        platforma: 'facebook',
+        slika: 'https://gmedia.playstation.com/is/image/SIEPDC/ps5-product-thumbnail-01-en-14sep21',
+        score: 80,
+        aiTag: 'good',
+        aiLabel: 'Komplet oprema',
+        datum: '18.04.2026',
+        link: 'https://www.facebook.com/marketplace',
+        detalji: 'PS5 Disc, 2 DualSense kontrolera, FIFA 24, God of War, Spider-Man, GTA V, Call of Duty, sve u odličnom stanju'
+    },
+    {
+        id: 11,
+        kategorija: 'elektronika',
+        stanje: 'polovno',
+        naslov: 'MacBook Pro M3 14" 16GB/512GB 2023',
+        cijena: 3200,
+        cijenaStr: '3.200 KM',
+        lokacija: 'Sarajevo',
+        platforma: 'olx',
+        slika: 'https://store.storeimages.cdn-apple.com/4982/as-images.apple.com/is/mbp14-spacegray-select-202310?wid=904&hei=840&fmt=jpeg',
+        score: 88,
+        aiTag: 'good',
+        aiLabel: 'Odlična cijena',
+        datum: '10.04.2026',
+        link: 'https://www.olx.ba',
+        detalji: 'M3 čip, 16GB RAM, 512GB SSD, baterija 97%, kutija, punjač, garancija do 2025, kupljen u Njemackoj'
+    },
+    {
+        id: 12,
+        kategorija: 'elektronika',
+        stanje: 'polovno',
+        naslov: 'Dell XPS 15 i7 32GB RTX 3050 Ti 2022',
+        cijena: 2400,
+        cijenaStr: '2.400 KM',
+        lokacija: 'Zenica',
+        platforma: 'njuskalo',
+        slika: 'https://i.dell.com/sites/csimages/App-Merchandizing_Images/all/xps-15-9520-laptop.jpg',
+        score: 75,
+        aiTag: 'good',
+        aiLabel: 'Solidna ponuda',
+        datum: '12.04.2026',
+        link: 'https://www.njuskalo.hr',
+        detalji: 'i7-12700H, 32GB DDR5, 1TB NVMe, RTX 3050Ti 4GB, 4K OLED displej, sve ispravno'
+    },
+
+    // NEKRETNINE
+    {
+        id: 13,
+        kategorija: 'nekretnine',
+        stanje: 'polovno',
+        naslov: 'Prodaje se stan 65m2 Novo Sarajevo, 2. sprat, lift',
+        cijena: 145000,
+        cijenaStr: '145.000 KM',
+        lokacija: 'Sarajevo',
+        platforma: 'olx',
+        slika: 'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=800',
+        score: 76,
+        aiTag: 'good',
+        aiLabel: 'Dobra lokacija',
+        datum: 'danas',
+        link: 'https://www.olx.ba',
+        detalji: 'Dvosoban stan, 65m2, 2. sprat, lift, centralno grijanje, parking, uknjižen 1/1, odmah useljiv'
+    },
+    {
+        id: 14,
+        kategorija: 'nekretnine',
+        stanje: 'novo',
+        naslov: 'Novogradnja stan 55m2 Ilidža, useljivost 2025',
+        cijena: 125000,
+        cijenaStr: '125.000 KM',
+        lokacija: 'Sarajevo',
+        platforma: 'facebook',
+        slika: 'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=800',
+        score: 83,
+        aiTag: 'good',
+        aiLabel: 'Novogradnja',
+        datum: '01.04.2026',
+        link: 'https://www.facebook.com/marketplace',
+        detalji: 'Novogradnja, 55m2, prizemlje + 4 sprata, parking u garaži, A energetski razred, useljivost Q3 2025'
+    },
+    {
+        id: 15,
+        kategorija: 'nekretnine',
+        stanje: 'polovno',
+        naslov: 'Kuća 180m2 + 500m2 plac, Banja Luka centar',
+        cijena: 280000,
+        cijenaStr: '280.000 KM',
+        lokacija: 'Banja Luka',
+        platforma: 'olx',
+        slika: 'https://images.unsplash.com/photo-1568605114967-8130f3a36994?w=800',
+        score: 70,
+        aiTag: 'warn',
+        aiLabel: 'Provjeri dokumente',
+        datum: '05.04.2026',
+        link: 'https://www.olx.ba',
+        detalji: 'Spratna kuća, P+1, 180m2 stambenog prostora, 500m2 plac, garaža, uknjižena, centar BL'
+    },
+
+    // NAMJEŠTAJ
+    {
+        id: 16,
+        kategorija: 'namjestaj',
+        stanje: 'polovno',
+        naslov: 'Ugaona garnitura L-oblik, tamno siva, kao nova',
+        cijena: 650,
+        cijenaStr: '650 KM',
+        lokacija: 'Sarajevo',
+        platforma: 'facebook',
+        slika: 'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=800',
+        score: 78,
+        aiTag: 'good',
+        aiLabel: 'Dobro stanje',
+        datum: '17.04.2026',
+        link: 'https://www.facebook.com/marketplace',
+        detalji: 'Ugaona garnitura, tamno siva, L-oblik, 280x200cm, kao nova, koristena samo godinu dana, bez oštećenja'
+    },
+    {
+        id: 17,
+        kategorija: 'namjestaj',
+        stanje: 'novo',
+        naslov: 'IKEA Besta TV stalak bijeli 180cm, novo neotpakovano',
+        cijena: 280,
+        cijenaStr: '280 KM',
+        lokacija: 'Mostar',
+        platforma: 'olx',
+        slika: 'https://images.unsplash.com/photo-1585412727339-54e4bae3bbf9?w=800',
+        score: 85,
+        aiTag: 'good',
+        aiLabel: 'Novo',
+        datum: '14.04.2026',
+        link: 'https://www.olx.ba',
+        detalji: 'IKEA Besta, bijela boja, 180x40x74cm, novo u kutiji, nikad otpakovano, povoljno od maloprodajne cijene'
+    },
+    {
+        id: 18,
+        kategorija: 'namjestaj',
+        stanje: 'polovno',
+        naslov: 'Bračni krevet 160x200 + madrac, hrast boja',
+        cijena: 450,
+        cijenaStr: '450 KM',
+        lokacija: 'Tuzla',
+        platforma: 'facebook',
+        slika: 'https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?w=800',
+        score: 65,
+        aiTag: 'warn',
+        aiLabel: 'Provjeri stanje',
+        datum: '11.04.2026',
+        link: 'https://www.facebook.com/marketplace',
+        detalji: 'Bračni krevet 160x200, hrast boja, sa ladicama, madrac Dormeo memory foam, 3 godine star'
+    },
+
+    // ODJEĆA
+    {
+        id: 19,
+        kategorija: 'odjeca',
+        stanje: 'novo',
+        naslov: 'Nike Air Max 270 bijele, vel. 43, novo sa etiketom',
+        cijena: 160,
+        cijenaStr: '160 KM',
+        lokacija: 'Sarajevo',
+        platforma: 'olx',
+        slika: 'https://static.nike.com/a/images/t_PDP_1280_v1/f_auto,q_auto:eco/awjogtze1hkgbxiqlfe4/air-max-270-shoes-2V5C4p.png',
+        score: 92,
+        aiTag: 'good',
+        aiLabel: 'Novo s etiketom',
+        datum: 'danas',
+        link: 'https://www.olx.ba',
+        detalji: 'Nike Air Max 270, bijela boja, veličina 43, kupljene u Splitu, nikad nošene, kutija i etiketa'
+    },
+    {
+        id: 20,
+        kategorija: 'odjeca',
+        stanje: 'polovno',
+        naslov: 'Tommy Hilfiger zimska jakna M, odlično stanje',
+        cijena: 120,
+        cijenaStr: '120 KM',
+        lokacija: 'Banja Luka',
+        platforma: 'facebook',
+        slika: 'https://images.unsplash.com/photo-1544441893-675973e31985?w=800',
+        score: 74,
+        aiTag: 'good',
+        aiLabel: 'Dobro stanje',
+        datum: '16.04.2026',
+        link: 'https://www.facebook.com/marketplace',
+        detalji: 'Tommy Hilfiger zimska pernata jakna, veličina M, navy plava, nošena jednu zimu, bez oštećenja'
+    },
+    {
+        id: 21,
+        kategorija: 'odjeca',
+        stanje: 'novo',
+        naslov: 'Adidas Samba OG bijele/crne, vel. 42, novo',
+        cijena: 180,
+        cijenaStr: '180 KM',
+        lokacija: 'Zenica',
+        platforma: 'olx',
+        slika: 'https://assets.adidas.com/images/h_840,f_auto,q_auto,fl_lossy,c_fill,g_auto/cbf2f5b3c6094b67b733adf200a1b8a1_9366/Samba_OG_Shoes_White_B75806_01_standard.jpg',
+        score: 88,
+        aiTag: 'good',
+        aiLabel: 'Novo s kutijom',
+        datum: '19.04.2026',
+        link: 'https://www.olx.ba',
+        detalji: 'Adidas Samba OG, bijela/crna, vel. 42, original, kupljene online, nikad nošene, kutija'
     }
 ];
-
-let trenutniOglasi = [...demoOglasi];
-let aktivnaPlatforma = 'sve';
-let aktivnoSortiranje = 'novo';
-
-function prikaziOglase(oglasi) {
-    const grid = document.getElementById('oglasiGrid');
-    const info = document.getElementById('rezultatiInfo');
-
-    info.textContent = 'Pronadeno ' + oglasi.length + ' oglasa';
-
-    if (oglasi.length === 0) {
-        grid.innerHTML = '<div class="loader">Nema rezultata za ovu pretragu.</div>';
-        return;
-    }
-
-    grid.innerHTML = oglasi.map(o => {
-        const scoreColor = o.score >= 75 ? '#639922' : o.score >= 50 ? '#BA7517' : '#A32D2D';
-        return '<div class="oglas-card">' +
-'<div class="oglas-slika">' + (o.slika ? '<img src="' + o.slika + '" style="width:100%;height:100%;object-fit:cover;border-radius:12px 12px 0 0;">' : '🚗') + '</div>' +            '<div class="oglas-body">' +
-            '<div class="oglas-naslov">' + o.naslov + '</div>' +
-            '<div class="oglas-cijena">' + o.cijenaStr + '</div>' +
-            '<div class="oglas-meta"><span class="oglas-lokacija">📍 ' + o.lokacija + ' · ' + o.datum + '</span>' +
-            '<span class="oglas-platforma platforma-' + o.platforma + '">' + o.platforma.toUpperCase() + '</span></div>' +
-            '<div class="ai-score">' +
-            '<span class="ai-tag ai-' + o.aiTag + '">' + o.aiLabel + '</span>' +
-            '<div class="score-bar-wrap"><div class="score-bar-fill" style="width:' + o.score + '%;background:' + scoreColor + ';"></div></div>' +
-            '<span class="score-label" style="color:' + scoreColor + ';">' + o.score + '</span>' +
-            '</div></div></div>';
-    }).join('');
-}
-
-function pretrazi() {
-    const query = document.getElementById('searchInput').value.trim();
-    if (!query) return;
-    window.open('https://www.olx.ba/pretraga?keywords=' + encodeURIComponent(query), '_blank');
-}
-
-function filterPlatforma(btn, platforma) {
-    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    aktivnaPlatforma = platforma;
-    var filtrirani = aktivnaPlatforma === 'sve' ? [...demoOglasi] : demoOglasi.filter(o => o.platforma === aktivnaPlatforma);
-    prikaziOglase(filtrirani);
-}
-
-function sortiraj(btn, tip) {
-    document.querySelectorAll('.filter-btn').forEach(b => {
-        if (['novo','cijena_asc','cijena_desc','score'].some(s => b.onclick && b.onclick.toString().includes(s))) {
-            b.classList.remove('active');
-        }
-    });
-    btn.classList.add('active');
-    aktivnoSortiranje = tip;
-    var oglasi = [...demoOglasi];
-    switch(tip) {
-        case 'cijena_asc': oglasi.sort((a, b) => a.cijena - b.cijena); break;
-        case 'cijena_desc': oglasi.sort((a, b) => b.cijena - a.cijena); break;
-        case 'score': oglasi.sort((a, b) => b.score - a.score); break;
-    }
-    prikaziOglase(oglasi);
-}
-
-window.onload = () => prikaziOglase(demoOglasi);
-
-document.addEventListener('keydown', e => {
-    if (e.key === 'Enter') pretrazi();
-});
