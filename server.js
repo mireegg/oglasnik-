@@ -303,25 +303,32 @@ app.post('/api/sacuvaj-oglase', async (req, res) => {
             slika TEXT,
             link TEXT UNIQUE,
             platforma VARCHAR(50) DEFAULT 'olx',
+            kategorija VARCHAR(100),
             datum TIMESTAMP DEFAULT NOW()
         )`);
 
+        // Dodaj kategorija kolonu ako ne postoji
+        await pool.query(`ALTER TABLE live_oglasi ADD COLUMN IF NOT EXISTS kategorija VARCHAR(100)`);
+
         for (const o of oglasi) {
             await pool.query(
-                `INSERT INTO live_oglasi (naslov, cijena, slika, link, platforma)
-                 VALUES ($1, $2, $3, $4, $5)
-                 ON CONFLICT (link) DO NOTHING`,
-                [o.naslov, o.cijena, o.slika, o.link, o.platforma]
+                `INSERT INTO live_oglasi (naslov, cijena, slika, link, platforma, kategorija)
+                 VALUES ($1, $2, $3, $4, $5, $6)
+                 ON CONFLICT (link) DO UPDATE SET kategorija = $6`,
+                [o.naslov, o.cijena, o.slika, o.link, o.platforma, o.kategorija || null]
             );
         }
 
-        console.log(`Saved ${oglasi.length} oglasa iz ekstenzije`);
         res.json({ uspjeh: true, sacuvano: oglasi.length });
     } catch(e) {
         console.log('Greška:', e.message);
         res.json({ uspjeh: false, poruka: e.message });
     }
 });
+
+
+
+
 app.get('/api/live-oglasi', async (req, res) => {
     try {
         const q = req.query.q || '';
