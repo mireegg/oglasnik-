@@ -193,12 +193,42 @@ Pisi na bosanskom/hrvatskom jeziku. Budi konkretan, jasan i koristan kupcu.`;
     apiReq.end();
 });
 
+app.get('/api/test-scrape', async (req, res) => {
+    try {
+        const response = await axios.get('https://www.olx.ba/pretraga?q=golf', {
+            headers: {
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+                'Accept-Language': 'bs,hr;q=0.9',
+                'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8'
+            },
+            timeout: 10000
+        });
+
+        const $ = cheerio.load(response.data);
+        const prvih2000 = response.data.substring(0, 2000);
+        const artikli = $('article').length;
+        const divovi = $('[class*="listing"]').length;
+        const kartice = $('[class*="card"]').length;
+
+        res.json({
+            status: response.status,
+            html_preview: prvih2000,
+            article_count: artikli,
+            listing_divs: divovi,
+            card_divs: kartice
+        });
+
+    } catch(e) {
+        res.json({ greska: e.message });
+    }
+});
+
 app.get('/api/oglasi', async (req, res) => {
     const pretraga = req.query.q || '';
-    
+
     try {
         const url = `https://www.olx.ba/pretraga?q=${encodeURIComponent(pretraga)}`;
-        
+
         const response = await axios.get(url, {
             headers: {
                 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
@@ -213,7 +243,6 @@ app.get('/api/oglasi', async (req, res) => {
 
         $('article').each((i, el) => {
             const el$ = $(el);
-
             const naslov = el$.find('h3, h4, .title, [class*="title"]').first().text().trim();
             const cijena = el$.find('[class*="price"], [class*="cijena"]').first().text().trim();
             const lokacija = el$.find('[class*="location"], [class*="lokacija"], [class*="city"]').first().text().trim();
