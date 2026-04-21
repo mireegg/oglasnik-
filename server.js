@@ -332,34 +332,30 @@ app.post('/api/sacuvaj-oglase', async (req, res) => {
 app.get('/api/live-oglasi', async (req, res) => {
     try {
         const q = req.query.q || '';
-        let query, params;
-
-        if (q) {
-            query = `SELECT * FROM live_oglasi WHERE naslov ILIKE $1 ORDER BY datum DESC LIMIT 50`;
-            params = [`%${q}%`];
-        } else {
-            query = `SELECT * FROM live_oglasi ORDER BY datum DESC LIMIT 50`;
-            params = [];
-        }
-
-        const result = await pool.query(query, params);
-        res.json({ uspjeh: true, oglasi: result.rows });
-    } catch(e) {
-        res.json({ uspjeh: false, oglasi: [] });
-        app.get('/api/live-oglasi', async (req, res) => {
-    try {
-        const q = req.query.q || '';
         const offset = parseInt(req.query.offset) || 0;
-        let query, params;
+        const limit = parseInt(req.query.limit) || 12;
+        const kategorija = req.query.kategorija || '';
+
+        let uvjeti = [];
+        let params = [];
+        let i = 1;
 
         if (q) {
-            query = `SELECT * FROM live_oglasi WHERE naslov ILIKE $1 ORDER BY datum DESC LIMIT 12 OFFSET $2`;
-            params = [`%${q}%`, offset];
-        } else {
-            query = `SELECT * FROM live_oglasi ORDER BY datum DESC LIMIT 12 OFFSET $1`;
-            params = [offset];
+            uvjeti.push(`naslov ILIKE $${i++}`);
+            params.push(`%${q}%`);
         }
 
+        if (kategorija) {
+            const kats = kategorija.split(',').map(k => k.trim());
+            const katPlaceholders = kats.map(() => `$${i++}`).join(',');
+            uvjeti.push(`kategorija IN (${katPlaceholders})`);
+            params.push(...kats);
+        }
+
+        const where = uvjeti.length > 0 ? 'WHERE ' + uvjeti.join(' AND ') : '';
+        params.push(limit, offset);
+
+        const query = `SELECT * FROM live_oglasi ${where} ORDER BY datum DESC LIMIT $${i++} OFFSET $${i++}`;
         const result = await pool.query(query, params);
         res.json({ uspjeh: true, oglasi: result.rows });
     } catch(e) {
