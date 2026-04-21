@@ -284,6 +284,37 @@ app.get('/api/test-rss', async (req, res) => {
         res.json({ greska: e.message });
     }
 });
+app.post('/api/sacuvaj-oglase', async (req, res) => {
+    const { oglasi } = req.body;
+    if (!oglasi || oglasi.length === 0) return res.json({ uspjeh: false });
+
+    try {
+        await pool.query(`CREATE TABLE IF NOT EXISTS live_oglasi (
+            id SERIAL PRIMARY KEY,
+            naslov TEXT,
+            cijena TEXT,
+            slika TEXT,
+            link TEXT UNIQUE,
+            platforma VARCHAR(50) DEFAULT 'olx',
+            datum TIMESTAMP DEFAULT NOW()
+        )`);
+
+        for (const o of oglasi) {
+            await pool.query(
+                `INSERT INTO live_oglasi (naslov, cijena, slika, link, platforma)
+                 VALUES ($1, $2, $3, $4, $5)
+                 ON CONFLICT (link) DO NOTHING`,
+                [o.naslov, o.cijena, o.slika, o.link, o.platforma]
+            );
+        }
+
+        console.log(`Saved ${oglasi.length} oglasa iz ekstenzije`);
+        res.json({ uspjeh: true, sacuvano: oglasi.length });
+    } catch(e) {
+        console.log('Greška:', e.message);
+        res.json({ uspjeh: false, poruka: e.message });
+    }
+});
 app.listen(PORT, () => {
     app.get('/api/debug-scrape', async (req, res) => {
     try {
