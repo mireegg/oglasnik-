@@ -322,6 +322,25 @@ app.post('/api/sacuvaj-oglase', async (req, res) => {
         res.json({ uspjeh: false, poruka: e.message });
     }
 });
+app.get('/api/live-oglasi', async (req, res) => {
+    try {
+        const q = req.query.q || '';
+        let query, params;
+
+        if (q) {
+            query = `SELECT * FROM live_oglasi WHERE naslov ILIKE $1 ORDER BY datum DESC LIMIT 50`;
+            params = [`%${q}%`];
+        } else {
+            query = `SELECT * FROM live_oglasi ORDER BY datum DESC LIMIT 50`;
+            params = [];
+        }
+
+        const result = await pool.query(query, params);
+        res.json({ uspjeh: true, oglasi: result.rows });
+    } catch(e) {
+        res.json({ uspjeh: false, oglasi: [] });
+    }
+});
 app.listen(PORT, () => {
     app.get('/api/debug-scrape', async (req, res) => {
     try {
