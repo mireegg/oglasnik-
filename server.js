@@ -368,6 +368,20 @@ app.get('/api/live-oglasi', async (req, res) => {
 });
     }
 });
+app.get('/api/kategorije', async (req, res) => {
+    try {
+        const result = await pool.query(
+            `SELECT kategorija, COUNT(*) as broj 
+             FROM live_oglasi 
+             WHERE kategorija IS NOT NULL 
+             GROUP BY kategorija 
+             ORDER BY broj DESC`
+        );
+        res.json({ uspjeh: true, kategorije: result.rows });
+    } catch(e) {
+        res.json({ uspjeh: false, kategorije: [] });
+    }
+});
 app.listen(PORT, () => {
     app.get('/api/debug-scrape', async (req, res) => {
     try {
@@ -401,20 +415,7 @@ app.listen(PORT, () => {
     } catch(e) {
         res.json({ greska: e.message });
     }
-    app.get('/api/kategorije', async (req, res) => {
-    try {
-        const result = await pool.query(
-            `SELECT kategorija, COUNT(*) as broj 
-             FROM live_oglasi 
-             WHERE kategorija IS NOT NULL 
-             GROUP BY kategorija 
-             ORDER BY broj DESC`
-        );
-        res.json({ uspjeh: true, kategorije: result.rows });
-    } catch(e) {
-        res.json({ uspjeh: false, kategorije: [] });
-    }
-});
+
 });
     console.log('Server radi na http://localhost:' + PORT);
 });
