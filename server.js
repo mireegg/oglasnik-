@@ -270,6 +270,20 @@ app.get('/api/oglasi', async (req, res) => {
     }
 });
 
+app.get('/api/test-rss', async (req, res) => {
+    try {
+        const response = await axios.get('https://www.olx.ba/rss/pretraga/?q=golf', {
+            headers: {
+                'User-Agent': 'Mozilla/5.0',
+                'Accept': 'application/rss+xml, application/xml, text/xml'
+            },
+            timeout: 10000
+        });
+        res.send(response.data);
+    } catch(e) {
+        res.json({ greska: e.message });
+    }
+});
 app.listen(PORT, () => {
     app.get('/api/debug-scrape', async (req, res) => {
     try {
