@@ -817,7 +817,7 @@
     <div class="grid" id="oglasiGrid"></div>
 
     <div class="load-more">
-      <button class="load-btn">Učitaj još oglasa</button>
+<button class="load-btn" onclick="ucitajJos()">Učitaj još oglasa</button>
     </div>
   </div>
 </div>
@@ -1037,6 +1037,48 @@ function updateNavbar() {
 function odjava() {
     localStorage.removeItem('korisnik');
     window.location.href = '/login.html';
+}
+var trenutnaStrana = 0;
+var OGLASI_PO_STRANI = 12;
+
+async function ucitajJos() {
+    trenutnaStrana++;
+    try {
+        var q = document.getElementById('searchInput').value.trim();
+        var url = '/api/live-oglasi?offset=' + (trenutnaStrana * OGLASI_PO_STRANI) + (q ? '&q=' + encodeURIComponent(q) : '');
+        var res = await fetch(url);
+        var data = await res.json();
+        
+        if (data.uspjeh && data.oglasi.length > 0) {
+            var novi = data.oglasi.map(function(o) {
+                return {
+                    id: o.id,
+                    naslov: o.naslov,
+                    cijena: parseFloat(o.cijena.replace(/[^0-9.]/g, '')) || 0,
+                    cijenaStr: o.cijena,
+                    lokacija: 'BiH',
+                    platforma: o.platforma || 'olx',
+                    slika: o.slika,
+                    link: o.link,
+                    datum: new Date(o.datum).toLocaleDateString('bs-BA'),
+                    score: 75,
+                    aiTag: 'good',
+                    aiLabel: 'Live oglas',
+                    kategorija: o.kategorija || 'ostalo',
+                    stanje: 'polovno',
+                    detalji: o.naslov
+                };
+            });
+            
+            // Dodaj na postojeće, ne zamjenjuj
+            trenutnoFiltrirani = trenutnoFiltrirani.concat(novi);
+            prikaziOglase(trenutnoFiltrirani);
+        } else {
+            alert('Nema više oglasa!');
+        }
+    } catch(e) {
+        console.log('Greška:', e.message);
+    }
 }
 
 // --- Init ---

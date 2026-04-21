@@ -346,6 +346,26 @@ app.get('/api/live-oglasi', async (req, res) => {
         res.json({ uspjeh: true, oglasi: result.rows });
     } catch(e) {
         res.json({ uspjeh: false, oglasi: [] });
+        app.get('/api/live-oglasi', async (req, res) => {
+    try {
+        const q = req.query.q || '';
+        const offset = parseInt(req.query.offset) || 0;
+        let query, params;
+
+        if (q) {
+            query = `SELECT * FROM live_oglasi WHERE naslov ILIKE $1 ORDER BY datum DESC LIMIT 12 OFFSET $2`;
+            params = [`%${q}%`, offset];
+        } else {
+            query = `SELECT * FROM live_oglasi ORDER BY datum DESC LIMIT 12 OFFSET $1`;
+            params = [offset];
+        }
+
+        const result = await pool.query(query, params);
+        res.json({ uspjeh: true, oglasi: result.rows });
+    } catch(e) {
+        res.json({ uspjeh: false, oglasi: [] });
+    }
+});
     }
 });
 app.listen(PORT, () => {
