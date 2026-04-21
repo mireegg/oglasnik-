@@ -1073,20 +1073,6 @@
 
       prikaziOglase(filtrirani);
     }
-    // Pretraga
-    if (query && !o.naslov.toLowerCase().includes(query) &&
-      !(o.detalji && o.detalji.toLowerCase().includes(query)) &&
-      !o.lokacija.toLowerCase().includes(query)) return false;
-
-    // Cijena
-    if (o.cijena < cijenaOd || o.cijena > cijenaDo) return false;
-
-    // Lokacija
-    if (lokacija && !o.lokacija.toLowerCase().includes(lokacija.toLowerCase())) return false;
-
-    // Stanje
-    if (aktivnoStanje === 'novo' && o.stanje !== 'novo') return false;
-    if (aktivnoStanje === 'polovno' && o.stanje !== 'polovno') return false;
 function resetujFiltre() {
     document.getElementById('cijenaOd').value = '';
     document.getElementById('cijenaDo').value = '';
