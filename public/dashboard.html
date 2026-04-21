@@ -73,10 +73,7 @@
     font-weight: 600;
   }
 
-  .username {
-    font-size: 14px;
-    color: var(--text-muted);
-  }
+  .username { font-size: 14px; color: var(--text-muted); }
 
   .logout-btn {
     font-size: 13px;
@@ -86,6 +83,7 @@
     border: none;
     font-family: 'DM Sans', sans-serif;
   }
+  .logout-btn:hover { color: var(--text); }
 
   .db-body {
     display: grid;
@@ -122,7 +120,6 @@
     border-right: 2px solid transparent;
     transition: all 0.15s;
   }
-
   .menu-item:hover { background: var(--bg); color: var(--text); }
   .menu-item.active {
     color: var(--orange);
@@ -139,9 +136,7 @@
     flex-shrink: 0;
   }
 
-  .main {
-    padding: 28px;
-  }
+  .main { padding: 28px; }
 
   .db-header {
     display: flex;
@@ -197,6 +192,7 @@
 
   .stat-label { font-size: 11px; color: var(--text-faint); }
   .stat-change { font-size: 11px; color: #16a34a; margin-top: 4px; }
+  .stat-change.down { color: #dc2626; }
 
   .two-col {
     display: grid;
@@ -226,7 +222,6 @@
     display: flex;
     align-items: center;
     gap: 12px;
-    cursor: pointer;
     transition: border-color 0.15s;
   }
   .pracenje-item:hover { border-color: var(--orange); }
@@ -243,28 +238,45 @@
     flex-shrink: 0;
   }
 
-  .pracenje-info { flex: 1; }
-  .pracenje-title { font-size: 13px; font-weight: 500; color: var(--text); margin-bottom: 2px; }
+  .pracenje-info { flex: 1; min-width: 0; }
+  .pracenje-title {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text);
+    margin-bottom: 2px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
   .pracenje-meta { font-size: 11px; color: var(--text-faint); }
 
-  .badge-orange {
-    background: var(--orange);
-    color: #fff;
-    font-size: 10px;
-    font-weight: 600;
-    padding: 3px 9px;
+  .ukloni-btn {
+    background: none;
+    border: 1px solid var(--border);
     border-radius: var(--radius-pill);
-    white-space: nowrap;
-  }
-
-  .badge-grey {
-    background: #f0f0f0;
+    padding: 4px 12px;
+    font-size: 11px;
     color: var(--text-faint);
-    font-size: 10px;
-    padding: 3px 9px;
-    border-radius: var(--radius-pill);
+    cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
     white-space: nowrap;
+    transition: all 0.15s;
   }
+  .ukloni-btn:hover { border-color: #dc2626; color: #dc2626; }
+
+  .pretrazi-btn {
+    background: var(--orange-dim);
+    border: none;
+    border-radius: var(--radius-pill);
+    padding: 4px 12px;
+    font-size: 11px;
+    color: var(--orange);
+    cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+    white-space: nowrap;
+    margin-right: 6px;
+  }
+  .pretrazi-btn:hover { background: var(--orange); color: white; }
 
   .notif-list {
     display: flex;
@@ -302,6 +314,12 @@
     margin-bottom: 16px;
   }
 
+  .form-row {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+  }
+
   .form-input {
     width: 100%;
     border: 1px solid var(--border);
@@ -310,10 +328,11 @@
     font-size: 14px;
     font-family: 'DM Sans', sans-serif;
     color: var(--text);
-    margin-bottom: 10px;
+    background: var(--bg);
     outline: none;
+    flex: 1;
   }
-  .form-input:focus { border-color: var(--orange); }
+  .form-input:focus { border-color: var(--orange); background: var(--surface); }
 
   .form-btn {
     background: var(--orange);
@@ -324,8 +343,9 @@
     font-size: 13px;
     font-family: 'DM Sans', sans-serif;
     cursor: pointer;
-    margin-right: 8px;
+    white-space: nowrap;
   }
+  .form-btn:hover { background: var(--orange-light); }
 
   .form-cancel {
     background: none;
@@ -336,13 +356,61 @@
     font-family: 'DM Sans', sans-serif;
     cursor: pointer;
     color: var(--text-muted);
+    white-space: nowrap;
   }
 
   .loader-msg {
-    padding: 20px;
+    padding: 32px 20px;
     text-align: center;
     color: var(--text-faint);
     font-size: 13px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+  }
+
+  .empty-state {
+    padding: 40px 20px;
+    text-align: center;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+  }
+  .empty-state-icon { font-size: 32px; margin-bottom: 12px; }
+  .empty-state-title { font-size: 15px; font-weight: 500; color: var(--text); margin-bottom: 6px; }
+  .empty-state-sub { font-size: 13px; color: var(--text-faint); }
+
+  .postavke-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 24px;
+    margin-bottom: 16px;
+  }
+
+  .postavke-label {
+    font-size: 11px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--text-faint);
+    margin-bottom: 6px;
+  }
+
+  .postavke-field { margin-bottom: 16px; }
+
+  .poruka-inline {
+    font-size: 13px;
+    font-weight: 500;
+    margin-top: 12px;
+    min-height: 18px;
+  }
+
+  @media (max-width: 768px) {
+    .db-body { grid-template-columns: 1fr; }
+    .sidebar { display: none; }
+    .stats-grid { grid-template-columns: repeat(2, 1fr); }
+    .two-col { grid-template-columns: 1fr; }
   }
 </style>
 </head>
@@ -351,7 +419,7 @@
 <nav>
   <div class="logo" onclick="window.location.href='/oglasi.html'">oglix<span>.ba</span></div>
   <div class="nav-right">
-    <span class="username" id="navIme">Korisnik</span>
+    <span class="username" id="navIme"></span>
     <div class="avatar" id="navAvatar">?</div>
     <button class="logout-btn" onclick="odjava()">Odjava</button>
   </div>
@@ -360,43 +428,55 @@
 <div class="db-body">
   <div class="sidebar">
     <div class="menu-section">Glavni</div>
-    <div class="menu-item active" onclick="pokaziSekciju('pregled')"><div class="menu-dot"></div> Pregled</div>
-    <div class="menu-item" onclick="pokaziSekciju('pracenja')"><div class="menu-dot"></div> Moja praćenja</div>
-    <div class="menu-item" onclick="pokaziSekciju('obavijesti')"><div class="menu-dot"></div> Obavijesti</div>
+    <div class="menu-item active" id="menu-pregled" onclick="pokaziSekciju('pregled', this)">
+      <div class="menu-dot"></div> Pregled
+    </div>
+    <div class="menu-item" id="menu-pracenja" onclick="pokaziSekciju('pracenja', this)">
+      <div class="menu-dot"></div> Moja praćenja
+    </div>
+    <div class="menu-item" id="menu-obavijesti" onclick="pokaziSekciju('obavijesti', this)">
+      <div class="menu-dot"></div> Obavijesti
+    </div>
     <div class="menu-section">Alati</div>
-    <div class="menu-item" onclick="window.location.href='/oglasi.html'"><div class="menu-dot"></div> Pretraži oglase</div>
+    <div class="menu-item" onclick="window.location.href='/oglasi.html'">
+      <div class="menu-dot"></div> Pretraži oglase
+    </div>
     <div class="menu-section">Račun</div>
-    <div class="menu-item" onclick="pokaziSekciju('postavke')"><div class="menu-dot"></div> Postavke</div>
+    <div class="menu-item" id="menu-postavke" onclick="pokaziSekciju('postavke', this)">
+      <div class="menu-dot"></div> Postavke
+    </div>
   </div>
 
   <div class="main">
 
+    <!-- PREGLED -->
     <div id="sekcija-pregled">
       <div class="db-header">
         <div>
           <div class="db-greeting" id="pozdrav">Dobro jutro!</div>
-          <div class="db-sub">Evo šta se desilo dok si bio odsutan.</div>
+          <div class="db-sub">Evo pregleda tvojih praćenja i aktivnosti.</div>
         </div>
-        <button class="cta-btn" onclick="pokaziSekciju('pracenja')">+ Novo praćenje</button>
+        <button class="cta-btn" onclick="pokaziSekciju('pracenja', document.getElementById('menu-pracenja'))">+ Novo praćenje</button>
       </div>
 
       <div class="stats-grid">
         <div class="stat-card">
-          <div class="stat-num" id="statPracenja">0</div>
+          <div class="stat-num" id="statPracenja">—</div>
           <div class="stat-label">Aktivna praćenja</div>
         </div>
         <div class="stat-card">
-          <div class="stat-num">12</div>
-          <div class="stat-label">Novih oglasa danas</div>
-          <div class="stat-change">+5 od jucer</div>
+          <div class="stat-num" id="statOglasa">21</div>
+          <div class="stat-label">Demo oglasa dostupno</div>
         </div>
         <div class="stat-card">
-          <div class="stat-num">2</div>
-          <div class="stat-label">AI upozorenja</div>
+          <div class="stat-num" id="statDana">
+            <script>document.write(Math.floor((new Date() - new Date(localStorage.getItem('registrovan') || new Date())) / 86400000) || 1)</script>
+          </div>
+          <div class="stat-label">Dana kao član</div>
         </div>
         <div class="stat-card">
-          <div class="stat-num">48</div>
-          <div class="stat-label">Oglasa pregledano</div>
+          <div class="stat-num">4</div>
+          <div class="stat-label">Izvora pretrage</div>
         </div>
       </div>
 
@@ -404,15 +484,15 @@
         <div>
           <div class="section-title">Moja praćenja</div>
           <div class="pracenje-list" id="pregled-pracenja">
-            <div class="loader-msg">Učitavam praćenja...</div>
+            <div class="loader-msg">Učitavam...</div>
           </div>
         </div>
         <div>
-          <div class="section-title">Posljednje obavijesti</div>
-          <div class="notif-list">
+          <div class="section-title">Obavijesti</div>
+          <div class="notif-list" id="pregled-notif">
             <div class="notif-item">
               <div class="notif-dot" style="background:#e65c00;"></div>
-              <div class="notif-text">Nov oglas: Golf 7 CUP 2.0 TDI DSG — 24.999 KM · Sarajevo · OLX</div>
+              <div class="notif-text">Nov oglas: Golf 7 CUP 2.0 TDI DSG — 24.999 KM · OLX</div>
               <div class="notif-time">12 min</div>
             </div>
             <div class="notif-item">
@@ -427,7 +507,7 @@
             </div>
             <div class="notif-item">
               <div class="notif-dot" style="background:#e65c00;"></div>
-              <div class="notif-text">Nov oglas: iPhone 15 Pro 256GB — 2.200 KM · Sarajevo · Facebook</div>
+              <div class="notif-text">Nov oglas: iPhone 15 Pro 256GB — 1.850 KM · OLX</div>
               <div class="notif-time">5h</div>
             </div>
           </div>
@@ -435,6 +515,7 @@
       </div>
     </div>
 
+    <!-- PRAĆENJA -->
     <div id="sekcija-pracenja" style="display:none;">
       <div class="db-header">
         <div>
@@ -445,9 +526,11 @@
       </div>
 
       <div class="add-pracenje-form" id="addForm">
-        <input class="form-input" id="novaPretraga" placeholder="Npr. Golf 7 DSG do 25.000 KM..." />
-        <button class="form-btn" onclick="dodajPracenje()">Dodaj praćenje</button>
-        <button class="form-cancel" onclick="toggleForm()">Odustani</button>
+        <div class="form-row">
+          <input class="form-input" id="novaPretraga" placeholder="Npr. Golf 7 DSG, iPhone 15, stan Sarajevo..." />
+          <button class="form-btn" onclick="dodajPracenje()">Dodaj</button>
+          <button class="form-cancel" onclick="toggleForm()">Odustani</button>
+        </div>
       </div>
 
       <div class="pracenje-list" id="lista-pracenja">
@@ -455,6 +538,7 @@
       </div>
     </div>
 
+    <!-- OBAVIJESTI -->
     <div id="sekcija-obavijesti" style="display:none;">
       <div class="db-header">
         <div>
@@ -480,17 +564,18 @@
         </div>
         <div class="notif-item">
           <div class="notif-dot" style="background:#e65c00;"></div>
-          <div class="notif-text">Nov oglas: iPhone 15 Pro 256GB — 2.200 KM · Sarajevo · Facebook</div>
+          <div class="notif-text">Nov oglas: iPhone 15 Pro 256GB — 1.850 KM · Sarajevo · OLX</div>
           <div class="notif-time">5h</div>
         </div>
         <div class="notif-item">
           <div class="notif-dot" style="background:#16a34a;"></div>
-          <div class="notif-text">Nov oglas: Stan Grbavica 65m2 — 850 KM/mj · Sarajevo</div>
+          <div class="notif-text">Nov oglas: Stan Grbavica 65m2 — 145.000 KM · Sarajevo · OLX</div>
           <div class="notif-time">8h</div>
         </div>
       </div>
     </div>
 
+    <!-- POSTAVKE -->
     <div id="sekcija-postavke" style="display:none;">
       <div class="db-header">
         <div>
@@ -498,16 +583,25 @@
           <div class="db-sub">Upravljaj svojim accountom.</div>
         </div>
       </div>
-      <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-md);padding:20px;">
-        <div style="margin-bottom:16px;">
-          <div style="font-size:12px;color:var(--text-faint);margin-bottom:6px;">Ime</div>
-          <input class="form-input" id="postavkeIme" style="margin-bottom:0;" />
+
+      <div class="postavke-card">
+        <div class="section-title" style="margin-bottom:20px;">Lični podaci</div>
+        <div class="postavke-field">
+          <div class="postavke-label">Ime i prezime</div>
+          <input class="form-input" id="postavkeIme" />
         </div>
-        <div style="margin-bottom:16px;">
-          <div style="font-size:12px;color:var(--text-faint);margin-bottom:6px;">Email</div>
-          <input class="form-input" id="postavkeEmail" style="margin-bottom:0;" readonly />
+        <div class="postavke-field">
+          <div class="postavke-label">Email adresa</div>
+          <input class="form-input" id="postavkeEmail" readonly style="opacity:0.6;cursor:not-allowed;" />
         </div>
-        <button class="form-btn" onclick="alert('Sacuvano!')">Sačuvaj</button>
+        <button class="form-btn" onclick="sacuvajPostavke()">Sačuvaj izmjene</button>
+        <div class="poruka-inline" id="postavkePoruka"></div>
+      </div>
+
+      <div class="postavke-card">
+        <div class="section-title" style="margin-bottom:4px;">Opasna zona</div>
+        <div style="font-size:13px;color:var(--text-faint);margin-bottom:16px;">Ove akcije su nepovratne.</div>
+        <button class="form-cancel" onclick="odjava()">Odjavi se sa svih uređaja</button>
       </div>
     </div>
 
@@ -521,85 +615,144 @@ if (!korisnik) {
     window.location.href = '/login.html';
 }
 
+// Navbar
 document.getElementById('navIme').textContent = korisnik ? korisnik.ime : '';
 document.getElementById('navAvatar').textContent = korisnik ? korisnik.ime.charAt(0).toUpperCase() : '?';
 
+// Pozdrav
 var sati = new Date().getHours();
-var pozdrav = sati < 12 ? 'Dobro jutro' : sati < 18 ? 'Dobar dan' : 'Dobro veče';
-document.getElementById('pozdrav').textContent = pozdrav + ', ' + (korisnik ? korisnik.ime.split(' ')[0] : '') + '!';
+var pozdravTekst = sati < 12 ? 'Dobro jutro' : sati < 18 ? 'Dobar dan' : 'Dobro veče';
+document.getElementById('pozdrav').textContent = pozdravTekst + ', ' + (korisnik ? korisnik.ime.split(' ')[0] : '') + '!';
 
+// Postavke forma
 if (korisnik) {
     document.getElementById('postavkeIme').value = korisnik.ime;
     document.getElementById('postavkeEmail').value = korisnik.email;
 }
 
+// Registracija datum (za dana kao clan)
+if (!localStorage.getItem('registrovan')) {
+    localStorage.setItem('registrovan', new Date().toISOString());
+}
+
 function odjava() {
-localStorage.removeItem('korisnik');
+    localStorage.removeItem('korisnik');
     window.location.href = '/login.html';
 }
 
-function pokaziSekciju(id) {
-    document.querySelectorAll('[id^="sekcija-"]').forEach(s => s.style.display = 'none');
+function pokaziSekciju(id, el) {
+    document.querySelectorAll('[id^="sekcija-"]').forEach(function(s) { s.style.display = 'none'; });
     document.getElementById('sekcija-' + id).style.display = 'block';
-    document.querySelectorAll('.menu-item').forEach(m => m.classList.remove('active'));
-    event.currentTarget.classList.add('active');
+    document.querySelectorAll('.menu-item').forEach(function(m) { m.classList.remove('active'); });
+    if (el) el.classList.add('active');
     if (id === 'pracenja' || id === 'pregled') ucitajPracenja();
 }
 
 function toggleForm() {
     var form = document.getElementById('addForm');
-    form.style.display = form.style.display === 'none' ? 'block' : 'none';
+    form.style.display = form.style.display === 'none' || form.style.display === '' ? 'block' : 'none';
+    if (form.style.display === 'block') {
+        document.getElementById('novaPretraga').focus();
+    }
+}
+
+function renderPracenja(pracenja, containerId) {
+    var el = document.getElementById(containerId);
+    if (!el) return;
+
+    if (pracenja.length === 0) {
+        el.innerHTML = '<div class="empty-state">' +
+            '<div class="empty-state-icon">🔔</div>' +
+            '<div class="empty-state-title">Nema aktivnih praćenja</div>' +
+            '<div class="empty-state-sub">Dodaj pretragu da dobijaš obavijesti o novim oglasima.</div>' +
+            '</div>';
+        return;
+    }
+
+    el.innerHTML = pracenja.map(function(p) {
+        var datum = new Date(p.datum).toLocaleDateString('bs-BA', { day: '2-digit', month: '2-digit', year: 'numeric' });
+        return '<div class="pracenje-item" id="pracenje-' + p.id + '">' +
+            '<div class="pracenje-icon">🔔</div>' +
+            '<div class="pracenje-info">' +
+            '<div class="pracenje-title">' + p.pretraga + '</div>' +
+            '<div class="pracenje-meta">Dodano ' + datum + '</div>' +
+            '</div>' +
+            '<button class="pretrazi-btn" onclick="window.location.href=\'/oglasi.html?q=' + encodeURIComponent(p.pretraga) + '\'">Pretraži</button>' +
+            '<button class="ukloni-btn" onclick="obrisiPracenje(' + p.id + ')">Ukloni</button>' +
+            '</div>';
+    }).join('');
 }
 
 async function ucitajPracenja() {
     if (!korisnik) return;
-    var res = await fetch('/moja-pracenja?email=' + encodeURIComponent(korisnik.email));
-    var pracenja = await res.json();
+    try {
+        var res = await fetch('/moja-pracenja?email=' + encodeURIComponent(korisnik.email));
+        var pracenja = await res.json();
 
-    document.getElementById('statPracenja').textContent = pracenja.length;
-
-    var html = pracenja.length === 0
-        ? '<div class="loader-msg">Nemate aktivnih praćenja. Dodajte novo!</div>'
-        : pracenja.map(p => `
-            <div class="pracenje-item">
-                <div class="pracenje-icon">🔔</div>
-                <div class="pracenje-info">
-                    <div class="pracenje-title">${p.pretraga}</div>
-                    <div class="pracenje-meta">Dodano ${new Date(p.datum).toLocaleDateString('bs')}</div>
-                </div>
-                <span class="badge-grey" style="cursor:pointer;" onclick="obrisiPracenje(${p.id}, this)">Ukloni</span>
-            </div>
-        `).join('');
-
-    if (document.getElementById('lista-pracenja')) {
-        document.getElementById('lista-pracenja').innerHTML = html;
-    }
-    if (document.getElementById('pregled-pracenja')) {
-        document.getElementById('pregled-pracenja').innerHTML = html;
+        document.getElementById('statPracenja').textContent = pracenja.length;
+        renderPracenja(pracenja, 'lista-pracenja');
+        renderPracenja(pracenja.slice(0, 3), 'pregled-pracenja');
+    } catch(e) {
+        console.log('Greška pri učitavanju praćenja:', e.message);
     }
 }
 
 async function dodajPracenje() {
-    var pretraga = document.getElementById('novaPretraga').value.trim();
+    var input = document.getElementById('novaPretraga');
+    var pretraga = input.value.trim();
     if (!pretraga || !korisnik) return;
 
-    await fetch('/pracenje', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: korisnik.email, pretraga: pretraga })
-    });
-
-    document.getElementById('novaPretraga').value = '';
-    document.getElementById('addForm').style.display = 'none';
-    ucitajPracenja();
+    try {
+        await fetch('/pracenje', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email: korisnik.email, pretraga: pretraga })
+        });
+        input.value = '';
+        document.getElementById('addForm').style.display = 'none';
+        ucitajPracenja();
+    } catch(e) {
+        console.log('Greška pri dodavanju:', e.message);
+    }
 }
 
-async function obrisiPracenje(id, el) {
-    await fetch('/pracenje/' + id, { method: 'DELETE' });
-    el.closest('.pracenje-item').remove();
-    ucitajPracenja();
+async function obrisiPracenje(id) {
+    try {
+        await fetch('/pracenje/' + id, { method: 'DELETE' });
+        var el = document.getElementById('pracenje-' + id);
+        if (el) el.remove();
+        ucitajPracenja();
+    } catch(e) {
+        console.log('Greška pri brisanju:', e.message);
+    }
 }
 
+function sacuvajPostavke() {
+    var novoIme = document.getElementById('postavkeIme').value.trim();
+    var poruka = document.getElementById('postavkePoruka');
+
+    if (!novoIme) {
+        poruka.style.color = '#dc2626';
+        poruka.textContent = 'Ime ne može biti prazno!';
+        return;
+    }
+
+    korisnik.ime = novoIme;
+    localStorage.setItem('korisnik', JSON.stringify(korisnik));
+    document.getElementById('navIme').textContent = novoIme;
+    document.getElementById('navAvatar').textContent = novoIme.charAt(0).toUpperCase();
+
+    poruka.style.color = '#16a34a';
+    poruka.textContent = 'Izmjene sačuvane!';
+    setTimeout(function() { poruka.textContent = ''; }, 3000);
+}
+
+// Enter na formi praćenja
+document.getElementById('novaPretraga').addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') dodajPracenje();
+});
+
+// Init
 ucitajPracenja();
 </script>
 </body>
