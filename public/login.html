@@ -209,6 +209,87 @@
     margin-bottom: 4px;
   }
   .footer-logo span { color: var(--orange); }
+  .spinner {
+    display: inline-block;
+    width: 13px;
+    height: 13px;
+    border: 2px solid rgba(255,255,255,0.4);
+    border-top-color: white;
+    border-radius: 50%;
+    animation: spin 0.6s linear infinite;
+    vertical-align: middle;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.auth-btn:disabled {
+    opacity: 0.65;
+    cursor: not-allowed;
+}
+
+.s-bar {
+    flex: 1;
+    height: 3px;
+    border-radius: 2px;
+    background: var(--border);
+    transition: background 0.2s;
+}
+.s-bar.weak   { background: #dc2626; }
+.s-bar.medium { background: #f59e0b; }
+.s-bar.strong { background: #16a34a; }
+
+.s-hint {
+    font-size: 11px;
+    margin-top: 4px;
+    color: var(--text-faint);
+}
+
+.strength {
+    display: flex;
+    gap: 4px;
+    margin-top: 6px;
+}
+
+.input-wrap {
+    position: relative;
+}
+.input-wrap input {
+    width: 100%;
+    padding: 12px 38px 12px 14px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    font-size: 14px;
+    font-family: 'DM Sans', sans-serif;
+    color: var(--text);
+    background: var(--bg);
+    outline: none;
+    transition: border-color 0.15s;
+}
+.input-wrap input:focus {
+    border-color: var(--orange);
+    background: var(--surface);
+}
+
+.eye {
+    position: absolute;
+    right: 11px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    font-size: 14px;
+    user-select: none;
+    line-height: 1;
+}
+
+.forgot {
+    text-align: right;
+    margin-top: 5px;
+}
+.forgot a {
+    font-size: 12px;
+    color: var(--text-faint);
+    text-decoration: none;
+}
+.forgot a:hover { color: var(--orange); }
 </style>
 </head>
 <body>
@@ -229,34 +310,54 @@
     </div>
 
     <div id="loginForma">
-      <div class="form-group">
-        <label>Email adresa</label>
-        <input type="email" id="loginEmail" placeholder="tvoj@email.com" />
-      </div>
-      <div class="form-group">
-        <label>Lozinka</label>
-        <input type="password" id="loginLozinka" placeholder="••••••••" />
-      </div>
-      <button class="auth-btn" onclick="login()">Prijavi se</button>
-      <div class="auth-poruka" id="loginPoruka"></div>
+  <div class="form-group">
+    <label>Email adresa</label>
+    <div class="input-wrap">
+      <input type="email" id="loginEmail" placeholder="tvoj@email.com" />
     </div>
+  </div>
+  <div class="form-group">
+    <label>Lozinka</label>
+    <div class="input-wrap">
+      <input type="password" id="loginLozinka" placeholder="••••••••" />
+      <span class="eye" onclick="togglePass('loginLozinka', this)">👁</span>
+    </div>
+    <div class="forgot"><a href="#">Zaboravljena lozinka?</a></div>
+  </div>
+  <button class="auth-btn" id="loginBtn" onclick="login()">Prijavi se</button>
+  <div class="auth-poruka" id="loginPoruka"></div>
+</div>
 
     <div id="registerForma" style="display:none;">
-      <div class="form-group">
-        <label>Ime i prezime</label>
-        <input type="text" id="regIme" placeholder="Npr. Mirza Cakanovic" />
-      </div>
-      <div class="form-group">
-        <label>Email adresa</label>
-        <input type="email" id="regEmail" placeholder="tvoj@email.com" />
-      </div>
-      <div class="form-group">
-        <label>Lozinka</label>
-        <input type="password" id="regLozinka" placeholder="Minimum 6 karaktera" />
-      </div>
-      <button class="auth-btn" onclick="register()">Napravi account</button>
-      <div class="auth-poruka" id="registerPoruka"></div>
+  <div class="form-group">
+    <label>Ime i prezime</label>
+    <div class="input-wrap">
+      <input type="text" id="regIme" placeholder="Npr. Mirza Čakanović" />
     </div>
+  </div>
+  <div class="form-group">
+    <label>Email adresa</label>
+    <div class="input-wrap">
+      <input type="email" id="regEmail" placeholder="tvoj@email.com" />
+    </div>
+  </div>
+  <div class="form-group">
+    <label>Lozinka</label>
+    <div class="input-wrap">
+      <input type="password" id="regLozinka" placeholder="Minimum 6 karaktera"
+             oninput="checkStrength(this.value)" />
+      <span class="eye" onclick="togglePass('regLozinka', this)">👁</span>
+    </div>
+    <div class="strength">
+      <div class="s-bar" id="s1"></div>
+      <div class="s-bar" id="s2"></div>
+      <div class="s-bar" id="s3"></div>
+    </div>
+    <div class="s-hint" id="sHint"></div>
+  </div>
+  <button class="auth-btn" id="regBtn" onclick="register()">Napravi account</button>
+  <div class="auth-poruka" id="registerPoruka"></div>
+</div>
 
     <div class="auth-footer">
       Nastavkom prihvataš naše uslove korištenja
@@ -277,83 +378,99 @@ function switchTab(tab, btn) {
     document.getElementById('registerForma').style.display = tab === 'register' ? 'block' : 'none';
 }
 
+function togglePass(id, el) {
+    var inp = document.getElementById(id);
+    inp.type = inp.type === 'password' ? 'text' : 'password';
+    el.textContent = inp.type === 'password' ? '👁' : '🙈';
+}
+
+function checkStrength(val) {
+    var bars = [document.getElementById('s1'), document.getElementById('s2'), document.getElementById('s3')];
+    var hint = document.getElementById('sHint');
+    bars.forEach(b => b.className = 's-bar');
+    if (val.length === 0) { hint.textContent = ''; return; }
+    var score = 0;
+    if (val.length >= 6) score++;
+    if (val.length >= 10) score++;
+    if (/[A-Z]/.test(val) && /[0-9]/.test(val)) score++;
+    var cls = ['weak', 'medium', 'strong'][score - 1] || 'weak';
+    var labels = ['Slaba lozinka', 'Srednja lozinka', 'Jaka lozinka'];
+    for (var i = 0; i < score; i++) bars[i].classList.add(cls);
+    hint.textContent = labels[score - 1] || 'Previše kratka';
+    hint.style.color = score === 1 ? '#dc2626' : score === 2 ? '#f59e0b' : '#16a34a';
+}
+
+function setLoading(btnId, loading, tekst) {
+    var btn = document.getElementById(btnId);
+    btn.disabled = loading;
+    btn.innerHTML = loading
+        ? '<span class="spinner"></span> ' + tekst
+        : tekst;
+}
+
+function showPoruka(id, tekst, ok) {
+    var el = document.getElementById(id);
+    el.style.color = ok ? '#16a34a' : '#dc2626';
+    el.textContent = tekst;
+}
+
 async function login() {
-    var email = document.getElementById('loginEmail').value;
+    var email = document.getElementById('loginEmail').value.trim();
     var lozinka = document.getElementById('loginLozinka').value;
-    var poruka = document.getElementById('loginPoruka');
+    if (!email || !lozinka) { showPoruka('loginPoruka', 'Popunite sva polja!', false); return; }
 
-    if (!email || !lozinka) {
-        poruka.style.color = '#dc2626';
-        poruka.textContent = 'Popunite sva polja!';
-        return;
-    }
-
-poruka.style.color = '#777';
-    poruka.textContent = 'Prijavljujem...';
+    setLoading('loginBtn', true, 'Prijavljujem...');
 
     var res = await fetch('/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: email, lozinka: lozinka })
+        body: JSON.stringify({ email, lozinka })
     });
-
     var data = await res.json();
+
+    setLoading('loginBtn', false, 'Prijavi se');
+
     if (data.uspjeh) {
         localStorage.setItem('korisnik', JSON.stringify(data.korisnik));
-        poruka.style.color = '#16a34a';
-        poruka.textContent = 'Uspješno! Preusmjeravam...';
+        showPoruka('loginPoruka', 'Uspješno! Preusmjeravam...', true);
         setTimeout(() => window.location.href = '/dashboard.html', 1000);
     } else {
-        poruka.style.color = '#dc2626';
-        poruka.textContent = data.poruka;
+        showPoruka('loginPoruka', data.poruka, false);
     }
 }
 
 async function register() {
-    var ime = document.getElementById('regIme').value;
-    var email = document.getElementById('regEmail').value;
+    var ime = document.getElementById('regIme').value.trim();
+    var email = document.getElementById('regEmail').value.trim();
     var lozinka = document.getElementById('regLozinka').value;
-    var poruka = document.getElementById('registerPoruka');
 
-    if (!ime || !email || !lozinka) {
-        poruka.style.color = '#dc2626';
-        poruka.textContent = 'Popunite sva polja!';
-        return;
-    }
+    if (!ime || !email || !lozinka) { showPoruka('registerPoruka', 'Popunite sva polja!', false); return; }
+    if (lozinka.length < 6) { showPoruka('registerPoruka', 'Lozinka mora imati min. 6 karaktera!', false); return; }
 
-    if (lozinka.length < 6) {
-        poruka.style.color = '#dc2626';
-        poruka.textContent = 'Lozinka mora imati minimum 6 karaktera!';
-        return;
-    }
-
-    poruka.style.color = '#777';
-    poruka.textContent = 'Kreiram account...';
+    setLoading('regBtn', true, 'Kreiram account...');
 
     var res = await fetch('/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ime: ime, email: email, lozinka: lozinka })
+        body: JSON.stringify({ ime, email, lozinka })
     });
-
     var data = await res.json();
+
+    setLoading('regBtn', false, 'Napravi account');
+
     if (data.uspjeh) {
         localStorage.setItem('korisnik', JSON.stringify(data.korisnik));
-        poruka.style.color = '#16a34a';
-        poruka.textContent = 'Account kreiran! Preusmjeravam...';
+        showPoruka('registerPoruka', 'Account kreiran! Preusmjeravam...', true);
         setTimeout(() => window.location.href = '/dashboard.html', 1000);
     } else {
-        poruka.style.color = '#dc2626';
-        poruka.textContent = data.poruka;
+        showPoruka('registerPoruka', data.poruka, false);
     }
 }
 
 document.addEventListener('keydown', function(e) {
-    if (e.key === 'Enter') {
-        var activeTab = document.querySelector('.tab-btn.active').textContent;
-        if (activeTab === 'Prijava') login();
-        else register();
-    }
+    if (e.key !== 'Enter') return;
+    var active = document.querySelector('.tab-btn.active').textContent;
+    if (active === 'Prijava') login(); else register();
 });
 </script>
 </body>

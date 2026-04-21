@@ -1,3 +1,5 @@
+const bcrypt = require('bcrypt');
+const SALT_ROUNDS = 10;
 const express = require('express');
 const nodemailer = require('nodemailer');
 const https = require('https');
@@ -42,22 +44,68 @@ app.post('/prijava', async (req, res) => {
 
 app.post('/register', async (req, res) => {
     const { ime, email, lozinka } = req.body;
+
+    if (!ime || !email || !lozinka) {
+        return res.json({ uspjeh: false, poruka: 'Sva polja su obavezna!' });
+    }
+    if (lozinka.length < 6) {
+        return res.json({ uspjeh: false, poruka: 'Lozinka mora imati min. 6 karaktera!' });
+    }
+
     try {
-        await pool.query('INSERT INTO korisnici (ime, email, lozinka) VALUES ($1, $2, $3)', [ime, email, lozinka]);
-        transporter.sendMail({ from: process.env.EMAIL_USER, to: email, subject: 'Dobro dosli na Oglix!', html: '<h2>Zdravo ' + ime + '!</h2><p>Vas account je kreiran.</p>' }).catch(e => console.log(e.message));
-        res.json({ uspjeh: true });
-    } catch(e) {
-        res.json({ uspjeh: false, poruka: e.code === '23505' ? 'Email vec postoji!' : 'Greska pri registraciji!' });
+        const hash = await bcrypt.hash(lozinka, SALT_ROUNDS);
+        const result = await pool.query(
+            'INSERT INTO korisnici (ime, email, lozinka) VALUES ($1, $2, $3) RETURNING id, ime, email',
+            [ime, email, hash]
+        );
+        const korisnik = result.rows[0];
+
+        transporter.sendMail({
+            from: process.env.EMAIL_USER,
+            to: email,
+            subject: 'Dobro došli na Oglix!',
+            html: `<h2>Zdravo ${ime}!</h2><p>Vaš account je uspješno kreiran.</p>`
+        }).catch(e => console.log('Email greška:', e.message));
+
+        res.json({ uspjeh: true, korisnik: { ime: korisnik.ime, email: korisnik.email } });
+    } catch (e) {
+        if (e.code === '23505') {
+            res.json({ uspjeh: false, poruka: 'Email adresa je već registrovana!' });
+        } else {
+            console.log('Register greška:', e.message);
+            res.json({ uspjeh: false, poruka: 'Greška pri registraciji. Pokušaj ponovo.' });
+        }
     }
 });
 
 app.post('/login', async (req, res) => {
     const { email, lozinka } = req.body;
-    const result = await pool.query('SELECT * FROM korisnici WHERE email = $1 AND lozinka = $2', [email, lozinka]);
-    if (result.rows.length > 0) {
-        res.json({ uspjeh: true, korisnik: { ime: result.rows[0].ime, email: result.rows[0].email } });
-    } else {
-        res.json({ uspjeh: false, poruka: 'Pogresan email ili lozinka!' });
+
+    if (!email || !lozinka) {
+        return res.json({ uspjeh: false, poruka: 'Unesite email i lozinku!' });
+    }
+
+    try {
+        const result = await pool.query(
+            'SELECT * FROM korisnici WHERE email = $1',
+            [email]
+        );
+
+        if (result.rows.length === 0) {
+            return res.json({ uspjeh: false, poruka: 'Pogrešan email ili lozinka!' });
+        }
+
+        const korisnik = result.rows[0];
+        const poklapanje = await bcrypt.compare(lozinka, korisnik.lozinka);
+
+        if (poklapanje) {
+            res.json({ uspjeh: true, korisnik: { ime: korisnik.ime, email: korisnik.email } });
+        } else {
+            res.json({ uspjeh: false, poruka: 'Pogrešan email ili lozinka!' });
+        }
+    } catch (e) {
+        console.log('Login greška:', e.message);
+        res.json({ uspjeh: false, poruka: 'Greška pri prijavi. Pokušaj ponovo.' });
     }
 });
 
