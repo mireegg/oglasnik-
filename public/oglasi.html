@@ -920,17 +920,25 @@ function primijeniFiltre() {
     var cijenaOd = parseFloat(document.getElementById('cijenaOd').value) || 0;
     var cijenaDo = parseFloat(document.getElementById('cijenaDo').value) || Infinity;
     var lokacija = document.getElementById('filterLokacija').value;
-
-    // Kategorije
-    var katAuta = document.getElementById('katAuta').checked;
-var katElektronika = document.getElementById('katElektronika').checked;
-var katNekretnine = document.getElementById('katNekretnine').checked;
-var katGaming = document.getElementById('katGaming').checked;
-var imaKat = katAuta || katElektronika || katNekretnine || katGaming; katNamestaj || katOdjeca;
-
     var query = document.getElementById('searchInput').value.trim().toLowerCase();
 
-    var filtrirani = demoOglasi.filter(function(o) {
+    // Odabrane kategorije iz dynamic checkboxova
+    var odabraneKat = [];
+    document.querySelectorAll('.kat-checkbox:checked').forEach(function(cb) {
+        odabraneKat.push(cb.value);
+    });
+
+    var filtrirani = trenutnoFiltrirani.filter(function(o) {
+        var cijenaOk = o.cijena >= cijenaOd && o.cijena <= cijenaDo;
+        var lokacijaOk = !lokacija || o.lokacija === lokacija;
+        var queryOk = !query || o.naslov.toLowerCase().includes(query);
+        var katOk = odabraneKat.length === 0 || odabraneKat.includes(o.kategorija);
+
+        return cijenaOk && lokacijaOk && queryOk && katOk;
+    });
+
+    prikaziOglase(filtrirani);
+}
         // Pretraga
         if (query && !o.naslov.toLowerCase().includes(query) &&
             !(o.detalji && o.detalji.toLowerCase().includes(query)) &&
