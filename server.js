@@ -362,8 +362,7 @@ app.get('/api/live-oglasi', async (req, res) => {
         res.json({ uspjeh: false, oglasi: [] });
     }
 });
-    }
-});
+    
 app.get('/api/kategorije', async (req, res) => {
     try {
         const result = await pool.query(
