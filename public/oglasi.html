@@ -1150,7 +1150,7 @@ window.onload = async function() {
                     score: 75,
                     aiTag: 'good',
                     aiLabel: 'Live oglas',
-                    kategorija: 'automobili',
+kategorija: o.kategorija || 'ostalo',
                     stanje: 'polovno',
                     detalji: o.naslov
                 };
@@ -1169,7 +1169,7 @@ window.onload = async function() {
         prikaziOglase(demoOglasi);
     }
     ucitajKategorije();
-    
+
 };</script>
 </body>
 </html>
