@@ -1218,37 +1218,40 @@ function resetujFiltre() {
       }
     }
     async function ucitajKategorije() {
-      try {
+    try {
         var res = await fetch('/api/kategorije');
         var data = await res.json();
-
+        
         if (!data.uspjeh || data.kategorije.length === 0) return;
 
         var html = '';
-        data.kategorije.forEach(function (k) {
-          var ime = k.kategorija
-            .replace('vozila-', 'Vozila - ')
-            .replace('elektronika-', 'Elektronika - ')
-            .replace('gaming-', 'Gaming - ')
-            .replace('nekretnine', 'Nekretnine')
-            .replace('ostalo', 'Ostalo')
-            .replace('vozila', 'Vozila')
-            .replace('elektronika', 'Elektronika')
-            // Capitalize
-            .replace(/\b\w/g, function (l) { return l.toUpperCase(); });
+        data.kategorije.forEach(function(k) {
+            var ime = k.kategorija;
+            
+            if (ime === 'vozila') ime = 'Vozila';
+            else if (ime === 'vozila-audi') ime = 'Vozila - Audi';
+            else if (ime === 'vozila-golf') ime = 'Vozila - Golf';
+            else if (ime === 'vozila-mercedes') ime = 'Vozila - Mercedes';
+            else if (ime === 'vozila-bmw') ime = 'Vozila - BMW';
+            else if (ime === 'elektronika') ime = 'Elektronika';
+            else if (ime === 'elektronika-iphone') ime = 'Elektronika - iPhone';
+            else if (ime === 'elektronika-samsung') ime = 'Elektronika - Samsung';
+            else if (ime === 'gaming-ps5') ime = 'Gaming - PS5';
+            else if (ime === 'gaming-ps4') ime = 'Gaming - PS4';
+            else if (ime === 'nekretnine') ime = 'Nekretnine';
+            else if (ime === 'ostalo') ime = 'Ostalo';
 
-          html += `<label class="check-item">
-                <input type="checkbox" class="kat-checkbox" value="${k.kategorija}" onchange="primijeniFiltre()"
-                ${ime} <span class="check-count">${k.broj}</span>
-            </label>`;
+            html += '<label class="check-item">' +
+                '<input type="checkbox" class="kat-checkbox" value="' + k.kategorija + '" onchange="primijeniFiltre()">' +
+                ime + ' <span class="check-count">' + k.broj + '</span>' +
+                '</label>';
         });
 
         document.getElementById('kategorijeList').innerHTML = html;
-      } catch (e) {
+    } catch(e) {
         console.log('Greška kategorije:', e.message);
-      }
     }
-
+}
     function filtrirajPoKategoriji() {
       var odabrane = [];
       document.querySelectorAll('.kat-checkbox:checked').forEach(function (cb) {
