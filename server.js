@@ -271,5 +271,38 @@ app.get('/api/oglasi', async (req, res) => {
 });
 
 app.listen(PORT, () => {
+    app.get('/api/debug-scrape', async (req, res) => {
+    try {
+        const response = await axios.get('https://www.olx.ba/pretraga?q=golf', {
+            headers: {
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+                'Accept-Language': 'bs,hr;q=0.9',
+                'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8'
+            },
+            timeout: 10000
+        });
+
+        const $ = cheerio.load(response.data);
+
+        const rezultati = [];
+        $('[class*="listing"]').each((i, el) => {
+            rezultati.push({
+                tag: el.name,
+                klase: $(el).attr('class'),
+                html_preview: $(el).html()?.substring(0, 300)
+            });
+        });
+
+        const cijene = [];
+        $('[class*="price"], [class*="Price"]').each((i, el) => {
+            cijene.push($(el).text().trim());
+        });
+
+        res.json({ listing_elementi: rezultati, cijene });
+
+    } catch(e) {
+        res.json({ greska: e.message });
+    }
+});
     console.log('Server radi na http://localhost:' + PORT);
 });
