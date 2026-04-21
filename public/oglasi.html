@@ -1238,7 +1238,7 @@ function resetujFiltre() {
             .replace(/\b\w/g, function (l) { return l.toUpperCase(); });
 
           html += `<label class="check-item">
-                <input type="checkbox" class="kat-checkbox" value="${k.kategorija}" onchange="filtrirajPoKategoriji()">
+                <input type="checkbox" class="kat-checkbox" value="${k.kategorija}" onchange="primijeniFiltre()"
                 ${ime} <span class="check-count">${k.broj}</span>
             </label>`;
         });
