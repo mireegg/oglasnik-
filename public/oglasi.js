@@ -1,6 +1,8 @@
 const demoOglasi = [
     {
         id: 1,
+        kategorija: 'automobili',
+        stanje: 'polovno',
         naslov: 'VW Golf 7 GTI 2013 DSG 169kw 230ks Automatik Performance',
         cijena: 25900,
         cijenaStr: '25.900 KM',
@@ -15,6 +17,8 @@ slika: 'https://d4n0y8dshd77z.cloudfront.net/listings/75957072/lg/img-1776677957
     },
     {
         id: 2,
+        kategorija: 'automobili',
+        stanje: 'polovno',
         naslov: 'VW Golf 7.5 1.6 TDI 85kw DSG SOUND 2017/2018',
         cijena: 23999,
         cijenaStr: '23.999 KM',
@@ -29,6 +33,8 @@ slika: 'https://d4n0y8dshd77z.cloudfront.net/listings/75957072/lg/img-1776677957
     },
     {
         id: 3,
+        kategorija: 'automobili',
+        stanje: 'polovno',  
         naslov: 'VW Golf 7 2.0 TDI 110kw 150ks DSG CUP 2014/2015 Uvoz DE',
         cijena: 24999,
         cijenaStr: '24.999 KM',
@@ -43,6 +49,8 @@ slika: 'https://d4n0y8dshd77z.cloudfront.net/listings/75957072/lg/img-1776677957
     },
     {
         id: 4,
+        kategorija: 'automobili',
+        stanje: 'polovno',  
         naslov: 'VW Golf 7 2.0 TDI 110kw DSG Bi-Xenon LED Navigacija Highline 2013',
         cijena: 19550,
         cijenaStr: '19.550 KM',
@@ -57,6 +65,8 @@ slika: 'https://d4n0y8dshd77z.cloudfront.net/listings/75957072/lg/img-1776677957
     },
     {
         id: 5,
+        kategorija: 'automobili',
+        stanje: 'polovno',  
         naslov: 'VW Golf 7 Bluemotion 1.6 TDI 81kw DSG 2015',
         cijena: 20800,
         cijenaStr: '20.800 KM',
