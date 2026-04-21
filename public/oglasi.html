@@ -1123,7 +1123,9 @@ function filtrirajPoKategoriji() {
     }
 
     var filtrirani = trenutnoFiltrirani.filter(function(o) {
-        return odabrane.includes(o.kategorija);
+        return odabrane.some(function(kat) {
+            return o.kategorija && o.kategorija.startsWith(kat.split('-')[0]);
+        });
     });
 
     prikaziOglase(filtrirani);
