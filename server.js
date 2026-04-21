@@ -1,3 +1,5 @@
+const cheerio = require('cheerio');
+const axios = require('axios');
 const bcrypt = require('bcrypt');
 const SALT_ROUNDS = 10;
 const express = require('express');
@@ -193,23 +195,50 @@ Pisi na bosanskom/hrvatskom jeziku. Budi konkretan, jasan i koristan kupcu.`;
 
 app.get('/api/oglasi', async (req, res) => {
     const pretraga = req.query.q || '';
-    const token = process.env.OLX_TOKEN;
-    const options = {
-        hostname: 'api.olx.ba',
-        path: '/listings?limit=20&keyword=' + encodeURIComponent(pretraga),
-        method: 'GET',
-        headers: { 'Authorization': 'Bearer ' + token, 'Accept': 'application/json' }
-    };
-    const apiReq = https.request(options, apiRes => {
-        let body = '';
-        apiRes.on('data', chunk => body += chunk);
-        apiRes.on('end', () => {
-            try { res.json(JSON.parse(body)); }
-            catch(e) { res.json({ error: 'Greska pri parsiranju' }); }
+    
+    try {
+        const url = `https://www.olx.ba/pretraga?q=${encodeURIComponent(pretraga)}`;
+        
+        const response = await axios.get(url, {
+            headers: {
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+                'Accept-Language': 'bs,hr;q=0.9,sr;q=0.8',
+                'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8'
+            },
+            timeout: 10000
         });
-    });
-    apiReq.on('error', e => res.json({ error: e.message }));
-    apiReq.end();
+
+        const $ = cheerio.load(response.data);
+        const oglasi = [];
+
+        $('article').each((i, el) => {
+            const el$ = $(el);
+
+            const naslov = el$.find('h3, h4, .title, [class*="title"]').first().text().trim();
+            const cijena = el$.find('[class*="price"], [class*="cijena"]').first().text().trim();
+            const lokacija = el$.find('[class*="location"], [class*="lokacija"], [class*="city"]').first().text().trim();
+            const slika = el$.find('img').first().attr('src') || '';
+            const link = el$.find('a').first().attr('href') || '';
+
+            if (naslov) {
+                oglasi.push({
+                    naslov,
+                    cijenaStr: cijena || 'Cijena na upit',
+                    lokacija: lokacija || 'BiH',
+                    slika,
+                    link: link.startsWith('http') ? link : `https://www.olx.ba${link}`,
+                    platforma: 'olx'
+                });
+            }
+        });
+
+        console.log(`Scraped ${oglasi.length} oglasa za: ${pretraga}`);
+        res.json({ uspjeh: true, oglasi });
+
+    } catch (e) {
+        console.log('Scraping greška:', e.message);
+        res.json({ uspjeh: false, poruka: e.message, oglasi: [] });
+    }
 });
 
 app.listen(PORT, () => {
