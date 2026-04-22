@@ -1045,12 +1045,14 @@ function otvoriModal(index) {
                     </div>
                 </div>
 
-                <a href="${o.link}" target="_blank" style="display:block;background:#e65c00;color:white;text-align:center;padding:14px;border-radius:10px;font-size:15px;font-weight:600;text-decoration:none;" onmouseover="this.style.background='#c94d00'" onmouseout="this.style.background='#e65c00'">
-                    Pogledaj oglas na ${o.platforma.toUpperCase()} →
-                </a>
-               <button onclick="pratiOglas('${o.naslov}')" style="display:block;background:white;color:#e65c00;border:2px solid #e65c00;text-align:center;padding:14px;border-radius:10px;font-size:15px;font-weight:600;cursor:pointer;margin-top:10px;" onmouseover="this.style.background='#fff5f0'" onmouseout="this.style.background='white'">
-    🔔 Prati oglas
-</button>
+                <div style="display:flex;gap:10px;margin-top:16px;">
+    <a href="${o.link}" target="_blank" style="flex:1;background:#e65c00;color:white;text-align:center;padding:14px;border-radius:10px;font-size:15px;font-weight:600;text-decoration:none;" onmouseover="this.style.background='#c94d00'" onmouseout="this.style.background='#e65c00'">
+        Pogledaj na OLX →
+    </a>
+    <button onclick="pratiOglas('${o.naslov}')" style="flex:1;background:white;color:#e65c00;border:2px solid #e65c00;text-align:center;padding:14px;border-radius:10px;font-size:15px;font-weight:600;cursor:pointer;" onmouseover="this.style.background='#fff5f0'" onmouseout="this.style.background='white'">
+        🔔 Prati oglas
+    </button>
+</div>
             
                 </a>
             </div>
