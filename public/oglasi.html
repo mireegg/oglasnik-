@@ -964,8 +964,10 @@
     <p style="margin-top:8px;">© 2026 oglix.ba</p>
   </footer>
 
-  <script src="oglasi.js"></script>
-  <script>
+  <script src="oglasi.js"></script> 
+  <script>  
+var urlParams = new URLSearchParams(window.location.search);
+var urlQ = urlParams.get('q');
     // --- State ---
     var aktivnoStanje = 'sve';
     var aktivniDatum = 'sedmica';
@@ -1503,6 +1505,7 @@ if (urlQ) {
         return;
     }
 if (urlQ) {
+    document.getElementById('searchInput').value = urlQ;
     pretrazi();
 }
     fetch('/pracenje', {
