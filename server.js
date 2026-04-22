@@ -344,19 +344,42 @@ async function fetchOLXKategorija(categoryId, kategorija) {
     }
 }
 
-async function fetchSveKategorije() {
-    console.log('Pokrećem OLX auto-fetch...');
-    for (const kat of OLX_KATEGORIJE) {
-        await fetchOLXKategorija(kat.id, kat.naziv);
-        await new Promise(r => setTimeout(r, 2000)); // pauza između requestova
+async function fetchOLXKategorija(categoryId, kategorija) {
+    try {
+        for (let stranica = 1; stranica <= 5; stranica++) {
+            const url = `https://olx.ba/api/search?attr_encoded=1&category_id=${categoryId}&per_page=40&page=${stranica}`;
+            const response = await axios.get(url, {
+                headers: {
+                    'User-Agent': 'Mozilla/5.0',
+                    'Accept': 'application/json',
+                    'Referer': 'https://www.olx.ba/'
+                },
+                timeout: 10000
+            });
+
+            const oglasi = response.data.data || [];
+            if (oglasi.length === 0) break;
+
+            let sacuvano = 0;
+            for (const o of oglasi) {
+                try {
+                    await pool.query(
+                        `INSERT INTO live_oglasi (naslov, cijena, slika, link, platforma, kategorija)
+                         VALUES ($1, $2, $3, $4, $5, $6)
+                         ON CONFLICT (link) DO NOTHING`,
+                        [o.title, o.display_price || 'Na upit', o.image || '', `https://www.olx.ba/artikal/${o.id}`, 'olx', kategorija]
+                    );
+                    sacuvano++;
+                } catch(e) {}
+            }
+
+            console.log(`OLX: stranica ${stranica}, kategorija ${kategorija}, ${sacuvano} novih`);
+            await new Promise(r => setTimeout(r, 1000));
+        }
+    } catch(e) {
+        console.log(`OLX greška za ${kategorija}:`, e.message);
     }
 }
-
-// Pokreni odmah pri startu
-fetchSveKategorije();
-
-// Pokreni svakih sat vremena
-setInterval(fetchSveKategorije, 60 * 60 * 1000);
 
 app.listen(PORT, () => {
     console.log(`Server radi na portu ${PORT}`);
