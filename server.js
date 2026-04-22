@@ -53,13 +53,8 @@ app.post('/prijava', async (req, res) => {
 
 app.post('/register', async (req, res) => {
     const { ime, email, lozinka } = req.body;
-
-    if (!ime || !email || !lozinka) {
-        return res.json({ uspjeh: false, poruka: 'Sva polja su obavezna!' });
-    }
-    if (lozinka.length < 6) {
-        return res.json({ uspjeh: false, poruka: 'Lozinka mora imati min. 6 karaktera!' });
-    }
+    if (!ime || !email || !lozinka) return res.json({ uspjeh: false, poruka: 'Sva polja su obavezna!' });
+    if (lozinka.length < 6) return res.json({ uspjeh: false, poruka: 'Lozinka mora imati min. 6 karaktera!' });
 
     try {
         const hash = await bcrypt.hash(lozinka, SALT_ROUNDS);
@@ -68,20 +63,17 @@ app.post('/register', async (req, res) => {
             [ime, email, hash]
         );
         const korisnik = result.rows[0];
-
         transporter.sendMail({
             from: process.env.EMAIL_USER,
             to: email,
             subject: 'Dobro došli na Oglix!',
             html: `<h2>Zdravo ${ime}!</h2><p>Vaš account je uspješno kreiran.</p>`
         }).catch(e => console.log('Email greška:', e.message));
-
         res.json({ uspjeh: true, korisnik: { ime: korisnik.ime, email: korisnik.email } });
     } catch (e) {
         if (e.code === '23505') {
             res.json({ uspjeh: false, poruka: 'Email adresa je već registrovana!' });
         } else {
-            console.log('Register greška:', e.message);
             res.json({ uspjeh: false, poruka: 'Greška pri registraciji. Pokušaj ponovo.' });
         }
     }
@@ -89,31 +81,20 @@ app.post('/register', async (req, res) => {
 
 app.post('/login', async (req, res) => {
     const { email, lozinka } = req.body;
-
-    if (!email || !lozinka) {
-        return res.json({ uspjeh: false, poruka: 'Unesite email i lozinku!' });
-    }
+    if (!email || !lozinka) return res.json({ uspjeh: false, poruka: 'Unesite email i lozinku!' });
 
     try {
-        const result = await pool.query(
-            'SELECT * FROM korisnici WHERE email = $1',
-            [email]
-        );
-
-        if (result.rows.length === 0) {
-            return res.json({ uspjeh: false, poruka: 'Pogrešan email ili lozinka!' });
-        }
+        const result = await pool.query('SELECT * FROM korisnici WHERE email = $1', [email]);
+        if (result.rows.length === 0) return res.json({ uspjeh: false, poruka: 'Pogrešan email ili lozinka!' });
 
         const korisnik = result.rows[0];
         const poklapanje = await bcrypt.compare(lozinka, korisnik.lozinka);
-
         if (poklapanje) {
             res.json({ uspjeh: true, korisnik: { ime: korisnik.ime, email: korisnik.email } });
         } else {
             res.json({ uspjeh: false, poruka: 'Pogrešan email ili lozinka!' });
         }
     } catch (e) {
-        console.log('Login greška:', e.message);
         res.json({ uspjeh: false, poruka: 'Greška pri prijavi. Pokušaj ponovo.' });
     }
 });
@@ -152,16 +133,12 @@ ${oglasi.map((o, i) => `${i+1}. OGLAS:
    Platforma: ${o.platforma.toUpperCase()}`).join('\n\n')}
 
 Za svaki oglas analiziraj sljedece:
-1. CIJENA: Da li je cijena fer, previsoka ili preniska u odnosu na tržište BiH? Navedi konkretan razlog.
-2. KILOMETRAZA: Procijeni da li je kilometraza normalna za godiste vozila.
-3. OPREMA: Koja vazna oprema je ukljucena, a sta nedostaje?
-4. PREPORUKA: PREPORUCUJEM / OK / IZBJEGAVAJ
-5. AI SCORE: Daj ocjenu od 1 do 100.
+1. CIJENA: Da li je cijena fer, previsoka ili preniska u odnosu na tržište BiH?
+2. PREPORUKA: PREPORUCUJEM / OK / IZBJEGAVAJ
+3. AI SCORE: Daj ocjenu od 1 do 100.
 
-Na kraju napisi:
-ZAKLJUCAK: Koji oglas je najisplativija kupovina i zasto? Na sta kupac posebno treba obratiti paznju prije kupovine?
-
-Pisi na bosanskom/hrvatskom jeziku. Budi konkretan, jasan i koristan kupcu.`;
+Na kraju napisi ZAKLJUCAK: Koji oglas je najisplativija kupovina i zasto?
+Pisi na bosanskom/hrvatskom jeziku. Budi konkretan i koristan kupcu.`;
 
     const body = JSON.stringify({
         model: 'llama-3.3-70b-versatile',
@@ -189,7 +166,6 @@ Pisi na bosanskom/hrvatskom jeziku. Budi konkretan, jasan i koristan kupcu.`;
                 const tekst = parsed.choices[0].message.content;
                 res.json({ uspjeh: true, analiza: tekst });
             } catch(e) {
-                console.log('Groq odgovor:', data);
                 res.json({ uspjeh: false, poruka: 'Greska pri analizi' });
             }
         });
@@ -200,97 +176,6 @@ Pisi na bosanskom/hrvatskom jeziku. Budi konkretan, jasan i koristan kupcu.`;
     apiReq.end();
 });
 
-app.get('/api/test-scrape', async (req, res) => {
-    try {
-        const response = await axios.get('https://www.olx.ba/pretraga?q=golf', {
-            headers: {
-                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-                'Accept-Language': 'bs,hr;q=0.9',
-                'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8'
-            },
-            timeout: 10000
-        });
-
-        const $ = cheerio.load(response.data);
-        const prvih2000 = response.data.substring(0, 2000);
-        const artikli = $('article').length;
-        const divovi = $('[class*="listing"]').length;
-        const kartice = $('[class*="card"]').length;
-
-        res.json({
-            status: response.status,
-            html_preview: prvih2000,
-            article_count: artikli,
-            listing_divs: divovi,
-            card_divs: kartice
-        });
-
-    } catch(e) {
-        res.json({ greska: e.message });
-    }
-});
-
-app.get('/api/oglasi', async (req, res) => {
-    const pretraga = req.query.q || '';
-
-    try {
-        const url = `https://www.olx.ba/pretraga?q=${encodeURIComponent(pretraga)}`;
-
-        const response = await axios.get(url, {
-            headers: {
-                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-                'Accept-Language': 'bs,hr;q=0.9,sr;q=0.8',
-                'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8'
-            },
-            timeout: 10000
-        });
-
-        const $ = cheerio.load(response.data);
-        const oglasi = [];
-
-        $('article').each((i, el) => {
-            const el$ = $(el);
-            const naslov = el$.find('h3, h4, .title, [class*="title"]').first().text().trim();
-            const cijena = el$.find('[class*="price"], [class*="cijena"]').first().text().trim();
-            const lokacija = el$.find('[class*="location"], [class*="lokacija"], [class*="city"]').first().text().trim();
-            const slika = el$.find('img').first().attr('src') || '';
-            const link = el$.find('a').first().attr('href') || '';
-
-            if (naslov) {
-                oglasi.push({
-                    naslov,
-                    cijenaStr: cijena || 'Cijena na upit',
-                    lokacija: lokacija || 'BiH',
-                    slika,
-                    link: link.startsWith('http') ? link : `https://www.olx.ba${link}`,
-                    platforma: 'olx'
-                });
-            }
-        });
-
-        console.log(`Scraped ${oglasi.length} oglasa za: ${pretraga}`);
-        res.json({ uspjeh: true, oglasi });
-
-    } catch (e) {
-        console.log('Scraping greška:', e.message);
-        res.json({ uspjeh: false, poruka: e.message, oglasi: [] });
-    }
-});
-
-app.get('/api/test-rss', async (req, res) => {
-    try {
-        const response = await axios.get('https://www.olx.ba/rss/pretraga/?q=golf', {
-            headers: {
-                'User-Agent': 'Mozilla/5.0',
-                'Accept': 'application/rss+xml, application/xml, text/xml'
-            },
-            timeout: 10000
-        });
-        res.send(response.data);
-    } catch(e) {
-        res.json({ greska: e.message });
-    }
-});
 app.post('/api/sacuvaj-oglase', async (req, res) => {
     const { oglasi } = req.body;
     if (!oglasi || oglasi.length === 0) return res.json({ uspjeh: false });
@@ -307,7 +192,6 @@ app.post('/api/sacuvaj-oglase', async (req, res) => {
             datum TIMESTAMP DEFAULT NOW()
         )`);
 
-        // Dodaj kategorija kolonu ako ne postoji
         await pool.query(`ALTER TABLE live_oglasi ADD COLUMN IF NOT EXISTS kategorija VARCHAR(100)`);
 
         for (const o of oglasi) {
@@ -325,9 +209,6 @@ app.post('/api/sacuvaj-oglase', async (req, res) => {
         res.json({ uspjeh: false, poruka: e.message });
     }
 });
-
-
-
 
 app.get('/api/live-oglasi', async (req, res) => {
     try {
@@ -362,7 +243,7 @@ app.get('/api/live-oglasi', async (req, res) => {
         res.json({ uspjeh: false, oglasi: [] });
     }
 });
-    
+
 app.get('/api/kategorije', async (req, res) => {
     try {
         const result = await pool.query(
@@ -377,7 +258,11 @@ app.get('/api/kategorije', async (req, res) => {
         res.json({ uspjeh: false, kategorije: [] });
     }
 });
-const prompt = `Ti si iskusan savjetnik za kupovinu u Bosni i Hercegovini.
+
+app.post('/api/analiza-jednog-oglasa', async (req, res) => {
+    const { oglas, slicni } = req.body;
+
+    const prompt = `Ti si iskusan savjetnik za kupovinu u Bosni i Hercegovini.
 
 Oglas koji analiziraš:
 - Naziv: ${oglas.naslov}
@@ -385,14 +270,15 @@ Oglas koji analiziraš:
 - Kategorija: ${oglas.kategorija || 'nepoznato'}
 - Platforma: ${oglas.platforma}
 
-Slični oglasi koje SI ALREADY USPOREDIO:
-${slicni.slice(0,5).map((s, i) => `${i+1}. ${s.naslov} — ${s.cijenaStr}`).join('\n')}
+Slični oglasi u bazi:
+${slicni.slice(0, 5).map((s, i) => `${i + 1}. ${s.naslov} — ${s.cijenaStr}`).join('\n')}
 
 Tvoj zadatak je da TI uradiš usporedbu, ne kupac. Daj analizu u ovom formatu:
 OCJENA: [ODLIČNO/FER/PREVISOKO/IZBJEGAVAJ]
 CIJENA: [Napiši konkretno — npr. "Ovaj oglas je za 1.200 KM jeftiniji od sličnih oglasa u bazi" ili "Dva slična oglasa su po 13.500 KM, ovaj je previsok za 2.000 KM"]
 SAVJET: [Napiši konkretno da li preporučuješ OVAJ oglas ili koji od sličnih je bolji i zašto — budi direktan]
 SCORE: [broj 0-100]`;
+
     try {
         const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
             method: 'POST',
@@ -410,8 +296,6 @@ SCORE: [broj 0-100]`;
 
         const data = await response.json();
         const tekst = data.choices[0].message.content;
-
-        // Parsiranje score-a
         const scoreMatch = tekst.match(/SCORE:\s*(\d+)/);
         const score = scoreMatch ? parseInt(scoreMatch[1]) : 70;
 
@@ -420,40 +304,7 @@ SCORE: [broj 0-100]`;
         res.json({ uspjeh: false, analiza: 'Analiza nije dostupna.', score: 70 });
     }
 });
+
 app.listen(PORT, () => {
-    app.get('/api/debug-scrape', async (req, res) => {
-    try {
-        const response = await axios.get('https://www.olx.ba/pretraga?q=golf', {
-            headers: {
-                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-                'Accept-Language': 'bs,hr;q=0.9',
-                'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8'
-            },
-            timeout: 10000
-        });
-
-        const $ = cheerio.load(response.data);
-
-        const rezultati = [];
-        $('[class*="listing"]').each((i, el) => {
-            rezultati.push({
-                tag: el.name,
-                klase: $(el).attr('class'),
-                html_preview: $(el).html()?.substring(0, 300)
-            });
-        });
-
-        const cijene = [];
-        $('[class*="price"], [class*="Price"]').each((i, el) => {
-            cijene.push($(el).text().trim());
-        });
-
-        res.json({ listing_elementi: rezultati, cijene });
-
-    } catch(e) {
-        res.json({ greska: e.message });
-    }
-
-});
-    console.log('Server radi na http://localhost:' + PORT);
+    console.log(`Server radi na portu ${PORT}`);
 });
