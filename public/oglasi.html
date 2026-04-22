@@ -1509,6 +1509,26 @@ else if (ime === 'elektronika-vr') ime = 'Elektronika - VR uređaji';
         }
     });
 }
+function pratiOglas(pretraga) {
+    var korisnik = JSON.parse(localStorage.getItem('korisnik'));
+    if (!korisnik) {
+        alert('Moraš biti prijavljen da pratiš oglase!');
+        window.location.href = '/login.html';
+        return;
+    }
+
+    fetch('/pracenje', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: korisnik.email, pretraga: pretraga })
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.uspjeh) {
+            alert('Oglas je dodan u praćenja! 🔔');
+        }
+    });
+}
 
     };</script>
     <div id="oglasiModal" onclick="if(event.target===this)zatvoriModal()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:1000;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(4px);">
