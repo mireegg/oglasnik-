@@ -100,8 +100,8 @@ app.post('/login', async (req, res) => {
 });
 
 app.post('/pracenje', async (req, res) => {
-    const { email, pretraga } = req.body;
-    await pool.query('INSERT INTO pracenja (korisnik_email, pretraga) VALUES ($1, $2)', [email, pretraga]);
+    const { email, pretraga, link } = req.body;
+    await pool.query('INSERT INTO pracenja (korisnik_email, pretraga, link) VALUES ($1, $2, $3)', [email, pretraga, link || null]);
     res.json({ uspjeh: true });
 });
 
@@ -182,6 +182,7 @@ app.post('/api/sacuvaj-oglase', async (req, res) => {
 
     try {
         await pool.query(`CREATE TABLE IF NOT EXISTS live_oglasi (
+        
             id SERIAL PRIMARY KEY,
             naslov TEXT,
             cijena TEXT,
@@ -190,7 +191,9 @@ app.post('/api/sacuvaj-oglase', async (req, res) => {
             platforma VARCHAR(50) DEFAULT 'olx',
             kategorija VARCHAR(100),
             datum TIMESTAMP DEFAULT NOW()
+            
         )`);
+        await pool.query(`ALTER TABLE pracenja ADD COLUMN IF NOT EXISTS link TEXT`);
 
         await pool.query(`ALTER TABLE live_oglasi ADD COLUMN IF NOT EXISTS kategorija VARCHAR(100)`);
 

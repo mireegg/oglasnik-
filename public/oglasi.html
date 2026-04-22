@@ -378,8 +378,7 @@ function otvoriModal(index) {
           <a href="${o.link}" target="_blank" style="flex:1;background:#e65c00;color:white;text-align:center;padding:14px;border-radius:10px;font-size:15px;font-weight:600;text-decoration:none;" onmouseover="this.style.background='#c94d00'" onmouseout="this.style.background='#e65c00'">
             Pogledaj na OLX →
           </a>
-          <button onclick="pratiOglas('${o.naslov.replace(/'/g, "\\'")}')" style="flex:1;background:white;color:#e65c00;border:2px solid #e65c00;text-align:center;padding:14px;border-radius:10px;font-size:15px;font-weight:600;cursor:pointer;" onmouseover="this.style.background='#fff5f0'" onmouseout="this.style.background='white'">
-            🔔 Prati oglas
+onclick="pratiOglas('${o.naslov.replace(/'/g, "\\'")}', '${o.link}')"            🔔 Prati oglas
           </button>
         </div>
       </div>
@@ -431,24 +430,20 @@ function zatvoriModal() {
 }
 
 // --- Prati oglas ---
-function pratiOglas(pretraga) {
+function pratiOglas(pretraga, link) {
   var korisnik = JSON.parse(localStorage.getItem('korisnik') || 'null');
   if (!korisnik) {
     alert('Moraš biti prijavljen da pratiš oglase!');
     window.location.href = '/login.html';
     return;
   }
-  
-  // Uzmi samo prve dvije riječi kao ključne
-  var kljucneRijeci = pretraga.split(' ').slice(0, 2).join(' ');
-  
   fetch('/pracenje', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ email: korisnik.email, pretraga: kljucneRijeci })
+    body: JSON.stringify({ email: korisnik.email, pretraga: pretraga, link: link })
   })
   .then(r => r.json())
-  .then(data => { if (data.uspjeh) alert('Oglas dodan u praćenja za "' + kljucneRijeci + '"! 🔔'); });
+  .then(data => { if (data.uspjeh) alert('Oglas dodan u praćenja! 🔔'); });
 }
 
 // --- Pretraga ---

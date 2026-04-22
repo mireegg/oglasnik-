@@ -677,8 +677,10 @@ function renderPracenja(pracenja, containerId) {
             '<div class="pracenje-title">' + p.pretraga + '</div>' +
             '<div class="pracenje-meta">Dodano ' + datum + '</div>' +
             '</div>' +
-            '<button class="pretrazi-btn" onclick="window.location.href=\'/oglasi.html?q=' + encodeURIComponent(p.pretraga) + '\'">Pretraži</button>' +
-            '<button class="ukloni-btn" onclick="obrisiPracenje(' + p.id + ')">Ukloni</button>' +
+'<button class="pretrazi-btn" onclick="' + 
+  (p.link ? 'window.open(\'' + p.link + '\', \'_blank\')' : 'window.location.href=\'/oglasi.html?q=' + encodeURIComponent(p.pretraga) + '\'') + 
+  '">Pretraži</button>'
+              '<button class="ukloni-btn" onclick="obrisiPracenje(' + p.id + ')">Ukloni</button>' +
             '</div>';
     }).join('');
 }
