@@ -7,405 +7,74 @@
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
   :root {
-    --orange: #e65c00;
-    --orange-light: #ff7a1f;
-    --orange-dim: #fff0e6;
-    --bg: #f7f5f2;
-    --surface: #ffffff;
-    --border: rgba(0,0,0,0.08);
-    --text: #1a1a1a;
-    --text-muted: #777;
-    --text-faint: #aaa;
-    --radius-sm: 8px;
-    --radius-md: 12px;
-    --radius-lg: 18px;
-    --radius-pill: 100px;
+    --orange: #e65c00; --orange-light: #ff7a1f; --orange-dim: #fff0e6;
+    --bg: #f7f5f2; --surface: #ffffff; --border: rgba(0,0,0,0.08);
+    --text: #1a1a1a; --text-muted: #777; --text-faint: #aaa;
+    --radius-sm: 8px; --radius-md: 12px; --radius-lg: 18px; --radius-pill: 100px;
   }
-
   * { box-sizing: border-box; margin: 0; padding: 0; }
-
-  body {
-    font-family: 'DM Sans', sans-serif;
-    background: var(--bg);
-    color: var(--text);
-    min-height: 100vh;
-  }
-
-  nav {
-    background: var(--surface);
-    border-bottom: 1px solid var(--border);
-    padding: 0 24px;
-    height: 56px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    position: sticky;
-    top: 0;
-    z-index: 100;
-  }
-
-  .logo {
-    font-family: 'Syne', sans-serif;
-    font-size: 20px;
-    font-weight: 700;
-    color: var(--text);
-    letter-spacing: -0.5px;
-    cursor: pointer;
-  }
+  body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+  nav { background: var(--surface); border-bottom: 1px solid var(--border); padding: 0 24px; height: 56px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; }
+  .logo { font-family: 'Syne', sans-serif; font-size: 20px; font-weight: 700; color: var(--text); letter-spacing: -0.5px; cursor: pointer; }
   .logo span { color: var(--orange); }
-
-  .nav-right {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-  }
-
-  .avatar {
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    background: var(--orange);
-    color: #fff;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 13px;
-    font-weight: 600;
-  }
-
+  .nav-right { display: flex; align-items: center; gap: 12px; }
+  .avatar { width: 32px; height: 32px; border-radius: 50%; background: var(--orange); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 600; }
   .username { font-size: 14px; color: var(--text-muted); }
-
-  .logout-btn {
-    font-size: 13px;
-    color: var(--text-faint);
-    cursor: pointer;
-    background: none;
-    border: none;
-    font-family: 'DM Sans', sans-serif;
-  }
+  .logout-btn { font-size: 13px; color: var(--text-faint); cursor: pointer; background: none; border: none; font-family: 'DM Sans', sans-serif; }
   .logout-btn:hover { color: var(--text); }
-
-  .db-body {
-    display: grid;
-    grid-template-columns: 220px 1fr;
-    min-height: calc(100vh - 56px);
-  }
-
-  .sidebar {
-    background: var(--surface);
-    border-right: 1px solid var(--border);
-    padding: 20px 0;
-    position: sticky;
-    top: 56px;
-    height: calc(100vh - 56px);
-  }
-
-  .menu-section {
-    font-size: 10px;
-    font-weight: 600;
-    color: #ccc;
-    letter-spacing: 0.1em;
-    padding: 16px 20px 6px;
-    text-transform: uppercase;
-  }
-
-  .menu-item {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 10px 20px;
-    font-size: 13px;
-    color: var(--text-muted);
-    cursor: pointer;
-    border-right: 2px solid transparent;
-    transition: all 0.15s;
-  }
+  .db-body { display: grid; grid-template-columns: 220px 1fr; min-height: calc(100vh - 56px); }
+  .sidebar { background: var(--surface); border-right: 1px solid var(--border); padding: 20px 0; position: sticky; top: 56px; height: calc(100vh - 56px); }
+  .menu-section { font-size: 10px; font-weight: 600; color: #ccc; letter-spacing: 0.1em; padding: 16px 20px 6px; text-transform: uppercase; }
+  .menu-item { display: flex; align-items: center; gap: 10px; padding: 10px 20px; font-size: 13px; color: var(--text-muted); cursor: pointer; border-right: 2px solid transparent; transition: all 0.15s; }
   .menu-item:hover { background: var(--bg); color: var(--text); }
-  .menu-item.active {
-    color: var(--orange);
-    background: var(--orange-dim);
-    border-right-color: var(--orange);
-    font-weight: 500;
-  }
-
-  .menu-dot {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    background: currentColor;
-    flex-shrink: 0;
-  }
-
+  .menu-item.active { color: var(--orange); background: var(--orange-dim); border-right-color: var(--orange); font-weight: 500; }
+  .menu-dot { width: 8px; height: 8px; border-radius: 50%; background: currentColor; flex-shrink: 0; }
   .main { padding: 28px; }
-
-  .db-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    margin-bottom: 24px;
-  }
-
-  .db-greeting {
-    font-family: 'Syne', sans-serif;
-    font-size: 22px;
-    font-weight: 700;
-    color: var(--text);
-    margin-bottom: 4px;
-  }
-
+  .db-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 24px; }
+  .db-greeting { font-family: 'Syne', sans-serif; font-size: 22px; font-weight: 700; color: var(--text); margin-bottom: 4px; }
   .db-sub { font-size: 13px; color: var(--text-faint); }
-
-  .cta-btn {
-    background: var(--orange);
-    color: #fff;
-    border: none;
-    border-radius: var(--radius-pill);
-    padding: 10px 20px;
-    font-size: 13px;
-    font-weight: 500;
-    font-family: 'DM Sans', sans-serif;
-    cursor: pointer;
-  }
+  .cta-btn { background: var(--orange); color: #fff; border: none; border-radius: var(--radius-pill); padding: 10px 20px; font-size: 13px; font-weight: 500; font-family: 'DM Sans', sans-serif; cursor: pointer; }
   .cta-btn:hover { background: var(--orange-light); }
-
-  .stats-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 12px;
-    margin-bottom: 24px;
-  }
-
-  .stat-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-md);
-    padding: 16px;
-  }
-
-  .stat-num {
-    font-family: 'Syne', sans-serif;
-    font-size: 26px;
-    font-weight: 700;
-    color: var(--text);
-    margin-bottom: 2px;
-  }
-
+  .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 24px; }
+  .stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 16px; }
+  .stat-num { font-family: 'Syne', sans-serif; font-size: 26px; font-weight: 700; color: var(--text); margin-bottom: 2px; }
   .stat-label { font-size: 11px; color: var(--text-faint); }
-  .stat-change { font-size: 11px; color: #16a34a; margin-top: 4px; }
-  .stat-change.down { color: #dc2626; }
-
-  .two-col {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 20px;
-  }
-
-  .section-title {
-    font-family: 'Syne', sans-serif;
-    font-size: 14px;
-    font-weight: 600;
-    color: var(--text);
-    margin-bottom: 12px;
-  }
-
-  .pracenje-list {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-  }
-
-  .pracenje-item {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-md);
-    padding: 12px 16px;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    transition: border-color 0.15s;
-  }
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  .section-title { font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 600; color: var(--text); margin-bottom: 12px; }
+  .pracenje-list { display: flex; flex-direction: column; gap: 8px; }
+  .pracenje-item { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 12px 16px; display: flex; align-items: center; gap: 12px; transition: border-color 0.15s; }
   .pracenje-item:hover { border-color: var(--orange); }
-
-  .pracenje-icon {
-    width: 38px;
-    height: 38px;
-    background: var(--orange-dim);
-    border-radius: 10px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 18px;
-    flex-shrink: 0;
-  }
-
+  .pracenje-icon { width: 38px; height: 38px; background: var(--orange-dim); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
   .pracenje-info { flex: 1; min-width: 0; }
-  .pracenje-title {
-    font-size: 13px;
-    font-weight: 500;
-    color: var(--text);
-    margin-bottom: 2px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
+  .pracenje-title { font-size: 13px; font-weight: 500; color: var(--text); margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .pracenje-meta { font-size: 11px; color: var(--text-faint); }
-
-  .ukloni-btn {
-    background: none;
-    border: 1px solid var(--border);
-    border-radius: var(--radius-pill);
-    padding: 4px 12px;
-    font-size: 11px;
-    color: var(--text-faint);
-    cursor: pointer;
-    font-family: 'DM Sans', sans-serif;
-    white-space: nowrap;
-    transition: all 0.15s;
-  }
+  .ukloni-btn { background: none; border: 1px solid var(--border); border-radius: var(--radius-pill); padding: 4px 12px; font-size: 11px; color: var(--text-faint); cursor: pointer; font-family: 'DM Sans', sans-serif; white-space: nowrap; transition: all 0.15s; }
   .ukloni-btn:hover { border-color: #dc2626; color: #dc2626; }
-
-  .pretrazi-btn {
-    background: var(--orange-dim);
-    border: none;
-    border-radius: var(--radius-pill);
-    padding: 4px 12px;
-    font-size: 11px;
-    color: var(--orange);
-    cursor: pointer;
-    font-family: 'DM Sans', sans-serif;
-    white-space: nowrap;
-    margin-right: 6px;
-  }
+  .pretrazi-btn { background: var(--orange-dim); border: none; border-radius: var(--radius-pill); padding: 4px 12px; font-size: 11px; color: var(--orange); cursor: pointer; font-family: 'DM Sans', sans-serif; white-space: nowrap; margin-right: 6px; }
   .pretrazi-btn:hover { background: var(--orange); color: white; }
-
-  .notif-list {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-  }
-
-  .notif-item {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-md);
-    padding: 12px 16px;
-    display: flex;
-    gap: 10px;
-    align-items: flex-start;
-  }
-
-  .notif-dot {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    flex-shrink: 0;
-    margin-top: 4px;
-  }
-
+  .notif-list { display: flex; flex-direction: column; gap: 8px; }
+  .notif-item { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 12px 16px; display: flex; gap: 10px; align-items: flex-start; cursor: pointer; transition: border-color 0.15s; }
+  .notif-item:hover { border-color: var(--orange); }
+  .notif-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; margin-top: 4px; }
   .notif-text { font-size: 12px; color: var(--text); line-height: 1.5; flex: 1; }
   .notif-time { font-size: 11px; color: var(--text-faint); white-space: nowrap; }
-
-  .add-pracenje-form {
-    display: none;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-md);
-    padding: 16px;
-    margin-bottom: 16px;
-  }
-
-  .form-row {
-    display: flex;
-    gap: 8px;
-    align-items: center;
-  }
-
-  .form-input {
-    width: 100%;
-    border: 1px solid var(--border);
-    border-radius: var(--radius-sm);
-    padding: 10px 12px;
-    font-size: 14px;
-    font-family: 'DM Sans', sans-serif;
-    color: var(--text);
-    background: var(--bg);
-    outline: none;
-    flex: 1;
-  }
+  .notif-link { font-size: 11px; color: var(--orange); margin-top: 4px; }
+  .add-pracenje-form { display: none; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 16px; margin-bottom: 16px; }
+  .form-row { display: flex; gap: 8px; align-items: center; }
+  .form-input { width: 100%; border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 10px 12px; font-size: 14px; font-family: 'DM Sans', sans-serif; color: var(--text); background: var(--bg); outline: none; flex: 1; }
   .form-input:focus { border-color: var(--orange); background: var(--surface); }
-
-  .form-btn {
-    background: var(--orange);
-    color: #fff;
-    border: none;
-    border-radius: var(--radius-sm);
-    padding: 10px 20px;
-    font-size: 13px;
-    font-family: 'DM Sans', sans-serif;
-    cursor: pointer;
-    white-space: nowrap;
-  }
+  .form-btn { background: var(--orange); color: #fff; border: none; border-radius: var(--radius-sm); padding: 10px 20px; font-size: 13px; font-family: 'DM Sans', sans-serif; cursor: pointer; white-space: nowrap; }
   .form-btn:hover { background: var(--orange-light); }
-
-  .form-cancel {
-    background: none;
-    border: 1px solid var(--border);
-    border-radius: var(--radius-sm);
-    padding: 10px 16px;
-    font-size: 13px;
-    font-family: 'DM Sans', sans-serif;
-    cursor: pointer;
-    color: var(--text-muted);
-    white-space: nowrap;
-  }
-
-  .loader-msg {
-    padding: 32px 20px;
-    text-align: center;
-    color: var(--text-faint);
-    font-size: 13px;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-md);
-  }
-
-  .empty-state {
-    padding: 40px 20px;
-    text-align: center;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-md);
-  }
+  .form-cancel { background: none; border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 10px 16px; font-size: 13px; font-family: 'DM Sans', sans-serif; cursor: pointer; color: var(--text-muted); white-space: nowrap; }
+  .loader-msg { padding: 32px 20px; text-align: center; color: var(--text-faint); font-size: 13px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-md); }
+  .empty-state { padding: 40px 20px; text-align: center; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-md); }
   .empty-state-icon { font-size: 32px; margin-bottom: 12px; }
   .empty-state-title { font-size: 15px; font-weight: 500; color: var(--text); margin-bottom: 6px; }
   .empty-state-sub { font-size: 13px; color: var(--text-faint); }
-
-  .postavke-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-md);
-    padding: 24px;
-    margin-bottom: 16px;
-  }
-
-  .postavke-label {
-    font-size: 11px;
-    font-weight: 500;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-    color: var(--text-faint);
-    margin-bottom: 6px;
-  }
-
+  .postavke-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 24px; margin-bottom: 16px; }
+  .postavke-label { font-size: 11px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-faint); margin-bottom: 6px; }
   .postavke-field { margin-bottom: 16px; }
-
-  .poruka-inline {
-    font-size: 13px;
-    font-weight: 500;
-    margin-top: 12px;
-    min-height: 18px;
-  }
-
+  .poruka-inline { font-size: 13px; font-weight: 500; margin-top: 12px; min-height: 18px; }
   @media (max-width: 768px) {
     .db-body { grid-template-columns: 1fr; }
     .sidebar { display: none; }
@@ -428,23 +97,13 @@
 <div class="db-body">
   <div class="sidebar">
     <div class="menu-section">Glavni</div>
-    <div class="menu-item active" id="menu-pregled" onclick="pokaziSekciju('pregled', this)">
-      <div class="menu-dot"></div> Pregled
-    </div>
-    <div class="menu-item" id="menu-pracenja" onclick="pokaziSekciju('pracenja', this)">
-      <div class="menu-dot"></div> Moja praćenja
-    </div>
-    <div class="menu-item" id="menu-obavijesti" onclick="pokaziSekciju('obavijesti', this)">
-      <div class="menu-dot"></div> Obavijesti
-    </div>
+    <div class="menu-item active" id="menu-pregled" onclick="pokaziSekciju('pregled', this)"><div class="menu-dot"></div> Pregled</div>
+    <div class="menu-item" id="menu-pracenja" onclick="pokaziSekciju('pracenja', this)"><div class="menu-dot"></div> Moja praćenja</div>
+    <div class="menu-item" id="menu-obavijesti" onclick="pokaziSekciju('obavijesti', this)"><div class="menu-dot"></div> Obavijesti</div>
     <div class="menu-section">Alati</div>
-    <div class="menu-item" onclick="window.location.href='/oglasi.html'">
-      <div class="menu-dot"></div> Pretraži oglase
-    </div>
+    <div class="menu-item" onclick="window.location.href='/oglasi.html'"><div class="menu-dot"></div> Pretraži oglase</div>
     <div class="menu-section">Račun</div>
-    <div class="menu-item" id="menu-postavke" onclick="pokaziSekciju('postavke', this)">
-      <div class="menu-dot"></div> Postavke
-    </div>
+    <div class="menu-item" id="menu-postavke" onclick="pokaziSekciju('postavke', this)"><div class="menu-dot"></div> Postavke</div>
   </div>
 
   <div class="main">
@@ -458,59 +117,20 @@
         </div>
         <button class="cta-btn" onclick="pokaziSekciju('pracenja', document.getElementById('menu-pracenja'))">+ Novo praćenje</button>
       </div>
-
       <div class="stats-grid">
-        <div class="stat-card">
-          <div class="stat-num" id="statPracenja">—</div>
-          <div class="stat-label">Aktivna praćenja</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-num" id="statOglasa">21</div>
-          <div class="stat-label">Demo oglasa dostupno</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-num" id="statDana">
-            <script>document.write(Math.floor((new Date() - new Date(localStorage.getItem('registrovan') || new Date())) / 86400000) || 1)</script>
-          </div>
-          <div class="stat-label">Dana kao član</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-num">4</div>
-          <div class="stat-label">Izvora pretrage</div>
-        </div>
+        <div class="stat-card"><div class="stat-num" id="statPracenja">—</div><div class="stat-label">Aktivna praćenja</div></div>
+        <div class="stat-card"><div class="stat-num" id="statOglasa">1M+</div><div class="stat-label">Oglasa u bazi</div></div>
+        <div class="stat-card"><div class="stat-num" id="statDana">1</div><div class="stat-label">Dana kao član</div></div>
+        <div class="stat-card"><div class="stat-num">4</div><div class="stat-label">Izvora pretrage</div></div>
       </div>
-
       <div class="two-col">
         <div>
           <div class="section-title">Moja praćenja</div>
-          <div class="pracenje-list" id="pregled-pracenja">
-            <div class="loader-msg">Učitavam...</div>
-          </div>
+          <div class="pracenje-list" id="pregled-pracenja"><div class="loader-msg">Učitavam...</div></div>
         </div>
         <div>
           <div class="section-title">Obavijesti</div>
-          <div class="notif-list" id="pregled-notif">
-            <div class="notif-item">
-              <div class="notif-dot" style="background:#e65c00;"></div>
-              <div class="notif-text">Nov oglas: Golf 7 CUP 2.0 TDI DSG — 24.999 KM · OLX</div>
-              <div class="notif-time">12 min</div>
-            </div>
-            <div class="notif-item">
-              <div class="notif-dot" style="background:#16a34a;"></div>
-              <div class="notif-text">Cijena pala: Golf 7 GTI 25.900 → 24.500 KM · Mostar</div>
-              <div class="notif-time">1h</div>
-            </div>
-            <div class="notif-item">
-              <div class="notif-dot" style="background:#dc2626;"></div>
-              <div class="notif-text">AI upozorenje: Sumnjiv oglas — iste slike viđene drugdje</div>
-              <div class="notif-time">3h</div>
-            </div>
-            <div class="notif-item">
-              <div class="notif-dot" style="background:#e65c00;"></div>
-              <div class="notif-text">Nov oglas: iPhone 15 Pro 256GB — 1.850 KM · OLX</div>
-              <div class="notif-time">5h</div>
-            </div>
-          </div>
+          <div class="notif-list" id="pregled-notif"></div>
         </div>
       </div>
     </div>
@@ -524,7 +144,6 @@
         </div>
         <button class="cta-btn" onclick="toggleForm()">+ Novo praćenje</button>
       </div>
-
       <div class="add-pracenje-form" id="addForm">
         <div class="form-row">
           <input class="form-input" id="novaPretraga" placeholder="Npr. Golf 7 DSG, iPhone 15, stan Sarajevo..." />
@@ -532,10 +151,7 @@
           <button class="form-cancel" onclick="toggleForm()">Odustani</button>
         </div>
       </div>
-
-      <div class="pracenje-list" id="lista-pracenja">
-        <div class="loader-msg">Učitavam praćenja...</div>
-      </div>
+      <div class="pracenje-list" id="lista-pracenja"><div class="loader-msg">Učitavam praćenja...</div></div>
     </div>
 
     <!-- OBAVIJESTI -->
@@ -546,58 +162,21 @@
           <div class="db-sub">Sve obavijesti o tvojim praćenjima.</div>
         </div>
       </div>
-      <div class="notif-list">
-        <div class="notif-item">
-          <div class="notif-dot" style="background:#e65c00;"></div>
-          <div class="notif-text">Nov oglas: Golf 7 CUP 2.0 TDI DSG — 24.999 KM · Sarajevo · OLX</div>
-          <div class="notif-time">12 min</div>
-        </div>
-        <div class="notif-item">
-          <div class="notif-dot" style="background:#16a34a;"></div>
-          <div class="notif-text">Cijena pala: Golf 7 GTI 25.900 → 24.500 KM · Mostar</div>
-          <div class="notif-time">1h</div>
-        </div>
-        <div class="notif-item">
-          <div class="notif-dot" style="background:#dc2626;"></div>
-          <div class="notif-text">AI upozorenje: Sumnjiv oglas — iste slike viđene drugdje</div>
-          <div class="notif-time">3h</div>
-        </div>
-        <div class="notif-item">
-          <div class="notif-dot" style="background:#e65c00;"></div>
-          <div class="notif-text">Nov oglas: iPhone 15 Pro 256GB — 1.850 KM · Sarajevo · OLX</div>
-          <div class="notif-time">5h</div>
-        </div>
-        <div class="notif-item">
-          <div class="notif-dot" style="background:#16a34a;"></div>
-          <div class="notif-text">Nov oglas: Stan Grbavica 65m2 — 145.000 KM · Sarajevo · OLX</div>
-          <div class="notif-time">8h</div>
-        </div>
-      </div>
+      <div class="notif-list" id="sve-obavijesti"></div>
     </div>
 
     <!-- POSTAVKE -->
     <div id="sekcija-postavke" style="display:none;">
       <div class="db-header">
-        <div>
-          <div class="db-greeting">Postavke</div>
-          <div class="db-sub">Upravljaj svojim accountom.</div>
-        </div>
+        <div><div class="db-greeting">Postavke</div><div class="db-sub">Upravljaj svojim accountom.</div></div>
       </div>
-
       <div class="postavke-card">
         <div class="section-title" style="margin-bottom:20px;">Lični podaci</div>
-        <div class="postavke-field">
-          <div class="postavke-label">Ime i prezime</div>
-          <input class="form-input" id="postavkeIme" />
-        </div>
-        <div class="postavke-field">
-          <div class="postavke-label">Email adresa</div>
-          <input class="form-input" id="postavkeEmail" readonly style="opacity:0.6;cursor:not-allowed;" />
-        </div>
+        <div class="postavke-field"><div class="postavke-label">Ime i prezime</div><input class="form-input" id="postavkeIme" /></div>
+        <div class="postavke-field"><div class="postavke-label">Email adresa</div><input class="form-input" id="postavkeEmail" readonly style="opacity:0.6;cursor:not-allowed;" /></div>
         <button class="form-btn" onclick="sacuvajPostavke()">Sačuvaj izmjene</button>
         <div class="poruka-inline" id="postavkePoruka"></div>
       </div>
-
       <div class="postavke-card">
         <div class="section-title" style="margin-bottom:4px;">Opasna zona</div>
         <div style="font-size:13px;color:var(--text-faint);margin-bottom:16px;">Ove akcije su nepovratne.</div>
@@ -610,151 +189,159 @@
 
 <script>
 var korisnik = JSON.parse(localStorage.getItem('korisnik') || 'null');
+if (!korisnik) window.location.href = '/login.html';
 
-if (!korisnik) {
-    window.location.href = '/login.html';
-}
-
-// Navbar
 document.getElementById('navIme').textContent = korisnik ? korisnik.ime : '';
 document.getElementById('navAvatar').textContent = korisnik ? korisnik.ime.charAt(0).toUpperCase() : '?';
 
-// Pozdrav
 var sati = new Date().getHours();
 var pozdravTekst = sati < 12 ? 'Dobro jutro' : sati < 18 ? 'Dobar dan' : 'Dobro veče';
 document.getElementById('pozdrav').textContent = pozdravTekst + ', ' + (korisnik ? korisnik.ime.split(' ')[0] : '') + '!';
 
-// Postavke forma
 if (korisnik) {
-    document.getElementById('postavkeIme').value = korisnik.ime;
-    document.getElementById('postavkeEmail').value = korisnik.email;
+  document.getElementById('postavkeIme').value = korisnik.ime;
+  document.getElementById('postavkeEmail').value = korisnik.email;
 }
 
-// Registracija datum (za dana kao clan)
-if (!localStorage.getItem('registrovan')) {
-    localStorage.setItem('registrovan', new Date().toISOString());
-}
+if (!localStorage.getItem('registrovan')) localStorage.setItem('registrovan', new Date().toISOString());
+var dana = Math.floor((new Date() - new Date(localStorage.getItem('registrovan'))) / 86400000) || 1;
+document.getElementById('statDana').textContent = dana;
 
-function odjava() {
-    localStorage.removeItem('korisnik');
-    window.location.href = '/login.html';
-}
+function odjava() { localStorage.removeItem('korisnik'); window.location.href = '/login.html'; }
 
 function pokaziSekciju(id, el) {
-    document.querySelectorAll('[id^="sekcija-"]').forEach(function(s) { s.style.display = 'none'; });
-    document.getElementById('sekcija-' + id).style.display = 'block';
-    document.querySelectorAll('.menu-item').forEach(function(m) { m.classList.remove('active'); });
-    if (el) el.classList.add('active');
-    if (id === 'pracenja' || id === 'pregled') ucitajPracenja();
+  document.querySelectorAll('[id^="sekcija-"]').forEach(function(s) { s.style.display = 'none'; });
+  document.getElementById('sekcija-' + id).style.display = 'block';
+  document.querySelectorAll('.menu-item').forEach(function(m) { m.classList.remove('active'); });
+  if (el) el.classList.add('active');
+  if (id === 'pracenja' || id === 'pregled') ucitajPracenja();
+  if (id === 'obavijesti') prikaziObavijesti('sve-obavijesti');
 }
 
 function toggleForm() {
-    var form = document.getElementById('addForm');
-    form.style.display = form.style.display === 'none' || form.style.display === '' ? 'block' : 'none';
-    if (form.style.display === 'block') {
-        document.getElementById('novaPretraga').focus();
-    }
+  var form = document.getElementById('addForm');
+  form.style.display = (form.style.display === 'none' || form.style.display === '') ? 'block' : 'none';
+  if (form.style.display === 'block') document.getElementById('novaPretraga').focus();
+}
+
+// Obavijesti — generisane iz praćenja
+var sveObavijesti = [];
+
+function generisiObavijesti(pracenja) {
+  sveObavijesti = [];
+  pracenja.forEach(function(p) {
+    sveObavijesti.push({
+      tip: 'nov',
+      boja: '#e65c00',
+      tekst: 'Nov oglas za praćenje: ' + p.pretraga,
+      link: p.link || ('/oglasi.html?q=' + encodeURIComponent(p.pretraga)),
+      vrijeme: '1h'
+    });
+  });
+  // Dodaj fake obavijesti ako nema praćenja
+  if (sveObavijesti.length === 0) {
+    sveObavijesti = [
+      { tip: 'nov', boja: '#e65c00', tekst: 'Nov oglas: Golf 7 CUP 2.0 TDI DSG — 24.999 KM · OLX', link: '/oglasi.html?q=Golf+7', vrijeme: '12 min' },
+      { tip: 'pad', boja: '#16a34a', tekst: 'Cijena pala: Golf 7 GTI 25.900 → 24.500 KM · Mostar', link: '/oglasi.html?q=Golf+7+GTI', vrijeme: '1h' },
+      { tip: 'upoz', boja: '#dc2626', tekst: 'AI upozorenje: Sumnjiv oglas — iste slike viđene drugdje', link: '/oglasi.html', vrijeme: '3h' },
+      { tip: 'nov', boja: '#e65c00', tekst: 'Nov oglas: iPhone 15 Pro 256GB — 1.850 KM · OLX', link: '/oglasi.html?q=iPhone+15', vrijeme: '5h' },
+      { tip: 'nov', boja: '#16a34a', tekst: 'Nov oglas: Stan Grbavica 65m2 — 145.000 KM · Sarajevo', link: '/oglasi.html?q=stan+Sarajevo', vrijeme: '8h' }
+    ];
+  }
+}
+
+function prikaziObavijesti(containerId) {
+  var el = document.getElementById(containerId);
+  if (!el) return;
+  if (sveObavijesti.length === 0) {
+    el.innerHTML = '<div class="empty-state"><div class="empty-state-icon">🔔</div><div class="empty-state-title">Nema obavijesti</div></div>';
+    return;
+  }
+  el.innerHTML = sveObavijesti.map(function(o) {
+    return '<div class="notif-item" onclick="window.location.href=\'' + o.link + '\'">' +
+      '<div class="notif-dot" style="background:' + o.boja + ';"></div>' +
+      '<div><div class="notif-text">' + o.tekst + '</div>' +
+      '<div class="notif-link">Klikni da vidiš oglas →</div></div>' +
+      '<div class="notif-time">' + o.vrijeme + '</div>' +
+      '</div>';
+  }).join('');
 }
 
 function renderPracenja(pracenja, containerId) {
-    var el = document.getElementById(containerId);
-    if (!el) return;
-
-    if (pracenja.length === 0) {
-        el.innerHTML = '<div class="empty-state">' +
-            '<div class="empty-state-icon">🔔</div>' +
-            '<div class="empty-state-title">Nema aktivnih praćenja</div>' +
-            '<div class="empty-state-sub">Dodaj pretragu da dobijaš obavijesti o novim oglasima.</div>' +
-            '</div>';
-        return;
-    }
-
-    el.innerHTML = pracenja.map(function(p) {
-        var datum = new Date(p.datum).toLocaleDateString('bs-BA', { day: '2-digit', month: '2-digit', year: 'numeric' });
-        return '<div class="pracenje-item" id="pracenje-' + p.id + '">' +
-            '<div class="pracenje-icon">🔔</div>' +
-            '<div class="pracenje-info">' +
-            '<div class="pracenje-title">' + p.pretraga + '</div>' +
-            '<div class="pracenje-meta">Dodano ' + datum + '</div>' +
-            '</div>' +
-'<button class="pretrazi-btn" onclick="' + 
-  (p.link ? 'window.open(\'' + p.link + '\', \'_blank\')' : 'window.location.href=\'/oglasi.html?q=' + encodeURIComponent(p.pretraga) + '\'') + 
-  '">Pretraži</button>'
-              '<button class="ukloni-btn" onclick="obrisiPracenje(' + p.id + ')">Ukloni</button>' +
-            '</div>';
-    }).join('');
+  var el = document.getElementById(containerId);
+  if (!el) return;
+  if (pracenja.length === 0) {
+    el.innerHTML = '<div class="empty-state"><div class="empty-state-icon">🔔</div><div class="empty-state-title">Nema aktivnih praćenja</div><div class="empty-state-sub">Dodaj pretragu da dobijaš obavijesti o novim oglasima.</div></div>';
+    return;
+  }
+  el.innerHTML = pracenja.map(function(p) {
+    var datum = new Date(p.datum).toLocaleDateString('bs-BA', { day: '2-digit', month: '2-digit', year: 'numeric' });
+    var pretraziBtnOnclick = p.link
+      ? 'window.open(\'' + p.link + '\', \'_blank\')'
+      : 'window.location.href=\'/oglasi.html?q=' + encodeURIComponent(p.pretraga) + '\'';
+    return '<div class="pracenje-item" id="pracenje-' + p.id + '">' +
+      '<div class="pracenje-icon">🔔</div>' +
+      '<div class="pracenje-info">' +
+      '<div class="pracenje-title">' + p.pretraga + '</div>' +
+      '<div class="pracenje-meta">Dodano ' + datum + '</div>' +
+      '</div>' +
+      '<button class="pretrazi-btn" onclick="' + pretraziBtnOnclick + '">Pretraži</button>' +
+      '<button class="ukloni-btn" onclick="obrisiPracenje(' + p.id + ')">Ukloni</button>' +
+      '</div>';
+  }).join('');
 }
 
 async function ucitajPracenja() {
-    if (!korisnik) return;
-    try {
-        var res = await fetch('/moja-pracenja?email=' + encodeURIComponent(korisnik.email));
-        var pracenja = await res.json();
-
-        document.getElementById('statPracenja').textContent = pracenja.length;
-        renderPracenja(pracenja, 'lista-pracenja');
-        renderPracenja(pracenja.slice(0, 3), 'pregled-pracenja');
-    } catch(e) {
-        console.log('Greška pri učitavanju praćenja:', e.message);
-    }
+  if (!korisnik) return;
+  try {
+    var res = await fetch('/moja-pracenja?email=' + encodeURIComponent(korisnik.email));
+    var pracenja = await res.json();
+    document.getElementById('statPracenja').textContent = pracenja.length;
+    renderPracenja(pracenja, 'lista-pracenja');
+    renderPracenja(pracenja.slice(0, 3), 'pregled-pracenja');
+    generisiObavijesti(pracenja);
+    prikaziObavijesti('pregled-notif');
+  } catch(e) { console.log('Greška pri učitavanju praćenja:', e.message); }
 }
 
 async function dodajPracenje() {
-    var input = document.getElementById('novaPretraga');
-    var pretraga = input.value.trim();
-    if (!pretraga || !korisnik) return;
-
-    try {
-        await fetch('/pracenje', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ email: korisnik.email, pretraga: pretraga })
-        });
-        input.value = '';
-        document.getElementById('addForm').style.display = 'none';
-        ucitajPracenja();
-    } catch(e) {
-        console.log('Greška pri dodavanju:', e.message);
-    }
+  var input = document.getElementById('novaPretraga');
+  var pretraga = input.value.trim();
+  if (!pretraga || !korisnik) return;
+  try {
+    await fetch('/pracenje', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: korisnik.email, pretraga: pretraga })
+    });
+    input.value = '';
+    document.getElementById('addForm').style.display = 'none';
+    ucitajPracenja();
+  } catch(e) { console.log('Greška pri dodavanju:', e.message); }
 }
 
 async function obrisiPracenje(id) {
-    try {
-        await fetch('/pracenje/' + id, { method: 'DELETE' });
-        var el = document.getElementById('pracenje-' + id);
-        if (el) el.remove();
-        ucitajPracenja();
-    } catch(e) {
-        console.log('Greška pri brisanju:', e.message);
-    }
+  try {
+    await fetch('/pracenje/' + id, { method: 'DELETE' });
+    ucitajPracenja();
+  } catch(e) { console.log('Greška pri brisanju:', e.message); }
 }
 
 function sacuvajPostavke() {
-    var novoIme = document.getElementById('postavkeIme').value.trim();
-    var poruka = document.getElementById('postavkePoruka');
-
-    if (!novoIme) {
-        poruka.style.color = '#dc2626';
-        poruka.textContent = 'Ime ne može biti prazno!';
-        return;
-    }
-
-    korisnik.ime = novoIme;
-    localStorage.setItem('korisnik', JSON.stringify(korisnik));
-    document.getElementById('navIme').textContent = novoIme;
-    document.getElementById('navAvatar').textContent = novoIme.charAt(0).toUpperCase();
-
-    poruka.style.color = '#16a34a';
-    poruka.textContent = 'Izmjene sačuvane!';
-    setTimeout(function() { poruka.textContent = ''; }, 3000);
+  var novoIme = document.getElementById('postavkeIme').value.trim();
+  var poruka = document.getElementById('postavkePoruka');
+  if (!novoIme) { poruka.style.color = '#dc2626'; poruka.textContent = 'Ime ne može biti prazno!'; return; }
+  korisnik.ime = novoIme;
+  localStorage.setItem('korisnik', JSON.stringify(korisnik));
+  document.getElementById('navIme').textContent = novoIme;
+  document.getElementById('navAvatar').textContent = novoIme.charAt(0).toUpperCase();
+  poruka.style.color = '#16a34a';
+  poruka.textContent = 'Izmjene sačuvane!';
+  setTimeout(function() { poruka.textContent = ''; }, 3000);
 }
 
-// Enter na formi praćenja
-document.getElementById('novaPretraga').addEventListener('keydown', function(e) {
-    if (e.key === 'Enter') dodajPracenje();
-});
+document.getElementById('novaPretraga').addEventListener('keydown', function(e) { if (e.key === 'Enter') dodajPracenje(); });
 
-// Init
 ucitajPracenja();
 </script>
 </body>
