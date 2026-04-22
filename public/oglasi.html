@@ -635,7 +635,13 @@ window.onload = async function() {
     if (data.uspjeh && data.oglasi.length > 0) {
       var liveOglasi = data.oglasi.map(mapOglas);
       trenutnoFiltrirani = liveOglasi;
-      prikaziOglase(liveOglasi);
+      
+      if (urlQ) {
+        document.getElementById('searchInput').value = urlQ;
+        await pretrazi();
+      } else {
+        prikaziOglase(liveOglasi);
+      }
     } else {
       prikaziOglase(demoOglasi);
     }
@@ -645,11 +651,6 @@ window.onload = async function() {
   }
 
   ucitajKategorije();
-
-  if (urlQ) {
-    document.getElementById('searchInput').value = urlQ;
-    pretrazi();
-  }
 };
 </script>
 </body>
