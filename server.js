@@ -304,7 +304,48 @@ SCORE: [broj 0-100]`;
         res.json({ uspjeh: false, analiza: 'Analiza nije dostupna.', score: 70 });
     }
 });
+app.get('/api/olx-fetch', async (req, res) => {
+    try {
+        const kategorija = req.query.category_id || '18';
+        const stranica = req.query.page || '1';
+        const q = req.query.q || '';
 
+        const url = `https://olx.ba/api/search?attr_encoded=1&category_id=${kategorija}&per_page=40&page=${stranica}${q ? '&q=' + encodeURIComponent(q) : ''}`;
+
+        const response = await axios.get(url, {
+            headers: {
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+                'Accept': 'application/json',
+                'Referer': 'https://www.olx.ba/'
+            },
+            timeout: 10000
+        });
+
+        const oglasi = response.data.data.map(o => ({
+            naslov: o.title,
+            cijena: o.display_price || o.price + ' KM',
+            cijenaStr: o.display_price || o.price + ' KM',
+            slika: o.image || (o.images && o.images[0]) || '',
+            link: `https://www.olx.ba/artikal/${o.id}`,
+            platforma: 'olx',
+            kategorija: 'vozila'
+        }));
+
+        // Spremi u bazu
+        for (const o of oglasi) {
+            await pool.query(
+                `INSERT INTO live_oglasi (naslov, cijena, slika, link, platforma, kategorija)
+                 VALUES ($1, $2, $3, $4, $5, $6)
+                 ON CONFLICT (link) DO NOTHING`,
+                [o.naslov, o.cijenaStr, o.slika, o.link, o.platforma, o.kategorija]
+            );
+        }
+
+        res.json({ uspjeh: true, broj: oglasi.length, oglasi });
+    } catch(e) {
+        res.json({ uspjeh: false, poruka: e.message });
+    }
+});
 app.listen(PORT, () => {
     console.log(`Server radi na portu ${PORT}`);
 });
