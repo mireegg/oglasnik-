@@ -1033,15 +1033,7 @@ function otvoriModal(index) {
                 <div style="font-size:28px;font-weight:800;color:#e65c00;margin-bottom:16px;">${o.cijenaStr}</div>
                 <div style="font-size:13px;color:#888;margin-bottom:8px;">📍 ${o.lokacija}</div>
                 <div style="font-size:13px;color:#888;margin-bottom:16px;">📅 ${o.datum}</div>
-                
-                <div id="aiAnalizaBox" style="background:#f8f8f8;border-radius:10px;padding:14px;margin-bottom:20px;">
-                    <div style="font-size:12px;color:#999;margin-bottom:8px;font-weight:600;">🤖 Oglix AI Analiza</div>
-                    <div id="aiAnalizaTekst" style="font-size:13px;color:#666;line-height:1.6;">
-                        <div style="display:flex;align-items:center;gap:8px;color:#aaa;">
-                            <div style="width:16px;height:16px;border:2px solid #e65c00;border-top-color:transparent;border-radius:50%;animation:spin 0.8s linear infinite;"></div>
-                            Analiziram oglas...
-                        </div>
-                    </div>
+
                 </div>
                <div id="aiAnalizaBox" style="background:#f8f8f8;border-radius:10px;padding:14px;margin-bottom:20px;">
                     <div style="font-size:12px;color:#999;margin-bottom:8px;font-weight:600;">🤖 Oglix AI Analiza</div>
@@ -1059,8 +1051,7 @@ function otvoriModal(index) {
                 <button onclick="pratiOglas('${o.naslov}')" style="display:block;width:100%;background:white;color:#e65c00;border:2px solid #e65c00;text-align:center;padding:14px;border-radius:10px;font-size:15px;font-weight:600;cursor:pointer;margin-bottom:10px;" onmouseover="this.style.background='#fff5f0'" onmouseout="this.style.background='white'">
     🔔 Prati oglas
 </button>
-                <a href="${o.link}" target="_blank" style="display:block;background:#e65c00;color:white;text-align:center;padding:14px;border-radius:10px;font-size:15px;font-weight:600;text-decoration:none;" onmouseover="this.style.background='#c94d00'" onmouseout="this.style.background='#e65c00'">
-                    Pogledaj oglas na ${o.platforma.toUpperCase()} →
+            
                 </a>
             </div>
         </div>
