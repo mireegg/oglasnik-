@@ -377,27 +377,22 @@ app.get('/api/kategorije', async (req, res) => {
         res.json({ uspjeh: false, kategorije: [] });
     }
 });
-app.post('/api/analiza-jednog-oglasa', async (req, res) => {
-    const { oglas, slicni } = req.body;
+const prompt = `Ti si iskusan savjetnik za kupovinu u Bosni i Hercegovini.
 
-    const prompt = `Ti si iskusan savjetnik za kupovinu u Bosni i Hercegovini.
-
-Analiziraj ovaj oglas:
+Oglas koji analiziraš:
 - Naziv: ${oglas.naslov}
 - Cijena: ${oglas.cijenaStr}
 - Kategorija: ${oglas.kategorija || 'nepoznato'}
 - Platforma: ${oglas.platforma}
-- Lokacija: ${oglas.lokacija || 'BiH'}
 
-Slični oglasi na tržištu:
-${slicni.slice(0,5).map((o, i) => `${i+1}. ${o.naslov} — ${o.cijenaStr}`).join('\n')}
+Slični oglasi koje SI ALREADY USPOREDIO:
+${slicni.slice(0,5).map((s, i) => `${i+1}. ${s.naslov} — ${s.cijenaStr}`).join('\n')}
 
-Daj kratku analizu u ovom formatu (max 4 rečenice ukupno):
+Tvoj zadatak je da TI uradiš usporedbu, ne kupac. Daj analizu u ovom formatu:
 OCJENA: [ODLIČNO/FER/PREVISOKO/IZBJEGAVAJ]
-CIJENA: [jedan red o cijeni u odnosu na tržište]
-SAVJET: [jedan konkretan savjet kupcu]
+CIJENA: [Napiši konkretno — npr. "Ovaj oglas je za 1.200 KM jeftiniji od sličnih oglasa u bazi" ili "Dva slična oglasa su po 13.500 KM, ovaj je previsok za 2.000 KM"]
+SAVJET: [Napiši konkretno da li preporučuješ OVAJ oglas ili koji od sličnih je bolji i zašto — budi direktan]
 SCORE: [broj 0-100]`;
-
     try {
         const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
             method: 'POST',
