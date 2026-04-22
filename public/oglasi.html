@@ -1453,6 +1453,12 @@ else if (ime === 'elektronika-vr') ime = 'Elektronika - VR uređaji';
     updateNavbar();
     window.onload = async function () {
       try {
+        // Čitaj q parametar iz URL-a
+var urlParams = new URLSearchParams(window.location.search);
+var urlQ = urlParams.get('q');
+if (urlQ) {
+    document.getElementById('searchInput').value = urlQ;
+}
         var res = await fetch('/api/live-oglasi');
         var data = await res.json();
         if (data.uspjeh && data.oglasi.length > 0) {
