@@ -306,9 +306,27 @@ SCORE: [broj 0-100]`;
 });
 const OLX_KATEGORIJE = [
     { id: '18', naziv: 'vozila' },
-    { id: '2', naziv: 'elektronika' },
-    { id: '4', naziv: 'nekretnine' },
-    { id: '6', naziv: 'namjestaj' },
+    { id: '21', naziv: 'motocikli' },
+    { id: '22', naziv: 'bicikli' },
+    { id: '426', naziv: 'nautika' },
+    { id: '2457', naziv: 'atv-quad' },
+    { id: '23', naziv: 'nekretnine-stanovi' },
+    { id: '24', naziv: 'nekretnine-kuce' },
+    { id: '29', naziv: 'nekretnine-zemljista' },
+    { id: '25', naziv: 'nekretnine-poslovni' },
+    { id: '31', naziv: 'elektronika-mobiteli' },
+    { id: '1495', naziv: 'elektronika-tableti' },
+    { id: '2076', naziv: 'elektronika-satovi' },
+    { id: '252', naziv: 'elektronika-dijelovi-mobiteli' },
+    { id: '34', naziv: 'elektronika-bluetooth' },
+    { id: '38', naziv: 'elektronika-desktop' },
+    { id: '39', naziv: 'elektronika-laptopi' },
+    { id: '42', naziv: 'elektronika-oprema' },
+    { id: '75', naziv: 'elektronika-serveri' },
+    { id: '46', naziv: 'elektronika-bijela-tehnika' },
+    { id: '45', naziv: 'elektronika-tv' },
+    { id: '2392', naziv: 'elektronika-zvucnici' },
+    { id: '2129', naziv: 'elektronika-vr' },
 ];
 
 async function fetchOLXKategorija(categoryId, kategorija) {
@@ -346,7 +364,7 @@ async function fetchOLXKategorija(categoryId, kategorija) {
 
 async function fetchOLXKategorija(categoryId, kategorija) {
     try {
-        for (let stranica = 1; stranica <= 5; stranica++) {
+        for (let stranica = 1; stranica <= 10; stranica++) {
             const url = `https://olx.ba/api/search?attr_encoded=1&category_id=${categoryId}&per_page=40&page=${stranica}`;
             const response = await axios.get(url, {
                 headers: {
