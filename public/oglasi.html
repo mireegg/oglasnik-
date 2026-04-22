@@ -1043,7 +1043,22 @@ function otvoriModal(index) {
                         </div>
                     </div>
                 </div>
+               <div id="aiAnalizaBox" style="background:#f8f8f8;border-radius:10px;padding:14px;margin-bottom:20px;">
+                    <div style="font-size:12px;color:#999;margin-bottom:8px;font-weight:600;">🤖 Oglix AI Analiza</div>
+                    <div id="aiAnalizaTekst" style="font-size:13px;color:#666;line-height:1.6;">
+                        <div style="display:flex;align-items:center;gap:8px;color:#aaa;">
+                            <div style="width:16px;height:16px;border:2px solid #e65c00;border-top-color:transparent;border-radius:50%;animation:spin 0.8s linear infinite;"></div>
+                            Analiziram oglas...
+                        </div>
+                    </div>
+                </div>
 
+                <a href="${o.link}" target="_blank" style="display:block;background:#e65c00;color:white;text-align:center;padding:14px;border-radius:10px;font-size:15px;font-weight:600;text-decoration:none;" onmouseover="this.style.background='#c94d00'" onmouseout="this.style.background='#e65c00'">
+                    Pogledaj oglas na ${o.platforma.toUpperCase()} →
+                </a>
+                <button onclick="pratiOglas('${o.naslov}')" style="display:block;width:100%;background:white;color:#e65c00;border:2px solid #e65c00;text-align:center;padding:14px;border-radius:10px;font-size:15px;font-weight:600;cursor:pointer;margin-bottom:10px;" onmouseover="this.style.background='#fff5f0'" onmouseout="this.style.background='white'">
+    🔔 Prati oglas
+</button>
                 <a href="${o.link}" target="_blank" style="display:block;background:#e65c00;color:white;text-align:center;padding:14px;border-radius:10px;font-size:15px;font-weight:600;text-decoration:none;" onmouseover="this.style.background='#c94d00'" onmouseout="this.style.background='#e65c00'">
                     Pogledaj oglas na ${o.platforma.toUpperCase()} →
                 </a>
@@ -1481,6 +1496,26 @@ else if (ime === 'elektronika-vr') ime = 'Elektronika - VR uređaji';
         prikaziOglase(demoOglasi);
       }
       ucitajKategorije();
+      function pratiOglas(pretraga) {
+    var korisnik = JSON.parse(localStorage.getItem('korisnik'));
+    if (!korisnik) {
+        alert('Moraš biti prijavljen da pratiš oglase!');
+        window.location.href = '/login.html';
+        return;
+    }
+
+    fetch('/pracenje', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: korisnik.email, pretraga: pretraga })
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.uspjeh) {
+            alert('Oglas je dodan u praćenja! 🔔');
+        }
+    });
+}
 
     };</script>
     <div id="oglasiModal" onclick="if(event.target===this)zatvoriModal()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:1000;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(4px);">
