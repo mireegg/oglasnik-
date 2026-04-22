@@ -378,9 +378,9 @@ function otvoriModal(index) {
           <a href="${o.link}" target="_blank" style="flex:1;background:#e65c00;color:white;text-align:center;padding:14px;border-radius:10px;font-size:15px;font-weight:600;text-decoration:none;" onmouseover="this.style.background='#c94d00'" onmouseout="this.style.background='#e65c00'">
             Pogledaj na OLX →
           </a>
-<button onclick="pratiOglas(this.dataset.naslov, this.dataset.link)" data-naslov="${o.naslov}" data-link="${o.link}" style="flex:1;background:white;color:#e65c00;border:2px solid #e65c00;text-align:center;padding:14px;border-radius:10px;font-size:15px;font-weight:600;cursor:pointer;" onmouseover="this.style.background='#fff5f0'" onmouseout="this.style.background='white'">
+<button class="prati-btn" data-naslov="${o.naslov}" data-link="${o.link}" style="flex:1;background:white;color:#e65c00;border:2px solid #e65c00;text-align:center;padding:14px;border-radius:10px;font-size:15px;font-weight:600;cursor:pointer;" onmouseover="this.style.background='#fff5f0'" onmouseout="this.style.background='white'">
     🔔 Prati oglas
-</button>          
+</button>
         </div>
       </div>
     </div>
@@ -627,7 +627,11 @@ document.getElementById('searchInput').addEventListener('keydown', function(e) {
 
 // --- Init ---
 updateNavbar();
-
+document.getElementById('oglasiModal').addEventListener('click', function(e) {
+    if (e.target.classList.contains('prati-btn')) {
+        pratiOglas(e.target.dataset.naslov, e.target.dataset.link);
+    }
+});
 window.onload = async function() {
   try {
     var res = await fetch('/api/live-oglasi');
