@@ -438,13 +438,17 @@ function pratiOglas(pretraga) {
     window.location.href = '/login.html';
     return;
   }
+  
+  // Uzmi samo prve dvije riječi kao ključne
+  var kljucneRijeci = pretraga.split(' ').slice(0, 2).join(' ');
+  
   fetch('/pracenje', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ email: korisnik.email, pretraga: pretraga })
+    body: JSON.stringify({ email: korisnik.email, pretraga: kljucneRijeci })
   })
   .then(r => r.json())
-  .then(data => { if (data.uspjeh) alert('Oglas dodan u praćenja! 🔔'); });
+  .then(data => { if (data.uspjeh) alert('Oglas dodan u praćenja za "' + kljucneRijeci + '"! 🔔'); });
 }
 
 // --- Pretraga ---
