@@ -378,8 +378,9 @@ function otvoriModal(index) {
           <a href="${o.link}" target="_blank" style="flex:1;background:#e65c00;color:white;text-align:center;padding:14px;border-radius:10px;font-size:15px;font-weight:600;text-decoration:none;" onmouseover="this.style.background='#c94d00'" onmouseout="this.style.background='#e65c00'">
             Pogledaj na OLX →
           </a>
-onclick="pratiOglas('${o.naslov.replace(/'/g, "\\'")}', '${o.link}')"            🔔 Prati oglas
-          </button>
+<button onclick="pratiOglas(this.dataset.naslov, this.dataset.link)" data-naslov="${o.naslov}" data-link="${o.link}" style="flex:1;background:white;color:#e65c00;border:2px solid #e65c00;text-align:center;padding:14px;border-radius:10px;font-size:15px;font-weight:600;cursor:pointer;" onmouseover="this.style.background='#fff5f0'" onmouseout="this.style.background='white'">
+    🔔 Prati oglas
+</button>          
         </div>
       </div>
     </div>
