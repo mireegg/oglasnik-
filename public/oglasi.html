@@ -1,1562 +1,656 @@
 <!DOCTYPE html>
 <html lang="bs">
-
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Oglix — Svi oglasi u BiH</title>
-  <link
-    href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700&family=DM+Sans:wght@300;400;500&display=swap"
-    rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
   <style>
     :root {
-      --orange: #e65c00;
-      --orange-light: #ff7a1f;
-      --orange-dim: #fff0e6;
-      --bg: #f7f5f2;
-      --surface: #ffffff;
-      --border: rgba(0, 0, 0, 0.08);
-      --border-hover: rgba(0, 0, 0, 0.18);
-      --text: #1a1a1a;
-      --text-muted: #777;
-      --text-faint: #aaa;
-      --radius-sm: 8px;
-      --radius-md: 12px;
-      --radius-lg: 18px;
-      --radius-pill: 100px;
-    }
-    @keyframes spin {
-    to { transform: rotate(360deg); }
-}
-
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
-    body {
-      font-family: 'DM Sans', sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      min-height: 100vh;
-      font-size: 15px;
-      line-height: 1.5;
-    }
-
-    a {
-      text-decoration: none;
-      color: inherit;
-    }
-
-    nav {
-      background: var(--surface);
-      border-bottom: 1px solid var(--border);
-      padding: 0 32px;
-      height: 60px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      position: sticky;
-      top: 0;
-      z-index: 100;
-    }
-
-    .logo {
-      font-family: 'Syne', sans-serif;
-      font-size: 22px;
-      font-weight: 700;
-      letter-spacing: -0.5px;
-      color: var(--text);
-    }
-
-    .logo span {
-      color: var(--orange);
-    }
-
-    .nav-links {
-      display: flex;
-      align-items: center;
-      gap: 28px;
-    }
-
-    .nav-links a {
-      font-size: 14px;
-      color: var(--text-muted);
-      font-weight: 400;
-    }
-
-    .nav-right {
-      display: flex;
-      gap: 10px;
-      align-items: center;
-    }
-
-    .nav-btn {
-      background: var(--orange);
-      color: white;
-      border: none;
-      border-radius: var(--radius-pill);
-      padding: 9px 20px;
-      font-size: 14px;
-      font-family: 'DM Sans', sans-serif;
-      font-weight: 500;
-      cursor: pointer;
-    }
-
-    .nav-btn:hover {
-      background: var(--orange-light);
-    }
-
-    .nav-btn-ghost {
-      background: transparent;
-      color: var(--text-muted);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-pill);
-      padding: 9px 20px;
-      font-size: 14px;
-      font-family: 'DM Sans', sans-serif;
-      cursor: pointer;
-    }
-
-    .hero {
-      padding: 52px 32px 36px;
-      max-width: 760px;
-      margin: 0 auto;
-      text-align: center;
-    }
-
-    .hero-kicker {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      font-size: 12px;
-      font-weight: 500;
-      color: var(--orange);
-      background: var(--orange-dim);
-      padding: 5px 14px;
-      border-radius: var(--radius-pill);
-      margin-bottom: 20px;
-      letter-spacing: 0.03em;
-    }
-
-    .hero h1 {
-      font-family: 'Syne', sans-serif;
-      font-size: 44px;
-      font-weight: 700;
-      line-height: 1.1;
-      letter-spacing: -1.5px;
-      color: var(--text);
-      margin-bottom: 12px;
-    }
-
-    .hero h1 em {
-      font-style: normal;
-      color: var(--orange);
-    }
-
-    .hero p {
-      font-size: 15px;
-      color: var(--text-muted);
-      margin-bottom: 28px;
-      font-weight: 300;
-    }
-
-    .search-wrap {
-      display: flex;
-      gap: 10px;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-lg);
-      padding: 8px;
-      margin-bottom: 14px;
-      box-shadow: 0 2px 20px rgba(0, 0, 0, 0.06);
-    }
-
-    .search-icon {
-      display: flex;
-      align-items: center;
-      padding: 0 4px 0 10px;
-      color: var(--text-faint);
-    }
-
-    .search-input {
-      flex: 1;
-      border: none;
-      outline: none;
-      font-size: 15px;
-      font-family: 'DM Sans', sans-serif;
-      color: var(--text);
-      background: transparent;
-    }
-
-    .search-input::placeholder {
-      color: var(--text-faint);
-    }
-
-    .search-divider {
-      width: 1px;
-      background: var(--border);
-      margin: 4px 0;
-    }
-
-    .location-btn {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      padding: 0 16px;
-      font-size: 14px;
-      color: var(--text-muted);
-      background: none;
-      border: none;
-      cursor: pointer;
-      font-family: 'DM Sans', sans-serif;
-      white-space: nowrap;
-    }
-
-    .search-btn {
-      background: var(--orange);
-      color: white;
-      border: none;
-      border-radius: var(--radius-md);
-      padding: 12px 24px;
-      font-size: 15px;
-      font-family: 'DM Sans', sans-serif;
-      font-weight: 500;
-      cursor: pointer;
-      white-space: nowrap;
-    }
-
-    .search-btn:hover {
-      background: var(--orange-light);
-    }
-
-    .ai-btn {
-      background: #111;
-      color: white;
-      border: none;
-      border-radius: var(--radius-md);
-      padding: 12px 20px;
-      font-size: 14px;
-      font-family: 'DM Sans', sans-serif;
-      font-weight: 500;
-      cursor: pointer;
-      white-space: nowrap;
-    }
-
-    .ai-btn:hover {
-      background: #333;
-    }
-
-    .source-pills {
-      display: flex;
-      justify-content: center;
-      flex-wrap: wrap;
-      gap: 8px;
-      margin-bottom: 12px;
-    }
-
-    .pill {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      padding: 7px 16px;
-      border-radius: var(--radius-pill);
-      border: 1px solid var(--border);
-      font-size: 13px;
-      color: var(--text-muted);
-      background: var(--surface);
-      cursor: pointer;
-      transition: all 0.15s;
-    }
-
-    .pill.active {
-      background: var(--text);
-      color: white;
-      border-color: var(--text);
-    }
-
-    .pill-dot {
-      width: 7px;
-      height: 7px;
-      border-radius: 50%;
-      flex-shrink: 0;
-    }
-
-    .popular {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 8px;
-      font-size: 13px;
-      color: var(--text-faint);
-      margin-top: 10px;
-    }
-
-    .popular-tag {
-      color: var(--text-muted);
-      background: var(--surface);
-      border: 1px solid var(--border);
-      padding: 4px 12px;
-      border-radius: var(--radius-pill);
-      cursor: pointer;
-      font-size: 13px;
-    }
-
-    .popular-tag:hover {
-      color: var(--orange);
-      border-color: var(--orange);
-    }
-
-    .stats-bar {
-      background: var(--surface);
-      border-top: 1px solid var(--border);
-      border-bottom: 1px solid var(--border);
-      padding: 16px 32px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 40px;
-      font-size: 13px;
-      color: var(--text-muted);
-    }
-
-    .stat {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .stat-num {
-      font-family: 'Syne', sans-serif;
-      font-size: 18px;
-      font-weight: 700;
-      color: var(--text);
-    }
-
-    .main {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 32px;
-      display: grid;
-      grid-template-columns: 260px 1fr;
-      gap: 28px;
-      align-items: start;
-    }
-
-    .sidebar {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-lg);
-      padding: 22px;
-      position: sticky;
-      top: 80px;
-    }
-
-    .sidebar-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 20px;
-    }
-
-    .sidebar-title {
-      font-family: 'Syne', sans-serif;
-      font-size: 15px;
-      font-weight: 600;
-    }
-
-    .reset-btn {
-      font-size: 12px;
-      color: var(--orange);
-      background: none;
-      border: none;
-      cursor: pointer;
-      font-family: 'DM Sans', sans-serif;
-      padding: 0;
-    }
-
-    .filter-section {
-      margin-bottom: 22px;
-      padding-bottom: 22px;
-      border-bottom: 1px solid var(--border);
-    }
-
-    .filter-section:last-of-type {
-      border-bottom: none;
-      margin-bottom: 0;
-      padding-bottom: 0;
-    }
-
-    .filter-label {
-      font-size: 11px;
-      font-weight: 500;
-      text-transform: uppercase;
-      letter-spacing: 0.07em;
-      color: var(--text-faint);
-      margin-bottom: 12px;
-    }
-
-    .check-item {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      padding: 5px 0;
-      cursor: pointer;
-      font-size: 13px;
-      color: var(--text);
-    }
-
-    .check-item input[type=checkbox] {
-      accent-color: var(--orange);
-      width: 15px;
-      height: 15px;
-      cursor: pointer;
-      flex-shrink: 0;
-    }
-
-    .check-count {
-      margin-left: auto;
-      font-size: 11px;
-      color: var(--text-faint);
-      background: var(--bg);
-      padding: 1px 7px;
-      border-radius: 20px;
-    }
-
-    .source-dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      flex-shrink: 0;
-    }
-
-    .price-inputs {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 8px;
-      margin-bottom: 12px;
-    }
-
-    .price-input {
-      border: 1px solid var(--border);
-      border-radius: var(--radius-sm);
-      padding: 8px 10px;
-      font-size: 13px;
-      font-family: 'DM Sans', sans-serif;
-      color: var(--text);
-      background: var(--bg);
-      outline: none;
-      width: 100%;
-    }
-
-    .price-input:focus {
-      border-color: var(--orange);
-    }
-
-    .filter-chips {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-    }
-
-    .fchip {
-      font-size: 12px;
-      padding: 5px 12px;
-      border-radius: var(--radius-pill);
-      border: 1px solid var(--border);
-      color: var(--text-muted);
-      background: var(--bg);
-      cursor: pointer;
-      font-family: 'DM Sans', sans-serif;
-    }
-
-    .fchip.active {
-      background: var(--orange);
-      color: white;
-      border-color: var(--orange);
-    }
-
-    .filter-select {
-      width: 100%;
-      border: 1px solid var(--border);
-      border-radius: var(--radius-sm);
-      padding: 9px 10px;
-      font-size: 13px;
-      font-family: 'DM Sans', sans-serif;
-      color: var(--text);
-      background: var(--bg);
-      outline: none;
-      cursor: pointer;
-    }
-
-    .apply-btn {
-      width: 100%;
-      background: var(--orange);
-      color: white;
-      border: none;
-      border-radius: var(--radius-md);
-      padding: 12px;
-      font-size: 14px;
-      font-weight: 500;
-      font-family: 'DM Sans', sans-serif;
-      cursor: pointer;
-      margin-top: 18px;
-    }
-
-    .apply-btn:hover {
-      background: var(--orange-light);
-    }
-
-    .results-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 16px;
-    }
-
-    .results-count {
-      font-size: 14px;
-      color: var(--text-muted);
-    }
-
-    .results-count strong {
-      color: var(--text);
-    }
-
-    .sort-select {
-      border: 1px solid var(--border);
-      border-radius: var(--radius-sm);
-      padding: 7px 10px;
-      font-size: 13px;
-      font-family: 'DM Sans', sans-serif;
-      color: var(--text);
-      background: var(--surface);
-      outline: none;
-      cursor: pointer;
-    }
-
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-      gap: 14px;
-    }
-
-    .card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-lg);
-      overflow: hidden;
-      cursor: pointer;
-      transition: border-color 0.15s, transform 0.15s;
-    }
-
-    .card:hover {
-      border-color: var(--border-hover);
-      transform: translateY(-2px);
-    }
-
-    .card-img {
-      aspect-ratio: 4/3;
-      background: var(--bg);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      overflow: hidden;
-      position: relative;
-    }
-
-    .card-img img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-
-    .card-body {
-      padding: 12px 14px 14px;
-    }
-
-    .source-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-      font-size: 10px;
-      font-weight: 500;
-      padding: 3px 8px;
-      border-radius: var(--radius-pill);
-      margin-bottom: 7px;
-    }
-
-    .badge-olx {
-      background: #e8f5e9;
-      color: #1b5e20;
-    }
-
-    .badge-fb {
-      background: #e3f2fd;
-      color: #0d47a1;
-    }
-
-    .badge-njuskalo {
-      background: #fff3e0;
-      color: #bf360c;
-    }
-
-    .badge-halo {
-      background: #f3e5f5;
-      color: #4a148c;
-    }
-
-    .card-title {
-      font-size: 13px;
-      font-weight: 500;
-      color: var(--text);
-      margin-bottom: 6px;
-      line-height: 1.35;
-      display: -webkit-box;
-      -webkit-line-clamp: 2;
-      -webkit-box-orient: vertical;
-      overflow: hidden;
-    }
-
-    .card-price {
-      font-family: 'Syne', sans-serif;
-      font-size: 17px;
-      font-weight: 700;
-      color: var(--orange);
-      margin-bottom: 4px;
-    }
-
-    .card-meta {
-      font-size: 11px;
-      color: var(--text-faint);
-      display: flex;
-      align-items: center;
-      gap: 4px;
-      margin-bottom: 8px;
-    }
-
-    .card-score {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    .score-bar-wrap {
-      flex: 1;
-      height: 3px;
-      background: #f0f0f0;
-      border-radius: 2px;
-    }
-
-    .score-bar-fill {
-      height: 3px;
-      border-radius: 2px;
-    }
-
-    .score-tag {
-      font-size: 10px;
-      padding: 2px 7px;
-      border-radius: 10px;
-      font-weight: 600;
-    }
-
-    .tag-good {
-      background: #EAF3DE;
-      color: #27500A;
-    }
-
-    .tag-warn {
-      background: #FAEEDA;
-      color: #633806;
-    }
-
-    .tag-bad {
-      background: #FCEBEB;
-      color: #791F1F;
-    }
-
-    .ai-box {
-      margin-bottom: 20px;
-      background: #111;
-      border-radius: var(--radius-lg);
-      padding: 18px 20px;
-    }
-
-    .ai-box-title {
-      font-size: 13px;
-      font-weight: 700;
-      color: var(--orange);
-      margin-bottom: 8px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .ai-dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: var(--orange);
-    }
-
-    .ai-box-text {
-      font-size: 13px;
-      color: #aaa;
-      line-height: 1.7;
-      white-space: pre-wrap;
-    }
-
-    .load-more {
-      text-align: center;
-      margin-top: 28px;
-    }
-
-    .load-btn {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-pill);
-      padding: 12px 36px;
-      font-size: 14px;
-      font-family: 'DM Sans', sans-serif;
-      color: var(--text-muted);
-      cursor: pointer;
-    }
-
-    .load-btn:hover {
-      border-color: var(--border-hover);
-      color: var(--text);
-    }
-
-    footer {
-      margin-top: 60px;
-      border-top: 1px solid var(--border);
-      background: var(--surface);
-      padding: 32px;
-      text-align: center;
-      font-size: 13px;
-      color: var(--text-faint);
-    }
-
-    footer .footer-logo {
-      font-family: 'Syne', sans-serif;
-      font-size: 18px;
-      font-weight: 700;
-      color: var(--text);
-      margin-bottom: 8px;
-    }
-
-    footer .footer-logo span {
-      color: var(--orange);
-    }
-
+      --orange: #e65c00; --orange-light: #ff7a1f; --orange-dim: #fff0e6;
+      --bg: #f7f5f2; --surface: #ffffff; --border: rgba(0,0,0,0.08);
+      --border-hover: rgba(0,0,0,0.18); --text: #1a1a1a; --text-muted: #777;
+      --text-faint: #aaa; --radius-sm: 8px; --radius-md: 12px;
+      --radius-lg: 18px; --radius-pill: 100px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; font-size: 15px; line-height: 1.5; }
+    a { text-decoration: none; color: inherit; }
+    nav { background: var(--surface); border-bottom: 1px solid var(--border); padding: 0 32px; height: 60px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; }
+    .logo { font-family: 'Syne', sans-serif; font-size: 22px; font-weight: 700; letter-spacing: -0.5px; color: var(--text); }
+    .logo span { color: var(--orange); }
+    .nav-links { display: flex; align-items: center; gap: 28px; }
+    .nav-links a { font-size: 14px; color: var(--text-muted); font-weight: 400; }
+    .nav-right { display: flex; gap: 10px; align-items: center; }
+    .nav-btn { background: var(--orange); color: white; border: none; border-radius: var(--radius-pill); padding: 9px 20px; font-size: 14px; font-family: 'DM Sans', sans-serif; font-weight: 500; cursor: pointer; }
+    .nav-btn:hover { background: var(--orange-light); }
+    .nav-btn-ghost { background: transparent; color: var(--text-muted); border: 1px solid var(--border); border-radius: var(--radius-pill); padding: 9px 20px; font-size: 14px; font-family: 'DM Sans', sans-serif; cursor: pointer; }
+    .hero { padding: 52px 32px 36px; max-width: 760px; margin: 0 auto; text-align: center; }
+    .hero-kicker { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 500; color: var(--orange); background: var(--orange-dim); padding: 5px 14px; border-radius: var(--radius-pill); margin-bottom: 20px; letter-spacing: 0.03em; }
+    .hero h1 { font-family: 'Syne', sans-serif; font-size: 44px; font-weight: 700; line-height: 1.1; letter-spacing: -1.5px; color: var(--text); margin-bottom: 12px; }
+    .hero h1 em { font-style: normal; color: var(--orange); }
+    .hero p { font-size: 15px; color: var(--text-muted); margin-bottom: 28px; font-weight: 300; }
+    .search-wrap { display: flex; gap: 10px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 8px; margin-bottom: 14px; box-shadow: 0 2px 20px rgba(0,0,0,0.06); }
+    .search-icon { display: flex; align-items: center; padding: 0 4px 0 10px; color: var(--text-faint); }
+    .search-input { flex: 1; border: none; outline: none; font-size: 15px; font-family: 'DM Sans', sans-serif; color: var(--text); background: transparent; }
+    .search-input::placeholder { color: var(--text-faint); }
+    .search-divider { width: 1px; background: var(--border); margin: 4px 0; }
+    .location-btn { display: flex; align-items: center; gap: 6px; padding: 0 16px; font-size: 14px; color: var(--text-muted); background: none; border: none; cursor: pointer; font-family: 'DM Sans', sans-serif; white-space: nowrap; }
+    .search-btn { background: var(--orange); color: white; border: none; border-radius: var(--radius-md); padding: 12px 24px; font-size: 15px; font-family: 'DM Sans', sans-serif; font-weight: 500; cursor: pointer; white-space: nowrap; }
+    .search-btn:hover { background: var(--orange-light); }
+    .ai-btn { background: #111; color: white; border: none; border-radius: var(--radius-md); padding: 12px 20px; font-size: 14px; font-family: 'DM Sans', sans-serif; font-weight: 500; cursor: pointer; white-space: nowrap; }
+    .ai-btn:hover { background: #333; }
+    .source-pills { display: flex; justify-content: center; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
+    .pill { display: inline-flex; align-items: center; gap: 6px; padding: 7px 16px; border-radius: var(--radius-pill); border: 1px solid var(--border); font-size: 13px; color: var(--text-muted); background: var(--surface); cursor: pointer; transition: all 0.15s; }
+    .pill.active { background: var(--text); color: white; border-color: var(--text); }
+    .pill-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+    .popular { display: flex; justify-content: center; align-items: center; flex-wrap: wrap; gap: 8px; font-size: 13px; color: var(--text-faint); margin-top: 10px; }
+    .popular-tag { color: var(--text-muted); background: var(--surface); border: 1px solid var(--border); padding: 4px 12px; border-radius: var(--radius-pill); cursor: pointer; font-size: 13px; }
+    .popular-tag:hover { color: var(--orange); border-color: var(--orange); }
+    .stats-bar { background: var(--surface); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); padding: 16px 32px; display: flex; align-items: center; justify-content: center; gap: 40px; font-size: 13px; color: var(--text-muted); }
+    .stat { display: flex; align-items: center; gap: 8px; }
+    .stat-num { font-family: 'Syne', sans-serif; font-size: 18px; font-weight: 700; color: var(--text); }
+    .main { max-width: 1200px; margin: 0 auto; padding: 32px; display: grid; grid-template-columns: 260px 1fr; gap: 28px; align-items: start; }
+    .sidebar { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 22px; position: sticky; top: 80px; }
+    .sidebar-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+    .sidebar-title { font-family: 'Syne', sans-serif; font-size: 15px; font-weight: 600; }
+    .reset-btn { font-size: 12px; color: var(--orange); background: none; border: none; cursor: pointer; font-family: 'DM Sans', sans-serif; padding: 0; }
+    .filter-section { margin-bottom: 22px; padding-bottom: 22px; border-bottom: 1px solid var(--border); }
+    .filter-section:last-of-type { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+    .filter-label { font-size: 11px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.07em; color: var(--text-faint); margin-bottom: 12px; }
+    .check-item { display: flex; align-items: center; gap: 10px; padding: 5px 0; cursor: pointer; font-size: 13px; color: var(--text); }
+    .check-item input[type=checkbox] { accent-color: var(--orange); width: 15px; height: 15px; cursor: pointer; flex-shrink: 0; }
+    .check-count { margin-left: auto; font-size: 11px; color: var(--text-faint); background: var(--bg); padding: 1px 7px; border-radius: 20px; }
+    .source-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+    .price-inputs { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px; }
+    .price-input { border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 8px 10px; font-size: 13px; font-family: 'DM Sans', sans-serif; color: var(--text); background: var(--bg); outline: none; width: 100%; }
+    .price-input:focus { border-color: var(--orange); }
+    .filter-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+    .fchip { font-size: 12px; padding: 5px 12px; border-radius: var(--radius-pill); border: 1px solid var(--border); color: var(--text-muted); background: var(--bg); cursor: pointer; font-family: 'DM Sans', sans-serif; }
+    .fchip.active { background: var(--orange); color: white; border-color: var(--orange); }
+    .filter-select { width: 100%; border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 9px 10px; font-size: 13px; font-family: 'DM Sans', sans-serif; color: var(--text); background: var(--bg); outline: none; cursor: pointer; }
+    .apply-btn { width: 100%; background: var(--orange); color: white; border: none; border-radius: var(--radius-md); padding: 12px; font-size: 14px; font-weight: 500; font-family: 'DM Sans', sans-serif; cursor: pointer; margin-top: 18px; }
+    .apply-btn:hover { background: var(--orange-light); }
+    .results-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+    .results-count { font-size: 14px; color: var(--text-muted); }
+    .results-count strong { color: var(--text); }
+    .sort-select { border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 7px 10px; font-size: 13px; font-family: 'DM Sans', sans-serif; color: var(--text); background: var(--surface); outline: none; cursor: pointer; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 14px; }
+    .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; cursor: pointer; transition: border-color 0.15s, transform 0.15s; }
+    .card:hover { border-color: var(--border-hover); transform: translateY(-2px); }
+    .card-img { aspect-ratio: 4/3; background: var(--bg); display: flex; align-items: center; justify-content: center; overflow: hidden; }
+    .card-img img { width: 100%; height: 100%; object-fit: cover; }
+    .card-body { padding: 12px 14px 14px; }
+    .source-badge { display: inline-flex; align-items: center; gap: 4px; font-size: 10px; font-weight: 500; padding: 3px 8px; border-radius: var(--radius-pill); margin-bottom: 7px; }
+    .badge-olx { background: #e8f5e9; color: #1b5e20; }
+    .badge-fb { background: #e3f2fd; color: #0d47a1; }
+    .badge-njuskalo { background: #fff3e0; color: #bf360c; }
+    .badge-halo { background: #f3e5f5; color: #4a148c; }
+    .card-title { font-size: 13px; font-weight: 500; color: var(--text); margin-bottom: 6px; line-height: 1.35; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+    .card-price { font-family: 'Syne', sans-serif; font-size: 17px; font-weight: 700; color: var(--orange); margin-bottom: 4px; }
+    .card-meta { font-size: 11px; color: var(--text-faint); display: flex; align-items: center; gap: 4px; margin-bottom: 8px; }
+    .card-score { display: flex; align-items: center; gap: 6px; }
+    .score-bar-wrap { flex: 1; height: 3px; background: #f0f0f0; border-radius: 2px; }
+    .score-bar-fill { height: 3px; border-radius: 2px; }
+    .score-tag { font-size: 10px; padding: 2px 7px; border-radius: 10px; font-weight: 600; }
+    .tag-good { background: #EAF3DE; color: #27500A; }
+    .tag-warn { background: #FAEEDA; color: #633806; }
+    .tag-bad { background: #FCEBEB; color: #791F1F; }
+    .ai-box { margin-bottom: 20px; background: #111; border-radius: var(--radius-lg); padding: 18px 20px; }
+    .ai-box-title { font-size: 13px; font-weight: 700; color: var(--orange); margin-bottom: 8px; display: flex; align-items: center; gap: 8px; }
+    .ai-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--orange); }
+    .ai-box-text { font-size: 13px; color: #aaa; line-height: 1.7; white-space: pre-wrap; }
+    .load-more { text-align: center; margin-top: 28px; }
+    .load-btn { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-pill); padding: 12px 36px; font-size: 14px; font-family: 'DM Sans', sans-serif; color: var(--text-muted); cursor: pointer; }
+    .load-btn:hover { border-color: var(--border-hover); color: var(--text); }
+    footer { margin-top: 60px; border-top: 1px solid var(--border); background: var(--surface); padding: 32px; text-align: center; font-size: 13px; color: var(--text-faint); }
+    footer .footer-logo { font-family: 'Syne', sans-serif; font-size: 18px; font-weight: 700; color: var(--text); margin-bottom: 8px; }
+    footer .footer-logo span { color: var(--orange); }
     @media (max-width: 768px) {
-      nav {
-        padding: 0 16px;
-      }
-
-      .nav-links {
-        display: none;
-      }
-
-      .hero {
-        padding: 40px 16px 32px;
-      }
-
-      .hero h1 {
-        font-size: 32px;
-      }
-
-      .main {
-        grid-template-columns: 1fr;
-        padding: 16px;
-      }
-
-      .sidebar {
-        display: none;
-      }
-
-      .stats-bar {
-        gap: 20px;
-        flex-wrap: wrap;
-      }
+      nav { padding: 0 16px; }
+      .nav-links { display: none; }
+      .hero { padding: 40px 16px 32px; }
+      .hero h1 { font-size: 32px; }
+      .main { grid-template-columns: 1fr; padding: 16px; }
+      .sidebar { display: none; }
+      .stats-bar { gap: 20px; flex-wrap: wrap; }
     }
   </style>
 </head>
-
 <body>
 
-  <nav>
-    <div class="logo">oglix<span>.ba</span></div>
-    <div class="nav-links">
-      <a href="#">Kategorije</a>
-      <a href="#">Kako radi?</a>
-      <a href="/dashboard.html">Dashboard</a>
-    </div>
-    <div class="nav-right" id="navRight">
-      <button class="nav-btn-ghost" onclick="window.location.href='/login.html'">Prijava</button>
-      <button class="nav-btn" onclick="window.location.href='/login.html'">Registracija</button>
-    </div>
-  </nav>
-
-  <section class="hero">
-    <div class="hero-kicker">
-      <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
-        <circle cx="5" cy="5" r="4" fill="#e65c00" />
-      </svg>
-      Svi oglasi u BiH — na jednom mjestu
-    </div>
-    <h1>Pronađi šta tražiš.<br><em>Brže nego ikad.</em></h1>
-    <p>Pretražujemo OLX, Facebook Marketplace, Njuškalo i Halooglasi u realnom vremenu.</p>
-
-    <div class="search-wrap">
-      <div class="search-icon">
-        <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
-          <circle cx="8" cy="8" r="5.5" stroke="currentColor" stroke-width="1.5" />
-          <line x1="12.5" y1="12.5" x2="16" y2="16" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
-        </svg>
-      </div>
-      <input class="search-input" id="searchInput" type="text"
-        placeholder="Šta tražiš? npr. Golf 7 DSG, iPhone 15, sofa...">
-      <div class="search-divider"></div>
-      <button class="location-btn">
-        <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-          <circle cx="7" cy="5.5" r="2.5" stroke="currentColor" stroke-width="1.2" />
-          <path d="M2 13c0-2.76 2.24-5 5-5s5 2.24 5 5" stroke="currentColor" stroke-width="1.2"
-            stroke-linecap="round" />
-        </svg>
-        Sarajevo
-      </button>
-      <button class="ai-btn" onclick="aiAnaliza()">AI Analiza</button>
-      <button class="search-btn" onclick="pretrazi()">Traži</button>
-    </div>
-
-    <div class="source-pills">
-      <div class="pill active">Svi izvori</div>
-      <div class="pill"><span class="pill-dot" style="background:#43a047;"></span> OLX.ba</div>
-      <div class="pill"><span class="pill-dot" style="background:#1976d2;"></span> Facebook</div>
-      <div class="pill"><span class="pill-dot" style="background:#f57c00;"></span> Njuškalo</div>
-      <div class="pill"><span class="pill-dot" style="background:#8e24aa;"></span> Halooglasi</div>
-    </div>
-
-    <div class="popular">
-      <span>Popularno:</span>
-      <span class="popular-tag" onclick="quickSearch('Golf 7')">Golf 7</span>
-      <span class="popular-tag" onclick="quickSearch('iPhone 15')">iPhone 15</span>
-      <span class="popular-tag" onclick="quickSearch('PS5')">PS5</span>
-      <span class="popular-tag" onclick="quickSearch('stan Sarajevo')">stan Sarajevo</span>
-      <span class="popular-tag" onclick="quickSearch('laptop')">laptop</span>
-    </div>
-  </section>
-
-  <div class="stats-bar">
-    <div class="stat"><span class="stat-num">1M+</span><span>aktivnih oglasa</span></div>
-    <div class="stat" style="color:var(--border);font-size:20px;">|</div>
-    <div class="stat"><span class="stat-num">4</span><span>izvora istovremeno</span></div>
-    <div class="stat" style="color:var(--border);font-size:20px;">|</div>
-    <div class="stat"><span class="stat-num">AI</span><span>analiza i poređenje</span></div>
-    <div class="stat" style="color:var(--border);font-size:20px;">|</div>
-    <div class="stat"><span class="stat-num">besplatno</span><span>za kupce</span></div>
+<nav>
+  <div class="logo">oglix<span>.ba</span></div>
+  <div class="nav-links">
+    <a href="#">Kategorije</a>
+    <a href="#">Kako radi?</a>
+    <a href="/dashboard.html">Dashboard</a>
   </div>
+  <div class="nav-right" id="navRight">
+    <button class="nav-btn-ghost" onclick="window.location.href='/login.html'">Prijava</button>
+    <button class="nav-btn" onclick="window.location.href='/login.html'">Registracija</button>
+  </div>
+</nav>
 
-  <div class="main">
-    <aside class="sidebar">
-      <div class="sidebar-header">
-        <span class="sidebar-title">Filteri</span>
-        <button class="reset-btn" onclick="resetujFiltre()">Resetuj sve</button>
+<section class="hero">
+  <div class="hero-kicker">
+    <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><circle cx="5" cy="5" r="4" fill="#e65c00"/></svg>
+    Svi oglasi u BiH — na jednom mjestu
+  </div>
+  <h1>Pronađi šta tražiš.<br><em>Brže nego ikad.</em></h1>
+  <p>Pretražujemo OLX, Facebook Marketplace, Njuškalo i Halooglasi u realnom vremenu.</p>
+  <div class="search-wrap">
+    <div class="search-icon">
+      <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><circle cx="8" cy="8" r="5.5" stroke="currentColor" stroke-width="1.5"/><line x1="12.5" y1="12.5" x2="16" y2="16" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+    </div>
+    <input class="search-input" id="searchInput" type="text" placeholder="Šta tražiš? npr. Golf 7 DSG, iPhone 15, sofa...">
+    <div class="search-divider"></div>
+    <button class="location-btn">
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="5.5" r="2.5" stroke="currentColor" stroke-width="1.2"/><path d="M2 13c0-2.76 2.24-5 5-5s5 2.24 5 5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+      Sarajevo
+    </button>
+    <button class="ai-btn" onclick="aiAnaliza()">AI Analiza</button>
+    <button class="search-btn" onclick="pretrazi()">Traži</button>
+  </div>
+  <div class="source-pills">
+    <div class="pill active">Svi izvori</div>
+    <div class="pill"><span class="pill-dot" style="background:#43a047;"></span> OLX.ba</div>
+    <div class="pill"><span class="pill-dot" style="background:#1976d2;"></span> Facebook</div>
+    <div class="pill"><span class="pill-dot" style="background:#f57c00;"></span> Njuškalo</div>
+    <div class="pill"><span class="pill-dot" style="background:#8e24aa;"></span> Halooglasi</div>
+  </div>
+  <div class="popular">
+    <span>Popularno:</span>
+    <span class="popular-tag" onclick="quickSearch('Golf 7')">Golf 7</span>
+    <span class="popular-tag" onclick="quickSearch('iPhone 15')">iPhone 15</span>
+    <span class="popular-tag" onclick="quickSearch('PS5')">PS5</span>
+    <span class="popular-tag" onclick="quickSearch('stan Sarajevo')">stan Sarajevo</span>
+    <span class="popular-tag" onclick="quickSearch('laptop')">laptop</span>
+  </div>
+</section>
+
+<div class="stats-bar">
+  <div class="stat"><span class="stat-num">1M+</span><span>aktivnih oglasa</span></div>
+  <div class="stat" style="color:var(--border);font-size:20px;">|</div>
+  <div class="stat"><span class="stat-num">4</span><span>izvora istovremeno</span></div>
+  <div class="stat" style="color:var(--border);font-size:20px;">|</div>
+  <div class="stat"><span class="stat-num">AI</span><span>analiza i poređenje</span></div>
+  <div class="stat" style="color:var(--border);font-size:20px;">|</div>
+  <div class="stat"><span class="stat-num">besplatno</span><span>za kupce</span></div>
+</div>
+
+<div class="main">
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <span class="sidebar-title">Filteri</span>
+      <button class="reset-btn" onclick="resetujFiltre()">Resetuj sve</button>
+    </div>
+    <div class="filter-section">
+      <div class="filter-label">Izvor</div>
+      <label class="check-item"><input type="checkbox" checked><span class="source-dot" style="background:#43a047;"></span>OLX.ba<span class="check-count">18.420</span></label>
+      <label class="check-item"><input type="checkbox" checked><span class="source-dot" style="background:#1976d2;"></span>Facebook<span class="check-count">14.302</span></label>
+      <label class="check-item"><input type="checkbox"><span class="source-dot" style="background:#f57c00;"></span>Njuškalo<span class="check-count">8.718</span></label>
+      <label class="check-item"><input type="checkbox"><span class="source-dot" style="background:#8e24aa;"></span>Halooglasi<span class="check-count">5.844</span></label>
+    </div>
+    <div class="filter-section">
+      <div class="filter-label">Kategorija</div>
+      <div id="kategorijeList"><div style="color:#999;font-size:13px;">Učitavanje...</div></div>
+    </div>
+    <div class="filter-section">
+      <div class="filter-label">Cijena (KM)</div>
+      <div class="price-inputs">
+        <input class="price-input" type="number" placeholder="Od" id="cijenaOd">
+        <input class="price-input" type="number" placeholder="Do" id="cijenaDo">
       </div>
-
-      <div class="filter-section">
-        <div class="filter-label">Izvor</div>
-        <label class="check-item"><input type="checkbox" checked><span class="source-dot"
-            style="background:#43a047;"></span>OLX.ba<span class="check-count">18.420</span></label>
-        <label class="check-item"><input type="checkbox" checked><span class="source-dot"
-            style="background:#1976d2;"></span>Facebook<span class="check-count">14.302</span></label>
-        <label class="check-item"><input type="checkbox"><span class="source-dot"
-            style="background:#f57c00;"></span>Njuškalo<span class="check-count">8.718</span></label>
-        <label class="check-item"><input type="checkbox"><span class="source-dot"
-            style="background:#8e24aa;"></span>Halooglasi<span class="check-count">5.844</span></label>
+      <input type="range" min="0" max="50000" value="50000" id="cijenaRange" style="width:100%;accent-color:var(--orange);" oninput="document.getElementById('cijenaDo').value = this.value > 49999 ? '' : this.value">
+    </div>
+    <div class="filter-section">
+      <div class="filter-label">Stanje</div>
+      <div class="filter-chips" id="stanjeChips">
+        <span class="fchip active" onclick="odaberStanje('sve', this)">Sve</span>
+        <span class="fchip" onclick="odaberStanje('novo', this)">Novo</span>
+        <span class="fchip" onclick="odaberStanje('polovno', this)">Polovno</span>
       </div>
-
-      <div class="filter-section">
-        <div class="filter-label">Kategorija</div>
-        <div id="kategorijeList">
-          <div style="color:#999;font-size:13px;">Učitavanje...</div>
-        </div>
+    </div>
+    <div class="filter-section">
+      <div class="filter-label">Lokacija</div>
+      <select class="filter-select" id="filterLokacija">
+        <option value="">Cijela BiH</option>
+        <option value="Sarajevo">Sarajevo</option>
+        <option value="Banja Luka">Banja Luka</option>
+        <option value="Mostar">Mostar</option>
+        <option value="Tuzla">Tuzla</option>
+        <option value="Zenica">Zenica</option>
+        <option value="Živinice">Živinice</option>
+      </select>
+    </div>
+    <div class="filter-section">
+      <div class="filter-label">Datum objave</div>
+      <div class="filter-chips" id="datumChips">
+        <span class="fchip" onclick="odaberDatum('danas', this)">Danas</span>
+        <span class="fchip active" onclick="odaberDatum('sedmica', this)">Sedmica</span>
+        <span class="fchip" onclick="odaberDatum('mjesec', this)">Mjesec</span>
+        <span class="fchip" onclick="odaberDatum('sve', this)">Sve</span>
       </div>
+    </div>
+    <button class="apply-btn" onclick="primijeniFiltre()">Primijeni filtere</button>
+  </aside>
 
-      <div class="filter-section">
-        <div class="filter-label">Cijena (KM)</div>
-        <div class="price-inputs">
-          <input class="price-input" type="number" placeholder="Od" id="cijenaOd">
-          <input class="price-input" type="number" placeholder="Do" id="cijenaDo">
-        </div>
-        <input type="range" min="0" max="50000" value="50000" id="cijenaRange"
-          style="width:100%;accent-color:var(--orange);"
-          oninput="document.getElementById('cijenaDo').value = this.value > 49999 ? '' : this.value">
-      </div>
-
-      <div class="filter-section">
-        <div class="filter-label">Stanje</div>
-        <div class="filter-chips" id="stanjeChips">
-          <span class="fchip active" onclick="odaberStanje('sve', this)">Sve</span>
-          <span class="fchip" onclick="odaberStanje('novo', this)">Novo</span>
-          <span class="fchip" onclick="odaberStanje('polovno', this)">Polovno</span>
-        </div>
-      </div>
-
-      <div class="filter-section">
-        <div class="filter-label">Lokacija</div>
-        <select class="filter-select" id="filterLokacija">
-          <option value="">Cijela BiH</option>
-          <option value="Sarajevo">Sarajevo</option>
-          <option value="Banja Luka">Banja Luka</option>
-          <option value="Mostar">Mostar</option>
-          <option value="Tuzla">Tuzla</option>
-          <option value="Zenica">Zenica</option>
-          <option value="Živinice">Živinice</option>
-        </select>
-      </div>
-
-      <div class="filter-section">
-        <div class="filter-label">Datum objave</div>
-        <div class="filter-chips" id="datumChips">
-          <span class="fchip" onclick="odaberDatum('danas', this)">Danas</span>
-          <span class="fchip active" onclick="odaberDatum('sedmica', this)">Sedmica</span>
-          <span class="fchip" onclick="odaberDatum('mjesec', this)">Mjesec</span>
-          <span class="fchip" onclick="odaberDatum('sve', this)">Sve</span>
-        </div>
-      </div>
-
-      <button class="apply-btn" onclick="primijeniFiltre()">Primijeni filtere</button>
-    </aside>
-
-    <div>
-      <div id="ai-analiza-box" style="display:none;" class="ai-box">
-        <div class="ai-box-title">
-          <div class="ai-dot"></div> Oglix AI Analiza
-        </div>
-        <div class="ai-box-text" id="ai-analiza-tekst">Analiziram oglase...</div>
-      </div>
-
-      <div class="results-header">
-        <div class="results-count">Pronađeno <strong id="rezultatiBroj">0</strong> oglasa</div>
-        <select class="sort-select" onchange="sortirajSelect(this.value)">
-          <option value="novo">Najnoviji</option>
-          <option value="cijena_asc">Najjeftiniji</option>
-          <option value="cijena_desc">Najskuplji</option>
-          <option value="score">AI Score</option>
-        </select>
-      </div>
-
-      <div class="grid" id="oglasiGrid"></div>
-
-      <div class="load-more">
-        <button class="load-btn" onclick="ucitajJos()">Učitaj još oglasa</button>
-      </div>
+  <div>
+    <div id="ai-analiza-box" style="display:none;" class="ai-box">
+      <div class="ai-box-title"><div class="ai-dot"></div> Oglix AI Analiza</div>
+      <div class="ai-box-text" id="ai-analiza-tekst">Analiziram oglase...</div>
+    </div>
+    <div class="results-header">
+      <div class="results-count">Pronađeno <strong id="rezultatiBroj">0</strong> oglasa</div>
+      <select class="sort-select" onchange="sortirajSelect(this.value)">
+        <option value="novo">Najnoviji</option>
+        <option value="cijena_asc">Najjeftiniji</option>
+        <option value="cijena_desc">Najskuplji</option>
+        <option value="score">AI Score</option>
+      </select>
+    </div>
+    <div class="grid" id="oglasiGrid"></div>
+    <div class="load-more">
+      <button class="load-btn" onclick="ucitajJos()">Učitaj još oglasa</button>
     </div>
   </div>
+</div>
 
-  <footer>
-    <div class="footer-logo">oglix<span>.ba</span></div>
-    <p>Agregator oglasa za Bosnu i Hercegovinu · Nisu naši oglasi, mi ih samo skupljamo.</p>
-    <p style="margin-top:8px;">© 2026 oglix.ba</p>
-  </footer>
+<footer>
+  <div class="footer-logo">oglix<span>.ba</span></div>
+  <p>Agregator oglasa za Bosnu i Hercegovinu · Nisu naši oglasi, mi ih samo skupljamo.</p>
+  <p style="margin-top:8px;">© 2026 oglix.ba</p>
+</footer>
 
-  <script src="oglasi.js"></script> 
-  <script>  
+<div id="oglasiModal" onclick="if(event.target===this)zatvoriModal()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:1000;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(4px);">
+  <div style="background:white;border-radius:20px;padding:32px;max-width:780px;width:100%;max-height:90vh;overflow-y:auto;position:relative;box-shadow:0 20px 60px rgba(0,0,0,0.3);">
+    <button onclick="zatvoriModal()" style="position:absolute;top:16px;right:16px;background:#f0f0f0;border:none;width:36px;height:36px;border-radius:50%;cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center;">×</button>
+    <div id="modalSadrzaj"></div>
+  </div>
+</div>
+
+<script src="oglasi.js"></script>
+<script>
+// --- URL params ---
 var urlParams = new URLSearchParams(window.location.search);
 var urlQ = urlParams.get('q');
-    // --- State ---
-    var aktivnoStanje = 'sve';
-    var aktivniDatum = 'sedmica';
-    var trenutnoFiltrirani = [];
 
-    // --- Prikaz oglasa ---
-    function prikaziOglase(oglasi) {
-    var grid = document.getElementById('oglasiGrid');
-    var broj = document.getElementById('rezultatiBroj');
-    trenutnoFiltrirani = oglasi;
-    broj.textContent = oglasi.length;
+// --- State ---
+var aktivnoStanje = 'sve';
+var aktivniDatum = 'sedmica';
+var trenutnoFiltrirani = [];
+var trenutnaStrana = 0;
+var OGLASI_PO_STRANI = 12;
 
-    if (oglasi.length === 0) {
-        grid.innerHTML = '<div style="padding:40px;text-align:center;color:#aaa;grid-column:1/-1;">Nema rezultata.</div>';
-        return;
-    }
-
-    var badgeClass = { olx: 'badge-olx', njuskalo: 'badge-njuskalo', facebook: 'badge-fb', halooglasi: 'badge-halo' };
-    var scoreColor = function(s) { return s >= 75 ? '#639922' : s >= 50 ? '#BA7517' : '#A32D2D'; };
-
-    grid.innerHTML = oglasi.map(function(o, i) {
-        return '<div class="card" onclick="otvoriModal(' + i + ')">' +
-            '<div class="card-img">' +
-            (o.slika ? '<img src="' + o.slika + '" alt="' + o.naslov + '" onerror="this.style.display=\'none\'">' : '<svg width="56" height="56" viewBox="0 0 56 56" fill="none"><ellipse cx="28" cy="36" rx="18" ry="10" stroke="#aaa" stroke-width="2"/><path d="M10 36 Q10 20 28 17 Q46 20 46 36" stroke="#aaa" stroke-width="2" fill="none"/></svg>') +
-            '</div>' +
-            '<div class="card-body">' +
-            '<span class="source-badge ' + (badgeClass[o.platforma] || 'badge-olx') + '">' + o.platforma.toUpperCase() + '</span>' +
-            '<div class="card-title">' + o.naslov + '</div>' +
-            '<div class="card-price">' + o.cijenaStr + '</div>' +
-            '<div class="card-meta">📍 ' + o.lokacija + ' · ' + o.datum + '</div>' +
-            '<div class="card-score">' +
-            '<span class="score-tag tag-' + o.aiTag + '">' + o.aiLabel + '</span>' +
-            '<div class="score-bar-wrap"><div class="score-bar-fill" style="width:' + o.score + '%;background:' + scoreColor(o.score) + ';"></div></div>' +
-            '<span style="font-size:11px;font-weight:600;color:' + scoreColor(o.score) + ';">' + o.score + '</span>' +
-            '</div></div></div>';
-    }).join('');
+// --- Helper ---
+function mapOglas(o) {
+  return {
+    id: o.id, naslov: o.naslov,
+    cijena: parseFloat(o.cijena.replace(/[^0-9.]/g, '')) || 0,
+    cijenaStr: o.cijena, lokacija: 'BiH',
+    platforma: o.platforma || 'olx', slika: o.slika, link: o.link,
+    datum: new Date(o.datum).toLocaleDateString('bs-BA'),
+    score: 75, aiTag: 'good', aiLabel: 'Live oglas',
+    kategorija: o.kategorija || 'ostalo', stanje: 'polovno', detalji: o.naslov
+  };
 }
 
+// --- Navbar ---
+function updateNavbar() {
+  var korisnik = JSON.parse(localStorage.getItem('korisnik') || 'null');
+  var navRight = document.getElementById('navRight');
+  if (korisnik) {
+    navRight.innerHTML =
+      '<span style="font-size:14px;color:var(--text-muted);margin-right:8px;">Zdravo, <strong>' + korisnik.ime.split(' ')[0] + '</strong></span>' +
+      '<button class="nav-btn-ghost" onclick="window.location.href=\'/dashboard.html\'">Dashboard</button>' +
+      '<button class="nav-btn" onclick="odjava()">Odjava</button>';
+  }
+}
+
+function odjava() {
+  localStorage.removeItem('korisnik');
+  window.location.href = '/login.html';
+}
+
+// --- Prikaz oglasa ---
+function prikaziOglase(oglasi) {
+  var grid = document.getElementById('oglasiGrid');
+  var broj = document.getElementById('rezultatiBroj');
+  trenutnoFiltrirani = oglasi;
+  broj.textContent = oglasi.length;
+  if (oglasi.length === 0) {
+    grid.innerHTML = '<div style="padding:40px;text-align:center;color:#aaa;grid-column:1/-1;">Nema rezultata.</div>';
+    return;
+  }
+  var badgeClass = { olx: 'badge-olx', njuskalo: 'badge-njuskalo', facebook: 'badge-fb', halooglasi: 'badge-halo' };
+  var scoreColor = function(s) { return s >= 75 ? '#639922' : s >= 50 ? '#BA7517' : '#A32D2D'; };
+  grid.innerHTML = oglasi.map(function(o, i) {
+    return '<div class="card" onclick="otvoriModal(' + i + ')">' +
+      '<div class="card-img">' +
+      (o.slika ? '<img src="' + o.slika + '" alt="' + o.naslov + '" onerror="this.style.display=\'none\'">' : '<svg width="56" height="56" viewBox="0 0 56 56" fill="none"><ellipse cx="28" cy="36" rx="18" ry="10" stroke="#aaa" stroke-width="2"/><path d="M10 36 Q10 20 28 17 Q46 20 46 36" stroke="#aaa" stroke-width="2" fill="none"/></svg>') +
+      '</div><div class="card-body">' +
+      '<span class="source-badge ' + (badgeClass[o.platforma] || 'badge-olx') + '">' + o.platforma.toUpperCase() + '</span>' +
+      '<div class="card-title">' + o.naslov + '</div>' +
+      '<div class="card-price">' + o.cijenaStr + '</div>' +
+      '<div class="card-meta">📍 ' + o.lokacija + ' · ' + o.datum + '</div>' +
+      '<div class="card-score"><span class="score-tag tag-' + o.aiTag + '">' + o.aiLabel + '</span>' +
+      '<div class="score-bar-wrap"><div class="score-bar-fill" style="width:' + o.score + '%;background:' + scoreColor(o.score) + ';"></div></div>' +
+      '<span style="font-size:11px;font-weight:600;color:' + scoreColor(o.score) + ';">' + o.score + '</span>' +
+      '</div></div></div>';
+  }).join('');
+}
+
+// --- Modal ---
 function otvoriModal(index) {
-    var o = trenutnoFiltrirani[index];
-    if (!o) return;
+  var o = trenutnoFiltrirani[index];
+  if (!o) return;
 
-    // Slični oglasi — ista kategorija, slična cijena ±30%
-    var slicni = trenutnoFiltrirani.filter(function(s, i) {
-        return i !== index && 
-               s.kategorija === o.kategorija && 
-               s.cijena >= o.cijena * 0.7 && 
-               s.cijena <= o.cijena * 1.3;
-    }).slice(0, 6);
+  var slicni = trenutnoFiltrirani.filter(function(s, i) {
+    return i !== index && s.kategorija === o.kategorija &&
+      s.cijena >= o.cijena * 0.7 && s.cijena <= o.cijena * 1.3;
+  }).slice(0, 6);
 
-    var modal = document.getElementById('oglasiModal');
-    var scoreColor = o.score >= 75 ? '#639922' : o.score >= 50 ? '#BA7517' : '#A32D2D';
+  var modal = document.getElementById('oglasiModal');
 
-    document.getElementById('modalSadrzaj').innerHTML = `
-        <div style="display:flex;gap:24px;align-items:flex-start;flex-wrap:wrap;">
-            <div style="flex:1;min-width:200px;">
-                ${o.slika ? 
-                    `<img src="${o.slika}" alt="${o.naslov}" style="width:100%;border-radius:12px;object-fit:cover;max-height:280px;">` : 
-                    `<div style="width:100%;height:200px;background:#f0f0f0;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:48px;">🖼️</div>`
-                }
+  document.getElementById('modalSadrzaj').innerHTML = `
+    <div style="display:flex;gap:24px;align-items:flex-start;flex-wrap:wrap;">
+      <div style="flex:1;min-width:200px;">
+        ${o.slika ? `<img src="${o.slika}" alt="${o.naslov}" style="width:100%;border-radius:12px;object-fit:cover;max-height:280px;">` : `<div style="width:100%;height:200px;background:#f0f0f0;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:48px;">🖼️</div>`}
+      </div>
+      <div style="flex:1;min-width:240px;">
+        <div style="font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:#999;margin-bottom:8px;">${o.platforma.toUpperCase()}</div>
+        <div style="font-size:20px;font-weight:700;color:#1a1a1a;line-height:1.3;margin-bottom:12px;">${o.naslov}</div>
+        <div style="font-size:28px;font-weight:800;color:#e65c00;margin-bottom:16px;">${o.cijenaStr}</div>
+        <div style="font-size:13px;color:#888;margin-bottom:8px;">📍 ${o.lokacija}</div>
+        <div style="font-size:13px;color:#888;margin-bottom:16px;">📅 ${o.datum}</div>
+        <div id="aiAnalizaBox" style="background:#f8f8f8;border-radius:10px;padding:14px;margin-bottom:20px;">
+          <div style="font-size:12px;color:#999;margin-bottom:8px;font-weight:600;">🤖 Oglix AI Analiza</div>
+          <div id="aiAnalizaTekst" style="font-size:13px;color:#666;line-height:1.6;">
+            <div style="display:flex;align-items:center;gap:8px;color:#aaa;">
+              <div style="width:16px;height:16px;border:2px solid #e65c00;border-top-color:transparent;border-radius:50%;animation:spin 0.8s linear infinite;"></div>
+              Analiziram oglas...
             </div>
-            <div style="flex:1;min-width:240px;">
-                <div style="font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:#999;margin-bottom:8px;">${o.platforma.toUpperCase()}</div>
-                <div style="font-size:20px;font-weight:700;color:#1a1a1a;line-height:1.3;margin-bottom:12px;">${o.naslov}</div>
-                <div style="font-size:28px;font-weight:800;color:#e65c00;margin-bottom:16px;">${o.cijenaStr}</div>
-                <div style="font-size:13px;color:#888;margin-bottom:8px;">📍 ${o.lokacija}</div>
-                <div style="font-size:13px;color:#888;margin-bottom:16px;">📅 ${o.datum}</div>
-
-                </div>
-               <div id="aiAnalizaBox" style="background:#f8f8f8;border-radius:10px;padding:14px;margin-bottom:20px;">
-                    <div style="font-size:12px;color:#999;margin-bottom:8px;font-weight:600;">🤖 Oglix AI Analiza</div>
-                    <div id="aiAnalizaTekst" style="font-size:13px;color:#666;line-height:1.6;">
-                        <div style="display:flex;align-items:center;gap:8px;color:#aaa;">
-                            <div style="width:16px;height:16px;border:2px solid #e65c00;border-top-color:transparent;border-radius:50%;animation:spin 0.8s linear infinite;"></div>
-                            Analiziram oglas...
-                        </div>
-                    </div>
-                </div>
-
-                <div style="display:flex;gap:10px;margin-top:16px;">
-    <a href="${o.link}" target="_blank" style="flex:1;background:#e65c00;color:white;text-align:center;padding:14px;border-radius:10px;font-size:15px;font-weight:600;text-decoration:none;" onmouseover="this.style.background='#c94d00'" onmouseout="this.style.background='#e65c00'">
-        Pogledaj na OLX →
-    </a>
-    <button onclick="pratiOglas('${o.naslov}')" style="flex:1;background:white;color:#e65c00;border:2px solid #e65c00;text-align:center;padding:14px;border-radius:10px;font-size:15px;font-weight:600;cursor:pointer;" onmouseover="this.style.background='#fff5f0'" onmouseout="this.style.background='white'">
-        🔔 Prati oglas
-    </button>
-</div>
-            
-                </a>
-            </div>
+          </div>
         </div>
+        <div style="display:flex;gap:10px;">
+          <a href="${o.link}" target="_blank" style="flex:1;background:#e65c00;color:white;text-align:center;padding:14px;border-radius:10px;font-size:15px;font-weight:600;text-decoration:none;" onmouseover="this.style.background='#c94d00'" onmouseout="this.style.background='#e65c00'">
+            Pogledaj na OLX →
+          </a>
+          <button onclick="pratiOglas('${o.naslov.replace(/'/g, "\\'")}')" style="flex:1;background:white;color:#e65c00;border:2px solid #e65c00;text-align:center;padding:14px;border-radius:10px;font-size:15px;font-weight:600;cursor:pointer;" onmouseover="this.style.background='#fff5f0'" onmouseout="this.style.background='white'">
+            🔔 Prati oglas
+          </button>
+        </div>
+      </div>
+    </div>
+    ${slicni.length > 0 ? `
+    <div style="margin-top:32px;border-top:1px solid #f0f0f0;padding-top:24px;">
+      <div style="font-size:13px;font-weight:600;color:#999;text-transform:uppercase;letter-spacing:1px;margin-bottom:16px;">Slični oglasi</div>
+      <div style="display:flex;gap:12px;overflow-x:auto;padding-bottom:8px;">
+        ${slicni.map(function(s) {
+          var sc = s.score >= 75 ? '#639922' : s.score >= 50 ? '#BA7517' : '#A32D2D';
+          return `<div onclick="otvoriModal(${trenutnoFiltrirani.indexOf(s)})" style="min-width:180px;background:#f8f8f8;border-radius:12px;padding:14px;cursor:pointer;border:2px solid transparent;transition:border-color 0.2s;" onmouseover="this.style.borderColor='#e65c00'" onmouseout="this.style.borderColor='transparent'">
+            ${s.slika ? `<img src="${s.slika}" style="width:100%;height:100px;object-fit:cover;border-radius:8px;margin-bottom:10px;">` : `<div style="width:100%;height:100px;background:#e0e0e0;border-radius:8px;margin-bottom:10px;display:flex;align-items:center;justify-content:center;">🖼️</div>`}
+            <div style="font-size:12px;font-weight:600;color:#1a1a1a;line-height:1.3;margin-bottom:6px;">${s.naslov.substring(0,40)}${s.naslov.length>40?'...':''}</div>
+            <div style="font-size:14px;font-weight:700;color:#e65c00;margin-bottom:6px;">${s.cijenaStr}</div>
+            <div style="font-size:11px;font-weight:600;color:${sc};">${s.aiLabel}</div>
+          </div>`;
+        }).join('')}
+      </div>
+    </div>` : ''}
+  `;
 
-        ${slicni.length > 0 ? `
-        <div style="margin-top:32px;border-top:1px solid #f0f0f0;padding-top:24px;">
-            <div style="font-size:13px;font-weight:600;color:#999;text-transform:uppercase;letter-spacing:1px;margin-bottom:16px;">Slični oglasi</div>
-            <div style="display:flex;gap:12px;overflow-x:auto;padding-bottom:8px;">
-                ${slicni.map(function(s, si) {
-                    var sc = s.score >= 75 ? '#639922' : s.score >= 50 ? '#BA7517' : '#A32D2D';
-                    return `<div onclick="otvoriModal(${trenutnoFiltrirani.indexOf(s)})" style="min-width:180px;background:#f8f8f8;border-radius:12px;padding:14px;cursor:pointer;border:2px solid transparent;transition:border-color 0.2s;" onmouseover="this.style.borderColor='#e65c00'" onmouseout="this.style.borderColor='transparent'">
-                        ${s.slika ? `<img src="${s.slika}" style="width:100%;height:100px;object-fit:cover;border-radius:8px;margin-bottom:10px;">` : `<div style="width:100%;height:100px;background:#e0e0e0;border-radius:8px;margin-bottom:10px;display:flex;align-items:center;justify-content:center;">🖼️</div>`}
-                        <div style="font-size:12px;font-weight:600;color:#1a1a1a;line-height:1.3;margin-bottom:6px;">${s.naslov.substring(0,40)}${s.naslov.length>40?'...':''}</div>
-                        <div style="font-size:14px;font-weight:700;color:#e65c00;margin-bottom:6px;">${s.cijenaStr}</div>
-                        <div style="font-size:11px;font-weight:600;color:${sc};">${s.aiLabel}</div>
-                    </div>`;
-                }).join('')}
-            </div>
-        </div>` : ''}
-    `;
+  modal.style.display = 'flex';
+  document.body.style.overflow = 'hidden';
 
-    modal.style.display = 'flex';
-    document.body.style.overflow = 'hidden';
-
-    // Pozovi AI analizu
-    fetch('/api/analiza-jednog-oglasa', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ oglas: o, slicni: slicni })
-    })
-    .then(r => r.json())
-    .then(data => {
-        if (data.uspjeh) {
-            var tekst = data.analiza
-                .replace(/OCJENA:\s*([^\n]+)/g, '<div style="display:inline-block;background:#e65c00;color:white;padding:3px 10px;border-radius:6px;font-size:12px;font-weight:700;margin-bottom:8px;">$1</div>')
-                .replace(/CIJENA:\s*([^\n]+)/g, '<div style="margin-bottom:6px;"><strong style="color:#333;">💰 Cijena:</strong> $1</div>')
-                .replace(/SAVJET:\s*([^\n]+)/g, '<div style="margin-bottom:6px;"><strong style="color:#333;">💡 Savjet:</strong> $1</div>')
-                .replace(/SCORE:\s*(\d+)/g, '');
-            document.getElementById('aiAnalizaTekst').innerHTML = tekst;
-        } else {
-            document.getElementById('aiAnalizaTekst').innerHTML = 'Analiza trenutno nije dostupna.';
-        }
-    })
-    .catch(() => {
-        document.getElementById('aiAnalizaTekst').innerHTML = 'Analiza trenutno nije dostupna.';
-    });
+  fetch('/api/analiza-jednog-oglasa', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ oglas: o, slicni: slicni })
+  })
+  .then(r => r.json())
+  .then(data => {
+    if (data.uspjeh) {
+      var tekst = data.analiza
+        .replace(/OCJENA:\s*([^\n]+)/g, '<div style="display:inline-block;background:#e65c00;color:white;padding:3px 10px;border-radius:6px;font-size:12px;font-weight:700;margin-bottom:8px;">$1</div>')
+        .replace(/CIJENA:\s*([^\n]+)/g, '<div style="margin-bottom:6px;"><strong style="color:#333;">💰 Cijena:</strong> $1</div>')
+        .replace(/SAVJET:\s*([^\n]+)/g, '<div style="margin-bottom:6px;"><strong style="color:#333;">💡 Savjet:</strong> $1</div>')
+        .replace(/SCORE:\s*(\d+)/g, '');
+      document.getElementById('aiAnalizaTekst').innerHTML = tekst;
+    } else {
+      document.getElementById('aiAnalizaTekst').innerHTML = 'Analiza trenutno nije dostupna.';
+    }
+  })
+  .catch(() => { document.getElementById('aiAnalizaTekst').innerHTML = 'Analiza trenutno nije dostupna.'; });
 }
 
 function zatvoriModal() {
-    document.getElementById('oglasiModal').style.display = 'none';
-    document.body.style.overflow = '';
+  document.getElementById('oglasiModal').style.display = 'none';
+  document.body.style.overflow = '';
 }
 
-    // --- Pretraga ---
-    async function pretrazi() {
-    var query = document.getElementById('searchInput').value.trim();
-    
-    try {
-        var url = '/api/live-oglasi?limit=50' + (query ? '&q=' + encodeURIComponent(query) : '');
-        var res = await fetch(url);
-        var data = await res.json();
-
-        if (data.uspjeh && data.oglasi.length > 0) {
-            var oglasi = data.oglasi.map(function(o) {
-                return {
-                    id: o.id,
-                    naslov: o.naslov,
-                    cijena: parseFloat(o.cijena.replace(/[^0-9.]/g, '')) || 0,
-                    cijenaStr: o.cijena,
-                    lokacija: 'BiH',
-                    platforma: o.platforma || 'olx',
-                    slika: o.slika,
-                    link: o.link,
-                    datum: new Date(o.datum).toLocaleDateString('bs-BA'),
-                    score: 75,
-                    aiTag: 'good',
-                    aiLabel: 'Live oglas',
-                    kategorija: o.kategorija || 'ostalo',
-                    stanje: 'polovno',
-                    detalji: o.naslov
-                };
-            });
-            trenutnoFiltrirani = oglasi;
-            prikaziOglase(oglasi);
-        } else {
-            document.getElementById('oglasiGrid').innerHTML = '<div style="padding:40px;text-align:center;color:#aaa;grid-column:1/-1;">Nema rezultata za "' + query + '".<br><br><a href="https://www.olx.ba/pretraga?keywords=' + encodeURIComponent(query) + '" target="_blank" style="color:#e65c00;">Pretraži na OLX.ba →</a></div>';
-            document.getElementById('rezultatiBroj').textContent = '0';
-        }
-    } catch(e) {
-        console.log('Greška pretrage:', e.message);
-    }
+// --- Prati oglas ---
+function pratiOglas(pretraga) {
+  var korisnik = JSON.parse(localStorage.getItem('korisnik') || 'null');
+  if (!korisnik) {
+    alert('Moraš biti prijavljen da pratiš oglase!');
+    window.location.href = '/login.html';
+    return;
+  }
+  fetch('/pracenje', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email: korisnik.email, pretraga: pretraga })
+  })
+  .then(r => r.json())
+  .then(data => { if (data.uspjeh) alert('Oglas dodan u praćenja! 🔔'); });
 }
 
-    // --- Sortiranje ---
-    function sortirajSelect(tip) {
-      var lista = trenutnoFiltrirani.length > 0 ? [...trenutnoFiltrirani] : [...demoOglasi];
-      switch (tip) {
-        case 'cijena_asc': lista.sort(function (a, b) { return a.cijena - b.cijena; }); break;
-        case 'cijena_desc': lista.sort(function (a, b) { return b.cijena - a.cijena; }); break;
-        case 'score': lista.sort(function (a, b) { return b.score - a.score; }); break;
-      }
-      prikaziOglase(lista);
-    }
-
-    // --- Filteri ---
-    function odaberStanje(stanje, el) {
-      aktivnoStanje = stanje;
-      document.querySelectorAll('#stanjeChips .fchip').forEach(function (c) { c.classList.remove('active'); });
-      el.classList.add('active');
-    }
-
-    function odaberDatum(datum, el) {
-      aktivniDatum = datum;
-      document.querySelectorAll('#datumChips .fchip').forEach(function (c) { c.classList.remove('active'); });
-      el.classList.add('active');
-    }
-
-   async function primijeniFiltre() {
-    var cijenaOd = parseFloat(document.getElementById('cijenaOd').value) || 0;
-    var cijenaDo = parseFloat(document.getElementById('cijenaDo').value) || Infinity;
-    var lokacija = document.getElementById('filterLokacija').value;
-    var query = document.getElementById('searchInput').value.trim();
-
-    var odabraneKat = [];
-    document.querySelectorAll('.kat-checkbox:checked').forEach(function(cb) {
-        odabraneKat.push(cb.value);
-    });
-
-    try {
-        var url = '/api/live-oglasi?limit=50';
-        if (query) url += '&q=' + encodeURIComponent(query);
-        if (odabraneKat.length > 0) url += '&kategorija=' + encodeURIComponent(odabraneKat.join(','));
-
-        var res = await fetch(url);
-        var data = await res.json();
-
-        if (data.uspjeh && data.oglasi.length > 0) {
-            var oglasi = data.oglasi.map(function(o) {
-                return {
-                    id: o.id,
-                    naslov: o.naslov,
-                    cijena: parseFloat(o.cijena.replace(/[^0-9.]/g, '')) || 0,
-                    cijenaStr: o.cijena,
-                    lokacija: 'BiH',
-                    platforma: o.platforma || 'olx',
-                    slika: o.slika,
-                    link: o.link,
-                    datum: new Date(o.datum).toLocaleDateString('bs-BA'),
-                    score: 75,
-                    aiTag: 'good',
-                    aiLabel: 'Live oglas',
-                    kategorija: o.kategorija || 'ostalo',
-                    stanje: 'polovno',
-                    detalji: o.naslov
-                };
-            });
-
-            // Filtriraj po cijeni lokalno
-            var filtrirani = oglasi.filter(function(o) {
-                return o.cijena >= cijenaOd && o.cijena <= cijenaDo;
-            });
-
-            trenutnoFiltrirani = filtrirani;
-            prikaziOglase(filtrirani);
-        } else {
-            prikaziOglase([]);
-        }
-    } catch(e) {
-        console.log('Greška filtera:', e.message);
-    }
-}
-    
-function resetujFiltre() {
-    document.getElementById('cijenaOd').value = '';
-    document.getElementById('cijenaDo').value = '';
-    document.getElementById('cijenaRange').value = 50000;
-    document.getElementById('filterLokacija').value = '';
-    document.getElementById('searchInput').value = '';
-    
-    // Reset dynamic kategorija checkboxova
-    document.querySelectorAll('.kat-checkbox').forEach(function(cb) {
-        cb.checked = false;
-    });
-
-    prikaziOglase(trenutnoFiltrirani);
-}
-
-    // --- AI Analiza ---
-    async function aiAnaliza() {
-      var box = document.getElementById('ai-analiza-box');
-      var tekst = document.getElementById('ai-analiza-tekst');
-      var query = document.getElementById('searchInput').value.trim();
-
-      box.style.display = 'block';
-      tekst.textContent = 'AI analizira oglase...';
-      box.scrollIntoView({ behavior: 'smooth' });
-
-      // Koristi trenutno filtrirane oglase, ne sve
-      var oglasZaAnalizu = trenutnoFiltrirani.length > 0 ? trenutnoFiltrirani : demoOglasi;
-
-      var res = await fetch('/ai-analiza', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          oglasi: oglasZaAnalizu.slice(0, 5),
-          pretraga: query || 'oglasi'
-        })
-      });
-
-      var data = await res.json();
-      tekst.textContent = data.uspjeh ? data.analiza : 'Greška pri analizi. Pokušaj ponovo.';
-    }
-
-    // --- Source pills ---
-    document.querySelectorAll('.pill').forEach(function (p) {
-      p.addEventListener('click', function () {
-        document.querySelectorAll('.pill').forEach(function (x) { x.classList.remove('active'); });
-        p.classList.add('active');
-      });
-    });
-
-    // --- Enter pretraga ---
-    document.getElementById('searchInput').addEventListener('keydown', function (e) {
-      if (e.key === 'Enter') pretrazi();
-    });
-
-    // --- Navbar ---
-    function updateNavbar() {
-      var korisnik = JSON.parse(localStorage.getItem('korisnik') || 'null');
-      var navRight = document.getElementById('navRight');
-      if (korisnik) {
-        navRight.innerHTML =
-          '<span style="font-size:14px;color:var(--text-muted);margin-right:8px;">Zdravo, <strong>' + korisnik.ime.split(' ')[0] + '</strong></span>' +
-          '<button class="nav-btn-ghost" onclick="window.location.href=\'/dashboard.html\'">Dashboard</button>' +
-          '<button class="nav-btn" onclick="odjava()">Odjava</button>';
-      }
-    }
-
-    function odjava() {
-      localStorage.removeItem('korisnik');
-      window.location.href = '/login.html';
-    }
-    var trenutnaStrana = 0;
-    var OGLASI_PO_STRANI = 12;
-
-    async function ucitajJos() {
-      trenutnaStrana++;
-      try {
-        var q = document.getElementById('searchInput').value.trim();
-        var url = '/api/live-oglasi?offset=' + (trenutnaStrana * OGLASI_PO_STRANI) + (q ? '&q=' + encodeURIComponent(q) : '');
-        var res = await fetch(url);
-        var data = await res.json();
-
-        if (data.uspjeh && data.oglasi.length > 0) {
-          var novi = data.oglasi.map(function (o) {
-            return {
-              id: o.id,
-              naslov: o.naslov,
-              cijena: parseFloat(o.cijena.replace(/[^0-9.]/g, '')) || 0,
-              cijenaStr: o.cijena,
-              lokacija: 'BiH',
-              platforma: o.platforma || 'olx',
-              slika: o.slika,
-              link: o.link,
-              datum: new Date(o.datum).toLocaleDateString('bs-BA'),
-              score: 75,
-              aiTag: 'good',
-              aiLabel: 'Live oglas',
-              kategorija: o.kategorija || 'ostalo',
-              stanje: 'polovno',
-              detalji: o.naslov
-            };
-          });
-
-          // Dodaj na postojeće, ne zamjenjuj
-          trenutnoFiltrirani = trenutnoFiltrirani.concat(novi);
-          prikaziOglase(trenutnoFiltrirani);
-        } else {
-          alert('Nema više oglasa!');
-        }
-      } catch (e) {
-        console.log('Greška:', e.message);
-      }
-    }
-    async function ucitajKategorije() {
-    try {
-        var res = await fetch('/api/kategorije');
-        var data = await res.json();
-        
-        if (!data.uspjeh || data.kategorije.length === 0) return;
-
-        var html = '';
-        data.kategorije.forEach(function(k) {
-            var ime = k.kategorija;
-            
-            if (ime === 'vozila') ime = 'Vozila';
-            else if (ime === 'vozila-opel') ime = 'Vozila - Opel';
-else if (ime === 'vozila-peugeot') ime = 'Vozila - Peugeot';
-else if (ime === 'vozila-renault') ime = 'Vozila - Renault';
-else if (ime === 'vozila-toyota') ime = 'Vozila - Toyota';
-else if (ime === 'vozila-honda') ime = 'Vozila - Honda';
-else if (ime === 'vozila-ford') ime = 'Vozila - Ford';
-else if (ime === 'vozila-skoda') ime = 'Vozila - Škoda';
-else if (ime === 'vozila-seat') ime = 'Vozila - Seat';
-else if (ime === 'vozila-fiat') ime = 'Vozila - Fiat';
-else if (ime === 'vozila-citroen') ime = 'Vozila - Citroën';
-else if (ime === 'vozila-hyundai') ime = 'Vozila - Hyundai';
-else if (ime === 'vozila-kia') ime = 'Vozila - Kia';
-else if (ime === 'vozila-mazda') ime = 'Vozila - Mazda';
-else if (ime === 'vozila-nissan') ime = 'Vozila - Nissan';
-else if (ime === 'vozila-suzuki') ime = 'Vozila - Suzuki';
-else if (ime === 'vozila-volvo') ime = 'Vozila - Volvo';
-else if (ime === 'vozila-porsche') ime = 'Vozila - Porsche';
-else if (ime === 'vozila-landrover') ime = 'Vozila - Land Rover';
-else if (ime === 'vozila-jeep') ime = 'Vozila - Jeep';
-else if (ime === 'vozila-mitsubishi') ime = 'Vozila - Mitsubishi';
-else if (ime === 'vozila-subaru') ime = 'Vozila - Subaru';
-else if (ime === 'vozila-dacia') ime = 'Vozila - Dacia';
-else if (ime === 'vozila-alfaromeo') ime = 'Vozila - Alfa Romeo';
-else if (ime === 'vozila-mini') ime = 'Vozila - Mini';
-else if (ime === 'vozila-chevrolet') ime = 'Vozila - Chevrolet';
-else if (ime === 'elektronika-huawei') ime = 'Elektronika - Huawei';
-else if (ime === 'elektronika-xiaomi') ime = 'Elektronika - Xiaomi';
-else if (ime === 'elektronika-laptop') ime = 'Elektronika - Laptop';
-else if (ime === 'elektronika-macbook') ime = 'Elektronika - MacBook';
-else if (ime === 'elektronika-tablet') ime = 'Elektronika - Tablet';
-else if (ime === 'elektronika-tv') ime = 'Elektronika - TV';
-else if (ime === 'gaming-xbox') ime = 'Gaming - Xbox';
-else if (ime === 'gaming-nintendo') ime = 'Gaming - Nintendo';
-else if (ime === 'nekretnine-zemljiste') ime = 'Nekretnine - Zemljište';
-else if (ime === 'nekretnine-poslovni') ime = 'Nekretnine - Poslovni';
-            else if (ime === 'vozila-audi') ime = 'Vozila - Audi';
-            else if (ime === 'vozila-golf') ime = 'Vozila - Golf';
-            else if (ime === 'vozila-mercedes') ime = 'Vozila - Mercedes';
-            else if (ime === 'vozila-bmw') ime = 'Vozila - BMW';
-            else if (ime === 'elektronika') ime = 'Elektronika';
-            else if (ime === 'elektronika-iphone') ime = 'Elektronika - iPhone';
-            else if (ime === 'elektronika-samsung') ime = 'Elektronika - Samsung';
-            else if (ime === 'gaming-ps5') ime = 'Gaming - PS5';
-            else if (ime === 'gaming-ps4') ime = 'Gaming - PS4';
-            else if (ime === 'nekretnine') ime = 'Nekretnine';
-            else if (ime === 'motocikli') ime = 'Motocikli';
-else if (ime === 'bicikli') ime = 'Bicikli';
-else if (ime === 'nautika') ime = 'Nautika';
-else if (ime === 'atv-quad') ime = 'ATV / Quad';
-else if (ime === 'nekretnine-stanovi') ime = 'Nekretnine - Stanovi';
-else if (ime === 'nekretnine-kuce') ime = 'Nekretnine - Kuće';
-else if (ime === 'nekretnine-zemljista') ime = 'Nekretnine - Zemljišta';
-else if (ime === 'nekretnine-poslovni') ime = 'Nekretnine - Poslovni prostori';
-else if (ime === 'elektronika-mobiteli') ime = 'Elektronika - Mobiteli';
-else if (ime === 'elektronika-tableti') ime = 'Elektronika - Tableti';
-else if (ime === 'elektronika-satovi') ime = 'Elektronika - Pametni satovi';
-else if (ime === 'elektronika-dijelovi-mobiteli') ime = 'Elektronika - Dijelovi mobitela';
-else if (ime === 'elektronika-bluetooth') ime = 'Elektronika - Bluetooth';
-else if (ime === 'elektronika-desktop') ime = 'Elektronika - Desktop računari';
-else if (ime === 'elektronika-laptopi') ime = 'Elektronika - Laptopi';
-else if (ime === 'elektronika-oprema') ime = 'Elektronika - Kompjuterska oprema';
-else if (ime === 'elektronika-serveri') ime = 'Elektronika - Serveri';
-else if (ime === 'elektronika-bijela-tehnika') ime = 'Elektronika - Bijela tehnika';
-else if (ime === 'elektronika-tv') ime = 'Elektronika - TV';
-else if (ime === 'elektronika-zvucnici') ime = 'Elektronika - Bluetooth zvučnici';
-else if (ime === 'elektronika-vr') ime = 'Elektronika - VR uređaji';
-            else if (ime === 'ostalo') ime = 'Ostalo';
-
-            html += '<label class="check-item">' +
-                '<input type="checkbox" class="kat-checkbox" value="' + k.kategorija + '" onchange="primijeniFiltre()">' +
-                ime + ' <span class="check-count">' + k.broj + '</span>' +
-                '</label>';
-        });
-
-        document.getElementById('kategorijeList').innerHTML = html;
-    } catch(e) {
-        console.log('Greška kategorije:', e.message);
-    }
-}
-    function filtrirajPoKategoriji() {
-      var odabrane = [];
-      document.querySelectorAll('.kat-checkbox:checked').forEach(function (cb) {
-        odabrane.push(cb.value);
-      });
-
-      if (odabrane.length === 0) {
-        prikaziOglase(trenutnoFiltrirani);
-        return;
-      }
-
-      var filtrirani = trenutnoFiltrirani.filter(function (o) {
-        return odabrane.some(function (kat) {
-          return o.kategorija && o.kategorija.startsWith(kat.split('-')[0]);
-        });
-      });
-
-      prikaziOglase(filtrirani);
-    }
-
-    // --- Init ---
-    updateNavbar();
-    window.onload = async function () {
-      try {
-        // Čitaj q parametar iz URL-a
-var urlParams = new URLSearchParams(window.location.search);
-var urlQ = urlParams.get('q');
-if (urlQ) {
-    document.getElementById('searchInput').value = urlQ;
-}
-        var res = await fetch('/api/live-oglasi');
-        var data = await res.json();
-        if (data.uspjeh && data.oglasi.length > 0) {
-          var liveOglasi = data.oglasi.map(function (o) {
-            return {
-              id: o.id,
-              naslov: o.naslov,
-              cijena: parseFloat(o.cijena.replace(/[^0-9.]/g, '')) || 0,
-              cijenaStr: o.cijena,
-              lokacija: 'BiH',
-              platforma: o.platforma || 'olx',
-              slika: o.slika,
-              link: o.link,
-              datum: new Date(o.datum).toLocaleDateString('bs-BA'),
-              score: 75,
-              aiTag: 'good',
-              aiLabel: 'Live oglas',
-              kategorija: o.kategorija || 'ostalo',
-              stanje: 'polovno',
-              detalji: o.naslov
-            };
-
-
-          });
-
-        trenutnoFiltrirani = liveOglasi;
-        prikaziOglase(liveOglasi);
-        console.log('Učitano', liveOglasi.length, 'live oglasa iz baze');
-        
-        if (urlQ) {
-            document.getElementById('searchInput').value = urlQ;
-            await pretrazi();
-        }
-
+// --- Pretraga ---
+async function pretrazi() {
+  var query = document.getElementById('searchInput').value.trim();
+  try {
+    var url = '/api/live-oglasi?limit=50' + (query ? '&q=' + encodeURIComponent(query) : '');
+    var res = await fetch(url);
+    var data = await res.json();
+    if (data.uspjeh && data.oglasi.length > 0) {
+      var oglasi = data.oglasi.map(mapOglas);
+      trenutnoFiltrirani = oglasi;
+      prikaziOglase(oglasi);
     } else {
-        prikaziOglase(demoOglasi);
+      document.getElementById('oglasiGrid').innerHTML = '<div style="padding:40px;text-align:center;color:#aaa;grid-column:1/-1;">Nema rezultata za "' + query + '".<br><br><a href="https://www.olx.ba/pretraga?keywords=' + encodeURIComponent(query) + '" target="_blank" style="color:#e65c00;">Pretraži na OLX.ba →</a></div>';
+      document.getElementById('rezultatiBroj').textContent = '0';
     }
-    } catch (e) {
-        console.log('Greška pri učitavanju:', e.message);
-        prikaziOglase(demoOglasi);
+  } catch(e) { console.log('Greška pretrage:', e.message); }
+}
+
+function quickSearch(q) {
+  document.getElementById('searchInput').value = q;
+  pretrazi();
+}
+
+// --- Sortiranje ---
+function sortirajSelect(tip) {
+  var lista = [...trenutnoFiltrirani];
+  if (tip === 'cijena_asc') lista.sort(function(a, b) { return a.cijena - b.cijena; });
+  if (tip === 'cijena_desc') lista.sort(function(a, b) { return b.cijena - a.cijena; });
+  if (tip === 'score') lista.sort(function(a, b) { return b.score - a.score; });
+  prikaziOglase(lista);
+}
+
+// --- Filteri ---
+function odaberStanje(stanje, el) {
+  aktivnoStanje = stanje;
+  document.querySelectorAll('#stanjeChips .fchip').forEach(function(c) { c.classList.remove('active'); });
+  el.classList.add('active');
+}
+
+function odaberDatum(datum, el) {
+  aktivniDatum = datum;
+  document.querySelectorAll('#datumChips .fchip').forEach(function(c) { c.classList.remove('active'); });
+  el.classList.add('active');
+}
+
+async function primijeniFiltre() {
+  var cijenaOd = parseFloat(document.getElementById('cijenaOd').value) || 0;
+  var cijenaDo = parseFloat(document.getElementById('cijenaDo').value) || Infinity;
+  var query = document.getElementById('searchInput').value.trim();
+  var odabraneKat = [];
+  document.querySelectorAll('.kat-checkbox:checked').forEach(function(cb) { odabraneKat.push(cb.value); });
+
+  try {
+    var url = '/api/live-oglasi?limit=50';
+    if (query) url += '&q=' + encodeURIComponent(query);
+    if (odabraneKat.length > 0) url += '&kategorija=' + encodeURIComponent(odabraneKat.join(','));
+    var res = await fetch(url);
+    var data = await res.json();
+    if (data.uspjeh && data.oglasi.length > 0) {
+      var oglasi = data.oglasi.map(mapOglas).filter(function(o) {
+        return o.cijena >= cijenaOd && o.cijena <= cijenaDo;
+      });
+      trenutnoFiltrirani = oglasi;
+      prikaziOglase(oglasi);
+    } else {
+      prikaziOglase([]);
     }
-    ucitajKategorije();
-};
-    var korisnik = JSON.parse(localStorage.getItem('korisnik'));
-    if (!korisnik) {
-        alert('Moraš biti prijavljen da pratiš oglase!');
-        window.location.href = '/login.html';
-        return;
+  } catch(e) { console.log('Greška filtera:', e.message); }
+}
+
+function resetujFiltre() {
+  document.getElementById('cijenaOd').value = '';
+  document.getElementById('cijenaDo').value = '';
+  document.getElementById('cijenaRange').value = 50000;
+  document.getElementById('filterLokacija').value = '';
+  document.getElementById('searchInput').value = '';
+  document.querySelectorAll('.kat-checkbox').forEach(function(cb) { cb.checked = false; });
+  pretrazi();
+}
+
+// --- Učitaj još ---
+async function ucitajJos() {
+  trenutnaStrana++;
+  try {
+    var q = document.getElementById('searchInput').value.trim();
+    var url = '/api/live-oglasi?offset=' + (trenutnaStrana * OGLASI_PO_STRANI) + (q ? '&q=' + encodeURIComponent(q) : '');
+    var res = await fetch(url);
+    var data = await res.json();
+    if (data.uspjeh && data.oglasi.length > 0) {
+      var novi = data.oglasi.map(mapOglas);
+      trenutnoFiltrirani = trenutnoFiltrirani.concat(novi);
+      prikaziOglase(trenutnoFiltrirani);
+    } else {
+      alert('Nema više oglasa!');
     }
-if (urlQ) {
+  } catch(e) { console.log('Greška:', e.message); }
+}
+
+// --- AI Analiza ---
+async function aiAnaliza() {
+  var box = document.getElementById('ai-analiza-box');
+  var tekst = document.getElementById('ai-analiza-tekst');
+  var query = document.getElementById('searchInput').value.trim();
+  box.style.display = 'block';
+  tekst.textContent = 'AI analizira oglase...';
+  box.scrollIntoView({ behavior: 'smooth' });
+  var res = await fetch('/ai-analiza', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ oglasi: trenutnoFiltrirani.slice(0, 5), pretraga: query || 'oglasi' })
+  });
+  var data = await res.json();
+  tekst.textContent = data.uspjeh ? data.analiza : 'Greška pri analizi.';
+}
+
+// --- Kategorije ---
+async function ucitajKategorije() {
+  try {
+    var res = await fetch('/api/kategorije');
+    var data = await res.json();
+    if (!data.uspjeh || data.kategorije.length === 0) return;
+    var imena = {
+      'vozila': 'Vozila', 'vozila-audi': 'Vozila - Audi', 'vozila-golf': 'Vozila - Golf',
+      'vozila-mercedes': 'Vozila - Mercedes', 'vozila-bmw': 'Vozila - BMW',
+      'vozila-opel': 'Vozila - Opel', 'vozila-peugeot': 'Vozila - Peugeot',
+      'vozila-renault': 'Vozila - Renault', 'vozila-toyota': 'Vozila - Toyota',
+      'vozila-honda': 'Vozila - Honda', 'vozila-ford': 'Vozila - Ford',
+      'vozila-skoda': 'Vozila - Škoda', 'vozila-seat': 'Vozila - Seat',
+      'vozila-fiat': 'Vozila - Fiat', 'vozila-citroen': 'Vozila - Citroën',
+      'vozila-hyundai': 'Vozila - Hyundai', 'vozila-kia': 'Vozila - Kia',
+      'vozila-mazda': 'Vozila - Mazda', 'vozila-nissan': 'Vozila - Nissan',
+      'vozila-suzuki': 'Vozila - Suzuki', 'vozila-volvo': 'Vozila - Volvo',
+      'vozila-porsche': 'Vozila - Porsche', 'vozila-landrover': 'Vozila - Land Rover',
+      'vozila-jeep': 'Vozila - Jeep', 'vozila-mitsubishi': 'Vozila - Mitsubishi',
+      'vozila-subaru': 'Vozila - Subaru', 'vozila-dacia': 'Vozila - Dacia',
+      'vozila-alfaromeo': 'Vozila - Alfa Romeo', 'vozila-mini': 'Vozila - Mini',
+      'vozila-chevrolet': 'Vozila - Chevrolet',
+      'elektronika': 'Elektronika', 'elektronika-iphone': 'Elektronika - iPhone',
+      'elektronika-samsung': 'Elektronika - Samsung', 'elektronika-huawei': 'Elektronika - Huawei',
+      'elektronika-xiaomi': 'Elektronika - Xiaomi', 'elektronika-laptop': 'Elektronika - Laptop',
+      'elektronika-macbook': 'Elektronika - MacBook', 'elektronika-tablet': 'Elektronika - Tablet',
+      'elektronika-tv': 'Elektronika - TV', 'elektronika-mobiteli': 'Elektronika - Mobiteli',
+      'elektronika-tableti': 'Elektronika - Tableti', 'elektronika-satovi': 'Elektronika - Pametni satovi',
+      'elektronika-dijelovi-mobiteli': 'Elektronika - Dijelovi mobitela',
+      'elektronika-bluetooth': 'Elektronika - Bluetooth', 'elektronika-desktop': 'Elektronika - Desktop računari',
+      'elektronika-laptopi': 'Elektronika - Laptopi', 'elektronika-oprema': 'Elektronika - Kompjuterska oprema',
+      'elektronika-serveri': 'Elektronika - Serveri', 'elektronika-bijela-tehnika': 'Elektronika - Bijela tehnika',
+      'elektronika-zvucnici': 'Elektronika - Bluetooth zvučnici', 'elektronika-vr': 'Elektronika - VR uređaji',
+      'gaming-ps5': 'Gaming - PS5', 'gaming-ps4': 'Gaming - PS4',
+      'gaming-xbox': 'Gaming - Xbox', 'gaming-nintendo': 'Gaming - Nintendo',
+      'nekretnine': 'Nekretnine', 'nekretnine-stanovi': 'Nekretnine - Stanovi',
+      'nekretnine-kuce': 'Nekretnine - Kuće', 'nekretnine-zemljista': 'Nekretnine - Zemljišta',
+      'nekretnine-poslovni': 'Nekretnine - Poslovni prostori', 'nekretnine-zemljiste': 'Nekretnine - Zemljište',
+      'motocikli': 'Motocikli', 'bicikli': 'Bicikli', 'nautika': 'Nautika',
+      'atv-quad': 'ATV / Quad', 'ostalo': 'Ostalo'
+    };
+    var html = '';
+    data.kategorije.forEach(function(k) {
+      var ime = imena[k.kategorija] || k.kategorija;
+      html += '<label class="check-item"><input type="checkbox" class="kat-checkbox" value="' + k.kategorija + '" onchange="primijeniFiltre()">' + ime + ' <span class="check-count">' + k.broj + '</span></label>';
+    });
+    document.getElementById('kategorijeList').innerHTML = html;
+  } catch(e) { console.log('Greška kategorije:', e.message); }
+}
+
+// --- Source pills ---
+document.querySelectorAll('.pill').forEach(function(p) {
+  p.addEventListener('click', function() {
+    document.querySelectorAll('.pill').forEach(function(x) { x.classList.remove('active'); });
+    p.classList.add('active');
+  });
+});
+
+// --- Enter pretraga ---
+document.getElementById('searchInput').addEventListener('keydown', function(e) {
+  if (e.key === 'Enter') pretrazi();
+});
+
+// --- Init ---
+updateNavbar();
+
+window.onload = async function() {
+  try {
+    var res = await fetch('/api/live-oglasi');
+    var data = await res.json();
+    if (data.uspjeh && data.oglasi.length > 0) {
+      var liveOglasi = data.oglasi.map(mapOglas);
+      trenutnoFiltrirani = liveOglasi;
+      prikaziOglase(liveOglasi);
+    } else {
+      prikaziOglase(demoOglasi);
+    }
+  } catch(e) {
+    console.log('Greška pri učitavanju:', e.message);
+    prikaziOglase(demoOglasi);
+  }
+
+  ucitajKategorije();
+
+  if (urlQ) {
     document.getElementById('searchInput').value = urlQ;
     pretrazi();
-}
-    fetch('/pracenje', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: korisnik.email, pretraga: pretraga })
-    })
-    .then(r => r.json())
-    .then(data => {
-        if (data.uspjeh) {
-            alert('Oglas je dodan u praćenja! 🔔');
-        }
-    });
-}
-
-    };
-    
-    function pratiOglas(pretraga) {
-    var korisnik = JSON.parse(localStorage.getItem('korisnik'));
-    if (!korisnik) {
-        alert('Moraš biti prijavljen da pratiš oglase!');
-        window.location.href = '/login.html';
-        return;
-    }
-
-    fetch('/pracenje', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: korisnik.email, pretraga: pretraga })
-    })
-    .then(r => r.json())
-    .then(data => {
-        if (data.uspjeh) {
-            alert('Oglas je dodan u praćenja! 🔔');
-        }
-    });
-}
-
+  }
+};
 </script>
-    <div id="oglasiModal" onclick="if(event.target===this)zatvoriModal()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:1000;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(4px);">
-    <div style="background:white;border-radius:20px;padding:32px;max-width:780px;width:100%;max-height:90vh;overflow-y:auto;position:relative;box-shadow:0 20px 60px rgba(0,0,0,0.3);">
-        <button onclick="zatvoriModal()" style="position:absolute;top:16px;right:16px;background:#f0f0f0;border:none;width:36px;height:36px;border-radius:50%;cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center;">×</button>
-        <div id="modalSadrzaj"></div>
-    </div>
-</div>
 </body>
-
 </html>
