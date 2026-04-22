@@ -377,6 +377,54 @@ app.get('/api/kategorije', async (req, res) => {
         res.json({ uspjeh: false, kategorije: [] });
     }
 });
+app.post('/api/analiza-jednog-oglasa', async (req, res) => {
+    const { oglas, slicni } = req.body;
+
+    const prompt = `Ti si iskusan savjetnik za kupovinu u Bosni i Hercegovini.
+
+Analiziraj ovaj oglas:
+- Naziv: ${oglas.naslov}
+- Cijena: ${oglas.cijenaStr}
+- Kategorija: ${oglas.kategorija || 'nepoznato'}
+- Platforma: ${oglas.platforma}
+- Lokacija: ${oglas.lokacija || 'BiH'}
+
+Slični oglasi na tržištu:
+${slicni.slice(0,5).map((o, i) => `${i+1}. ${o.naslov} — ${o.cijenaStr}`).join('\n')}
+
+Daj kratku analizu u ovom formatu (max 4 rečenice ukupno):
+OCJENA: [ODLIČNO/FER/PREVISOKO/IZBJEGAVAJ]
+CIJENA: [jedan red o cijeni u odnosu na tržište]
+SAVJET: [jedan konkretan savjet kupcu]
+SCORE: [broj 0-100]`;
+
+    try {
+        const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${process.env.GROQ_API_KEY}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                model: 'llama-3.3-70b-versatile',
+                messages: [{ role: 'user', content: prompt }],
+                max_tokens: 300,
+                temperature: 0.7
+            })
+        });
+
+        const data = await response.json();
+        const tekst = data.choices[0].message.content;
+
+        // Parsiranje score-a
+        const scoreMatch = tekst.match(/SCORE:\s*(\d+)/);
+        const score = scoreMatch ? parseInt(scoreMatch[1]) : 70;
+
+        res.json({ uspjeh: true, analiza: tekst, score });
+    } catch(e) {
+        res.json({ uspjeh: false, analiza: 'Analiza nije dostupna.', score: 70 });
+    }
+});
 app.listen(PORT, () => {
     app.get('/api/debug-scrape', async (req, res) => {
     try {
