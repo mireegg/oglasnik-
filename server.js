@@ -416,6 +416,3 @@ setInterval(fetchSveKategorije, 60 * 60 * 1000);
 app.listen(PORT, () => {
     console.log(`Server radi na portu ${PORT}`);
 });
-app.listen(PORT, () => {
-    console.log(`Server radi na portu ${PORT}`);
-});
