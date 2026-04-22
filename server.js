@@ -398,7 +398,24 @@ async function fetchOLXKategorija(categoryId, kategorija) {
         console.log(`OLX greška za ${kategorija}:`, e.message);
     }
 }
+async function fetchSveKategorije() {
+    console.log('Pokrećem OLX auto-fetch...');
+    for (const kat of OLX_KATEGORIJE) {
+        await fetchOLXKategorija(kat.id, kat.naziv);
+        await new Promise(r => setTimeout(r, 2000));
+    }
+    console.log('OLX auto-fetch završen!');
+}
 
+// Pokreni odmah pri startu
+fetchSveKategorije();
+
+// Pokreni svakih sat vremena
+setInterval(fetchSveKategorije, 60 * 60 * 1000);
+
+app.listen(PORT, () => {
+    console.log(`Server radi na portu ${PORT}`);
+});
 app.listen(PORT, () => {
     console.log(`Server radi na portu ${PORT}`);
 });
