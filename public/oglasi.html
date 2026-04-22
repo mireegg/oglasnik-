@@ -1502,7 +1502,9 @@ if (urlQ) {
         window.location.href = '/login.html';
         return;
     }
-
+if (urlQ) {
+    pretrazi();
+}
     fetch('/pracenje', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
