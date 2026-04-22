@@ -1486,18 +1486,24 @@ if (urlQ) {
 
           });
 
-          trenutnoFiltrirani = liveOglasi;
-          prikaziOglase(liveOglasi);
-          console.log('Učitano', liveOglasi.length, 'live oglasa iz baze');
-        } else {
-          prikaziOglase(demoOglasi);
+        trenutnoFiltrirani = liveOglasi;
+        prikaziOglase(liveOglasi);
+        console.log('Učitano', liveOglasi.length, 'live oglasa iz baze');
+        
+        if (urlQ) {
+            document.getElementById('searchInput').value = urlQ;
+            await pretrazi();
         }
-      } catch (e) {
+
+    } else {
+        prikaziOglase(demoOglasi);
+    }
+    } catch (e) {
         console.log('Greška pri učitavanju:', e.message);
         prikaziOglase(demoOglasi);
-      }
-      ucitajKategorije();
-      function pratiOglas(pretraga) {
+    }
+    ucitajKategorije();
+};
     var korisnik = JSON.parse(localStorage.getItem('korisnik'));
     if (!korisnik) {
         alert('Moraš biti prijavljen da pratiš oglase!');
