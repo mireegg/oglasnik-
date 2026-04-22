@@ -1070,23 +1070,29 @@ function otvoriModal(index) {
     modal.style.display = 'flex';
     document.body.style.overflow = 'hidden';
 
-    const prompt = `Ti si iskusan savjetnik za kupovinu u Bosni i Hercegovini.
-
-Analiziraj ovaj oglas:
-- Naziv: ${oglas.naslov}
-- Cijena: ${oglas.cijenaStr}
-- Kategorija: ${oglas.kategorija || 'nepoznato'}
-- Platforma: ${oglas.platforma}
-- Lokacija: ${oglas.lokacija || 'BiH'}
-
-Slični oglasi na tržištu:
-${slicni.slice(0,5).map((o, i) => `${i+1}. ${o.naslov} — ${o.cijenaStr}`).join('\n')}
-
-Daj kratku analizu u ovom formatu (max 4 rečenice ukupno):
-OCJENA: [ODLIČNO/FER/PREVISOKO/IZBJEGAVAJ]
-CIJENA: [usporedi konkretno ovu cijenu sa sličnim oglasima koje si dobio gore — je li jeftinija, skuplja, koliko?]
-SAVJET: [daj konkretan zaključak — da li vrijedi kupiti ovaj oglas ili neki od sličnih, i zašto]
-SCORE: [broj 0-100]`;
+    // Pozovi AI analizu
+    fetch('/api/analiza-jednog-oglasa', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ oglas: o, slicni: slicni })
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.uspjeh) {
+            var tekst = data.analiza
+                .replace(/OCJENA:\s*([^\n]+)/g, '<div style="display:inline-block;background:#e65c00;color:white;padding:3px 10px;border-radius:6px;font-size:12px;font-weight:700;margin-bottom:8px;">$1</div>')
+                .replace(/CIJENA:\s*([^\n]+)/g, '<div style="margin-bottom:6px;"><strong style="color:#333;">💰 Cijena:</strong> $1</div>')
+                .replace(/SAVJET:\s*([^\n]+)/g, '<div style="margin-bottom:6px;"><strong style="color:#333;">💡 Savjet:</strong> $1</div>')
+                .replace(/SCORE:\s*(\d+)/g, '');
+            document.getElementById('aiAnalizaTekst').innerHTML = tekst;
+        } else {
+            document.getElementById('aiAnalizaTekst').innerHTML = 'Analiza trenutno nije dostupna.';
+        }
+    })
+    .catch(() => {
+        document.getElementById('aiAnalizaTekst').innerHTML = 'Analiza trenutno nije dostupna.';
+    });
+}
 
 function zatvoriModal() {
     document.getElementById('oglasiModal').style.display = 'none';
