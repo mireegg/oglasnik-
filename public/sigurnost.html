@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="bs">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Oglix — Online sigurnost pri kupovini</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{--orange:#e65c00;--orange-light:#ff7a1f;--orange-dim:#fff0e6;--bg:#f7f5f2;--surface:#fff;--border:rgba(0,0,0,0.08);--text:#1a1a1a;--muted:#777;--faint:#aaa;--r-sm:8px;--r-md:12px;--r-lg:18px;--r-pill:100px;--red:#dc2626;--red-dim:#fef2f2;--green:#16a34a;--green-dim:#f0fdf4;--yellow:#d97706;--yellow-dim:#fffbeb;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);line-height:1.6;}
+a{color:var(--orange);text-decoration:none;}
+
+nav{background:var(--surface);border-bottom:1px solid var(--border);padding:0 32px;height:60px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;}
+.logo{font-family:'Syne',sans-serif;font-size:22px;font-weight:700;color:var(--text);cursor:pointer;}
+.logo span{color:var(--orange);}
+
+.hero{background:linear-gradient(135deg,#1a1a2e 0%,#16213e 100%);padding:80px 32px;text-align:center;}
+.hero-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(220,38,38,0.2);border:1px solid rgba(220,38,38,0.4);color:#fca5a5;padding:6px 16px;border-radius:var(--r-pill);font-size:12px;font-weight:500;margin-bottom:24px;letter-spacing:0.5px;}
+.hero h1{font-family:'Syne',sans-serif;font-size:clamp(30px,5vw,52px);font-weight:700;color:#fff;letter-spacing:-1.5px;margin-bottom:16px;}
+.hero p{font-size:17px;color:rgba(255,255,255,0.55);max-width:560px;margin:0 auto;font-weight:300;}
+
+.main{max-width:900px;margin:0 auto;padding:60px 32px;}
+
+.alert-box{border-radius:var(--r-lg);padding:24px 28px;margin-bottom:32px;display:flex;gap:16px;align-items:flex-start;}
+.alert-red{background:var(--red-dim);border:1px solid rgba(220,38,38,0.2);}
+.alert-green{background:var(--green-dim);border:1px solid rgba(22,163,74,0.2);}
+.alert-yellow{background:var(--yellow-dim);border:1px solid rgba(217,119,6,0.2);}
+.alert-icon{font-size:28px;flex-shrink:0;}
+.alert-title{font-weight:600;font-size:15px;margin-bottom:6px;}
+.alert-red .alert-title{color:var(--red);}
+.alert-green .alert-title{color:var(--green);}
+.alert-yellow .alert-title{color:var(--yellow);}
+.alert-text{font-size:14px;color:var(--muted);line-height:1.7;}
+
+.section-title{font-family:'Syne',sans-serif;font-size:22px;font-weight:700;letter-spacing:-0.5px;margin-bottom:20px;color:var(--text);margin-top:48px;}
+.section-title:first-of-type{margin-top:0;}
+
+.tips-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:32px;}
+.tip-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:24px;}
+.tip-card.danger{border-left:4px solid var(--red);}
+.tip-card.safe{border-left:4px solid var(--green);}
+.tip-icon{font-size:24px;margin-bottom:12px;}
+.tip-title{font-weight:600;font-size:14px;margin-bottom:8px;}
+.tip-card.danger .tip-title{color:var(--red);}
+.tip-card.safe .tip-title{color:var(--green);}
+.tip-text{font-size:13px;color:var(--muted);line-height:1.6;}
+
+.steps{display:flex;flex-direction:column;gap:0;margin-bottom:32px;}
+.step{display:flex;gap:20px;padding:20px 0;border-bottom:1px solid var(--border);}
+.step:last-child{border-bottom:none;}
+.step-num{width:36px;height:36px;border-radius:50%;background:var(--orange);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:15px;flex-shrink:0;margin-top:2px;}
+.step-title{font-weight:600;font-size:15px;margin-bottom:6px;}
+.step-text{font-size:14px;color:var(--muted);line-height:1.6;}
+
+.red-flags{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:28px;margin-bottom:32px;}
+.red-flag-item{display:flex;gap:12px;align-items:flex-start;padding:10px 0;border-bottom:1px solid var(--border);}
+.red-flag-item:last-child{border-bottom:none;}
+.rf-icon{font-size:18px;flex-shrink:0;margin-top:2px;}
+.rf-text{font-size:14px;color:var(--text);line-height:1.6;}
+.rf-text strong{color:var(--red);}
+
+.checklist{background:var(--green-dim);border:1px solid rgba(22,163,74,0.2);border-radius:var(--r-lg);padding:28px;margin-bottom:32px;}
+.checklist-title{font-family:'Syne',sans-serif;font-size:16px;font-weight:600;color:var(--green);margin-bottom:16px;}
+.check-item{display:flex;gap:10px;align-items:flex-start;margin-bottom:10px;font-size:14px;color:var(--text);line-height:1.5;}
+.check-item:last-child{margin-bottom:0;}
+
+footer{background:var(--text);padding:48px 32px;text-align:center;}
+.footer-logo{font-family:'Syne',sans-serif;font-size:20px;font-weight:700;color:#fff;margin-bottom:12px;}
+.footer-logo span{color:var(--orange);}
+.footer-links{display:flex;justify-content:center;gap:24px;margin-bottom:16px;flex-wrap:wrap;}
+.footer-links a{font-size:13px;color:rgba(255,255,255,0.4);text-decoration:none;}
+.footer-links a:hover{color:#fff;}
+.footer-copy{font-size:12px;color:rgba(255,255,255,0.25);}
+
+@media(max-width:768px){.tips-grid{grid-template-columns:1fr;}nav{padding:0 16px;}.main{padding:40px 16px;}}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="logo" onclick="window.location.href='/oglasi.html'">oglix<span>.ba</span></div>
+  <a href="/oglasi.html" style="font-size:14px;color:var(--muted);">← Nazad na oglase</a>
+</nav>
+
+<div class="hero">
+  <div class="hero-badge">🛡️ SIGURNOST PRI KUPOVINI</div>
+  <h1>Kupuj pametno.<br>Kupuj sigurno.</h1>
+  <p>Online prevare pri kupovini vozila i elektronike su učestale u BiH. Evo svega što trebaš znati da se zaštitis.</p>
+</div>
+
+<div class="main">
+
+  <div class="alert-box alert-red" style="margin-top:0;">
+    <div class="alert-icon">⚠️</div>
+    <div>
+      <div class="alert-title">Važno: Oglix nije platforma za prodaju</div>
+      <div class="alert-text">Oglix prikazuje oglase s OLX.ba i ostalih platformi — mi nismo prodavači ni posrednici. Sve kupovine se odvijaju direktno između kupca i prodavača na originalnoj platformi. Oglix ne odgovara za kvalitet, autentičnost ni sigurnost oglasa.</div>
+    </div>
+  </div>
+
+  <div class="section-title">🚨 Najčešće prevare u BiH</div>
+  
+  <div class="red-flags">
+    <div class="red-flag-item">
+      <div class="rf-icon">🏴</div>
+      <div class="rf-text"><strong>Prevara s avansnim plaćanjem</strong> — Prodavač traži da platiš unaprijed (depozit, rezervacija) putem Western Union, MoneyGram, kriptovaluta ili direktne bankovne doznake. Nakon uplate, nestaje. Ovo je najčešća prevara u BiH.</div>
+    </div>
+    <div class="red-flag-item">
+      <div class="rf-icon">🏴</div>
+      <div class="rf-text"><strong>Previše dobra cijena</strong> — Golf 7 2018. za 5.000 KM, iPhone 15 Pro za 300 KM. Ako cijena izgleda nevjerovatno dobro, gotovo sigurno je prevara. Provjeri prosječnu cijenu na Oglix AI analizi.</div>
+    </div>
+    <div class="red-flag-item">
+      <div class="rf-icon">🏴</div>
+      <div class="rf-text"><strong>Iste slike na više oglasa</strong> — Prevaranti koriste tuđe fotografije. Provjeri sliku putem Google Images (desni klik → "Pretraži sliku") da vidiš gdje se još pojavljuje.</div>
+    </div>
+    <div class="red-flag-item">
+      <div class="rf-icon">🏴</div>
+      <div class="rf-text"><strong>"Nalazim se u inostranstvu"</strong> — Prodavač tvrdi da je u Njemačkoj, Austriji ili UK i može poslati auto/predmet kurirskom službom. Klasična prevara — ne nasjedi.</div>
+    </div>
+    <div class="red-flag-item">
+      <div class="rf-icon">🏴</div>
+      <div class="rf-text"><strong>Pritisak na brzinu odluke</strong> — "Imam još 3 zainteresirani, ako ne platiš do večeras, prodajem drugome." Ovo je tehnika pritiska da doneseš ishitrenu odluku.</div>
+    </div>
+    <div class="red-flag-item">
+      <div class="rf-icon">🏴</div>
+      <div class="rf-text"><strong>Neregistrovano vozilo sa stranim tablicama</strong> — Vozilo bez BiH registracije, dokumenti nisu uredni, prodavač tvrdi da "može sve riješiti". Provjeri CarVertical ili VIN provjeru.</div>
+    </div>
+    <div class="red-flag-item">
+      <div class="rf-icon">🏴</div>
+      <div class="rf-text"><strong>Phishing linkovi</strong> — Dobijete SMS/WhatsApp sa linkom poput "oglix-ba.com", "olx-plati.ba" koji izgledaju kao naša ili OLX platforma. Uvijek provjeri URL — jedina naša adresa je oglix.ba.</div>
+    </div>
+  </div>
+
+  <div class="section-title">✅ Sigurna kupovina korak po korak</div>
+  
+  <div class="steps">
+    <div class="step">
+      <div class="step-num">1</div>
+      <div>
+        <div class="step-title">Provjeri profil prodavača</div>
+        <div class="step-text">Na OLX.ba provjeri koliko dugo je profil aktivan, broj prethodnih oglasa i recenzije. Novi profili (manje od 30 dana) s malim brojem oglasa su veći rizik.</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">2</div>
+      <div>
+        <div class="step-title">Provjeri cijenu na Oglix AI analizi</div>
+        <div class="step-text">Otvori oglas u Oglix i pričekaj AI analizu. Ako AI kaže "PREVISOKO" ili "IZBJEGAVAJ", to je signal za oprez. Ako kaže "ODLIČNO" s konkretnim razlozima, oglas je vjerovatno legit.</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">3</div>
+      <div>
+        <div class="step-title">Za vozila: uradi VIN provjeru</div>
+        <div class="step-text">VIN broj (broj šasije) provjeri putem carVertical.com, AutoDNA ili besplatne provjere na PK.hr. Saznaj historiju servisa, da li je vozilo bilo u udesima, broj prethodnih vlasnika i originalne kilometraže.</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">4</div>
+      <div>
+        <div class="step-title">Insistiraj na ličnom susretu</div>
+        <div class="step-text">Nikada ne kupuj bez fizičkog pregleda. Predloži susret na neutralnoj lokaciji — banka, MUP parking, ili servis koji ti može pregledati vozilo. Legitimni prodavači nikada ne odbijaju lični susret.</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">5</div>
+      <div>
+        <div class="step-title">Vozila: odvedi na mehanički pregled</div>
+        <div class="step-text">Insistiraj da odvezete vozilo na mehanički pregled u servis po tvom izboru. Troškovi pregleda (50-150 KM) su zanemarivi u odnosu na potencijalne probleme. Prodavač koji odbija pregled — nešto krije.</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">6</div>
+      <div>
+        <div class="step-title">Plaćaj samo po preuzimanju</div>
+        <div class="step-text">Uvijek plati gotovinom ili karticom tek kada si preuzeo robu/vozilo i provjerio da je sve u redu. Nikada ne šalji novac unaprijed, bez obzira na razlog koji prodavač navodi.</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">7</div>
+      <div>
+        <div class="step-title">Traži račun i provjeri dokumentaciju</div>
+        <div class="step-text">Za vozilo: saobraćajna dozvola, historija servisa, kupoprodajni ugovor. Za elektroniku: originalnu kutiju, garancijski list, račun kupovine. Bez dokumenata — nema kupovine.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-title">🟢 Kako prepoznati siguran oglas</div>
+  
+  <div class="tips-grid">
+    <div class="tip-card safe">
+      <div class="tip-icon">✅</div>
+      <div class="tip-title">Znakovi sigurnog oglasa</div>
+      <div class="tip-text">Realna cijena (Oglix AI kaže FER ili ODLIČNO) · Originalne fotografije s različitih uglova · Detaljan opis s nedostacima · Prodavač pristaje na fizički pregled · Jasni dokumenti i historija · Lokalni kontakt broj · Stariji OLX profil s recenzijama</div>
+    </div>
+    <div class="tip-card danger">
+      <div class="tip-icon">🚫</div>
+      <div class="tip-title">Znakovi sumnjivog oglasa</div>
+      <div class="tip-text">Cijena daleko ispod tržišne · Generičke ili preuzete fotografije · Nema opisa ili kratki opis · Odbija fizički pregled · Traži avansno plaćanje · Prodavač "u inostranstvu" · Novi profil bez historije · Pritisak na brzu odluku</div>
+    </div>
+  </div>
+
+  <div class="section-title">📋 Checklista prije kupovine vozila</div>
+  
+  <div class="checklist">
+    <div class="checklist-title">✅ Provjeri sve ove stavke prije nego potpišeš ugovor</div>
+    <div class="check-item">☐ <span>VIN provjera putem carVertical ili AutoDNA — historija udesa i servisa</span></div>
+    <div class="check-item">☐ <span>Saobraćajna dozvola — ime vlasnika se poklapa s prodavačem</span></div>
+    <div class="check-item">☐ <span>Mehanički pregled u servisu po tvom izboru</span></div>
+    <div class="check-item">☐ <span>Kilometraža se poklapa s OBD dijagnostikom</span></div>
+    <div class="check-item">☐ <span>Nema aktivnih lizing/kredit obaveza na vozilu (provjeri u banci)</span></div>
+    <div class="check-item">☐ <span>Broj šasije (VIN) fizički vidljiv na vozilu i poklapa se s dokumentima</span></div>
+    <div class="check-item">☐ <span>Vozilo nije prijavljeno kao ukradeno (provjeri MUP)</span></div>
+    <div class="check-item">☐ <span>Kupoprodajni ugovor sadrži sve podatke kupca i prodavača</span></div>
+    <div class="check-item">☐ <span>Plaćaš tek nakon preuzimanja i provjere svega navedenog</span></div>
+  </div>
+
+  <div class="alert-box alert-yellow">
+    <div class="alert-icon">📞</div>
+    <div>
+      <div class="alert-title">Ako si žrtva prevare</div>
+      <div class="alert-text">Prijavi prevaru policiji (broj 122) i MUP-u BiH. Sačuvaj svu prepisku, broj telefona, IBAN i sve dokaze. Prijavi oglas na originalnoj platformi (OLX.ba) da se ukloni i zaštiti druge. Prevare možeš prijaviti i nama na podrska@oglix.ba — pokušat ćemo pomoći.</div>
+    </div>
+  </div>
+
+  <div class="alert-box alert-green">
+    <div class="alert-icon">🤖</div>
+    <div>
+      <div class="alert-title">Kako Oglix AI pomaže u sigurnosti</div>
+      <div class="alert-text">Oglix AI automatski upozorava na oglase s neuobičajeno niskim cijenama, uspoređuje ih sa tržišnim prosjekom i daje konkretne savjete. Ako AI analiza kaže "IZBJEGAVAJ" — uzmi to ozbiljno. AI nije nepogrešiv, ali može ti ukazati na crvene zastavice koje možda propustiš.</div>
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  <div class="footer-logo">oglix<span>.ba</span></div>
+  <div class="footer-links">
+    <a href="/oglasi.html">Oglasi</a>
+    <a href="/podrska.html">Podrška</a>
+    <a href="/sigurnost.html">Online sigurnost</a>
+    <a href="/privatnost.html">Privatnost</a>
+  </div>
+  <div class="footer-copy">© 2026 Oglix · Agregator oglasa za BiH</div>
+</footer>
+
+</body>
+</html>

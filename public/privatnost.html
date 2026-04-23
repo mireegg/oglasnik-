@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="bs">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Oglix — Privatnost podataka</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{--orange:#e65c00;--bg:#f7f5f2;--surface:#fff;--border:rgba(0,0,0,0.08);--text:#1a1a1a;--muted:#777;--faint:#aaa;--r-sm:8px;--r-md:12px;--r-lg:18px;--r-pill:100px;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);line-height:1.7;}
+a{color:var(--orange);}
+nav{background:var(--surface);border-bottom:1px solid var(--border);padding:0 32px;height:60px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;}
+.logo{font-family:'Syne',sans-serif;font-size:22px;font-weight:700;color:var(--text);cursor:pointer;}
+.logo span{color:var(--orange);}
+.hero{background:var(--text);padding:72px 32px;text-align:center;}
+.hero h1{font-family:'Syne',sans-serif;font-size:clamp(28px,4vw,48px);font-weight:700;color:#fff;letter-spacing:-1px;margin-bottom:12px;}
+.hero p{font-size:15px;color:rgba(255,255,255,0.5);max-width:500px;margin:0 auto;}
+.hero-date{display:inline-block;background:rgba(232,84,26,0.2);color:#ff9966;padding:4px 14px;border-radius:var(--r-pill);font-size:12px;margin-bottom:16px;}
+.main{max-width:780px;margin:0 auto;padding:60px 32px;}
+.toc{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:24px 28px;margin-bottom:48px;}
+.toc-title{font-weight:600;font-size:14px;margin-bottom:14px;color:var(--faint);text-transform:uppercase;letter-spacing:0.07em;}
+.toc a{display:block;font-size:14px;color:var(--orange);padding:4px 0;text-decoration:none;}
+.toc a:hover{text-decoration:underline;}
+.section{margin-bottom:48px;}
+.section h2{font-family:'Syne',sans-serif;font-size:20px;font-weight:700;color:var(--text);margin-bottom:16px;padding-top:8px;}
+.section p{font-size:15px;color:var(--muted);margin-bottom:14px;}
+.section ul{margin:0 0 14px 20px;}
+.section ul li{font-size:15px;color:var(--muted);margin-bottom:8px;}
+.section ul li strong{color:var(--text);font-weight:500;}
+.highlight-box{background:var(--surface);border:1px solid var(--border);border-left:4px solid var(--orange);border-radius:var(--r-md);padding:18px 20px;margin:16px 0;}
+.highlight-box p{margin:0;font-size:14px;color:var(--text);}
+.rights-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:16px 0;}
+.right-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-md);padding:16px;}
+.right-icon{font-size:22px;margin-bottom:8px;}
+.right-title{font-weight:600;font-size:13px;margin-bottom:4px;}
+.right-text{font-size:12px;color:var(--muted);line-height:1.5;}
+footer{background:var(--text);padding:48px 32px;text-align:center;}
+.footer-logo{font-family:'Syne',sans-serif;font-size:20px;font-weight:700;color:#fff;margin-bottom:12px;}
+.footer-logo span{color:var(--orange);}
+.footer-links{display:flex;justify-content:center;gap:24px;margin-bottom:16px;flex-wrap:wrap;}
+.footer-links a{font-size:13px;color:rgba(255,255,255,0.4);text-decoration:none;}
+.footer-links a:hover{color:#fff;}
+.footer-copy{font-size:12px;color:rgba(255,255,255,0.25);}
+@media(max-width:768px){.rights-grid{grid-template-columns:1fr;}nav{padding:0 16px;}.main{padding:40px 16px;}}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="logo" onclick="window.location.href='/oglasi.html'">oglix<span>.ba</span></div>
+  <a href="/oglasi.html" style="font-size:14px;color:var(--muted);">← Nazad na oglase</a>
+</nav>
+
+<div class="hero">
+  <div class="hero-date">Posljednja izmjena: April 2026</div>
+  <h1>Politika privatnosti</h1>
+  <p>Jasno i transparentno — šta prikupljamo, zašto i kako štitimo tvoje podatke.</p>
+</div>
+
+<div class="main">
+
+  <div class="toc">
+    <div class="toc-title">Sadržaj</div>
+    <a href="#ko-smo">1. Ko smo i kako nas kontaktirati</a>
+    <a href="#sta-prikupljamo">2. Koje podatke prikupljamo</a>
+    <a href="#zasto">3. Zašto prikupljamo podatke</a>
+    <a href="#dijeljenje">4. Dijeljenje podataka s trećim stranama</a>
+    <a href="#kolacici">5. Kolačići (Cookies)</a>
+    <a href="#sigurnost">6. Sigurnost podataka</a>
+    <a href="#prava">7. Tvoja prava</a>
+    <a href="#cuvanje">8. Čuvanje podataka</a>
+    <a href="#djeca">9. Zaštita djece</a>
+    <a href="#izmjene">10. Izmjene politike</a>
+    <a href="#kontakt-priv">11. Kontakt</a>
+  </div>
+
+  <div class="highlight-box">
+    <p>🔒 <strong>Kratka verzija:</strong> Oglix prikuplja minimalne podatke koji su nužni za funkcioniranje platforme. Ne prodajemo tvoje podatke. Ne prikazujemo reklame. Možeš zatražiti brisanje svih svojih podataka u bilo kom trenutku.</p>
+  </div>
+
+  <div class="section" id="ko-smo">
+    <h2>1. Ko smo i kako nas kontaktirati</h2>
+    <p>Oglix (oglix.ba) je agregator oglasa za Bosnu i Hercegovinu. Operator platforme je fizičko lice sa sjedištem u Bosni i Hercegovini.</p>
+    <p>Za sva pitanja vezana za privatnost podataka, kontaktiraj nas na: <a href="mailto:privatnost@oglix.ba">privatnost@oglix.ba</a></p>
+  </div>
+
+  <div class="section" id="sta-prikupljamo">
+    <h2>2. Koje podatke prikupljamo</h2>
+    <p><strong>Podatke koje nam direktno daješ (registracija):</strong></p>
+    <ul>
+      <li><strong>Ime i prezime</strong> — koristi se za personalizaciju pozdrava</li>
+      <li><strong>Email adresa</strong> — za prijavu na račun i slanje notifikacija</li>
+      <li><strong>Lozinka</strong> — čuvamo isključivo u hashovanom obliku (bcrypt), nikada u čistom tekstu</li>
+    </ul>
+    <p><strong>Podatke koje prikupljamo automatski (bez registracije):</strong></p>
+    <ul>
+      <li><strong>Praćenja i pretrage</strong> — ako si prijavljen, čuvamo termine koje pratiš</li>
+      <li><strong>Logovi servera</strong> — IP adresa, datum/vrijeme pristupa, stranica koja je posjećena (standardni serverski logovi, čuvaju se 30 dana)</li>
+    </ul>
+    <p><strong>Šta NE prikupljamo:</strong></p>
+    <ul>
+      <li>Podatke o plaćanju (kreditne kartice, bankovne račune)</li>
+      <li>Broj telefona</li>
+      <li>Lokacijske podatke</li>
+      <li>Biografske ili osjetljive osobne podatke</li>
+    </ul>
+  </div>
+
+  <div class="section" id="zasto">
+    <h2>3. Zašto prikupljamo podatke</h2>
+    <ul>
+      <li><strong>Korisnički račun</strong> — da možeš koristiti praćenje oglasa i Dashboard</li>
+      <li><strong>Notifikacije</strong> — slanje obavijesti o novim oglasima koji odgovaraju tvojim praćenjima</li>
+      <li><strong>Sigurnost</strong> — sprečavanje zloupotrebe, spama i neovlaštenog pristupa</li>
+      <li><strong>Poboljšanje platforme</strong> — analiza popularnih pretraga radi poboljšanja rezultata (anonimno, bez vezivanja za korisnika)</li>
+    </ul>
+    <p>Oglix ne koristi tvoje podatke za profiliranje u komercijalne svrhe, ciljano oglašavanje ni prodaju trećim stranama.</p>
+  </div>
+
+  <div class="section" id="dijeljenje">
+    <h2>4. Dijeljenje podataka s trećim stranama</h2>
+    <p>Oglix dijeli minimalne podatke s trećim stranama isključivo radi funkcioniranja servisa:</p>
+    <ul>
+      <li><strong>Railway (hosting)</strong> — naša platforma je hostovana na Railway (SAD). Podaci su zaštićeni standardima industrijske sigurnosti.</li>
+      <li><strong>Groq AI</strong> — sadržaj oglasa koji analiziraš šalje se Groq API-ju radi AI analize cijena. Oglix ne šalje Groq-u nikakve tvoje osobne podatke — samo sadržaj oglasa (naslov, cijena, kategorija).</li>
+      <li><strong>OLX.ba API</strong> — povlačimo javno dostupne podatke o oglasima.</li>
+    </ul>
+    <p>Ne dijelimo tvoje podatke s marketinškim agencijama, brokerima podataka ni bilo kojim trećim stranama u komercijalne svrhe.</p>
+    <div class="highlight-box">
+      <p>⚖️ Podatke možemo otkriti nadležnim organima jedino na osnovu zakonskog zahtjeva (sudski nalog, zahtjev policije) — u skladu sa zakonodavstvom BiH.</p>
+    </div>
+  </div>
+
+  <div class="section" id="kolacici">
+    <h2>5. Kolačići (Cookies)</h2>
+    <p>Oglix koristi minimalni broj kolačića neophodnih za funkcioniranje platforme:</p>
+    <ul>
+      <li><strong>localStorage (korisnički podaci)</strong> — tvoje ime i email čuvaju se lokalno u tvom browseru kako bi ostao prijavljen. Ovi podaci ostaju na tvom uređaju i ne šalju se na naš server pri svakom posjetu.</li>
+      <li><strong>Tehnički kolačići</strong> — koriste se za upravljanje sesijom i sigurnost prijave.</li>
+    </ul>
+    <p>Oglix <strong>ne koristi</strong> kolačiće za praćenje ponašanja korisnika, reklamne svrhe ni analitiku treće strane (Google Analytics, Facebook Pixel i sl.).</p>
+  </div>
+
+  <div class="section" id="sigurnost">
+    <h2>6. Sigurnost podataka</h2>
+    <p>Oglix primjenjuje sljedeće mjere zaštite:</p>
+    <ul>
+      <li><strong>HTTPS enkripcija</strong> — sva komunikacija između tebe i Oglixa je šifrirana</li>
+      <li><strong>bcrypt hashovanje lozinki</strong> — lozinke se nikada ne čuvaju u čitljivom obliku</li>
+      <li><strong>PostgreSQL baza</strong> — podaci su na sigurnom serveru s SSL konekcijom</li>
+      <li><strong>Minimalna kolekcija podataka</strong> — prikupljamo samo ono što je nužno</li>
+    </ul>
+    <p>U slučaju sigurnosnog incidenta koji bi mogao utjecati na tvoje podatke, obavijestit ćemo te putem emaila unutar 72 sata od otkrivanja.</p>
+  </div>
+
+  <div class="section" id="prava">
+    <h2>7. Tvoja prava</h2>
+    <p>U skladu s primjenjivim propisima o zaštiti podataka, imaš sljedeća prava:</p>
+    <div class="rights-grid">
+      <div class="right-card">
+        <div class="right-icon">👁️</div>
+        <div class="right-title">Pravo pristupa</div>
+        <div class="right-text">Možeš zatražiti kopiju svih podataka koje Oglix ima o tebi.</div>
+      </div>
+      <div class="right-card">
+        <div class="right-icon">✏️</div>
+        <div class="right-title">Pravo ispravke</div>
+        <div class="right-text">Možeš ispraviti netačne podatke putem Dashboarda ili kontaktiranjem podrške.</div>
+      </div>
+      <div class="right-card">
+        <div class="right-icon">🗑️</div>
+        <div class="right-title">Pravo brisanja</div>
+        <div class="right-text">Možeš zatražiti brisanje svog računa i svih podataka. Obradimo zahtjev unutar 48 sati.</div>
+      </div>
+      <div class="right-card">
+        <div class="right-icon">📦</div>
+        <div class="right-title">Pravo prenosivosti</div>
+        <div class="right-text">Možeš zatražiti izvoz svojih podataka u čitljivom formatu (JSON).</div>
+      </div>
+      <div class="right-card">
+        <div class="right-icon">🚫</div>
+        <div class="right-title">Pravo prigovora</div>
+        <div class="right-text">Možeš se usprotiviti obradi tvojih podataka u određenim situacijama.</div>
+      </div>
+      <div class="right-card">
+        <div class="right-icon">⏸️</div>
+        <div class="right-title">Pravo ograničenja</div>
+        <div class="right-text">Možeš zatražiti privremeno ograničenje obrade dok se ne razriješi spor.</div>
+      </div>
+    </div>
+    <p>Za ostvarivanje bilo kojeg od ovih prava, kontaktiraj nas na <a href="mailto:privatnost@oglix.ba">privatnost@oglix.ba</a>. Odgovaramo unutar 30 dana.</p>
+  </div>
+
+  <div class="section" id="cuvanje">
+    <h2>8. Čuvanje podataka</h2>
+    <ul>
+      <li><strong>Korisnički račun</strong> — čuvamo dok ne zatraži brisanje</li>
+      <li><strong>Praćenja oglasa</strong> — čuvamo dok ih korisnik ne obriše</li>
+      <li><strong>Serverski logovi</strong> — brišu se automatski nakon 30 dana</li>
+      <li><strong>Email komunikacija</strong> — čuvamo do 2 godine radi rješavanja eventualnih sporova</li>
+    </ul>
+    <p>Nakon brisanja računa, svi osobni podaci se trajno brišu unutar 48 sati. Anonimni agregatni podaci (statistike pretrage) mogu ostati u sistemu bez mogućnosti identifikacije.</p>
+  </div>
+
+  <div class="section" id="djeca">
+    <h2>9. Zaštita djece</h2>
+    <p>Oglix nije namijenjen osobama mlađim od 16 godina. Ne prikupljamo namjerno podatke o djeci. Ako saznaš da je dijete mlađe od 16 godina kreiralo račun, kontaktiraj nas na <a href="mailto:privatnost@oglix.ba">privatnost@oglix.ba</a> i odmah ćemo obrisati račun.</p>
+  </div>
+
+  <div class="section" id="izmjene">
+    <h2>10. Izmjene politike privatnosti</h2>
+    <p>Ovu politiku možemo povremeno ažurirati. O značajnim izmjenama obavijestit ćemo te emailom i prikazati obavijest na platformi. Datum posljednje izmjene uvijek je vidljiv na vrhu ove stranice.</p>
+    <p>Nastavljanjem korištenja Oglixa nakon obavijesti o izmjenama, smatramo da prihvataš ažuriranu politiku.</p>
+  </div>
+
+  <div class="section" id="kontakt-priv">
+    <h2>11. Kontakt za pitanja o privatnosti</h2>
+    <p>Za sva pitanja, zahtjeve i pritužbe vezane za privatnost:</p>
+    <ul>
+      <li><strong>Email:</strong> <a href="mailto:privatnost@oglix.ba">privatnost@oglix.ba</a></li>
+      <li><strong>Opći upiti:</strong> <a href="mailto:podrska@oglix.ba">podrska@oglix.ba</a></li>
+      <li><strong>Rok odgovora:</strong> Do 30 dana od primitka zahtjeva</li>
+    </ul>
+    <p>Ako nisi zadovoljan/na našim odgovorom, imaš pravo podnijeti pritužbu nadležnom tijelu za zaštitu podataka u Bosni i Hercegovini (Agencija za zaštitu osobnih podataka BiH).</p>
+  </div>
+
+</div>
+
+<footer>
+  <div class="footer-logo">oglix<span>.ba</span></div>
+  <div class="footer-links">
+    <a href="/oglasi.html">Oglasi</a>
+    <a href="/podrska.html">Podrška</a>
+    <a href="/sigurnost.html">Online sigurnost</a>
+    <a href="/privatnost.html">Privatnost</a>
+  </div>
+  <div class="footer-copy">© 2026 Oglix · Agregator oglasa za BiH</div>
+</footer>
+
+</body>
+</html>
