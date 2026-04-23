@@ -338,8 +338,19 @@ function otvoriModal(index) {
   var o = trenutnoFiltrirani[index];
   if (!o) return;
   var slicni = trenutnoFiltrirani.filter(function(s, i) {
-    return i !== index && s.kategorija === o.kategorija && s.cijena >= o.cijena * 0.7 && s.cijena <= o.cijena * 1.3;
-  }).slice(0, 6);
+    if (i === index) return false;
+    if (s.kategorija !== o.kategorija) return false;
+    if (s.cijena < o.cijena * 0.7 || s.cijena > o.cijena * 1.3) return false;
+    
+    // Izvuci kljucne rijeci iz naslova (min 4 karaktera)
+    var rijeciOriginala = o.naslov.toLowerCase().split(/\s+/).filter(function(r) { return r.length >= 4; });
+    var rijeciSlicnog = s.naslov.toLowerCase();
+    
+    // Treba da dijeli bar 2 kljucne rijeci
+    var poklapanja = rijeciOriginala.filter(function(r) { return rijeciSlicnog.includes(r); });
+    
+    return poklapanja.length >= 2;
+}).slice(0, 6);
 
   document.getElementById('modalSadrzaj').innerHTML =
     '<div style="display:flex;gap:24px;align-items:flex-start;flex-wrap:wrap;">' +
