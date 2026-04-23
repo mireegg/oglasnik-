@@ -236,6 +236,7 @@ app.get('/api/slicni-oglasi', async (req, res) => {
     try {
         const { brand_id, cijena_od, cijena_do, trenutni_id, gorivo, transmisija, kubikaza, boja, km_od, km_do } = req.query;
 
+        // Fetchaj 40 oglasa istog brenda
         let url = `https://olx.ba/api/search?category_id=18&per_page=40`;
         if (brand_id) url += `&brand=${brand_id}&brands=${brand_id}`;
         if (cijena_od) url += `&price_from=${cijena_od}`;
@@ -246,36 +247,44 @@ app.get('/api/slicni-oglasi', async (req, res) => {
             timeout: 10000
         });
 
-        let oglasi = (response.data.data || []).filter(o => o.id != trenutni_id);
+        const kandidati = (response.data.data || []).filter(o => o.id != trenutni_id);
 
-        // Ako ima puno rezultata, filtriraj strože po special_labels
-        if (oglasi.length > 6) {
-            // Pokušaj filtrirati po gorivu i transmisiji iz labels
-            const filtered = oglasi.filter(o => {
-                const labels = o.special_labels || [];
-                const ogGorivo = labels.find(l => l.label === 'Gorivo');
-                // Ako oglas ima gorivo info, provjeri poklapanje
-                if (ogGorivo && gorivo && ogGorivo.value.toLowerCase() !== gorivo.toLowerCase()) return false;
-                return true;
-            });
-            if (filtered.length >= 3) oglasi = filtered;
-        }
-
-        const rezultat = oglasi.slice(0, 6).map(o => {
-            const labels = o.special_labels || [];
-            const kmLabel = labels.find(l => l.label === 'Kilometraža');
-            const gorivLabel = labels.find(l => l.label === 'Gorivo');
-            const godLabel = labels.find(l => l.label === 'Godište');
-            return {
-                id: o.id, naslov: o.title,
-                cijena: o.display_price || 'Na upit',
-                slika: o.image || '',
-                link: `https://www.olx.ba/artikal/${o.id}`,
-                gorivo: gorivLabel ? gorivLabel.value : '',
-                km: kmLabel ? kmLabel.value : '',
-                godiste: godLabel ? godLabel.value : ''
-            };
+        // Fetchaj detalje za svaki oglas paralelno
+        const detaljiPromises = kandidati.slice(0, 30).map(async (o) => {
+            try {
+                const det = await axios.get(`https://olx.ba/api/listings/${o.id}`, {
+                    headers: { 'User-Agent': 'Mozilla/5.0', 'Accept': 'application/json', 'Referer': 'https://www.olx.ba/' },
+                    timeout: 8000
+                });
+                const attrs = {};
+                (det.data.attributes || []).forEach(a => { attrs[a.attr_code] = a.value; });
+                return {
+                    id: o.id,
+                    naslov: o.title,
+                    cijena: o.display_price || 'Na upit',
+                    slika: o.image || '',
+                    link: `https://www.olx.ba/artikal/${o.id}`,
+                    gorivo: attrs['gorivo'] || '',
+                    transmisija: attrs['transmisija'] || '',
+                    kubikaza: attrs['kubikaza'] || null,
+                    boja: attrs['boja'] || '',
+                    km: attrs['kilometra-a'] || null,
+                    model_id: det.data.model_id || null
+                };
+            } catch(e) { return null; }
         });
+
+        const sviDetalji = (await Promise.all(detaljiPromises)).filter(Boolean);
+
+        // Strogi filter
+        const rezultat = sviDetalji.filter(o => {
+            if (gorivo && o.gorivo.toLowerCase() !== gorivo.toLowerCase()) return false;
+            if (transmisija && o.transmisija.toLowerCase() !== transmisija.toLowerCase()) return false;
+            if (kubikaza && Math.abs(parseFloat(o.kubikaza) - parseFloat(kubikaza)) > 0.1) return false;
+            if (boja && o.boja.toLowerCase() !== boja.toLowerCase()) return false;
+            if (km_od && km_do && o.km && (o.km < km_od || o.km > km_do)) return false;
+            return true;
+        }).slice(0, 6);
 
         res.json({ uspjeh: true, oglasi: rezultat });
     } catch(e) {
