@@ -485,26 +485,6 @@ function otvoriModal(index) {
   .then(function(data) { if (data.uspjeh) alert('Oglas dodan u praćenja! 🔔'); });
 }
 
-  // AI analiza
-  fetch('/api/analiza-jednog-oglasa', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ oglas: o, slicni: slicni })
-  })
-  .then(function(r) { return r.json(); })
-  .then(function(data) {
-    if (data.uspjeh) {
-      var tekst = data.analiza
-        .replace(/OCJENA:\s*([^\n]+)/g, '<div style="display:inline-block;background:#e65c00;color:white;padding:3px 10px;border-radius:6px;font-size:12px;font-weight:700;margin-bottom:8px;">$1</div>')
-        .replace(/CIJENA:\s*([^\n]+)/g, '<div style="margin-bottom:6px;"><strong style="color:#333;">💰 Cijena:</strong> $1</div>')
-        .replace(/SAVJET:\s*([^\n]+)/g, '<div style="margin-bottom:6px;"><strong style="color:#333;">💡 Savjet:</strong> $1</div>')
-        .replace(/SCORE:\s*(\d+)/g, '');
-      document.getElementById('aiAnalizaTekst').innerHTML = tekst;
-    } else {
-      document.getElementById('aiAnalizaTekst').innerHTML = 'Analiza trenutno nije dostupna.';
-    }
-  })
-
 
 function zatvoriModal() {
   document.getElementById('oglasiModal').style.display = 'none';
