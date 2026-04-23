@@ -280,7 +280,7 @@ function renderPracenja(pracenja, containerId) {
       ? 'window.open(\'' + p.link + '\', \'_blank\')'
       : 'window.location.href=\'/oglasi.html?q=' + encodeURIComponent(p.pretraga) + '\'';
     return '<div class="pracenje-item" id="pracenje-' + p.id + '">' +
-      (p.slika ? '<img src="' + p.slika + '" style="width:52px;height:52px;border-radius:10px;object-fit:cover;flex-shrink:0;">' : '<div class="pracenje-icon">🔔</div>') +
+      '<div class="pracenje-icon">🔔</div>' +
       '<div class="pracenje-info">' +
       '<div class="pracenje-title">' + p.pretraga + '</div>' +
       '<div class="pracenje-meta">Dodano ' + datum + '</div>' +
@@ -288,9 +288,8 @@ function renderPracenja(pracenja, containerId) {
       '<button class="pretrazi-btn" onclick="' + pretraziBtnOnclick + '">Pretraži</button>' +
       '<button class="ukloni-btn" onclick="obrisiPracenje(' + p.id + ')">Ukloni</button>' +
       '</div>';
-}).join('');
+  }).join('');
 }
-
 
 async function ucitajPracenja() {
   if (!korisnik) return;
