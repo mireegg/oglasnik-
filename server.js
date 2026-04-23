@@ -420,7 +420,89 @@ fetchSveKategorije();
 
 // Pokreni svakih sat vremena
 setInterval(fetchSveKategorije, 60 * 60 * 1000);
+app.get('/api/oglas-detalji/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const response = await axios.get(`https://olx.ba/api/listings/${id}`, {
+            headers: {
+                'User-Agent': 'Mozilla/5.0',
+                'Accept': 'application/json',
+                'Referer': 'https://www.olx.ba/'
+            },
+            timeout: 10000
+        });
 
+        const data = response.data;
+        
+        // Izvuci atribute
+        const attrs = {};
+        (data.attributes || []).forEach(function(a) {
+            attrs[a.attr_code] = a.value;
+        });
+
+        const detalji = {
+            id: data.id,
+            naslov: data.title,
+            opis: data.additional?.description?.replace(/<[^>]*>/g, '').substring(0, 300) || '',
+            brand: data.brand?.name || '',
+            model: data.model?.name || '',
+            brand_id: data.brand?.id || null,
+            model_id: data.model_id || null,
+            godiste: attrs['godiste'] || null,
+            gorivo: attrs['gorivo'] || null,
+            transmisija: attrs['transmisija'] || null,
+            km: attrs['kilometra-a'] || null,
+            kubikaza: attrs['kubikaza'] || null,
+            kw: attrs['kilovata-kw'] || null,
+            boja: attrs['boja'] || null,
+            tip: attrs['tip'] || null,
+            grad: data.cities?.[0]?.name || 'BiH',
+            slike: data.images || []
+        };
+
+        res.json({ uspjeh: true, detalji });
+    } catch(e) {
+        res.json({ uspjeh: false, poruka: e.message });
+    }
+});
+
+app.get('/api/slicni-oglasi', async (req, res) => {
+    try {
+        const { brand_id, model_id, cijena_od, cijena_do, trenutni_id } = req.query;
+        
+        let url = `https://olx.ba/api/search?category_id=18&per_page=6`;
+        if (brand_id) url += `&brand=${brand_id}`;
+        if (model_id) url += `&models=${model_id}`;
+        if (cijena_od) url += `&price_from=${cijena_od}`;
+        if (cijena_do) url += `&price_to=${cijena_do}`;
+
+        const response = await axios.get(url, {
+            headers: {
+                'User-Agent': 'Mozilla/5.0',
+                'Accept': 'application/json',
+                'Referer': 'https://www.olx.ba/'
+            },
+            timeout: 10000
+        });
+
+        const oglasi = (response.data.data || [])
+            .filter(o => o.id != trenutni_id)
+            .slice(0, 6)
+            .map(o => ({
+                id: o.id,
+                naslov: o.title,
+                cijena: o.display_price || 'Na upit',
+                slika: o.image || '',
+                link: `https://www.olx.ba/artikal/${o.id}`,
+                gorivo: o.labels?.[0] || '',
+                km: o.labels?.[1] || ''
+            }));
+
+        res.json({ uspjeh: true, oglasi });
+    } catch(e) {
+        res.json({ uspjeh: false, oglasi: [] });
+    }
+});
 app.listen(PORT, () => {
     console.log(`Server radi na portu ${PORT}`);
 });
