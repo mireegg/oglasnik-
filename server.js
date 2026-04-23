@@ -374,13 +374,13 @@ async function fetchOLXKategorija(categoryId, kategorija) {
 }
 
 async function fetchSveKategorije() {
-    console.log('Pokrećem OLX auto-fetch...');
-    for (const kat of OLX_KATEGORIJE) {
-        await fetchOLXKategorija(kat.id, kat.naziv);
-        await new Promise(r => setTimeout(r, 2000));
-    }
-    console.log('OLX auto-fetch završen!');
+    console.log('Pokrećem OLX fetch vozila...');
+    await fetchOLXKategorija('18', 'vozila');
+    console.log('OLX fetch vozila završen!');
 }
+
+fetchSveKategorije();
+setInterval(fetchSveKategorije, 60 * 60 * 1000);
 app.get('/api/reset-vozila', async (req, res) => {
     await pool.query(`DELETE FROM live_oglasi WHERE kategorija = 'vozila'`);
     res.json({ uspjeh: true, poruka: 'Vozila obrisana' });
