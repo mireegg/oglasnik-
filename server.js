@@ -381,6 +381,10 @@ async function fetchSveKategorije() {
     }
     console.log('OLX auto-fetch završen!');
 }
+app.get('/api/reset-vozila', async (req, res) => {
+    await pool.query(`DELETE FROM live_oglasi WHERE kategorija = 'vozila'`);
+    res.json({ uspjeh: true, poruka: 'Vozila obrisana' });
+});
 
 fetchSveKategorije();
 setInterval(fetchSveKategorije, 60 * 60 * 1000);
