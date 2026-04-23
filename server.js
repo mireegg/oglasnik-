@@ -470,11 +470,21 @@ app.get('/api/oglas-detalji/:id', async (req, res) => {
 
 app.get('/api/slicni-oglasi', async (req, res) => {
     try {
-        const { brand_id, cijena_od, cijena_do, trenutni_id } = req.query;
-        
-        // Fetchaj više pa filtriraj lokalno
-        let url = `https://olx.ba/api/search?category_id=18&per_page=40`;
-        if (brand_id) url += `&brand=${brand_id}`;
+        const { brand_id, cijena_od, cijena_do, trenutni_id, gorivo, transmisija, kubikaza, km_od, km_do } = req.query;
+
+        // Napravi attr string
+        var attrParts = [];
+        if (gorivo) attrParts.push(`7(${gorivo})`);
+        if (transmisija) attrParts.push(`52(${transmisija})`);
+        if (kubikaza) attrParts.push(`1144(${kubikaza}-${kubikaza})`);
+        if (km_od && km_do) attrParts.push(`3(${km_od}-${km_do})`);
+
+        var attrString = attrParts.join(':');
+        var attrEncoded = Buffer.from(attrString).toString('hex');
+
+        let url = `https://olx.ba/api/search?attr_encoded=1&category_id=18&per_page=8`;
+        if (brand_id) url += `&brand=${brand_id}&brands=${brand_id}`;
+        if (attrEncoded) url += `&attr=${attrEncoded}`;
         if (cijena_od) url += `&price_from=${cijena_od}`;
         if (cijena_do) url += `&price_to=${cijena_do}`;
 
@@ -488,12 +498,7 @@ app.get('/api/slicni-oglasi', async (req, res) => {
         });
 
         const oglasi = (response.data.data || [])
-            .filter(o => {
-                if (o.id == trenutni_id) return false;
-                // Filtriraj po brand_id
-                if (brand_id && o.brand_id != brand_id) return false;
-                return true;
-            })
+            .filter(o => o.id != trenutni_id)
             .slice(0, 6)
             .map(o => {
                 var labels = o.special_labels || [];

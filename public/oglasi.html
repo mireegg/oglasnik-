@@ -425,11 +425,19 @@ function otvoriModal(index) {
       }
 
       // Fetchaj slične oglase
-      var cijenaOd = Math.round(o.cijena * 0.8);
-      var cijenaDo = Math.round(o.cijena * 1.2);
-      var url = '/api/slicni-oglasi?trenutni_id=' + olxId + '&cijena_od=' + cijenaOd + '&cijena_do=' + cijenaDo;
-      if (d.brand_id) url += '&brand_id=' + d.brand_id;
-      if (d.model_id) url += '&model_id=' + d.model_id;
+      var kmOd = Math.max(0, d.km - 50000);
+var kmDo = d.km + 50000;
+var cijenaOd = Math.round(o.cijena * 0.8);
+var cijenaDo = Math.round(o.cijena * 1.2);
+
+var url = '/api/slicni-oglasi?trenutni_id=' + olxId + 
+    '&cijena_od=' + cijenaOd + 
+    '&cijena_do=' + cijenaDo;
+if (d.brand_id) url += '&brand_id=' + d.brand_id;
+if (d.gorivo) url += '&gorivo=' + encodeURIComponent(d.gorivo);
+if (d.transmisija) url += '&transmisija=' + encodeURIComponent(d.transmisija);
+if (d.kubikaza) url += '&kubikaza=' + d.kubikaza;
+if (d.km) url += '&km_od=' + kmOd + '&km_do=' + kmDo;
 
       fetch(url)
       .then(function(r) { return r.json(); })
@@ -484,6 +492,7 @@ function otvoriModal(index) {
   .then(function(r) { return r.json(); })
   .then(function(data) { if (data.uspjeh) alert('Oglas dodan u praćenja! 🔔'); });
 }
+
 
 
 function zatvoriModal() {
