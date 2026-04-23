@@ -310,28 +310,48 @@ const OLX_KATEGORIJE = [
 
 async function fetchOLXKategorija(categoryId, kategorija) {
     try {
-        for (let stranica = 1; stranica <= 10; stranica++) {
-            const url = `https://olx.ba/api/search?attr_encoded=1&category_id=${categoryId}&per_page=40&page=${stranica}`;
+        let stranica = 1;
+        let ukupnoNovih = 0;
+        while (true) {
+            const url = `https://olx.ba/api/search?category_id=${categoryId}&per_page=40&page=${stranica}`;
             const response = await axios.get(url, {
                 headers: { 'User-Agent': 'Mozilla/5.0', 'Accept': 'application/json', 'Referer': 'https://www.olx.ba/' },
-                timeout: 10000
+                timeout: 15000
             });
             const oglasi = response.data.data || [];
+            const meta = response.data.meta || {};
+            
             if (!oglasi.length) break;
+
             let sacuvano = 0;
             for (const o of oglasi) {
                 try {
-                    await pool.query(
-                        `INSERT INTO live_oglasi (naslov, cijena, slika, link, platforma, kategorija) VALUES ($1,$2,$3,$4,$5,$6) ON CONFLICT (link) DO NOTHING`,
-                        [o.title, o.display_price || 'Na upit', o.image || '', `https://www.olx.ba/artikal/${o.id}`, 'olx', kategorija]
+                    const result = await pool.query(
+                        `INSERT INTO live_oglasi (naslov, cijena, slika, link, platforma, kategorija)
+                         VALUES ($1,$2,$3,$4,$5,$6)
+                         ON CONFLICT (link) DO NOTHING`,
+                        [o.title, o.display_price || 'Na upit', o.image || '', 
+                         `https://www.olx.ba/artikal/${o.id}`, 'olx', kategorija]
                     );
-                    sacuvano++;
+                    if (result.rowCount > 0) sacuvano++;
                 } catch(e) {}
             }
-            console.log(`OLX: stranica ${stranica}, kategorija ${kategorija}, ${sacuvano} novih`);
-            await new Promise(r => setTimeout(r, 1000));
+            
+            ukupnoNovih += sacuvano;
+            console.log(`OLX: stranica ${stranica}/${meta.last_page || '?'}, kategorija ${kategorija}, ${sacuvano} novih`);
+            
+            // Stani kad nema više stranica
+            if (stranica >= (meta.last_page || 1)) break;
+            // Stani kad nema novih oglasa 3 stranice zaredom
+            if (sacuvano === 0 && stranica > 3) break;
+            
+            stranica++;
+            await new Promise(r => setTimeout(r, 500));
         }
-    } catch(e) { console.log(`OLX greška za ${kategorija}:`, e.message); }
+        console.log(`OLX: kategorija ${kategorija} završena — ukupno ${ukupnoNovih} novih oglasa`);
+    } catch(e) {
+        console.log(`OLX greška za ${kategorija}:`, e.message);
+    }
 }
 
 async function fetchSveKategorije() {
