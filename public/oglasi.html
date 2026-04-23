@@ -384,10 +384,25 @@ function otvoriModal(index) {
   document.body.style.overflow = 'hidden';
 
   // Prati btn event
-  document.getElementById('pratiBtnModal').addEventListener('click', function() {
+document.getElementById('pratiBtnModal').addEventListener('click', function() {
     var idx = parseInt(this.dataset.index);
     var oglas = trenutnoFiltrirani[idx];
-    pratiOglas(oglas.naslov, oglas.link);
+    pratiOglas(oglas.naslov, oglas.link, oglas.slika);
+});
+    var idx = parseInt(this.dataset.index);
+    var oglas = trenutnoFiltrirani[idx];
+    function pratiOglas(naslov, link, slika) {
+  var k = JSON.parse(localStorage.getItem('korisnik') || 'null');
+  if (!k) { alert('Moraš biti prijavljen da pratiš oglase!'); window.location.href = '/login.html'; return; }
+  fetch('/pracenje', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email: k.email, pretraga: naslov, link: link, slika: slika })
+  })
+  .then(function(r) { return r.json(); })
+  .then(function(data) { if (data.uspjeh) alert('Oglas dodan u praćenja! 🔔'); });
+}
+    pratiOglas(oglas.naslov, oglas.link, oglas.slika);
   });
 
   // AI analiza

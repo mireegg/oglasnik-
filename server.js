@@ -33,6 +33,7 @@ const pool = new Pool({
 });
 
 async function initDB() {
+    await pool.query(`ALTER TABLE pracenja ADD COLUMN IF NOT EXISTS slika TEXT`);
     await pool.query(`ALTER TABLE pracenja ADD COLUMN IF NOT EXISTS link TEXT`);
     await pool.query(`CREATE TABLE IF NOT EXISTS korisnici (id SERIAL PRIMARY KEY, ime VARCHAR(100), email VARCHAR(100) UNIQUE, lozinka VARCHAR(100), datum TIMESTAMP DEFAULT NOW())`);
     await pool.query(`CREATE TABLE IF NOT EXISTS prijave (id SERIAL PRIMARY KEY, ime VARCHAR(100), email VARCHAR(100), telefon VARCHAR(50), datum TIMESTAMP DEFAULT NOW())`);
@@ -101,10 +102,10 @@ app.post('/login', async (req, res) => {
 });
 
 app.post('/pracenje', async (req, res) => {
-    const { email, pretraga, link } = req.body;
+    const { email, pretraga, link, slika } = req.body;
     await pool.query(
-        'INSERT INTO pracenja (korisnik_email, pretraga, link) VALUES ($1, $2, $3)',
-        [email, pretraga, link || null]
+        'INSERT INTO pracenja (korisnik_email, pretraga, link, slika) VALUES ($1, $2, $3, $4)',
+        [email, pretraga, link || null, slika || null]
     );
     res.json({ uspjeh: true });
 });
