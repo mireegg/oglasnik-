@@ -470,13 +470,14 @@ app.get('/api/oglas-detalji/:id', async (req, res) => {
 
 app.get('/api/slicni-oglasi', async (req, res) => {
     try {
-        const { brand_id, cijena_od, cijena_do, trenutni_id, gorivo, transmisija, kubikaza, km_od, km_do } = req.query;
+        const { brand_id, cijena_od, cijena_do, trenutni_id, gorivo, transmisija, kubikaza, boja, km_od, km_do } = req.query;
 
-        // Napravi attr string
+        // Napravi attr string format: ID(Vrijednost):ID(Vrijednost)
         var attrParts = [];
         if (gorivo) attrParts.push(`7(${gorivo})`);
         if (transmisija) attrParts.push(`52(${transmisija})`);
         if (kubikaza) attrParts.push(`1144(${kubikaza}-${kubikaza})`);
+        if (boja) attrParts.push(`62(${boja})`);
         if (km_od && km_do) attrParts.push(`3(${km_od}-${km_do})`);
 
         var attrString = attrParts.join(':');
@@ -487,6 +488,9 @@ app.get('/api/slicni-oglasi', async (req, res) => {
         if (attrEncoded) url += `&attr=${attrEncoded}`;
         if (cijena_od) url += `&price_from=${cijena_od}`;
         if (cijena_do) url += `&price_to=${cijena_do}`;
+
+        console.log('Slicni oglasi URL:', url);
+        console.log('Attr string:', attrString);
 
         const response = await axios.get(url, {
             headers: {
@@ -517,6 +521,7 @@ app.get('/api/slicni-oglasi', async (req, res) => {
 
         res.json({ uspjeh: true, oglasi });
     } catch(e) {
+        console.log('Slicni greška:', e.message);
         res.json({ uspjeh: false, oglasi: [], poruka: e.message });
     }
 });
