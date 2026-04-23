@@ -289,6 +289,8 @@ function renderPracenja(pracenja, containerId) {
       '<button class="ukloni-btn" onclick="obrisiPracenje(' + p.id + ')">Ukloni</button>' +
       '</div>';
 }).join('');
+}
+
 
 async function ucitajPracenja() {
   if (!korisnik) return;
