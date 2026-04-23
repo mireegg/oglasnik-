@@ -349,21 +349,23 @@ async function fetchOLXKategorija(categoryId, kategorija) {
             timeout: 10000
         });
 
-        const oglasi = response.data.data || [];
-        let sacuvano = 0;
-
-        for (const o of oglasi) {
-            try {
-                await pool.query(
-                    `INSERT INTO live_oglasi (naslov, cijena, slika, link, platforma, kategorija)
-                     VALUES ($1, $2, $3, $4, $5, $6)
-                     ON CONFLICT (link) DO NOTHING`,
-                    [o.title, o.display_price || 'Na upit', o.image || '', `https://www.olx.ba/artikal/${o.id}`, 'olx', kategorija]
-                );
-                sacuvano++;
-            } catch(e) {}
-        }
-
+       const oglasi = (response.data.data || [])
+    .filter(o => o.id != trenutni_id)
+    .slice(0, 6)
+    .map(o => {
+        var labels = o.special_labels || [];
+        var km = labels.find(l => l.attr_code === 'kilometra-a' || l.label === 'Kilometraža');
+        var gorivo = labels.find(l => l.attr_code === 'gorivo' || l.label === 'Gorivo');
+        return {
+            id: o.id,
+            naslov: o.title,
+            cijena: o.display_price || 'Na upit',
+            slika: o.image || '',
+            link: `https://www.olx.ba/artikal/${o.id}`,
+            gorivo: gorivo ? gorivo.value : '',
+            km: km ? km.value : ''
+        };
+    });
         console.log(`OLX Auto-fetch: ${sacuvano} novih oglasa za kategoriju ${kategorija}`);
     } catch(e) {
         console.log(`OLX Auto-fetch greška za ${kategorija}:`, e.message);
