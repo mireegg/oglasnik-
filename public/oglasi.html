@@ -441,7 +441,7 @@ function otvoriModal(index) {
     .catch(function() { document.getElementById('aiAnalizaTekst').innerHTML = 'Analiza nije dostupna.'; });
 
     // Slični oglasi — fetchaj s OLX direktno
-    var cijenaRaw = parseFloat((o.cijenaStr || '').replace(/[^0-9.,]/g, '').replace(',', '.')) || 0;
+    var cijenaRaw = parseFloat((o.cijenaStr || '').replace(/\./g, '').replace(',', '.').replace(/[^0-9]/g, '')) || 0;
 var cijenaOd = Math.round(cijenaRaw * 0.75);
 var cijenaDo = Math.round(cijenaRaw * 1.25);
     var kmOd = d.km ? Math.max(0, parseInt(d.km) - 50000) : 0;
