@@ -470,11 +470,10 @@ app.get('/api/oglas-detalji/:id', async (req, res) => {
 
 app.get('/api/slicni-oglasi', async (req, res) => {
     try {
-        const { brand_id, model_id, cijena_od, cijena_do, trenutni_id } = req.query;
+        const { brand_id, cijena_od, cijena_do, trenutni_id } = req.query;
         
-        let url = `https://olx.ba/api/search?category_id=18&per_page=6`;
+        let url = `https://olx.ba/api/search?category_id=18&per_page=8`;
         if (brand_id) url += `&brand=${brand_id}`;
-        if (model_id) url += `&models=${model_id}`;
         if (cijena_od) url += `&price_from=${cijena_od}`;
         if (cijena_do) url += `&price_to=${cijena_do}`;
 
@@ -490,19 +489,24 @@ app.get('/api/slicni-oglasi', async (req, res) => {
         const oglasi = (response.data.data || [])
             .filter(o => o.id != trenutni_id)
             .slice(0, 6)
-            .map(o => ({
-                id: o.id,
-                naslov: o.title,
-                cijena: o.display_price || 'Na upit',
-                slika: o.image || '',
-                link: `https://www.olx.ba/artikal/${o.id}`,
-                gorivo: o.labels?.[0] || '',
-                km: o.labels?.[1] || ''
-            }));
+            .map(o => {
+                var labels = o.special_labels || [];
+                var kmLabel = labels.find(l => l.label === 'Kilometraža');
+                var gorivLabel = labels.find(l => l.label === 'Gorivo');
+                return {
+                    id: o.id,
+                    naslov: o.title,
+                    cijena: o.display_price || 'Na upit',
+                    slika: o.image || '',
+                    link: `https://www.olx.ba/artikal/${o.id}`,
+                    gorivo: gorivLabel ? gorivLabel.value : '',
+                    km: kmLabel ? kmLabel.value : ''
+                };
+            });
 
         res.json({ uspjeh: true, oglasi });
     } catch(e) {
-        res.json({ uspjeh: false, oglasi: [] });
+        res.json({ uspjeh: false, oglasi: [], poruka: e.message });
     }
 });
 app.listen(PORT, () => {
