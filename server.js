@@ -360,11 +360,17 @@ async function fetchOLXKategorija(categoryId, kategorija) {
                     console.log(`OLX: ${kategorija} — stranica ${stranica}/${lastPage}, ukupno novih: ${ukupnoNovih}`);
                 }
                 
-                await new Promise(r => setTimeout(r, 300));
+await new Promise(r => setTimeout(r, 1500));
             } catch(e) {
-                console.log(`OLX greška stranica ${stranica}:`, e.message);
-                await new Promise(r => setTimeout(r, 2000));
-            }
+    console.log(`OLX greška stranica ${stranica}:`, e.message);
+    if (e.response?.status === 429) {
+        console.log('Rate limit — čekam 30 sekundi...');
+        await new Promise(r => setTimeout(r, 30000));
+        stranica--; // Pokušaj istu stranicu ponovo
+    } else {
+        await new Promise(r => setTimeout(r, 2000));
+    }
+}
         }
         
         console.log(`OLX: kategorija ${kategorija} ZAVRŠENA — ${ukupnoNovih} novih oglasa`);
