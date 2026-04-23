@@ -402,8 +402,6 @@ document.getElementById('pratiBtnModal').addEventListener('click', function() {
   .then(function(r) { return r.json(); })
   .then(function(data) { if (data.uspjeh) alert('Oglas dodan u praćenja! 🔔'); });
 }
-    pratiOglas(oglas.naslov, oglas.link, oglas.slika);
-  });
 
   // AI analiza
   fetch('/api/analiza-jednog-oglasa', {
