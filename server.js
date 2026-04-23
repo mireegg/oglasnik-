@@ -472,7 +472,8 @@ app.get('/api/slicni-oglasi', async (req, res) => {
     try {
         const { brand_id, cijena_od, cijena_do, trenutni_id } = req.query;
         
-        let url = `https://olx.ba/api/search?category_id=18&per_page=8`;
+        // Fetchaj više pa filtriraj lokalno
+        let url = `https://olx.ba/api/search?category_id=18&per_page=40`;
         if (brand_id) url += `&brand=${brand_id}`;
         if (cijena_od) url += `&price_from=${cijena_od}`;
         if (cijena_do) url += `&price_to=${cijena_do}`;
@@ -487,7 +488,12 @@ app.get('/api/slicni-oglasi', async (req, res) => {
         });
 
         const oglasi = (response.data.data || [])
-            .filter(o => o.id != trenutni_id)
+            .filter(o => {
+                if (o.id == trenutni_id) return false;
+                // Filtriraj po brand_id
+                if (brand_id && o.brand_id != brand_id) return false;
+                return true;
+            })
             .slice(0, 6)
             .map(o => {
                 var labels = o.special_labels || [];
