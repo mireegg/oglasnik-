@@ -182,18 +182,17 @@ app.post('/api/sacuvaj-oglase', async (req, res) => {
 app.get('/api/live-oglasi', async (req, res) => {
     try {
         const { q, kategorija } = req.query;
-        const offset = parseInt(req.query.offset) || 0;
-        const limit = parseInt(req.query.limit) || 12;
         let uvjeti = [], params = [], i = 1;
+
         if (q) { uvjeti.push(`naslov ILIKE $${i++}`); params.push(`%${q}%`); }
         if (kategorija) {
             const kats = kategorija.split(',').map(k => k.trim());
             uvjeti.push(`kategorija IN (${kats.map(() => `$${i++}`).join(',')})`);
             params.push(...kats);
         }
+
         const where = uvjeti.length ? 'WHERE ' + uvjeti.join(' AND ') : '';
-        params.push(limit, offset);
-        const result = await pool.query(`SELECT * FROM live_oglasi ${where} ORDER BY datum DESC LIMIT $${i++} OFFSET $${i++}`, params);
+        const result = await pool.query(`SELECT * FROM live_oglasi ${where} ORDER BY datum DESC`, params);
         res.json({ uspjeh: true, oglasi: result.rows });
     } catch(e) { res.json({ uspjeh: false, oglasi: [] }); }
 });
