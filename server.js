@@ -379,20 +379,53 @@ await new Promise(r => setTimeout(r, 1500));
     }
 }
 
-async function fetchSveKategorije() {
-    console.log('Pokrećem OLX fetch vozila...');
-    await fetchOLXKategorija('18', 'vozila');
-    console.log('OLX fetch vozila završen!');
+let trenutnaStranica = 1;
+const UKUPNO_STRANICA = 1236;
+
+async function fetchSerija() {
+    if (trenutnaStranica > UKUPNO_STRANICA) {
+        console.log('Sve stranice fetchane!');
+        trenutnaStranica = 1;
+        return;
+    }
+    
+    const DO_STRANICE = Math.min(trenutnaStranica + 19, UKUPNO_STRANICA);
+    console.log(`Fetcham stranice ${trenutnaStranica}-${DO_STRANICE}...`);
+    
+    for (let stranica = trenutnaStranica; stranica <= DO_STRANICE; stranica++) {
+        try {
+            const response = await axios.get(`https://olx.ba/api/search?category_id=18&per_page=40&page=${stranica}`, {
+                headers: { 'User-Agent': 'Mozilla/5.0', 'Accept': 'application/json', 'Referer': 'https://www.olx.ba/' },
+                timeout: 15000
+            });
+            
+            const oglasi = response.data.data || [];
+            for (const o of oglasi) {
+                try {
+                    await pool.query(
+                        `INSERT INTO live_oglasi (naslov, cijena, slika, link, platforma, kategorija) VALUES ($1,$2,$3,$4,$5,$6) ON CONFLICT (link) DO NOTHING`,
+                        [o.title, o.display_price || 'Na upit', o.image || '', `https://www.olx.ba/artikal/${o.id}`, 'olx', 'vozila']
+                    );
+                } catch(e) {}
+            }
+            
+            console.log(`Stranica ${stranica} done`);
+            await new Promise(r => setTimeout(r, 2000));
+        } catch(e) {
+            if (e.response?.status === 429) {
+                console.log(`429 na stranici ${stranica} — čekam 60s`);
+                await new Promise(r => setTimeout(r, 60000));
+                stranica--;
+            }
+        }
+    }
+    
+    trenutnaStranica = DO_STRANICE + 1;
+    console.log(`Serija završena. Sljedeća serija počinje od stranice ${trenutnaStranica}`);
 }
 
-fetchSveKategorije();
-setInterval(fetchSveKategorije, 60 * 60 * 1000);
-app.get('/api/reset-vozila', async (req, res) => {
-    await pool.query(`DELETE FROM live_oglasi WHERE kategorija = 'vozila'`);
-    res.json({ uspjeh: true, poruka: 'Vozila obrisana' });
-});
-
-fetchSveKategorije();
-setInterval(fetchSveKategorije, 60 * 60 * 1000);
+// Fetchaj seriju od 20 stranica svake 3 minute
+fetchSerija();
+setInterval(fetchSerija, 3 * 60 * 1000);
 
 app.listen(PORT, () => console.log(`Server radi na portu ${PORT}`));
