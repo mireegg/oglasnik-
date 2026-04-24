@@ -177,60 +177,50 @@
 
 <div class="main">
   <aside class="sidebar">
-    <div class="sidebar-header">
-      <span class="sidebar-title">Filteri</span>
-      <button class="reset-btn" onclick="resetujFiltre()">Resetuj sve</button>
+  <div class="sidebar-header">
+    <span class="sidebar-title">Filteri</span>
+    <button class="reset-btn" onclick="resetujFiltre()">Resetuj sve</button>
+  </div>
+
+  <div class="filter-section">
+    <div class="filter-label">Kategorija</div>
+    <div class="filter-chips" id="glavneKategorije">
+      <span class="fchip active" onclick="filterGlavna('sve', this)">Sve</span>
+      <span class="fchip" onclick="filterGlavna('vozila', this)">🚗 Vozila</span>
+      <span class="fchip" onclick="filterGlavna('elektronika', this)">📱 Elektronika</span>
+      <span class="fchip" onclick="filterGlavna('nekretnine', this)">🏠 Nekretnine</span>
+      <span class="fchip" onclick="filterGlavna('motocikli', this)">🏍️ Moto</span>
     </div>
-    <div class="filter-section">
-      <div class="filter-label">Izvor</div>
-      <label class="check-item"><input type="checkbox" checked><span class="source-dot" style="background:#43a047;"></span>OLX.ba<span class="check-count">18.420</span></label>
-      <label class="check-item"><input type="checkbox" checked><span class="source-dot" style="background:#1976d2;"></span>Facebook<span class="check-count">14.302</span></label>
-      <label class="check-item"><input type="checkbox"><span class="source-dot" style="background:#f57c00;"></span>Njuškalo<span class="check-count">8.718</span></label>
-      <label class="check-item"><input type="checkbox"><span class="source-dot" style="background:#8e24aa;"></span>Halooglasi<span class="check-count">5.844</span></label>
+  </div>
+
+  <div class="filter-section" id="podkategorijeBox" style="display:none;">
+    <div class="filter-label">Brend</div>
+    <div id="podkategorijeList"></div>
+  </div>
+
+  <div class="filter-section">
+    <div class="filter-label">Cijena (KM)</div>
+    <div class="price-inputs">
+      <input class="price-input" type="number" placeholder="Od" id="cijenaOd">
+      <input class="price-input" type="number" placeholder="Do" id="cijenaDo">
     </div>
-    <div class="filter-section">
-      <div class="filter-label">Kategorija</div>
-      <div id="kategorijeList"><div style="color:#999;font-size:13px;">Učitavanje...</div></div>
-    </div>
-    <div class="filter-section">
-      <div class="filter-label">Cijena (KM)</div>
-      <div class="price-inputs">
-        <input class="price-input" type="number" placeholder="Od" id="cijenaOd">
-        <input class="price-input" type="number" placeholder="Do" id="cijenaDo">
-      </div>
-      <input type="range" min="0" max="50000" value="50000" id="cijenaRange" style="width:100%;accent-color:var(--orange);" oninput="document.getElementById('cijenaDo').value = this.value > 49999 ? '' : this.value">
-    </div>
-    <div class="filter-section">
-      <div class="filter-label">Stanje</div>
-      <div class="filter-chips" id="stanjeChips">
-        <span class="fchip active" onclick="odaberStanje('sve', this)">Sve</span>
-        <span class="fchip" onclick="odaberStanje('novo', this)">Novo</span>
-        <span class="fchip" onclick="odaberStanje('polovno', this)">Polovno</span>
-      </div>
-    </div>
-    <div class="filter-section">
-      <div class="filter-label">Lokacija</div>
-      <select class="filter-select" id="filterLokacija">
-        <option value="">Cijela BiH</option>
-        <option value="Sarajevo">Sarajevo</option>
-        <option value="Banja Luka">Banja Luka</option>
-        <option value="Mostar">Mostar</option>
-        <option value="Tuzla">Tuzla</option>
-        <option value="Zenica">Zenica</option>
-        <option value="Živinice">Živinice</option>
-      </select>
-    </div>
-    <div class="filter-section">
-      <div class="filter-label">Datum objave</div>
-      <div class="filter-chips" id="datumChips">
-        <span class="fchip" onclick="odaberDatum('danas', this)">Danas</span>
-        <span class="fchip active" onclick="odaberDatum('sedmica', this)">Sedmica</span>
-        <span class="fchip" onclick="odaberDatum('mjesec', this)">Mjesec</span>
-        <span class="fchip" onclick="odaberDatum('sve', this)">Sve</span>
-      </div>
-    </div>
-    <button class="apply-btn" onclick="primijeniFiltre()">Primijeni filtere</button>
-  </aside>
+  </div>
+
+  <div class="filter-section">
+    <div class="filter-label">Lokacija</div>
+    <select class="filter-select" id="filterLokacija">
+      <option value="">Cijela BiH</option>
+      <option value="Sarajevo">Sarajevo</option>
+      <option value="Banja Luka">Banja Luka</option>
+      <option value="Mostar">Mostar</option>
+      <option value="Tuzla">Tuzla</option>
+      <option value="Zenica">Zenica</option>
+      <option value="Živinice">Živinice</option>
+    </select>
+  </div>
+
+  <button class="apply-btn" onclick="primijeniFiltre()">Primijeni filtere</button>
+</aside>
 
   <div>
     <div id="ai-analiza-box" style="display:none;" class="ai-box">
@@ -272,7 +262,81 @@
 var urlParams = new URLSearchParams(window.location.search);
 var urlQ = urlParams.get('q');
 var urlLink = urlParams.get('link');
+var aktivnaGlavnaKat = 'sve';
 
+var podkategorije = {
+  vozila: [
+    { kat: 'vozila-volkswagen', naziv: 'Volkswagen' },
+    { kat: 'vozila-mercedes', naziv: 'Mercedes' },
+    { kat: 'vozila-bmw', naziv: 'BMW' },
+    { kat: 'vozila-audi', naziv: 'Audi' },
+    { kat: 'vozila-opel', naziv: 'Opel' },
+    { kat: 'vozila-peugeot', naziv: 'Peugeot' },
+    { kat: 'vozila-renault', naziv: 'Renault' },
+    { kat: 'vozila-skoda', naziv: 'Škoda' },
+    { kat: 'vozila-ford', naziv: 'Ford' },
+    { kat: 'vozila-citroen', naziv: 'Citroën' },
+    { kat: 'vozila-toyota', naziv: 'Toyota' },
+    { kat: 'vozila-hyundai', naziv: 'Hyundai' },
+    { kat: 'vozila-kia', naziv: 'Kia' },
+    { kat: 'vozila-seat', naziv: 'Seat' },
+    { kat: 'vozila-fiat', naziv: 'Fiat' },
+    { kat: 'vozila-mazda', naziv: 'Mazda' },
+    { kat: 'vozila-nissan', naziv: 'Nissan' },
+    { kat: 'vozila-volvo', naziv: 'Volvo' },
+    { kat: 'vozila-landrover', naziv: 'Land Rover' },
+    { kat: 'vozila-porsche', naziv: 'Porsche' },
+    { kat: 'vozila-jeep', naziv: 'Jeep' },
+    { kat: 'vozila-dacia', naziv: 'Dacia' },
+    { kat: 'vozila-alfaromeo', naziv: 'Alfa Romeo' },
+    { kat: 'vozila-mini', naziv: 'Mini' },
+    { kat: 'vozila-chevrolet', naziv: 'Chevrolet' },
+  ],
+  elektronika: [
+    { kat: 'elektronika-mobiteli', naziv: 'Mobiteli' },
+    { kat: 'elektronika-laptopi', naziv: 'Laptopi' },
+    { kat: 'elektronika-tableti', naziv: 'Tableti' },
+    { kat: 'elektronika-tv', naziv: 'TV' },
+    { kat: 'elektronika-iphone', naziv: 'iPhone' },
+    { kat: 'elektronika-samsung', naziv: 'Samsung' },
+    { kat: 'elektronika-bijela-tehnika', naziv: 'Bijela tehnika' },
+    { kat: 'elektronika-gaming', naziv: 'Gaming' },
+  ],
+  nekretnine: [
+    { kat: 'nekretnine-stanovi', naziv: 'Stanovi' },
+    { kat: 'nekretnine-kuce', naziv: 'Kuće' },
+    { kat: 'nekretnine-zemljista', naziv: 'Zemljišta' },
+    { kat: 'nekretnine-poslovni', naziv: 'Poslovni prostori' },
+  ],
+  motocikli: [
+    { kat: 'motocikli', naziv: 'Motocikli' },
+    { kat: 'bicikli', naziv: 'Bicikli' },
+    { kat: 'atv-quad', naziv: 'ATV / Quad' },
+  ]
+};
+
+function filterGlavna(tip, el) {
+  aktivnaGlavnaKat = tip;
+  document.querySelectorAll('#glavneKategorije .fchip').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+
+  var podBox = document.getElementById('podkategorijeBox');
+  var podList = document.getElementById('podkategorijeList');
+
+  if (tip === 'sve') {
+    podBox.style.display = 'none';
+    primijeniFiltre();
+    return;
+  }
+
+  podBox.style.display = 'block';
+  var lista = podkategorije[tip] || [];
+  podList.innerHTML = lista.map(function(p) {
+    return '<label class="check-item"><input type="checkbox" class="kat-checkbox" value="' + p.kat + '" onchange="primijeniFiltre()"> ' + p.naziv + '</label>';
+  }).join('');
+
+  primijeniFiltre();
+}
 // State
 var aktivnoStanje = 'sve';
 var aktivniDatum = 'sedmica';
@@ -543,19 +607,29 @@ async function primijeniFiltre() {
   var cijenaOd = parseFloat(document.getElementById('cijenaOd').value) || 0;
   var cijenaDo = parseFloat(document.getElementById('cijenaDo').value) || Infinity;
   var query = document.getElementById('searchInput').value.trim();
+  
   var odabraneKat = [];
-  document.querySelectorAll('.kat-checkbox:checked').forEach(function(cb){odabraneKat.push(cb.value);});
+  document.querySelectorAll('.kat-checkbox:checked').forEach(function(cb) { odabraneKat.push(cb.value); });
+
+  // Ako nije odabrana podkategorija ali je odabrana glavna, uzmi sve podkategorije te glavne
+  if (odabraneKat.length === 0 && aktivnaGlavnaKat !== 'sve') {
+    odabraneKat = (podkategorije[aktivnaGlavnaKat] || []).map(p => p.kat);
+  }
+
   try {
-    var url = '/api/live-oglasi?limit=50';
-    if (query) url += '&q=' + encodeURIComponent(query);
-    if (odabraneKat.length > 0) url += '&kategorija=' + encodeURIComponent(odabraneKat.join(','));
+    var url = '/api/live-oglasi?';
+    if (query) url += 'q=' + encodeURIComponent(query) + '&';
+    if (odabraneKat.length > 0) url += 'kategorija=' + encodeURIComponent(odabraneKat.join(',')) + '&';
+
     var res = await fetch(url);
     var data = await res.json();
-    if (data.uspjeh && data.oglasi.length > 0) {
-      var oglasi = data.oglasi.map(mapOglas).filter(function(o){return o.cijena>=cijenaOd&&o.cijena<=cijenaDo;});
+    if (data.uspjeh) {
+      var oglasi = data.oglasi.map(mapOglas).filter(function(o) {
+        return o.cijena >= cijenaOd && o.cijena <= cijenaDo;
+      });
       trenutnoFiltrirani = oglasi;
       prikaziOglase(oglasi);
-    } else { prikaziOglase([]); }
+    }
   } catch(e) { console.log('Greška filtera:', e.message); }
 }
 
