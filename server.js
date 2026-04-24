@@ -29,7 +29,6 @@ const pool = new Pool({
 });
 
 async function initDB() {
-    await pool.query(`ALTER TABLE live_oglasi ADD COLUMN IF NOT EXISTS brand_id INTEGER`);
     await pool.query(`CREATE TABLE IF NOT EXISTS korisnici (id SERIAL PRIMARY KEY, ime VARCHAR(100), email VARCHAR(100) UNIQUE, lozinka VARCHAR(100), datum TIMESTAMP DEFAULT NOW())`);
     await pool.query(`CREATE TABLE IF NOT EXISTS prijave (id SERIAL PRIMARY KEY, ime VARCHAR(100), email VARCHAR(100), telefon VARCHAR(50), datum TIMESTAMP DEFAULT NOW())`);
     await pool.query(`CREATE TABLE IF NOT EXISTS pracenja (id SERIAL PRIMARY KEY, korisnik_email VARCHAR(100), pretraga VARCHAR(200), aktivno BOOLEAN DEFAULT true, datum TIMESTAMP DEFAULT NOW())`);
@@ -37,6 +36,7 @@ async function initDB() {
     await pool.query(`ALTER TABLE pracenja ADD COLUMN IF NOT EXISTS link TEXT`);
     await pool.query(`ALTER TABLE pracenja ADD COLUMN IF NOT EXISTS slika TEXT`);
     await pool.query(`ALTER TABLE live_oglasi ADD COLUMN IF NOT EXISTS kategorija VARCHAR(100)`);
+    await pool.query(`ALTER TABLE live_oglasi ADD COLUMN IF NOT EXISTS brand_id INTEGER`);
     console.log('Baza inicijalizovana!');
 }
 initDB();
@@ -100,10 +100,8 @@ app.post('/ai-analiza', async (req, res) => {
     const { oglasi, pretraga } = req.body;
     const prompt = `Ti si iskusan savjetnik za kupovinu u Bosni i Hercegovini.
 Kupac traži: "${pretraga}"
-
 Oglasi:
 ${oglasi.map((o, i) => `${i+1}. ${o.naslov} — ${o.cijenaStr}`).join('\n')}
-
 Za svaki oglas daj kratku OCJENU i AI SCORE (0-100). Na kraju ZAKLJUCAK koji je najisplativiji.
 Odgovaraj na bosanskom. Budi konkretan.`;
 
@@ -145,10 +143,10 @@ Oglas koji analiziraš:
 Slični oglasi na tržištu:
 ${slicni && slicni.length > 0 ? slicni.slice(0,5).map((s, i) => `${i+1}. ${s.naslov} — ${s.cijena}`).join('\n') : 'Nema sličnih oglasa za poređenje'}
 
-Daj analizu u TAČNO ovom formatu (bez ikakvih dodatnih linija):
+Daj analizu u TAČNO ovom formatu:
 OCJENA: [ODLIČNO/FER/PREVISOKO/IZBJEGAVAJ]
-CIJENA: [Konkretno poređenje sa sličnim oglasima — koliko je jeftiniji ili skuplji]
-SAVJET: [Direktna preporuka — kupi ovaj, ili koji drugi i zašto]
+CIJENA: [Konkretno poređenje sa sličnim oglasima]
+SAVJET: [Direktna preporuka]
 SCORE: [broj 0-100]`;
 
     try {
@@ -194,16 +192,15 @@ app.get('/api/live-oglasi', async (req, res) => {
         }
 
         const where = uvjeti.length ? 'WHERE ' + uvjeti.join(' AND ') : '';
-        
         const countResult = await pool.query(`SELECT COUNT(*) FROM live_oglasi ${where}`, params);
         const ukupno = parseInt(countResult.rows[0].count);
-        
+
         params.push(limit, offset);
         const result = await pool.query(
-            `SELECT * FROM live_oglasi ${where} ORDER BY datum DESC LIMIT $${i++} OFFSET $${i++}`, 
+            `SELECT * FROM live_oglasi ${where} ORDER BY datum DESC LIMIT $${i++} OFFSET $${i++}`,
             params
         );
-        
+
         res.json({ uspjeh: true, oglasi: result.rows, ukupno, offset, limit });
     } catch(e) { res.json({ uspjeh: false, oglasi: [] }); }
 });
@@ -242,7 +239,6 @@ app.get('/api/oglas-detalji/:id', async (req, res) => {
 });
 
 // ── SLIČNI OGLASI ─────────────────────────────────────────
-// Strategija: fetchaj 40 oglasa istog brenda, filtriraj lokalno po gorivo+transmisija+kubikaza+boja+km raspon
 app.get('/api/slicni-oglasi', async (req, res) => {
     try {
         const { brand_id, model_id, cijena_od, cijena_do, trenutni_id, gorivo, transmisija, kubikaza, boja, km_od, km_do } = req.query;
@@ -292,7 +288,7 @@ app.get('/api/slicni-oglasi', async (req, res) => {
             if (transmisija && o.transmisija.toLowerCase() !== transmisija.toLowerCase()) return false;
             if (kubikaza && Math.abs(o.kubikaza - parseFloat(kubikaza)) > 0.1) return false;
             if (boja && o.boja.toLowerCase() !== boja.toLowerCase()) return false;
-            if (km_od && km_do && o.km && (o.km < km_od || o.km > km_do)) return false;
+            if (km_od && km_do && o.km && (parseInt(o.km) < parseInt(km_od) || parseInt(o.km) > parseInt(km_do))) return false;
             return true;
         }).slice(0, 6);
 
@@ -303,154 +299,12 @@ app.get('/api/slicni-oglasi', async (req, res) => {
     }
 });
 
-// ── OLX AUTO-FETCH ────────────────────────────────────────
-const OLX_KATEGORIJE = [
-    { id: '18', naziv: 'vozila' }, { id: '21', naziv: 'motocikli' },
-    { id: '22', naziv: 'bicikli' }, { id: '426', naziv: 'nautika' },
-    { id: '2457', naziv: 'atv-quad' }, { id: '23', naziv: 'nekretnine-stanovi' },
-    { id: '24', naziv: 'nekretnine-kuce' }, { id: '29', naziv: 'nekretnine-zemljista' },
-    { id: '25', naziv: 'nekretnine-poslovni' }, { id: '31', naziv: 'elektronika-mobiteli' },
-    { id: '1495', naziv: 'elektronika-tableti' }, { id: '2076', naziv: 'elektronika-satovi' },
-    { id: '252', naziv: 'elektronika-dijelovi-mobiteli' }, { id: '34', naziv: 'elektronika-bluetooth' },
-    { id: '38', naziv: 'elektronika-desktop' }, { id: '39', naziv: 'elektronika-laptopi' },
-    { id: '42', naziv: 'elektronika-oprema' }, { id: '75', naziv: 'elektronika-serveri' },
-    { id: '46', naziv: 'elektronika-bijela-tehnika' }, { id: '45', naziv: 'elektronika-tv' },
-    { id: '2392', naziv: 'elektronika-zvucnici' }, { id: '2129', naziv: 'elektronika-vr' },
-];
-
-async function fetchOLXKategorija(categoryId, kategorija) {
-    try {
-        let ukupnoNovih = 0;
-        
-        // Prvo fetchaj stranicu 1 da saznamo last_page
-        const prvaStrana = await axios.get(`https://olx.ba/api/search?category_id=${categoryId}&per_page=40&page=1`, {
-            headers: { 'User-Agent': 'Mozilla/5.0', 'Accept': 'application/json', 'Referer': 'https://www.olx.ba/' },
-            timeout: 15000
-        });
-        
-        const lastPage = prvaStrana.data.meta?.last_page || 1;
-        console.log(`OLX: kategorija ${kategorija} — ukupno ${lastPage} stranica`);
-        
-        // Spremi prvu stranicu
-        for (const o of (prvaStrana.data.data || [])) {
-            try {
-                const r = await pool.query(
-                    `INSERT INTO live_oglasi (naslov, cijena, slika, link, platforma, kategorija) VALUES ($1,$2,$3,$4,$5,$6) ON CONFLICT (link) DO NOTHING`,
-                    [o.title, o.display_price || 'Na upit', o.image || '', `https://www.olx.ba/artikal/${o.id}`, 'olx', kategorija]
-                );
-                if (r.rowCount > 0) ukupnoNovih++;
-            } catch(e) {}
-        }
-        
-        // Fetchaj ostale stranice
-        for (let stranica = 2; stranica <= lastPage; stranica++) {
-            try {
-                const response = await axios.get(`https://olx.ba/api/search?category_id=${categoryId}&per_page=40&page=${stranica}`, {
-                    headers: { 'User-Agent': 'Mozilla/5.0', 'Accept': 'application/json', 'Referer': 'https://www.olx.ba/' },
-                    timeout: 15000
-                });
-                
-                const oglasi = response.data.data || [];
-                if (!oglasi.length) break;
-                
-                let sacuvano = 0;
-                for (const o of oglasi) {
-                    try {
-                        const r = await pool.query(
-                            `INSERT INTO live_oglasi (naslov, cijena, slika, link, platforma, kategorija) VALUES ($1,$2,$3,$4,$5,$6) ON CONFLICT (link) DO NOTHING`,
-                            [o.title, o.display_price || 'Na upit', o.image || '', `https://www.olx.ba/artikal/${o.id}`, 'olx', kategorija]
-                        );
-                        if (r.rowCount > 0) sacuvano++;
-                    } catch(e) {}
-                }
-                
-                ukupnoNovih += sacuvano;
-                
-                if (stranica % 50 === 0) {
-                    console.log(`OLX: ${kategorija} — stranica ${stranica}/${lastPage}, ukupno novih: ${ukupnoNovih}`);
-                }
-                
-await new Promise(r => setTimeout(r, 1500));
-            } catch(e) {
-    console.log(`OLX greška stranica ${stranica}:`, e.message);
-    if (e.response?.status === 429) {
-        console.log('Rate limit — čekam 30 sekundi...');
-        await new Promise(r => setTimeout(r, 30000));
-        stranica--; // Pokušaj istu stranicu ponovo
-    } else {
-        await new Promise(r => setTimeout(r, 2000));
-    }
-}
-        }
-        
-        console.log(`OLX: kategorija ${kategorija} ZAVRŠENA — ${ukupnoNovih} novih oglasa`);
-    } catch(e) {
-        console.log(`OLX greška za ${kategorija}:`, e.message);
-    }
-}
-
-const OLX_BRENDOVI = [
-    7, 11, 20, 30, 39, 46, 56, 64, 65, 69, 71, 77, 89, 90, // Audi, BMW, Citroen, Ford, Jaguar, Land Rover, Mercedes, Opel, Peugeot, Porsche, Renault, Skoda, VW, Volvo
-    2, 3, 4, 5, 6, 8, 9, 10, 12, 13, 14, 15, 16, 17, 18, 19, 21, 22, 23, 24, 25, 26, 27, 28, 29, 31, 32, 33, 34, 35, 36, 37, 38, 40, 41, 42, 43, 44, 45, 47, 48, 49, 50, 51, 52, 53, 54, 55, 57, 58, 59, 60, 61, 62, 63, 66, 67, 68, 70, 72, 73, 74, 75, 76, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 91, 92, 93
-];
-
-async function fetchBrend(brandId) {
-    try {
-        const prva = await axios.get(`https://olx.ba/api/search?category_id=18&per_page=40&page=1&brand=${brandId}&brands=${brandId}`, {
-            headers: { 'User-Agent': 'Mozilla/5.0', 'Accept': 'application/json', 'Referer': 'https://www.olx.ba/' },
-            timeout: 15000
-        });
-        
-        const lastPage = prva.data.meta?.last_page || 1;
-        const sveStrane = [prva.data.data || []];
-        
-        for (let str = 2; str <= Math.min(lastPage, 50); str++) {
-            try {
-                const r = await axios.get(`https://olx.ba/api/search?category_id=18&per_page=40&page=${str}&brand=${brandId}&brands=${brandId}`, {
-                    headers: { 'User-Agent': 'Mozilla/5.0', 'Accept': 'application/json', 'Referer': 'https://www.olx.ba/' },
-                    timeout: 15000
-                });
-                sveStrane.push(r.data.data || []);
-                await new Promise(r => setTimeout(r, 800));
-            } catch(e) {
-                if (e.response?.status === 429) await new Promise(r => setTimeout(r, 15000));
-            }
-        }
-        
-        let sacuvano = 0;
-        for (const stranica of sveStrane) {
-            for (const o of stranica) {
-                try {
-                    const res = await pool.query(
-                        `INSERT INTO live_oglasi (naslov, cijena, slika, link, platforma, kategorija) VALUES ($1,$2,$3,$4,$5,$6) ON CONFLICT (link) DO NOTHING`,
-                        [o.title, o.display_price || 'Na upit', o.image || '', `https://www.olx.ba/artikal/${o.id}`, 'olx', 'vozila']
-                    );
-                    if (res.rowCount > 0) sacuvano++;
-                } catch(e) {}
-            }
-        }
-        console.log(`Brend ${brandId}: ${sacuvano} novih oglasa (${lastPage} stranica)`);
-    } catch(e) {
-        console.log(`Brend ${brandId} greška:`, e.message);
-    }
-}
-
-async function fetchSveKategorije() {
-    console.log('Fetcham vozila po brendovima...');
-    for (const brandId of OLX_BRENDOVI) {
-        await fetchBrend(brandId);
-        await new Promise(r => setTimeout(r, 1000));
-    }
-    console.log('Fetch završen!');
-}
-
-fetchSveKategorije();
-setInterval(fetchSveKategorije, 2 * 60 * 60 * 1000);
+// ── FIX KATEGORIJE ────────────────────────────────────────
 app.get('/api/fix-kategorije', async (req, res) => {
     const brendovi = [
         { kljuc: ['volkswagen', 'vw ', ' vw', 'golf', 'passat', 'tiguan', 'polo', 'touareg', 'touran', 'sharan', 'caddy'], kat: 'vozila-volkswagen' },
         { kljuc: ['audi'], kat: 'vozila-audi' },
-        { kljuc: ['mercedes', ' glc', ' gle', ' gla', ' glb', ' cls', ' amg', ' cla', ' slk', ' slc', 'sprinter'], kat: 'vozila-mercedes' },
+        { kljuc: ['mercedes', ' glc', ' gle', ' gla', ' glb', ' cls', ' amg', ' cla', ' slk', 'sprinter'], kat: 'vozila-mercedes' },
         { kljuc: ['bmw'], kat: 'vozila-bmw' },
         { kljuc: ['opel'], kat: 'vozila-opel' },
         { kljuc: ['peugeot'], kat: 'vozila-peugeot' },
@@ -461,7 +315,7 @@ app.get('/api/fix-kategorije', async (req, res) => {
         { kljuc: ['skoda', 'škoda'], kat: 'vozila-skoda' },
         { kljuc: ['seat'], kat: 'vozila-seat' },
         { kljuc: ['fiat'], kat: 'vozila-fiat' },
-        { kljuc: ['citroen', 'citroën', 'citrën'], kat: 'vozila-citroen' },
+        { kljuc: ['citroen', 'citroën'], kat: 'vozila-citroen' },
         { kljuc: ['hyundai'], kat: 'vozila-hyundai' },
         { kljuc: ['kia'], kat: 'vozila-kia' },
         { kljuc: ['mazda'], kat: 'vozila-mazda' },
@@ -478,19 +332,158 @@ app.get('/api/fix-kategorije', async (req, res) => {
         { kljuc: ['mini cooper', 'mini one', 'mini clubman', 'mini countryman'], kat: 'vozila-mini' },
         { kljuc: ['chevrolet'], kat: 'vozila-chevrolet' },
     ];
-
     let ukupno = 0;
     for (const b of brendovi) {
         const uvjet = b.kljuc.map(k => `LOWER(naslov) LIKE '%${k.toLowerCase()}%'`).join(' OR ');
-        const r = await pool.query(
-            `UPDATE live_oglasi SET kategorija = $1 WHERE (${uvjet})`,
-            [b.kat]
-        );
+        const r = await pool.query(`UPDATE live_oglasi SET kategorija = $1 WHERE (${uvjet})`, [b.kat]);
         ukupno += r.rowCount;
         console.log(`${b.kat}: ${r.rowCount} oglasa`);
     }
-
     res.json({ uspjeh: true, azurirano: ukupno });
 });
+
+// ── OLX FETCH PO BRENDOVIMA (VOZILA) ─────────────────────
+const OLX_BRENDOVI = [
+    7, 11, 20, 30, 39, 46, 56, 64, 65, 69, 71, 77, 89, 90,
+    2, 3, 4, 5, 6, 8, 9, 10, 12, 13, 14, 15, 16, 17, 18, 19, 21, 22, 23, 24, 25,
+    26, 27, 28, 29, 31, 32, 33, 34, 35, 36, 37, 38, 40, 41, 42, 43, 44, 45, 47,
+    48, 49, 50, 51, 52, 53, 54, 55, 57, 58, 59, 60, 61, 62, 63, 66, 67, 68, 70,
+    72, 73, 74, 75, 76, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 91, 92, 93
+];
+
+async function fetchBrend(brandId) {
+    try {
+        const prva = await axios.get(`https://olx.ba/api/search?category_id=18&per_page=40&page=1&brand=${brandId}&brands=${brandId}`, {
+            headers: { 'User-Agent': 'Mozilla/5.0', 'Accept': 'application/json', 'Referer': 'https://www.olx.ba/' },
+            timeout: 15000
+        });
+        const lastPage = Math.min(prva.data.meta?.last_page || 1, 50);
+        const sveStrane = [prva.data.data || []];
+
+        for (let str = 2; str <= lastPage; str++) {
+            try {
+                const r = await axios.get(`https://olx.ba/api/search?category_id=18&per_page=40&page=${str}&brand=${brandId}&brands=${brandId}`, {
+                    headers: { 'User-Agent': 'Mozilla/5.0', 'Accept': 'application/json', 'Referer': 'https://www.olx.ba/' },
+                    timeout: 15000
+                });
+                sveStrane.push(r.data.data || []);
+                await new Promise(r => setTimeout(r, 800));
+            } catch(e) {
+                if (e.response?.status === 429) await new Promise(r => setTimeout(r, 15000));
+            }
+        }
+
+        let sacuvano = 0;
+        for (const stranica of sveStrane) {
+            for (const o of stranica) {
+                try {
+                    const res = await pool.query(
+                        `INSERT INTO live_oglasi (naslov, cijena, slika, link, platforma, kategorija, brand_id) VALUES ($1,$2,$3,$4,$5,$6,$7) ON CONFLICT (link) DO NOTHING`,
+                        [o.title, o.display_price || 'Na upit', o.image || '', `https://www.olx.ba/artikal/${o.id}`, 'olx', 'vozila', o.brand_id || null]
+                    );
+                    if (res.rowCount > 0) sacuvano++;
+                } catch(e) {}
+            }
+        }
+        if (sacuvano > 0) console.log(`Brend ${brandId}: ${sacuvano} novih oglasa`);
+    } catch(e) {
+        console.log(`Brend ${brandId} greška:`, e.message);
+    }
+}
+
+// ── OLX FETCH OSTALIH KATEGORIJA ─────────────────────────
+async function fetchOLXKategorija(categoryId, kategorija) {
+    try {
+        const prvaStrana = await axios.get(`https://olx.ba/api/search?category_id=${categoryId}&per_page=40&page=1`, {
+            headers: { 'User-Agent': 'Mozilla/5.0', 'Accept': 'application/json', 'Referer': 'https://www.olx.ba/' },
+            timeout: 15000
+        });
+        const lastPage = prvaStrana.data.meta?.last_page || 1;
+
+        for (const o of (prvaStrana.data.data || [])) {
+            try {
+                await pool.query(
+                    `INSERT INTO live_oglasi (naslov, cijena, slika, link, platforma, kategorija) VALUES ($1,$2,$3,$4,$5,$6) ON CONFLICT (link) DO NOTHING`,
+                    [o.title, o.display_price || 'Na upit', o.image || '', `https://www.olx.ba/artikal/${o.id}`, 'olx', kategorija]
+                );
+            } catch(e) {}
+        }
+
+        for (let stranica = 2; stranica <= lastPage; stranica++) {
+            try {
+                const response = await axios.get(`https://olx.ba/api/search?category_id=${categoryId}&per_page=40&page=${stranica}`, {
+                    headers: { 'User-Agent': 'Mozilla/5.0', 'Accept': 'application/json', 'Referer': 'https://www.olx.ba/' },
+                    timeout: 15000
+                });
+                const oglasi = response.data.data || [];
+                if (!oglasi.length) break;
+                for (const o of oglasi) {
+                    try {
+                        await pool.query(
+                            `INSERT INTO live_oglasi (naslov, cijena, slika, link, platforma, kategorija) VALUES ($1,$2,$3,$4,$5,$6) ON CONFLICT (link) DO NOTHING`,
+                            [o.title, o.display_price || 'Na upit', o.image || '', `https://www.olx.ba/artikal/${o.id}`, 'olx', kategorija]
+                        );
+                    } catch(e) {}
+                }
+                if (stranica % 50 === 0) console.log(`OLX: ${kategorija} stranica ${stranica}/${lastPage}`);
+                await new Promise(r => setTimeout(r, 1500));
+            } catch(e) {
+                if (e.response?.status === 429) {
+                    await new Promise(r => setTimeout(r, 30000));
+                    stranica--;
+                }
+            }
+        }
+        console.log(`OLX: ${kategorija} ZAVRŠENA`);
+    } catch(e) {
+        console.log(`OLX greška za ${kategorija}:`, e.message);
+    }
+}
+
+async function fetchSveKategorije() {
+    console.log('Pokrećem fetch...');
+
+    // Vozila po brendovima
+    for (const brandId of OLX_BRENDOVI) {
+        await fetchBrend(brandId);
+        await new Promise(r => setTimeout(r, 1000));
+    }
+
+    // Ostale kategorije
+    const ostale = [
+        { id: '21', naziv: 'motocikli' },
+        { id: '22', naziv: 'bicikli' },
+        { id: '426', naziv: 'nautika' },
+        { id: '2457', naziv: 'atv-quad' },
+        { id: '23', naziv: 'nekretnine-stanovi' },
+        { id: '24', naziv: 'nekretnine-kuce' },
+        { id: '29', naziv: 'nekretnine-zemljista' },
+        { id: '25', naziv: 'nekretnine-poslovni' },
+        { id: '31', naziv: 'elektronika-mobiteli' },
+        { id: '1495', naziv: 'elektronika-tableti' },
+        { id: '2076', naziv: 'elektronika-satovi' },
+        { id: '252', naziv: 'elektronika-dijelovi-mobiteli' },
+        { id: '34', naziv: 'elektronika-bluetooth' },
+        { id: '38', naziv: 'elektronika-desktop' },
+        { id: '39', naziv: 'elektronika-laptopi' },
+        { id: '42', naziv: 'elektronika-oprema' },
+        { id: '75', naziv: 'elektronika-serveri' },
+        { id: '46', naziv: 'elektronika-bijela-tehnika' },
+        { id: '45', naziv: 'elektronika-tv' },
+        { id: '2392', naziv: 'elektronika-zvucnici' },
+        { id: '2129', naziv: 'elektronika-vr' },
+        { id: '225', naziv: 'masine-alati' },
+    ];
+
+    for (const kat of ostale) {
+        await fetchOLXKategorija(kat.id, kat.naziv);
+        await new Promise(r => setTimeout(r, 2000));
+    }
+
+    console.log('Fetch završen!');
+}
+
+fetchSveKategorije();
+setInterval(fetchSveKategorije, 2 * 60 * 60 * 1000);
 
 app.listen(PORT, () => console.log(`Server radi na portu ${PORT}`));
