@@ -182,8 +182,10 @@ app.post('/api/sacuvaj-oglase', async (req, res) => {
 app.get('/api/live-oglasi', async (req, res) => {
     try {
         const { q, kategorija } = req.query;
-        let uvjeti = [], params = [], i = 1;
+        const offset = parseInt(req.query.offset) || 0;
+        const limit = parseInt(req.query.limit) || 48;
 
+        let uvjeti = [], params = [], i = 1;
         if (q) { uvjeti.push(`naslov ILIKE $${i++}`); params.push(`%${q}%`); }
         if (kategorija) {
             const kats = kategorija.split(',').map(k => k.trim());
@@ -192,8 +194,17 @@ app.get('/api/live-oglasi', async (req, res) => {
         }
 
         const where = uvjeti.length ? 'WHERE ' + uvjeti.join(' AND ') : '';
-        const result = await pool.query(`SELECT * FROM live_oglasi ${where} ORDER BY datum DESC`, params);
-        res.json({ uspjeh: true, oglasi: result.rows });
+        
+        const countResult = await pool.query(`SELECT COUNT(*) FROM live_oglasi ${where}`, params);
+        const ukupno = parseInt(countResult.rows[0].count);
+        
+        params.push(limit, offset);
+        const result = await pool.query(
+            `SELECT * FROM live_oglasi ${where} ORDER BY datum DESC LIMIT $${i++} OFFSET $${i++}`, 
+            params
+        );
+        
+        res.json({ uspjeh: true, oglasi: result.rows, ukupno, offset, limit });
     } catch(e) { res.json({ uspjeh: false, oglasi: [] }); }
 });
 
