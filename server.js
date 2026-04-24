@@ -245,11 +245,11 @@ app.get('/api/oglas-detalji/:id', async (req, res) => {
 // Strategija: fetchaj 40 oglasa istog brenda, filtriraj lokalno po gorivo+transmisija+kubikaza+boja+km raspon
 app.get('/api/slicni-oglasi', async (req, res) => {
     try {
-        const { brand_id, cijena_od, cijena_do, trenutni_id, gorivo, transmisija, kubikaza, boja, km_od, km_do } = req.query;
+        const { brand_id, model_id, cijena_od, cijena_do, trenutni_id, gorivo, transmisija, kubikaza, boja, km_od, km_do } = req.query;
 
-        // Fetchaj 40 oglasa istog brenda
         let url = `https://olx.ba/api/search?category_id=18&per_page=40`;
         if (brand_id) url += `&brand=${brand_id}&brands=${brand_id}`;
+        if (model_id) url += `&models=${model_id}`;
         if (cijena_od) url += `&price_from=${cijena_od}`;
         if (cijena_do) url += `&price_to=${cijena_do}`;
 
@@ -260,8 +260,7 @@ app.get('/api/slicni-oglasi', async (req, res) => {
 
         const kandidati = (response.data.data || []).filter(o => o.id != trenutni_id);
 
-        // Fetchaj detalje za svaki oglas paralelno
-        const detaljiPromises = kandidati.slice(0, 30).map(async (o) => {
+        const detaljiPromises = kandidati.slice(0, 20).map(async (o) => {
             try {
                 const det = await axios.get(`https://olx.ba/api/listings/${o.id}`, {
                     headers: { 'User-Agent': 'Mozilla/5.0', 'Accept': 'application/json', 'Referer': 'https://www.olx.ba/' },
@@ -277,7 +276,7 @@ app.get('/api/slicni-oglasi', async (req, res) => {
                     link: `https://www.olx.ba/artikal/${o.id}`,
                     gorivo: attrs['gorivo'] || '',
                     transmisija: attrs['transmisija'] || '',
-                    kubikaza: attrs['kubikaza'] || null,
+                    kubikaza: parseFloat(attrs['kubikaza']) || null,
                     boja: attrs['boja'] || '',
                     km: attrs['kilometra-a'] || null,
                     model_id: det.data.model_id || null
@@ -287,11 +286,11 @@ app.get('/api/slicni-oglasi', async (req, res) => {
 
         const sviDetalji = (await Promise.all(detaljiPromises)).filter(Boolean);
 
-        // Strogi filter
         const rezultat = sviDetalji.filter(o => {
+            if (model_id && o.model_id != model_id) return false;
             if (gorivo && o.gorivo.toLowerCase() !== gorivo.toLowerCase()) return false;
             if (transmisija && o.transmisija.toLowerCase() !== transmisija.toLowerCase()) return false;
-            if (kubikaza && Math.abs(parseFloat(o.kubikaza) - parseFloat(kubikaza)) > 0.1) return false;
+            if (kubikaza && Math.abs(o.kubikaza - parseFloat(kubikaza)) > 0.1) return false;
             if (boja && o.boja.toLowerCase() !== boja.toLowerCase()) return false;
             if (km_od && km_do && o.km && (o.km < km_od || o.km > km_do)) return false;
             return true;

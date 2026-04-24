@@ -451,6 +451,7 @@ var cijenaDo = Math.round(cijenaRaw * 1.25);
       '&cijena_od=' + cijenaOd + '&cijena_do=' + cijenaDo;
       console.log('SLICNI URL:', url);
 console.log('DETALJI:', d.brand_id, d.gorivo, d.kubikaza, d.boja, d.km);
+    if (d.model_id) url += '&model_id=' + d.model_id;
     if (d.brand_id) url += '&brand_id=' + d.brand_id;
     if (d.gorivo) url += '&gorivo=' + encodeURIComponent(d.gorivo);
     if (d.transmisija) url += '&transmisija=' + encodeURIComponent(d.transmisija);
