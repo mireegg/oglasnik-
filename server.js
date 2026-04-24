@@ -29,6 +29,7 @@ const pool = new Pool({
 });
 
 async function initDB() {
+    await pool.query(`ALTER TABLE live_oglasi ADD COLUMN IF NOT EXISTS brand_id INTEGER`);
     await pool.query(`CREATE TABLE IF NOT EXISTS korisnici (id SERIAL PRIMARY KEY, ime VARCHAR(100), email VARCHAR(100) UNIQUE, lozinka VARCHAR(100), datum TIMESTAMP DEFAULT NOW())`);
     await pool.query(`CREATE TABLE IF NOT EXISTS prijave (id SERIAL PRIMARY KEY, ime VARCHAR(100), email VARCHAR(100), telefon VARCHAR(50), datum TIMESTAMP DEFAULT NOW())`);
     await pool.query(`CREATE TABLE IF NOT EXISTS pracenja (id SERIAL PRIMARY KEY, korisnik_email VARCHAR(100), pretraga VARCHAR(200), aktivno BOOLEAN DEFAULT true, datum TIMESTAMP DEFAULT NOW())`);
@@ -436,5 +437,51 @@ async function fetchSveKategorije() {
 
 fetchSveKategorije();
 setInterval(fetchSveKategorije, 2 * 60 * 60 * 1000);
+app.get('/api/fix-kategorije', async (req, res) => {
+    const brendovi = [
+        { kljuc: ['volkswagen', 'vw ', ' vw', 'golf', 'passat', 'tiguan', 'polo', 'touareg', 'touran', 'sharan', 'caddy'], kat: 'vozila-volkswagen' },
+        { kljuc: ['audi'], kat: 'vozila-audi' },
+        { kljuc: ['mercedes', ' glc', ' gle', ' gla', ' glb', ' cls', ' amg', ' cla', ' slk', ' slc', 'sprinter'], kat: 'vozila-mercedes' },
+        { kljuc: ['bmw'], kat: 'vozila-bmw' },
+        { kljuc: ['opel'], kat: 'vozila-opel' },
+        { kljuc: ['peugeot'], kat: 'vozila-peugeot' },
+        { kljuc: ['renault'], kat: 'vozila-renault' },
+        { kljuc: ['toyota'], kat: 'vozila-toyota' },
+        { kljuc: ['honda'], kat: 'vozila-honda' },
+        { kljuc: ['ford'], kat: 'vozila-ford' },
+        { kljuc: ['skoda', 'škoda'], kat: 'vozila-skoda' },
+        { kljuc: ['seat'], kat: 'vozila-seat' },
+        { kljuc: ['fiat'], kat: 'vozila-fiat' },
+        { kljuc: ['citroen', 'citroën', 'citrën'], kat: 'vozila-citroen' },
+        { kljuc: ['hyundai'], kat: 'vozila-hyundai' },
+        { kljuc: ['kia'], kat: 'vozila-kia' },
+        { kljuc: ['mazda'], kat: 'vozila-mazda' },
+        { kljuc: ['nissan'], kat: 'vozila-nissan' },
+        { kljuc: ['suzuki'], kat: 'vozila-suzuki' },
+        { kljuc: ['volvo'], kat: 'vozila-volvo' },
+        { kljuc: ['porsche'], kat: 'vozila-porsche' },
+        { kljuc: ['land rover', 'landrover', 'range rover', 'defender', 'discovery'], kat: 'vozila-landrover' },
+        { kljuc: ['jeep'], kat: 'vozila-jeep' },
+        { kljuc: ['mitsubishi'], kat: 'vozila-mitsubishi' },
+        { kljuc: ['subaru'], kat: 'vozila-subaru' },
+        { kljuc: ['dacia'], kat: 'vozila-dacia' },
+        { kljuc: ['alfa romeo', 'alfa-romeo'], kat: 'vozila-alfaromeo' },
+        { kljuc: ['mini cooper', 'mini one', 'mini clubman', 'mini countryman'], kat: 'vozila-mini' },
+        { kljuc: ['chevrolet'], kat: 'vozila-chevrolet' },
+    ];
+
+    let ukupno = 0;
+    for (const b of brendovi) {
+        const uvjet = b.kljuc.map(k => `LOWER(naslov) LIKE '%${k.toLowerCase()}%'`).join(' OR ');
+        const r = await pool.query(
+            `UPDATE live_oglasi SET kategorija = $1 WHERE (${uvjet})`,
+            [b.kat]
+        );
+        ukupno += r.rowCount;
+        console.log(`${b.kat}: ${r.rowCount} oglasa`);
+    }
+
+    res.json({ uspjeh: true, azurirano: ukupno });
+});
 
 app.listen(PORT, () => console.log(`Server radi na portu ${PORT}`));
