@@ -379,53 +379,62 @@ await new Promise(r => setTimeout(r, 1500));
     }
 }
 
-let trenutnaStranica = 1;
-const UKUPNO_STRANICA = 1236;
+const OLX_BRENDOVI = [
+    7, 11, 20, 30, 39, 46, 56, 64, 65, 69, 71, 77, 89, 90, // Audi, BMW, Citroen, Ford, Jaguar, Land Rover, Mercedes, Opel, Peugeot, Porsche, Renault, Skoda, VW, Volvo
+    2, 3, 4, 5, 6, 8, 9, 10, 12, 13, 14, 15, 16, 17, 18, 19, 21, 22, 23, 24, 25, 26, 27, 28, 29, 31, 32, 33, 34, 35, 36, 37, 38, 40, 41, 42, 43, 44, 45, 47, 48, 49, 50, 51, 52, 53, 54, 55, 57, 58, 59, 60, 61, 62, 63, 66, 67, 68, 70, 72, 73, 74, 75, 76, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 91, 92, 93
+];
 
-async function fetchSerija() {
-    if (trenutnaStranica > UKUPNO_STRANICA) {
-        console.log('Sve stranice fetchane!');
-        trenutnaStranica = 1;
-        return;
-    }
-    
-    const DO_STRANICE = Math.min(trenutnaStranica + 19, UKUPNO_STRANICA);
-    console.log(`Fetcham stranice ${trenutnaStranica}-${DO_STRANICE}...`);
-    
-    for (let stranica = trenutnaStranica; stranica <= DO_STRANICE; stranica++) {
-        try {
-            const response = await axios.get(`https://olx.ba/api/search?category_id=18&per_page=40&page=${stranica}`, {
-                headers: { 'User-Agent': 'Mozilla/5.0', 'Accept': 'application/json', 'Referer': 'https://www.olx.ba/' },
-                timeout: 15000
-            });
-            
-            const oglasi = response.data.data || [];
-            for (const o of oglasi) {
+async function fetchBrend(brandId) {
+    try {
+        const prva = await axios.get(`https://olx.ba/api/search?category_id=18&per_page=40&page=1&brand=${brandId}&brands=${brandId}`, {
+            headers: { 'User-Agent': 'Mozilla/5.0', 'Accept': 'application/json', 'Referer': 'https://www.olx.ba/' },
+            timeout: 15000
+        });
+        
+        const lastPage = prva.data.meta?.last_page || 1;
+        const sveStrane = [prva.data.data || []];
+        
+        for (let str = 2; str <= Math.min(lastPage, 50); str++) {
+            try {
+                const r = await axios.get(`https://olx.ba/api/search?category_id=18&per_page=40&page=${str}&brand=${brandId}&brands=${brandId}`, {
+                    headers: { 'User-Agent': 'Mozilla/5.0', 'Accept': 'application/json', 'Referer': 'https://www.olx.ba/' },
+                    timeout: 15000
+                });
+                sveStrane.push(r.data.data || []);
+                await new Promise(r => setTimeout(r, 800));
+            } catch(e) {
+                if (e.response?.status === 429) await new Promise(r => setTimeout(r, 15000));
+            }
+        }
+        
+        let sacuvano = 0;
+        for (const stranica of sveStrane) {
+            for (const o of stranica) {
                 try {
-                    await pool.query(
+                    const res = await pool.query(
                         `INSERT INTO live_oglasi (naslov, cijena, slika, link, platforma, kategorija) VALUES ($1,$2,$3,$4,$5,$6) ON CONFLICT (link) DO NOTHING`,
                         [o.title, o.display_price || 'Na upit', o.image || '', `https://www.olx.ba/artikal/${o.id}`, 'olx', 'vozila']
                     );
+                    if (res.rowCount > 0) sacuvano++;
                 } catch(e) {}
             }
-            
-            console.log(`Stranica ${stranica} done`);
-            await new Promise(r => setTimeout(r, 2000));
-        } catch(e) {
-            if (e.response?.status === 429) {
-                console.log(`429 na stranici ${stranica} — čekam 60s`);
-                await new Promise(r => setTimeout(r, 60000));
-                stranica--;
-            }
         }
+        console.log(`Brend ${brandId}: ${sacuvano} novih oglasa (${lastPage} stranica)`);
+    } catch(e) {
+        console.log(`Brend ${brandId} greška:`, e.message);
     }
-    
-    trenutnaStranica = DO_STRANICE + 1;
-    console.log(`Serija završena. Sljedeća serija počinje od stranice ${trenutnaStranica}`);
 }
 
-// Fetchaj seriju od 20 stranica svake 3 minute
-fetchSerija();
-setInterval(fetchSerija, 3 * 60 * 1000);
+async function fetchSveKategorije() {
+    console.log('Fetcham vozila po brendovima...');
+    for (const brandId of OLX_BRENDOVI) {
+        await fetchBrend(brandId);
+        await new Promise(r => setTimeout(r, 1000));
+    }
+    console.log('Fetch završen!');
+}
+
+fetchSveKategorije();
+setInterval(fetchSveKategorije, 2 * 60 * 60 * 1000);
 
 app.listen(PORT, () => console.log(`Server radi na portu ${PORT}`));
