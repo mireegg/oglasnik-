@@ -544,8 +544,7 @@ app.get('/api/run-autobum', async (req, res) => {
 
 app.get('/api/test-autobum', async (req, res) => {
     try {
-        const filters = encodeURIComponent('[{"field":"category_id","type":"eq","value":1}]');
-        const fields = encodeURIComponent('[]');
+const filters = encodeURIComponent('[{"field":"category_id","type":"eq","value":' + katId + '}]');        const fields = encodeURIComponent('[]');
         const url = `https://api.autobum.ba/api/v1/articles?perPage=3&page=1&filters=${filters}&fieldsFilters=${fields}`;
         const response = await fetch2(url, {
             headers: { 'User-Agent': 'Mozilla/5.0', 'Accept': 'application/json', 'Referer': 'https://autobum.ba/' }
