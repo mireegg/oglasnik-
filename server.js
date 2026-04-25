@@ -330,6 +330,7 @@ app.get('/api/fix-kategorije', async (req, res) => {
         { kljuc: ['alfa romeo', 'alfa-romeo'], kat: 'vozila-alfaromeo' },
         { kljuc: ['mini cooper', 'mini one', 'mini clubman', 'mini countryman'], kat: 'vozila-mini' },
         { kljuc: ['chevrolet'], kat: 'vozila-chevrolet' },
+        `UPDATE live_oglasi SET kategorija = $1 WHERE platforma = 'olx' AND (${uvjet})`
     ];
     let ukupno = 0;
     for (const b of brendovi) {
@@ -459,9 +460,9 @@ const lastPage = Math.min(prvaStrana.data.meta?.last_page || 1, 100);
 // Autobum kategorije su odvojene od OLX-a prefiksom 'autobum-'
 async function fetchAutobum() {
     const kategorije = [
-        { id: 1, naziv: 'autobum-vozila' },
-        { id: 2, naziv: 'autobum-motocikli' },
-        { id: 3, naziv: 'autobum-teretna' },
+      { id: 1, naziv: 'vozila' },
+{ id: 2, naziv: 'motocikli' },
+{ id: 3, naziv: 'teretna' },
     ];
 
     for (const kat of kategorije) {
