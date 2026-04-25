@@ -391,6 +391,7 @@ function updateNavbar() {
 function odjava() { localStorage.removeItem('korisnik'); window.location.href = '/login.html'; }
 
 function prikaziOglase(oglasi) {
+  trenutnoFiltrirani = oglasi;
   var grid = document.getElementById('oglasiGrid');
   var broj = document.getElementById('rezultatiBroj');
 var badgeClass = { olx: 'badge-olx', autobum: 'badge-autobum' };
