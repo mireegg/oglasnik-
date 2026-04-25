@@ -450,6 +450,9 @@ async function fetchAutobum() {
     for (const kat of kategorije) {
         try {
             const fetchStrana = (page) => new Promise((resolve, reject) => {
+                const filtersStr = encodeURIComponent(`[{"field":"category_id","type":"eq","value":${kat.id}}]`);
+const fieldsStr = encodeURIComponent('[]');
+const baseUrl = `https://api.autobum.ba/api/v1/articles?perPage=40&page=1&filters=${filtersStr}&fieldsFilters=${fieldsStr}`;
                 const path = `/api/v1/articles?perPage=40&page=${page}&filters=[{"field":"category_id","type":"eq","value":${kat.id}}]&fieldsFilters=[]`;
                 const options = {
                     hostname: 'api.autobum.ba',
@@ -483,7 +486,7 @@ async function fetchAutobum() {
                     await new Promise(r => setTimeout(r, 1000));
                 } catch(e) {}
             }
-
+const pageUrl = `https://api.autobum.ba/api/v1/articles?perPage=40&page=${str}&filters=${filtersStr}&fieldsFilters=${fieldsStr}`;
             for (const stranica of sveStrane) {
                 for (const o of stranica) {
                     try {
