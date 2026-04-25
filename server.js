@@ -294,12 +294,11 @@ app.get('/api/slicni-oglasi', async (req, res) => {
 
         res.json({ uspjeh: true, oglasi: rezultat });
     } catch(e) {
-        console.log('Slicni greška:', e.message);
         res.json({ uspjeh: false, oglasi: [] });
     }
 });
 
-// ── FIX KATEGORIJE ────────────────────────────────────────
+// ── FIX KATEGORIJE (samo OLX vozila) ─────────────────────
 app.get('/api/fix-kategorije', async (req, res) => {
     const brendovi = [
         { kljuc: ['volkswagen', 'vw ', ' vw', 'golf', 'passat', 'tiguan', 'polo', 'touareg', 'touran', 'sharan', 'caddy'], kat: 'vozila-volkswagen' },
@@ -335,11 +334,28 @@ app.get('/api/fix-kategorije', async (req, res) => {
     let ukupno = 0;
     for (const b of brendovi) {
         const uvjet = b.kljuc.map(k => `LOWER(naslov) LIKE '%${k.toLowerCase()}%'`).join(' OR ');
-        const r = await pool.query(`UPDATE live_oglasi SET kategorija = $1 WHERE (${uvjet})`, [b.kat]);
+        // VAŽNO: samo OLX vozila, ne dira elektroniku ni autobum
+        const r = await pool.query(
+            `UPDATE live_oglasi SET kategorija = $1 WHERE platforma = 'olx' AND kategorija IN ('vozila', $1) AND (${uvjet})`,
+            [b.kat]
+        );
         ukupno += r.rowCount;
-        console.log(`${b.kat}: ${r.rowCount} oglasa`);
     }
     res.json({ uspjeh: true, azurirano: ukupno });
+});
+
+// ── TEST AUTOBUM ──────────────────────────────────────────
+app.get('/api/test-autobum', async (req, res) => {
+    try {
+        const url = 'https://api.autobum.ba/api/v1/articles?perPage=3&page=1&filters=%5B%7B%22field%22%3A%22category_id%22%2C%22type%22%3A%22eq%22%2C%22value%22%3A1%7D%5D&fieldsFilters=%5B%5D';
+        const response = await axios.get(url, {
+            headers: { 'User-Agent': 'Mozilla/5.0', 'Accept': 'application/json', 'Referer': 'https://autobum.ba/' },
+            timeout: 10000
+        });
+        res.json({ uspjeh: true, ukupno: response.data.total, oglas: response.data.data?.[0] });
+    } catch(e) {
+        res.json({ uspjeh: false, greska: e.message, status: e.response?.status });
+    }
 });
 
 // ── OLX FETCH PO BRENDOVIMA (VOZILA) ─────────────────────
@@ -390,18 +406,7 @@ async function fetchBrend(brandId) {
         console.log(`Brend ${brandId} greška:`, e.message);
     }
 }
-app.get('/api/test-autobum', async (req, res) => {
-    try {
-        const url = 'https://api.autobum.ba/api/v1/articles?perPage=3&page=1&filters=%5B%7B%22field%22%3A%22category_id%22%2C%22type%22%3A%22eq%22%2C%22value%22%3A1%7D%5D&fieldsFilters=%5B%5D';
-        const response = await axios.get(url, {
-            headers: { 'User-Agent': 'Mozilla/5.0', 'Accept': 'application/json', 'Referer': 'https://autobum.ba/' },
-            timeout: 10000
-        });
-        res.json({ uspjeh: true, ukupno: response.data.total, oglas: response.data.data?.[0] });
-    } catch(e) {
-        res.json({ uspjeh: false, greska: e.message, status: e.response?.status });
-    }
-});
+
 // ── OLX FETCH OSTALIH KATEGORIJA ─────────────────────────
 async function fetchOLXKategorija(categoryId, kategorija) {
     try {
@@ -450,11 +455,14 @@ async function fetchOLXKategorija(categoryId, kategorija) {
         console.log(`OLX greška za ${kategorija}:`, e.message);
     }
 }
+
+// ── AUTOBUM FETCH ─────────────────────────────────────────
+// Autobum kategorije su odvojene od OLX-a prefiksom 'autobum-'
 async function fetchAutobum() {
     const kategorije = [
-        { id: 1, naziv: 'vozila' },
-        { id: 2, naziv: 'motocikli' },
-        { id: 3, naziv: 'teretna' },
+        { id: 1, naziv: 'autobum-vozila' },
+        { id: 2, naziv: 'autobum-motocikli' },
+        { id: 3, naziv: 'autobum-teretna' },
     ];
 
     for (const kat of kategorije) {
@@ -504,17 +512,18 @@ async function fetchAutobum() {
     }
     console.log('Autobum fetch završen!');
 }
+
+// ── GLAVNI FETCH ──────────────────────────────────────────
 async function fetchSveKategorije() {
     console.log('Pokrećem fetch...');
 
-    // Vozila po brendovima
+    // 1. OLX vozila po brendovima
     for (const brandId of OLX_BRENDOVI) {
         await fetchBrend(brandId);
         await new Promise(r => setTimeout(r, 1000));
-        await fetchAutobum();
     }
 
-    // Ostale kategorije
+    // 2. OLX ostale kategorije
     const ostale = [
         { id: '21', naziv: 'motocikli' },
         { id: '22', naziv: 'bicikli' },
@@ -544,6 +553,9 @@ async function fetchSveKategorije() {
         await fetchOLXKategorija(kat.id, kat.naziv);
         await new Promise(r => setTimeout(r, 2000));
     }
+
+    // 3. Autobum (jednom, na kraju)
+    await fetchAutobum();
 
     console.log('Fetch završen!');
 }
