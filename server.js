@@ -449,10 +449,8 @@ async function autobumGet(page, katId) {
 
 async function fetchAutobum() {
     const kategorije = [
-        { id: 1, naziv: 'vozila' },
-        { id: 2, naziv: 'motocikli' },
-        { id: 3, naziv: 'teretna' },
-    ];
+    { id: 1, naziv: 'vozila' },
+];
 
     for (const kat of kategorije) {
         try {
