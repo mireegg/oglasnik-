@@ -444,33 +444,35 @@ async function fetchAutobum() {
         { id: 3, naziv: 'teretna' },
     ];
 
+    const autobumGet = (page, katId) => new Promise((resolve, reject) => {
+        const path = `/api/v1/articles?perPage=40&page=${page}&filters=[{"field":"category_id","type":"eq","value":${katId}}]&fieldsFilters=[]`;
+        const req = https.request({
+            hostname: 'api.autobum.ba',
+            path: path,
+            method: 'GET',
+            headers: { 'User-Agent': 'Mozilla/5.0', 'Accept': 'application/json', 'Referer': 'https://autobum.ba/' }
+        }, res => {
+            let data = '';
+            res.on('data', chunk => data += chunk);
+            res.on('end', () => { try { resolve(JSON.parse(data)); } catch(e) { reject(e); } });
+        });
+        req.on('error', reject);
+        req.end();
+    });
+
     for (const kat of kategorije) {
         try {
-            const filtersStr = encodeURIComponent(`[{"field":"category_id","type":"eq","value":${kat.id}}]`);
-            const fieldsStr = encodeURIComponent('[]');
-            const baseUrl = `https://api.autobum.ba/api/v1/articles?perPage=40&page=1&filters=${filtersStr}&fieldsFilters=${fieldsStr}`;
+            const prva = await autobumGet(1, kat.id);
+            console.log(`Autobum ${kat.naziv} keys:`, Object.keys(prva));
 
-            const prvaRes = await fetch2(baseUrl, {
-                headers: { 'User-Agent': 'Mozilla/5.0', 'Accept': 'application/json', 'Referer': 'https://autobum.ba/' }
-            });
-            const prvaData = await prvaRes.json();
-
-            const lastPage = Math.min(prvaData.meta?.last_page || 1, 50);
-            console.log('Autobum keys:', JSON.stringify(Object.keys(prvaData)));
-console.log('Autobum meta:', JSON.stringify(prvaData.meta));
-console.log('Autobum data count:', prvaData.data?.length);
+            const lastPage = Math.min(prva.meta?.last_page || 1, 50);
             console.log(`Autobum: ${kat.naziv} — ${lastPage} stranica`);
 
-            const sveStrane = [prvaData.data || []];
-
+            const sveStrane = [prva.data || []];
             for (let page = 2; page <= lastPage; page++) {
                 try {
-                    const pageUrl = `https://api.autobum.ba/api/v1/articles?perPage=40&page=${page}&filters=${filtersStr}&fieldsFilters=${fieldsStr}`;
-                    const pageRes = await fetch2(pageUrl, {
-                        headers: { 'User-Agent': 'Mozilla/5.0', 'Accept': 'application/json', 'Referer': 'https://autobum.ba/' }
-                    });
-                    const pageData = await pageRes.json();
-                    sveStrane.push(pageData.data || []);
+                    const r = await autobumGet(page, kat.id);
+                    sveStrane.push(r.data || []);
                     await new Promise(r => setTimeout(r, 1000));
                 } catch(e) {}
             }
