@@ -1,3 +1,4 @@
+const got = require('got');
 const fetch2 = (...args) => import('node-fetch').then(({default: fetch}) => fetch(...args));
 const axios = require('axios');
 const bcrypt = require('bcrypt');
@@ -445,6 +446,14 @@ async function fetchAutobum() {
     ];
 
     const autobumGet = (page, katId) => new Promise((resolve, reject) => {
+        const autobumGet = async (page, katId) => {
+    const url = `https://api.autobum.ba/api/v1/articles?perPage=40&page=${page}&filters=[{"field":"category_id","type":"eq","value":${katId}}]&fieldsFilters=[]`;
+    const response = await got(url, {
+        headers: { 'User-Agent': 'Mozilla/5.0', 'Accept': 'application/json', 'Referer': 'https://autobum.ba/' },
+        timeout: 15000
+    });
+    return JSON.parse(response.body);
+};
         const path = `/api/v1/articles?perPage=40&page=${page}&filters=[{"field":"category_id","type":"eq","value":${katId}}]&fieldsFilters=[]`;
         const req = https.request({
             hostname: 'api.autobum.ba',
