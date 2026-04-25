@@ -449,32 +449,39 @@ async function fetchAutobum() {
 
     for (const kat of kategorije) {
         try {
-            const filtersStr = `[{"field":"category_id","type":"eq","value":${kat.id}}]`;
-            const baseUrl = `https://api.autobum.ba/api/v1/articles?perPage=40&page=1&filters=${filtersStr}&fieldsFilters=[]`;
-
-            const prva = await axios.get(baseUrl, {
-                headers: { 'User-Agent': 'Mozilla/5.0', 'Accept': 'application/json', 'Referer': 'https://autobum.ba/' },
-                timeout: 15000
+            const fetchStrana = (page) => new Promise((resolve, reject) => {
+                const path = `/api/v1/articles?perPage=40&page=${page}&filters=[{"field":"category_id","type":"eq","value":${kat.id}}]&fieldsFilters=[]`;
+                const options = {
+                    hostname: 'api.autobum.ba',
+                    path: path,
+                    method: 'GET',
+                    headers: { 'User-Agent': 'Mozilla/5.0', 'Accept': 'application/json', 'Referer': 'https://autobum.ba/' }
+                };
+                const req = https.request(options, res => {
+                    let data = '';
+                    res.on('data', chunk => data += chunk);
+                    res.on('end', () => {
+                        try { resolve(JSON.parse(data)); }
+                        catch(e) { reject(e); }
+                    });
+                });
+                req.on('error', reject);
+                req.end();
             });
 
-            const lastPage = Math.min(prva.data.last_page || 1, 50);
+            const prva = await fetchStrana(1);
+            const lastPage = Math.min(prva.last_page || 1, 50);
             console.log(`Autobum: ${kat.naziv} — ${lastPage} stranica`);
 
             let sacuvano = 0;
-            const sveStrane = [prva.data.data || []];
+            const sveStrane = [prva.data || []];
 
             for (let str = 2; str <= lastPage; str++) {
                 try {
-                    const pageUrl = `https://api.autobum.ba/api/v1/articles?perPage=40&page=${str}&filters=${filtersStr}&fieldsFilters=[]`;
-                    const r = await axios.get(pageUrl, {
-                        headers: { 'User-Agent': 'Mozilla/5.0', 'Accept': 'application/json', 'Referer': 'https://autobum.ba/' },
-                        timeout: 15000
-                    });
-                    sveStrane.push(r.data.data || []);
+                    const r = await fetchStrana(str);
+                    sveStrane.push(r.data || []);
                     await new Promise(r => setTimeout(r, 1000));
-                } catch(e) {
-                    if (e.response?.status === 429) await new Promise(r => setTimeout(r, 15000));
-                }
+                } catch(e) {}
             }
 
             for (const stranica of sveStrane) {
