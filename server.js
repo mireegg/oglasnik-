@@ -562,5 +562,9 @@ async function fetchSveKategorije() {
 
 fetchSveKategorije();
 setInterval(fetchSveKategorije, 2 * 60 * 60 * 1000);
+app.get('/api/run-autobum', async (req, res) => {
+    res.json({ uspjeh: true, poruka: 'Autobum fetch pokrenut!' });
+    fetchAutobum();
+});
 
 app.listen(PORT, () => console.log(`Server radi na portu ${PORT}`));
