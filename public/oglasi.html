@@ -107,6 +107,7 @@
       .main{grid-template-columns:1fr;padding:16px;}
       .sidebar{display:none;}
       .stats-bar{gap:20px;flex-wrap:wrap;}
+      .badge-autobum { background: #fff3e0; color: #e65c00; }
     }
   </style>
 </head>
@@ -391,6 +392,7 @@ function odjava() { localStorage.removeItem('korisnik'); window.location.href = 
 function prikaziOglase(oglasi) {
   var grid = document.getElementById('oglasiGrid');
   var broj = document.getElementById('rezultatiBroj');
+  var badgeClass = { olx: 'badge-olx', autobum: 'badge-autobum' };
   trenutnoFiltrirani = oglasi;
   broj.textContent = ukupnoOglasa || oglasi.length;
   if (oglasi.length === 0) {

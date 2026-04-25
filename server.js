@@ -450,7 +450,60 @@ async function fetchOLXKategorija(categoryId, kategorija) {
         console.log(`OLX greška za ${kategorija}:`, e.message);
     }
 }
+async function fetchAutobum() {
+    const kategorije = [
+        { id: 1, naziv: 'vozila' },
+        { id: 2, naziv: 'motocikli' },
+        { id: 3, naziv: 'teretna' },
+    ];
 
+    for (const kat of kategorije) {
+        try {
+            const filters = encodeURIComponent(JSON.stringify([{"field":"category_id","type":"eq","value":kat.id}]));
+            const prva = await axios.get(`https://api.autobum.ba/api/v1/articles?perPage=40&page=1&filters=${filters}&fieldsFilters=%5B%5D`, {
+                headers: { 'User-Agent': 'Mozilla/5.0', 'Accept': 'application/json', 'Referer': 'https://autobum.ba/' },
+                timeout: 15000
+            });
+
+            const lastPage = Math.min(prva.data.last_page || 1, 50);
+            console.log(`Autobum: ${kat.naziv} — ${lastPage} stranica`);
+
+            const sveStrane = [prva.data.data || []];
+            for (let str = 2; str <= lastPage; str++) {
+                try {
+                    const r = await axios.get(`https://api.autobum.ba/api/v1/articles?perPage=40&page=${str}&filters=${filters}&fieldsFilters=%5B%5D`, {
+                        headers: { 'User-Agent': 'Mozilla/5.0', 'Accept': 'application/json', 'Referer': 'https://autobum.ba/' },
+                        timeout: 15000
+                    });
+                    sveStrane.push(r.data.data || []);
+                    await new Promise(r => setTimeout(r, 1000));
+                } catch(e) {
+                    if (e.response?.status === 429) await new Promise(r => setTimeout(r, 15000));
+                }
+            }
+
+            let sacuvano = 0;
+            for (const stranica of sveStrane) {
+                for (const o of stranica) {
+                    try {
+                        const link = `https://autobum.ba/oglas/${o.id}`;
+                        const cijena = o.price || 'Na upit';
+                        const r = await pool.query(
+                            `INSERT INTO live_oglasi (naslov, cijena, slika, link, platforma, kategorija) VALUES ($1,$2,$3,$4,$5,$6) ON CONFLICT (link) DO NOTHING`,
+                            [o.title, cijena, o.image || '', link, 'autobum', kat.naziv]
+                        );
+                        if (r.rowCount > 0) sacuvano++;
+                    } catch(e) {}
+                }
+            }
+            console.log(`Autobum: ${kat.naziv} — ${sacuvano} novih oglasa`);
+        } catch(e) {
+            console.log(`Autobum greška ${kat.naziv}:`, e.message);
+        }
+        await new Promise(r => setTimeout(r, 3000));
+    }
+    console.log('Autobum fetch završen!');
+}
 async function fetchSveKategorije() {
     console.log('Pokrećem fetch...');
 
@@ -458,6 +511,7 @@ async function fetchSveKategorije() {
     for (const brandId of OLX_BRENDOVI) {
         await fetchBrend(brandId);
         await new Promise(r => setTimeout(r, 1000));
+        await fetchAutobum();
     }
 
     // Ostale kategorije
