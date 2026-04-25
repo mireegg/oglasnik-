@@ -559,7 +559,18 @@ async function fetchSveKategorije() {
 
     console.log('Fetch završen!');
 }
-
+app.get('/api/test-autobum2', async (req, res) => {
+    try {
+        const url = `https://api.autobum.ba/api/v1/articles?perPage=3&page=1&filters=[{"field":"category_id","type":"eq","value":1}]&fieldsFilters=[]`;
+        const response = await axios.get(url, {
+            headers: { 'User-Agent': 'Mozilla/5.0', 'Accept': 'application/json', 'Referer': 'https://autobum.ba/' },
+            timeout: 10000
+        });
+        res.json({ uspjeh: true, data: response.data.data?.[0] });
+    } catch(e) {
+        res.json({ uspjeh: false, greska: e.message, status: e.response?.status });
+    }
+});
 fetchSveKategorije();
 setInterval(fetchSveKategorije, 2 * 60 * 60 * 1000);
 app.get('/api/run-autobum', async (req, res) => {
