@@ -372,7 +372,6 @@ async function fetchBrend(brandId) {
        let sacuvano = 0;
 for (const stranica of sveStrane) {
     for (const o of stranica) {
-        console.log('Oglas:', o?.title, o?.price);
         try {
             const link = `https://autobum.ba/oglas/${o.id}`;
             const dbRes = await pool.query(
