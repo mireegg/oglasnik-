@@ -452,7 +452,13 @@ async function fetchAutobum() {
         try {
             const filtersStr = encodeURIComponent(`[{"field":"category_id","type":"eq","value":${kat.id}}]`);
             const fieldsStr = encodeURIComponent('[]');
+const prva = await fetch2(`https://api.autobum.ba/api/v1/articles?perPage=40&page=1&filters=${filtersStr}&fieldsFilters=${fieldsStr}`, {
+    headers: { 'User-Agent': 'Mozilla/5.0', 'Accept': 'application/json', 'Referer': 'https://autobum.ba/' }
+}).then(r => r.json());
 
+console.log('Autobum response keys:', Object.keys(prva));
+console.log('Autobum meta:', prva.meta);
+console.log('Autobum last_page:', prva.last_page);
            const prva = await fetch2(`https://api.autobum.ba/api/v1/articles?perPage=40&page=1&filters=${filtersStr}&fieldsFilters=${fieldsStr}`, {
     headers: { 'User-Agent': 'Mozilla/5.0', 'Accept': 'application/json', 'Referer': 'https://autobum.ba/' }
 }).then(r => r.json());
