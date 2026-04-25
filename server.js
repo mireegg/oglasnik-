@@ -458,7 +458,7 @@ async function fetchAutobum() {
     });
     req.on('error', reject);
     req.end();
-});
+};
 
     for (const kat of kategorije) {
         try {
