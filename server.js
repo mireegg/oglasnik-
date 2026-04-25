@@ -1,3 +1,4 @@
+const fetch2 = (...args) => import('node-fetch').then(({default: fetch}) => fetch(...args));
 const axios = require('axios');
 const bcrypt = require('bcrypt');
 const SALT_ROUNDS = 10;
@@ -452,10 +453,9 @@ async function fetchAutobum() {
             const filtersStr = encodeURIComponent(`[{"field":"category_id","type":"eq","value":${kat.id}}]`);
             const fieldsStr = encodeURIComponent('[]');
 
-            const prva = await axios.get(`https://api.autobum.ba/api/v1/articles?perPage=40&page=1&filters=${filtersStr}&fieldsFilters=${fieldsStr}`, {
-                headers: { 'User-Agent': 'Mozilla/5.0', 'Accept': 'application/json', 'Referer': 'https://autobum.ba/' },
-                timeout: 15000
-            });
+           const prva = await fetch2(`https://api.autobum.ba/api/v1/articles?perPage=40&page=1&filters=${filtersStr}&fieldsFilters=${fieldsStr}`, {
+    headers: { 'User-Agent': 'Mozilla/5.0', 'Accept': 'application/json', 'Referer': 'https://autobum.ba/' }
+}).then(r => r.json());
 
             const lastPage = Math.min(prva.data.meta?.last_page || prva.data.last_page || 1, 50);
             console.log(`Autobum: ${kat.naziv} — ${lastPage} stranica`);
@@ -464,10 +464,10 @@ async function fetchAutobum() {
 
             for (let page = 2; page <= lastPage; page++) {
                 try {
-                    const r = await axios.get(`https://api.autobum.ba/api/v1/articles?perPage=40&page=${page}&filters=${filtersStr}&fieldsFilters=${fieldsStr}`, {
-                        headers: { 'User-Agent': 'Mozilla/5.0', 'Accept': 'application/json', 'Referer': 'https://autobum.ba/' },
-                        timeout: 15000
-                    });
+                    const r = await fetch2(`https://api.autobum.ba/api/v1/articles?perPage=40&page=${page}&filters=${filtersStr}&fieldsFilters=${fieldsStr}`, {
+    headers: { 'User-Agent': 'Mozilla/5.0', 'Accept': 'application/json', 'Referer': 'https://autobum.ba/' }
+}).then(r => r.json());
+sveStrane.push(r.data || []);
                     sveStrane.push(r.data.data || []);
                     await new Promise(r => setTimeout(r, 1000));
                 } catch(e) {
