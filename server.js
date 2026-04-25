@@ -1,6 +1,4 @@
-const fetch2 = (...args) => import('node-fetch').then(({default: fetch}) => fetch(...args));
-const axios = require('axios');
-const bcrypt = require('bcrypt');
+const fetch2 = require('node-fetch');const bcrypt = require('bcrypt');
 const SALT_ROUNDS = 10;
 const express = require('express');
 const nodemailer = require('nodemailer');
@@ -444,13 +442,15 @@ async function fetchAutobum() {
         { id: 3, naziv: 'teretna' },
     ];
 
-    const autobumGet = (page, katId) => new Promise((resolve, reject) => {
-    const options = {
-        hostname: 'api.autobum.ba',
-        path: `/api/v1/articles?perPage=40&page=${page}&filters=%5B%7B%22field%22%3A%22category_id%22%2C%22type%22%3A%22eq%22%2C%22value%22%3A${katId}%7D%5D&fieldsFilters=%5B%5D`,
-        method: 'GET',
+  const autobumGet = async (page, katId) => {
+    const filters = encodeURIComponent(`[{"field":"category_id","type":"eq","value":${katId}}]`);
+    const fields = encodeURIComponent('[]');
+    const url = `https://api.autobum.ba/api/v1/articles?perPage=40&page=${page}&filters=${filters}&fieldsFilters=${fields}`;
+    const res = await fetch2(url, {
         headers: { 'User-Agent': 'Mozilla/5.0', 'Accept': 'application/json', 'Referer': 'https://autobum.ba/' }
-    };
+    });
+    return res.json();
+};
     const req = https.request(options, res => {
         let data = '';
         res.on('data', chunk => data += chunk);
