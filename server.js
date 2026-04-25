@@ -1,4 +1,6 @@
-const fetch2 = require('node-fetch');const bcrypt = require('bcrypt');
+const fetch2 = require('node-fetch');
+const axios = require('axios');
+const bcrypt = require('bcrypt');
 const SALT_ROUNDS = 10;
 const express = require('express');
 const nodemailer = require('nodemailer');
@@ -290,7 +292,7 @@ app.get('/api/slicni-oglasi', async (req, res) => {
     } catch(e) { res.json({ uspjeh: false, oglasi: [] }); }
 });
 
-// ── FIX KATEGORIJE (samo OLX vozila) ─────────────────────
+// ── FIX KATEGORIJE ────────────────────────────────────────
 app.get('/api/fix-kategorije', async (req, res) => {
     const brendovi = [
         { kljuc: ['volkswagen', 'vw ', ' vw', 'golf', 'passat', 'tiguan', 'polo', 'touareg', 'touran', 'sharan', 'caddy'], kat: 'vozila-volkswagen' },
@@ -435,14 +437,7 @@ async function fetchOLXKategorija(categoryId, kategorija) {
 }
 
 // ── AUTOBUM FETCH ─────────────────────────────────────────
-async function fetchAutobum() {
-    const kategorije = [
-        { id: 1, naziv: 'vozila' },
-        { id: 2, naziv: 'motocikli' },
-        { id: 3, naziv: 'teretna' },
-    ];
-
-  const autobumGet = async (page, katId) => {
+async function autobumGet(page, katId) {
     const filters = encodeURIComponent(`[{"field":"category_id","type":"eq","value":${katId}}]`);
     const fields = encodeURIComponent('[]');
     const url = `https://api.autobum.ba/api/v1/articles?perPage=40&page=${page}&filters=${filters}&fieldsFilters=${fields}`;
@@ -450,15 +445,14 @@ async function fetchAutobum() {
         headers: { 'User-Agent': 'Mozilla/5.0', 'Accept': 'application/json', 'Referer': 'https://autobum.ba/' }
     });
     return res.json();
-};
-    const req = https.request(options, res => {
-        let data = '';
-        res.on('data', chunk => data += chunk);
-        res.on('end', () => { try { resolve(JSON.parse(data)); } catch(e) { reject(e); } });
-    });
-    req.on('error', reject);
-    req.end();
-};
+}
+
+async function fetchAutobum() {
+    const kategorije = [
+        { id: 1, naziv: 'vozila' },
+        { id: 2, naziv: 'motocikli' },
+        { id: 3, naziv: 'teretna' },
+    ];
 
     for (const kat of kategorije) {
         try {
@@ -549,14 +543,16 @@ app.get('/api/run-autobum', async (req, res) => {
 
 app.get('/api/test-autobum', async (req, res) => {
     try {
-        const url = `https://api.autobum.ba/api/v1/articles?perPage=3&page=1&filters=[{"field":"category_id","type":"eq","value":1}]&fieldsFilters=[]`;
-        const response = await axios.get(url, {
-            headers: { 'User-Agent': 'Mozilla/5.0', 'Accept': 'application/json', 'Referer': 'https://autobum.ba/' },
-            timeout: 10000
+        const filters = encodeURIComponent('[{"field":"category_id","type":"eq","value":1}]');
+        const fields = encodeURIComponent('[]');
+        const url = `https://api.autobum.ba/api/v1/articles?perPage=3&page=1&filters=${filters}&fieldsFilters=${fields}`;
+        const response = await fetch2(url, {
+            headers: { 'User-Agent': 'Mozilla/5.0', 'Accept': 'application/json', 'Referer': 'https://autobum.ba/' }
         });
-        res.json({ uspjeh: true, ukupno: response.data.total, oglas: response.data.data?.[0] });
+        const data = await response.json();
+        res.json({ uspjeh: true, keys: Object.keys(data), oglas: data.data?.[0] });
     } catch(e) {
-        res.json({ uspjeh: false, greska: e.message, status: e.response?.status });
+        res.json({ uspjeh: false, greska: e.message });
     }
 });
 
