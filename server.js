@@ -1,4 +1,3 @@
-const got = require('got');
 const fetch2 = (...args) => import('node-fetch').then(({default: fetch}) => fetch(...args));
 const axios = require('axios');
 const bcrypt = require('bcrypt');
@@ -446,28 +445,20 @@ async function fetchAutobum() {
     ];
 
     const autobumGet = (page, katId) => new Promise((resolve, reject) => {
-        const autobumGet = async (page, katId) => {
-    const url = `https://api.autobum.ba/api/v1/articles?perPage=40&page=${page}&filters=[{"field":"category_id","type":"eq","value":${katId}}]&fieldsFilters=[]`;
-    const response = await got(url, {
-        headers: { 'User-Agent': 'Mozilla/5.0', 'Accept': 'application/json', 'Referer': 'https://autobum.ba/' },
-        timeout: 15000
+    const options = {
+        hostname: 'api.autobum.ba',
+        path: `/api/v1/articles?perPage=40&page=${page}&filters=%5B%7B%22field%22%3A%22category_id%22%2C%22type%22%3A%22eq%22%2C%22value%22%3A${katId}%7D%5D&fieldsFilters=%5B%5D`,
+        method: 'GET',
+        headers: { 'User-Agent': 'Mozilla/5.0', 'Accept': 'application/json', 'Referer': 'https://autobum.ba/' }
+    };
+    const req = https.request(options, res => {
+        let data = '';
+        res.on('data', chunk => data += chunk);
+        res.on('end', () => { try { resolve(JSON.parse(data)); } catch(e) { reject(e); } });
     });
-    return JSON.parse(response.body);
-};
-        const path = `/api/v1/articles?perPage=40&page=${page}&filters=[{"field":"category_id","type":"eq","value":${katId}}]&fieldsFilters=[]`;
-        const req = https.request({
-            hostname: 'api.autobum.ba',
-            path: path,
-            method: 'GET',
-            headers: { 'User-Agent': 'Mozilla/5.0', 'Accept': 'application/json', 'Referer': 'https://autobum.ba/' }
-        }, res => {
-            let data = '';
-            res.on('data', chunk => data += chunk);
-            res.on('end', () => { try { resolve(JSON.parse(data)); } catch(e) { reject(e); } });
-        });
-        req.on('error', reject);
-        req.end();
-    });
+    req.on('error', reject);
+    req.end();
+});
 
     for (const kat of kategorije) {
         try {
