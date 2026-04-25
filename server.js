@@ -456,6 +456,9 @@ async function fetchAutobum() {
             const prvaData = await prvaRes.json();
 
             const lastPage = Math.min(prvaData.meta?.last_page || 1, 50);
+            console.log('Autobum keys:', JSON.stringify(Object.keys(prvaData)));
+console.log('Autobum meta:', JSON.stringify(prvaData.meta));
+console.log('Autobum data count:', prvaData.data?.length);
             console.log(`Autobum: ${kat.naziv} — ${lastPage} stranica`);
 
             const sveStrane = [prvaData.data || []];
