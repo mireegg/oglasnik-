@@ -484,6 +484,7 @@ async function fetchAutobum() {
                     } catch(e) {}
                 }
             }
+            console.log('Autobum lastPage:', prva.meta);
             console.log(`Autobum: ${kat.naziv} — ${sacuvano} novih oglasa`);
         } catch(e) {
             console.log(`Autobum greška ${kat.naziv}:`, e.message);
