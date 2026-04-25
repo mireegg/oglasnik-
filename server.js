@@ -390,7 +390,18 @@ async function fetchBrend(brandId) {
         console.log(`Brend ${brandId} greška:`, e.message);
     }
 }
-
+app.get('/api/test-autobum', async (req, res) => {
+    try {
+        const url = 'https://api.autobum.ba/api/v1/articles?perPage=3&page=1&filters=%5B%7B%22field%22%3A%22category_id%22%2C%22type%22%3A%22eq%22%2C%22value%22%3A1%7D%5D&fieldsFilters=%5B%5D';
+        const response = await axios.get(url, {
+            headers: { 'User-Agent': 'Mozilla/5.0', 'Accept': 'application/json', 'Referer': 'https://autobum.ba/' },
+            timeout: 10000
+        });
+        res.json({ uspjeh: true, ukupno: response.data.total, oglas: response.data.data?.[0] });
+    } catch(e) {
+        res.json({ uspjeh: false, greska: e.message, status: e.response?.status });
+    }
+});
 // ── OLX FETCH OSTALIH KATEGORIJA ─────────────────────────
 async function fetchOLXKategorija(categoryId, kategorija) {
     try {
