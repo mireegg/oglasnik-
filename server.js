@@ -414,8 +414,7 @@ async function fetchOLXKategorija(categoryId, kategorija) {
             headers: { 'User-Agent': 'Mozilla/5.0', 'Accept': 'application/json', 'Referer': 'https://www.olx.ba/' },
             timeout: 15000
         });
-        const lastPage = prvaStrana.data.meta?.last_page || 1;
-
+const lastPage = Math.min(prvaStrana.data.meta?.last_page || 1, 100);
         for (const o of (prvaStrana.data.data || [])) {
             try {
                 await pool.query(
@@ -442,7 +441,7 @@ async function fetchOLXKategorija(categoryId, kategorija) {
                     } catch(e) {}
                 }
                 if (stranica % 50 === 0) console.log(`OLX: ${kategorija} stranica ${stranica}/${lastPage}`);
-                await new Promise(r => setTimeout(r, 1500));
+                await new Promise(r => setTimeout(r, 3000)); // umjesto 1000;
             } catch(e) {
                 if (e.response?.status === 429) {
                     await new Promise(r => setTimeout(r, 30000));
