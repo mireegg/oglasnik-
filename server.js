@@ -468,10 +468,16 @@ async function fetchAutobum() {
     for (const kat of kategorije) {
         try {
             const filters = `[{"field":"category_id","type":"eq","value":${kat.id}}]`;
-            const prva = await axios.get(`https://api.autobum.ba/api/v1/articles?perPage=40&page=1&filters=${filters}&fieldsFilters=[]`, {
-                headers: { 'User-Agent': 'Mozilla/5.0', 'Accept': 'application/json', 'Referer': 'https://autobum.ba/' },
-                timeout: 15000
-            });
+            const prva = await axios.get('https://api.autobum.ba/api/v1/articles', {
+    params: {
+        perPage: 40,
+        page: 1,
+        filters: `[{"field":"category_id","type":"eq","value":${kat.id}}]`,
+        fieldsFilters: '[]'
+    },
+    headers: { 'User-Agent': 'Mozilla/5.0', 'Accept': 'application/json', 'Referer': 'https://autobum.ba/' },
+    timeout: 15000
+});
 
             const lastPage = Math.min(prva.data.last_page || 1, 50);
             console.log(`Autobum: ${kat.naziv} — ${lastPage} stranica`);
@@ -480,10 +486,16 @@ async function fetchAutobum() {
             const sveStrane = [prva.data.data || []];
             for (let str = 2; str <= lastPage; str++) {
                 try {
-                    const r = await axios.get(`https://api.autobum.ba/api/v1/articles?perPage=40&page=${str}&filters=${filters}&fieldsFilters=[]`, {
-                        headers: { 'User-Agent': 'Mozilla/5.0', 'Accept': 'application/json', 'Referer': 'https://autobum.ba/' },
-                        timeout: 15000
-                    });
+                    const r = await axios.get('https://api.autobum.ba/api/v1/articles', {
+    params: {
+        perPage: 40,
+        page: str,
+        filters: `[{"field":"category_id","type":"eq","value":${kat.id}}]`,
+        fieldsFilters: '[]'
+    },
+    headers: { 'User-Agent': 'Mozilla/5.0', 'Accept': 'application/json', 'Referer': 'https://autobum.ba/' },
+    timeout: 15000
+});
                     sveStrane.push(r.data.data || []);
                     await new Promise(r => setTimeout(r, 1000));
                 } catch(e) {
