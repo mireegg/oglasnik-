@@ -460,15 +460,15 @@ const lastPage = Math.min(prvaStrana.data.meta?.last_page || 1, 100);
 // Autobum kategorije su odvojene od OLX-a prefiksom 'autobum-'
 async function fetchAutobum() {
     const kategorije = [
-      { id: 1, naziv: 'vozila' },
-{ id: 2, naziv: 'motocikli' },
-{ id: 3, naziv: 'teretna' },
+        { id: 1, naziv: 'vozila' },
+        { id: 2, naziv: 'motocikli' },
+        { id: 3, naziv: 'teretna' },
     ];
 
     for (const kat of kategorije) {
         try {
-            const filters = encodeURIComponent(JSON.stringify([{"field":"category_id","type":"eq","value":kat.id}]));
-            const prva = await axios.get(`https://api.autobum.ba/api/v1/articles?perPage=40&page=1&filters=${filters}&fieldsFilters=%5B%5D`, {
+            const filters = `[{"field":"category_id","type":"eq","value":${kat.id}}]`;
+            const prva = await axios.get(`https://api.autobum.ba/api/v1/articles?perPage=40&page=1&filters=${filters}&fieldsFilters=[]`, {
                 headers: { 'User-Agent': 'Mozilla/5.0', 'Accept': 'application/json', 'Referer': 'https://autobum.ba/' },
                 timeout: 15000
             });
@@ -476,10 +476,11 @@ async function fetchAutobum() {
             const lastPage = Math.min(prva.data.last_page || 1, 50);
             console.log(`Autobum: ${kat.naziv} — ${lastPage} stranica`);
 
+            let sacuvano = 0;
             const sveStrane = [prva.data.data || []];
             for (let str = 2; str <= lastPage; str++) {
                 try {
-                    const r = await axios.get(`https://api.autobum.ba/api/v1/articles?perPage=40&page=${str}&filters=${filters}&fieldsFilters=%5B%5D`, {
+                    const r = await axios.get(`https://api.autobum.ba/api/v1/articles?perPage=40&page=${str}&filters=${filters}&fieldsFilters=[]`, {
                         headers: { 'User-Agent': 'Mozilla/5.0', 'Accept': 'application/json', 'Referer': 'https://autobum.ba/' },
                         timeout: 15000
                     });
@@ -490,15 +491,13 @@ async function fetchAutobum() {
                 }
             }
 
-            let sacuvano = 0;
             for (const stranica of sveStrane) {
                 for (const o of stranica) {
                     try {
                         const link = `https://autobum.ba/oglas/${o.id}`;
-                        const cijena = o.price || 'Na upit';
                         const r = await pool.query(
                             `INSERT INTO live_oglasi (naslov, cijena, slika, link, platforma, kategorija) VALUES ($1,$2,$3,$4,$5,$6) ON CONFLICT (link) DO NOTHING`,
-                            [o.title, cijena, o.image || '', link, 'autobum', kat.naziv]
+                            [o.title, o.price || 'Na upit', o.image || '', link, 'autobum', kat.naziv]
                         );
                         if (r.rowCount > 0) sacuvano++;
                     } catch(e) {}
