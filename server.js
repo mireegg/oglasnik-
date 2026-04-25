@@ -369,18 +369,20 @@ async function fetchBrend(brandId) {
             }
         }
 
-        let sacuvano = 0;
-        for (const stranica of sveStrane) {
-            for (const o of stranica) {
-                try {
-                    const dbRes = await pool.query(
-                        `INSERT INTO live_oglasi (naslov, cijena, slika, link, platforma, kategorija, brand_id) VALUES ($1,$2,$3,$4,$5,$6,$7) ON CONFLICT (link) DO NOTHING`,
-                        [o.title, o.display_price || 'Na upit', o.image || '', `https://www.olx.ba/artikal/${o.id}`, 'olx', 'vozila', o.brand_id || null]
-                    );
-                    if (dbRes.rowCount > 0) sacuvano++;
-                } catch(e) {}
-            }
-        }
+       let sacuvano = 0;
+for (const stranica of sveStrane) {
+    for (const o of stranica) {
+        console.log('Oglas:', o?.title, o?.price);
+        try {
+            const link = `https://autobum.ba/oglas/${o.id}`;
+            const dbRes = await pool.query(
+                `INSERT INTO live_oglasi (naslov, cijena, slika, link, platforma, kategorija) VALUES ($1,$2,$3,$4,$5,$6) ON CONFLICT (link) DO NOTHING`,
+                [o.title, o.price || 'Na upit', o.image || '', link, 'autobum', kat.naziv]
+            );
+            if (dbRes.rowCount > 0) sacuvano++;
+        } catch(e) {}
+    }
+}
         if (sacuvano > 0) console.log(`Brend ${brandId}: ${sacuvano} novih oglasa`);
     } catch(e) {
         console.log(`Brend ${brandId} greška:`, e.message);
@@ -544,6 +546,7 @@ app.get('/api/run-autobum', async (req, res) => {
 
 app.get('/api/test-autobum', async (req, res) => {
     try {
+        
 const filters = encodeURIComponent('[{"field":"category_id","type":"eq","value":' + katId + '}]');        const fields = encodeURIComponent('[]');
         const url = `https://api.autobum.ba/api/v1/articles?perPage=3&page=1&filters=${filters}&fieldsFilters=${fields}`;
         const response = await fetch2(url, {
