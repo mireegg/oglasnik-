@@ -440,16 +440,15 @@ async function fetchOLXKategorija(categoryId, kategorija) {
 
 // ── AUTOBUM FETCH ─────────────────────────────────────────
 async function autobumGet(page, katId) {
-    const filters = encodeURIComponent(`[{"field":"category_id","type":"eq","value":${katId}}]`);
+    const filters = encodeURIComponent('[{"field":"category_id","type":"eq","value":' + katId + '}]');
     const fields = encodeURIComponent('[]');
     const url = `https://api.autobum.ba/api/v1/articles?perPage=40&page=${page}&filters=${filters}&fieldsFilters=${fields}`;
-    console.log('Autobum URL:', url);
-    const res = await fetch2(url, {
+    const response = await fetch2(url, {
         headers: { 'User-Agent': 'Mozilla/5.0', 'Accept': 'application/json', 'Referer': 'https://autobum.ba/' }
     });
-    const data = await res.json();
-    console.log('Autobum status:', res.status, 'keys:', Object.keys(data));
-    return data;
+    const text = await response.text();
+    console.log('Autobum raw:', text.substring(0, 200));
+    return JSON.parse(text);
 }
 
 async function fetchAutobum() {
