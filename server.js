@@ -42,7 +42,6 @@ async function initDB() {
 }
 initDB();
 
-// ── STATIC ──────────────────────────────────────────────
 app.get('/', (req, res) => res.sendFile(__dirname + '/public/index.html'));
 
 // ── AUTH ─────────────────────────────────────────────────
@@ -128,7 +127,6 @@ app.post('/api/analiza-jednog-oglasa', async (req, res) => {
     const { oglas, slicni } = req.body;
     const d = oglas.detalji || {};
     const prompt = `Ti si iskusan savjetnik za kupovinu vozila u Bosni i Hercegovini.
-
 Oglas koji analiziraš:
 - Naziv: ${oglas.naslov}
 - Cijena: ${oglas.cijenaStr}
@@ -140,10 +138,8 @@ Oglas koji analiziraš:
 - Kubikaža: ${d.kubikaza || 'nepoznato'}
 - Snaga: ${d.kw ? d.kw + ' kW' : 'nepoznato'}
 - Boja: ${d.boja || 'nepoznato'}
-
 Slični oglasi na tržištu:
 ${slicni && slicni.length > 0 ? slicni.slice(0,5).map((s, i) => `${i+1}. ${s.naslov} — ${s.cijena}`).join('\n') : 'Nema sličnih oglasa za poređenje'}
-
 Daj analizu u TAČNO ovom formatu:
 OCJENA: [ODLIČNO/FER/PREVISOKO/IZBJEGAVAJ]
 CIJENA: [Konkretno poređenje sa sličnim oglasima]
@@ -342,7 +338,7 @@ app.get('/api/fix-kategorije', async (req, res) => {
     res.json({ uspjeh: true, azurirano: ukupno });
 });
 
-// ── OLX FETCH PO BRENDOVIMA (VOZILA) ─────────────────────
+// ── OLX FETCH PO BRENDOVIMA ───────────────────────────────
 const OLX_BRENDOVI = [
     7, 11, 20, 30, 39, 46, 56, 64, 65, 69, 71, 77, 89, 90,
     2, 3, 4, 5, 6, 8, 9, 10, 12, 13, 14, 15, 16, 17, 18, 19, 21, 22, 23, 24, 25,
@@ -377,11 +373,11 @@ async function fetchBrend(brandId) {
         for (const stranica of sveStrane) {
             for (const o of stranica) {
                 try {
-                    const res = await pool.query(
+                    const dbRes = await pool.query(
                         `INSERT INTO live_oglasi (naslov, cijena, slika, link, platforma, kategorija, brand_id) VALUES ($1,$2,$3,$4,$5,$6,$7) ON CONFLICT (link) DO NOTHING`,
                         [o.title, o.display_price || 'Na upit', o.image || '', `https://www.olx.ba/artikal/${o.id}`, 'olx', 'vozila', o.brand_id || null]
                     );
-                    if (res.rowCount > 0) sacuvano++;
+                    if (dbRes.rowCount > 0) sacuvano++;
                 } catch(e) {}
             }
         }
@@ -452,33 +448,28 @@ async function fetchAutobum() {
         try {
             const filtersStr = encodeURIComponent(`[{"field":"category_id","type":"eq","value":${kat.id}}]`);
             const fieldsStr = encodeURIComponent('[]');
-const prva = await fetch2(`https://api.autobum.ba/api/v1/articles?perPage=40&page=1&filters=${filtersStr}&fieldsFilters=${fieldsStr}`, {
-    headers: { 'User-Agent': 'Mozilla/5.0', 'Accept': 'application/json', 'Referer': 'https://autobum.ba/' }
-}).then(r => r.json());
+            const baseUrl = `https://api.autobum.ba/api/v1/articles?perPage=40&page=1&filters=${filtersStr}&fieldsFilters=${fieldsStr}`;
 
-console.log('Autobum response keys:', Object.keys(prva));
-console.log('Autobum meta:', prva.meta);
-console.log('Autobum last_page:', prva.last_page);
-           const prva = await fetch2(`https://api.autobum.ba/api/v1/articles?perPage=40&page=1&filters=${filtersStr}&fieldsFilters=${fieldsStr}`, {
-    headers: { 'User-Agent': 'Mozilla/5.0', 'Accept': 'application/json', 'Referer': 'https://autobum.ba/' }
-}).then(r => r.json());
+            const prvaRes = await fetch2(baseUrl, {
+                headers: { 'User-Agent': 'Mozilla/5.0', 'Accept': 'application/json', 'Referer': 'https://autobum.ba/' }
+            });
+            const prvaData = await prvaRes.json();
 
-            const lastPage = Math.min(prva.data.meta?.last_page || prva.data.last_page || 1, 50);
+            const lastPage = Math.min(prvaData.meta?.last_page || 1, 50);
             console.log(`Autobum: ${kat.naziv} — ${lastPage} stranica`);
 
-            const sveStrane = [prva.data.data || []];
+            const sveStrane = [prvaData.data || []];
 
             for (let page = 2; page <= lastPage; page++) {
                 try {
-                    const r = await fetch2(`https://api.autobum.ba/api/v1/articles?perPage=40&page=${page}&filters=${filtersStr}&fieldsFilters=${fieldsStr}`, {
-    headers: { 'User-Agent': 'Mozilla/5.0', 'Accept': 'application/json', 'Referer': 'https://autobum.ba/' }
-}).then(r => r.json());
-sveStrane.push(r.data || []);
-                    sveStrane.push(r.data.data || []);
+                    const pageUrl = `https://api.autobum.ba/api/v1/articles?perPage=40&page=${page}&filters=${filtersStr}&fieldsFilters=${fieldsStr}`;
+                    const pageRes = await fetch2(pageUrl, {
+                        headers: { 'User-Agent': 'Mozilla/5.0', 'Accept': 'application/json', 'Referer': 'https://autobum.ba/' }
+                    });
+                    const pageData = await pageRes.json();
+                    sveStrane.push(pageData.data || []);
                     await new Promise(r => setTimeout(r, 1000));
-                } catch(e) {
-                    if (e.response?.status === 429) await new Promise(r => setTimeout(r, 15000));
-                }
+                } catch(e) {}
             }
 
             let sacuvano = 0;
@@ -486,11 +477,11 @@ sveStrane.push(r.data || []);
                 for (const o of stranica) {
                     try {
                         const link = `https://autobum.ba/oglas/${o.id}`;
-                        const r = await pool.query(
+                        const dbRes = await pool.query(
                             `INSERT INTO live_oglasi (naslov, cijena, slika, link, platforma, kategorija) VALUES ($1,$2,$3,$4,$5,$6) ON CONFLICT (link) DO NOTHING`,
                             [o.title, o.price || 'Na upit', o.image || '', link, 'autobum', kat.naziv]
                         );
-                        if (r.rowCount > 0) sacuvano++;
+                        if (dbRes.rowCount > 0) sacuvano++;
                     } catch(e) {}
                 }
             }
@@ -502,6 +493,7 @@ sveStrane.push(r.data || []);
     }
     console.log('Autobum fetch završen!');
 }
+
 // ── GLAVNI FETCH ──────────────────────────────────────────
 async function fetchSveKategorije() {
     console.log('Pokrećem fetch...');
@@ -545,7 +537,6 @@ async function fetchSveKategorije() {
     console.log('Fetch završen!');
 }
 
-// ── ENDPOINTI ZA MANUALNI POKRETANJE ─────────────────────
 app.get('/api/run-autobum', async (req, res) => {
     res.json({ uspjeh: true, poruka: 'Autobum fetch pokrenut!' });
     fetchAutobum();
