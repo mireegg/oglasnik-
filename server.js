@@ -441,10 +441,13 @@ async function autobumGet(page, katId) {
     const filters = encodeURIComponent(`[{"field":"category_id","type":"eq","value":${katId}}]`);
     const fields = encodeURIComponent('[]');
     const url = `https://api.autobum.ba/api/v1/articles?perPage=40&page=${page}&filters=${filters}&fieldsFilters=${fields}`;
+    console.log('Autobum URL:', url);
     const res = await fetch2(url, {
         headers: { 'User-Agent': 'Mozilla/5.0', 'Accept': 'application/json', 'Referer': 'https://autobum.ba/' }
     });
-    return res.json();
+    const data = await res.json();
+    console.log('Autobum status:', res.status, 'keys:', Object.keys(data));
+    return data;
 }
 
 async function fetchAutobum() {
