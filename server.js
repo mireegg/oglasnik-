@@ -440,7 +440,7 @@ async function fetchOLXKategorija(categoryId, kategorija) {
 async function autobumGet(page, katId) {
     const filters = encodeURIComponent('[{"field":"category_id","type":"eq","value":' + katId + '}]');
     const fields = encodeURIComponent('[]');
-const url = `https://api.autobum.ba/api/v1/articles?perPage=50&page=${page}&filters=${filters}&fieldsFilters=${fields}`;    const response = await fetch2(url, {
+const url = `https://api.autobum.ba/api/v1/articles?perPage=15&page=${page}&filters=${filters}&fieldsFilters=${fields}`;    const response = await fetch2(url, {
         headers: { 'User-Agent': 'Mozilla/5.0', 'Accept': 'application/json', 'Referer': 'https://autobum.ba/' }
     });
     return response.json();
@@ -453,7 +453,7 @@ async function fetchAutobum() {
         let nextUrl = prva.links?.next;
         let page = 2;
 
-        while (nextUrl && page <= 200) {
+        while (nextUrl && page <= 9999) {
             try {
                 const r = await autobumGet(page, 1);
                 sveStrane.push(r.data || []);
