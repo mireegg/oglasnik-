@@ -14,6 +14,8 @@
       --radius-lg:18px;--radius-pill:100px;
     }
     .badge-autobum { background: #fce4ec; color: #c62828; }
+    .badge-facebook { background: #e3f2fd; color: #1565c0; }
+
     @keyframes spin{to{transform:rotate(360deg);}}
     *{box-sizing:border-box;margin:0;padding:0;}
     body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;font-size:15px;line-height:1.5;}
@@ -394,8 +396,7 @@ function prikaziOglase(oglasi) {
   trenutnoFiltrirani = oglasi;
   var grid = document.getElementById('oglasiGrid');
   var broj = document.getElementById('rezultatiBroj');
-var badgeClass = { olx: 'badge-olx', autobum: 'badge-autobum' };
-  broj.textContent = ukupnoOglasa || oglasi.length;
+var badgeClass = { olx: 'badge-olx', autobum: 'badge-autobum', facebook: 'badge-facebook' };  broj.textContent = ukupnoOglasa || oglasi.length;
   if (oglasi.length === 0) {
     grid.innerHTML = '<div style="padding:40px;text-align:center;color:#aaa;grid-column:1/-1;">Nema rezultata.</div>';
     return;
