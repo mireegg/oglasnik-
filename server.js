@@ -369,19 +369,18 @@ async function fetchBrend(brandId) {
             }
         }
 
-       let sacuvano = 0;
-for (const stranica of sveStrane) {
-    for (const o of stranica) {
-        try {
-            const link = `https://autobum.ba/oglas/${o.id}`;
-            const dbRes = await pool.query(
-                `INSERT INTO live_oglasi (naslov, cijena, slika, link, platforma, kategorija) VALUES ($1,$2,$3,$4,$5,$6) ON CONFLICT (link) DO NOTHING`,
-                [o.title, o.price || 'Na upit', o.image || '', link, 'autobum', kat.naziv]
-            );
-            if (dbRes.rowCount > 0) sacuvano++;
-        } catch(e) {}
-    }
-}
+        let sacuvano = 0;
+        for (const stranica of sveStrane) {
+            for (const o of stranica) {
+                try {
+                    const dbRes = await pool.query(
+                        `INSERT INTO live_oglasi (naslov, cijena, slika, link, platforma, kategorija, brand_id) VALUES ($1,$2,$3,$4,$5,$6,$7) ON CONFLICT (link) DO NOTHING`,
+                        [o.title, o.display_price || 'Na upit', o.image || '', `https://www.olx.ba/artikal/${o.id}`, 'olx', 'vozila', o.brand_id || null]
+                    );
+                    if (dbRes.rowCount > 0) sacuvano++;
+                } catch(e) {}
+            }
+        }
         if (sacuvano > 0) console.log(`Brend ${brandId}: ${sacuvano} novih oglasa`);
     } catch(e) {
         console.log(`Brend ${brandId} greška:`, e.message);
@@ -441,54 +440,48 @@ async function fetchOLXKategorija(categoryId, kategorija) {
 async function autobumGet(page, katId) {
     const filters = encodeURIComponent('[{"field":"category_id","type":"eq","value":' + katId + '}]');
     const fields = encodeURIComponent('[]');
-const url = `https://api.autobum.ba/api/v1/articles?perPage=15&page=${page}&filters=${filters}&fieldsFilters=${fields}`;    const response = await fetch2(url, {
+    const url = `https://api.autobum.ba/api/v1/articles?perPage=15&page=${page}&filters=${filters}&fieldsFilters=${fields}`;
+    const response = await fetch2(url, {
         headers: { 'User-Agent': 'Mozilla/5.0', 'Accept': 'application/json', 'Referer': 'https://autobum.ba/' }
     });
-    const text = await response.text();
-    console.log('Autobum raw:', text.substring(0, 200));
-    return JSON.parse(text);
+    return response.json();
 }
 
 async function fetchAutobum() {
-    const kategorije = [
-    { id: 1, naziv: 'vozila' },
-];
+    try {
+        const prva = await autobumGet(1, 1);
+        const sveStrane = [prva.data || []];
+        let nextUrl = prva.links?.next;
+        let page = 2;
 
-    for (const kat of kategorije) {
-        try {
-            const prva = await autobumGet(1, kat.id);
-            console.log(`Autobum ${kat.naziv} keys:`, Object.keys(prva));
+        while (nextUrl && page <= 200) {
+            try {
+                const r = await autobumGet(page, 1);
+                sveStrane.push(r.data || []);
+                nextUrl = r.links?.next;
+                page++;
+                await new Promise(r => setTimeout(r, 1000));
+            } catch(e) { break; }
+        }
 
-            const lastPage = Math.min(prva.meta?.last_page || 1, 50);
-            console.log(`Autobum: ${kat.naziv} — ${lastPage} stranica`);
+        console.log(`Autobum: vozila — ${page - 1} stranica fetchovano`);
 
-            const sveStrane = [prva.data || []];
-            for (let page = 2; page <= lastPage; page++) {
+        let sacuvano = 0;
+        for (const stranica of sveStrane) {
+            for (const o of stranica) {
                 try {
-                    const r = await autobumGet(page, kat.id);
-                    sveStrane.push(r.data || []);
-                    await new Promise(r => setTimeout(r, 1000));
+                    const link = `https://autobum.ba/oglas/${o.id}`;
+                    const dbRes = await pool.query(
+                        `INSERT INTO live_oglasi (naslov, cijena, slika, link, platforma, kategorija) VALUES ($1,$2,$3,$4,$5,$6) ON CONFLICT (link) DO NOTHING`,
+                        [o.title, o.price || 'Na upit', o.image || '', link, 'autobum', 'vozila']
+                    );
+                    if (dbRes.rowCount > 0) sacuvano++;
                 } catch(e) {}
             }
-
-            let sacuvano = 0;
-            for (const stranica of sveStrane) {
-                for (const o of stranica) {
-                    try {
-                        const link = `https://autobum.ba/oglas/${o.id}`;
-                        const dbRes = await pool.query(
-                            `INSERT INTO live_oglasi (naslov, cijena, slika, link, platforma, kategorija) VALUES ($1,$2,$3,$4,$5,$6) ON CONFLICT (link) DO NOTHING`,
-                            [o.title, o.price || 'Na upit', o.image || '', link, 'autobum', kat.naziv]
-                        );
-                        if (dbRes.rowCount > 0) sacuvano++;
-                    } catch(e) {}
-                }
-            }
-console.log('Autobum meta full:', JSON.stringify(prva.meta));            console.log(`Autobum: ${kat.naziv} — ${sacuvano} novih oglasa`);
-        } catch(e) {
-            console.log(`Autobum greška ${kat.naziv}:`, e.message);
         }
-        await new Promise(r => setTimeout(r, 3000));
+        console.log(`Autobum: vozila — ${sacuvano} novih oglasa`);
+    } catch(e) {
+        console.log('Autobum greška:', e.message);
     }
     console.log('Autobum fetch završen!');
 }
@@ -543,14 +536,8 @@ app.get('/api/run-autobum', async (req, res) => {
 
 app.get('/api/test-autobum', async (req, res) => {
     try {
-        
-const filters = encodeURIComponent('[{"field":"category_id","type":"eq","value":' + katId + '}]');        const fields = encodeURIComponent('[]');
-        const url = `https://api.autobum.ba/api/v1/articles?perPage=3&page=1&filters=${filters}&fieldsFilters=${fields}`;
-        const response = await fetch2(url, {
-            headers: { 'User-Agent': 'Mozilla/5.0', 'Accept': 'application/json', 'Referer': 'https://autobum.ba/' }
-        });
-        const data = await response.json();
-        res.json({ uspjeh: true, keys: Object.keys(data), oglas: data.data?.[0] });
+        const data = await autobumGet(1, 1);
+        res.json({ uspjeh: true, keys: Object.keys(data), count: data.data?.length, oglas: data.data?.[0] });
     } catch(e) {
         res.json({ uspjeh: false, greska: e.message });
     }
