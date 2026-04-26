@@ -235,7 +235,7 @@ app.get('/api/oglas-detalji/:id', async (req, res) => {
     } catch(e) { res.json({ uspjeh: false, poruka: e.message }); }
 });
 
-// ── SLIČNI OGLASI ─────────────────────────────────────────
+// ── SLIČNI OGLASI (stari endpoint, ostavljen) ─────────────
 app.get('/api/slicni-oglasi', async (req, res) => {
     try {
         const { brand_id, model_id, cijena_od, cijena_do, trenutni_id, gorivo, transmisija, kubikaza, boja, km_od, km_do } = req.query;
@@ -440,7 +440,8 @@ async function fetchOLXKategorija(categoryId, kategorija) {
 async function autobumGet(page, katId) {
     const filters = encodeURIComponent('[{"field":"category_id","type":"eq","value":' + katId + '}]');
     const fields = encodeURIComponent('[]');
-const url = `https://api.autobum.ba/api/v1/articles?perPage=15&page=${page}&filters=${filters}&fieldsFilters=${fields}`;    const response = await fetch2(url, {
+    const url = `https://api.autobum.ba/api/v1/articles?perPage=15&page=${page}&filters=${filters}&fieldsFilters=${fields}`;
+    const response = await fetch2(url, {
         headers: { 'User-Agent': 'Mozilla/5.0', 'Accept': 'application/json', 'Referer': 'https://autobum.ba/' }
     });
     return response.json();
@@ -542,26 +543,18 @@ app.get('/api/test-autobum', async (req, res) => {
     }
 });
 
-fetchSveKategorije();
-setInterval(fetchSveKategorije, 2 * 60 * 60 * 1000);
-// ── DODATI U server.js (prije app.listen) ────────────────────
-// Oba endpointa kopiraj i zalijepi
-
 // ── SLIČNI OGLASI SA SVIH PLATFORMI ──────────────────────────
-// Vuče iz: 1) naše baze (autobum + facebook), 2) OLX API
 app.get('/api/slicni-sve-platforme', async (req, res) => {
     try {
         const { platforma, cijena, kategorija, olx_id, brand_id, model_id, gorivo, transmisija, km, kubikaza } = req.query;
         const cijenaNum = parseFloat(cijena) || 0;
         const rezultati = [];
 
-        // ── 1. IZ NAŠE BAZE (autobum + facebook + olx) ──────────
+        // 1. IZ NAŠE BAZE
         if (cijenaNum > 0 && kategorija) {
             const cijenaOd = Math.round(cijenaNum * 0.70);
             const cijenaDo = Math.round(cijenaNum * 1.30);
-
-            // Dohvati iz iste kategorije, slična cijena, različita platforma
-            const katPrefix = kategorija.split('-')[0]; // "vozila" iz "vozila-volkswagen"
+            const katPrefix = kategorija.split('-')[0];
             const dbRes = await pool.query(`
                 SELECT id, naslov, cijena, slika, link, platforma, kategorija
                 FROM live_oglasi
@@ -571,7 +564,6 @@ app.get('/api/slicni-sve-platforme', async (req, res) => {
                 LIMIT 100
             `, [katPrefix + '%', req.query.link || '']);
 
-            // Filtriraj po cijeni (cijena može biti text)
             const parsecijena = (str) => {
                 if (!str) return 0;
                 return parseFloat(str.replace(/\./g,'').replace(',','.').replace(/[^0-9.]/g,'')) || 0;
@@ -590,18 +582,14 @@ app.get('/api/slicni-sve-platforme', async (req, res) => {
                     slika: o.slika || '',
                     link: o.link,
                     platforma: o.platforma,
-                    km: null,
-                    gorivo: null,
-                    transmisija: null,
-                    godiste: null,
-                    kw: null,
-                    boja: null,
+                    km: null, gorivo: null, transmisija: null,
+                    godiste: null, kw: null, boja: null,
                     izvor: 'baza'
                 });
             });
         }
 
-        // ── 2. OLX API (ako je vozilo i ima brand_id) ────────────
+        // 2. OLX API (ako je vozilo i ima brand_id)
         if (brand_id && cijenaNum > 0) {
             try {
                 const cijenaOd = Math.round(cijenaNum * 0.75);
@@ -617,7 +605,6 @@ app.get('/api/slicni-sve-platforme', async (req, res) => {
 
                 const kandidati = (olxRes.data.data || []).filter(o => String(o.id) !== String(olx_id));
 
-                // Dohvati detalje za prvih 8 (da dobijemo km, gorivo, transmisija...)
                 const detaljPromises = kandidati.slice(0, 8).map(async (o) => {
                     try {
                         const det = await axios.get(`https://olx.ba/api/listings/${o.id}`, {
@@ -627,7 +614,6 @@ app.get('/api/slicni-sve-platforme', async (req, res) => {
                         const attrs = {};
                         (det.data.attributes || []).forEach(a => { attrs[a.attr_code] = a.value; });
 
-                        // Filtriraj po gorivu i transmisiji ako su specificirani
                         if (gorivo && attrs['gorivo'] && attrs['gorivo'].toLowerCase() !== gorivo.toLowerCase()) return null;
                         if (transmisija && attrs['transmisija'] && attrs['transmisija'].toLowerCase() !== transmisija.toLowerCase()) return null;
 
@@ -659,7 +645,7 @@ app.get('/api/slicni-sve-platforme', async (req, res) => {
             }
         }
 
-        // ── DEDUPLIKACIJA + SORT po relevantnosti ─────────────────
+        // DEDUPLIKACIJA + SORT
         const vidjenoLink = new Set();
         const jedinstveni = rezultati.filter(r => {
             if (vidjenoLink.has(r.link)) return false;
@@ -667,7 +653,6 @@ app.get('/api/slicni-sve-platforme', async (req, res) => {
             return true;
         });
 
-        // Sortiraj: OLX API oglasi sa detaljima idu prvi (imaju km, gorivo...)
         jedinstveni.sort((a, b) => {
             var aScore = (a.km ? 2 : 0) + (a.gorivo ? 1 : 0) + (a.izvor === 'olx-api' ? 1 : 0);
             var bScore = (b.km ? 2 : 0) + (b.gorivo ? 1 : 0) + (b.izvor === 'olx-api' ? 1 : 0);
@@ -682,13 +667,13 @@ app.get('/api/slicni-sve-platforme', async (req, res) => {
     }
 });
 
-
 // ── AI POREĐENJE OGLASA ───────────────────────────────────────
 app.post('/api/ai-poredi', async (req, res) => {
     const { trenutni, slicni } = req.body;
     const d = trenutni.detalji || {};
+    const oglasCijenaNum = parseFloat((trenutni.cijena || '').replace(/\./g,'').replace(',','.').replace(/[^0-9.]/g,'')) || 0;
 
-    const prompt = `Ti si iskusan savjetnik za kupovinu vozila u Bosni i Hercegovini. Kupac gleda jedan oglas i porediš ga sa sličnim oglasima na tržištu.
+    const prompt = `Ti si iskusan i direktan savjetnik za kupovinu vozila u Bosni i Hercegovini. Tvoj zadatak je da pomogneš kupcu da donese PRAVU odluku na osnovu konkretnih podataka.
 
 OGLAS KOJI KUPAC GLEDA:
 - Naziv: ${trenutni.naslov}
@@ -697,32 +682,36 @@ OGLAS KOJI KUPAC GLEDA:
 - Transmisija: ${d.transmisija || 'nije navedena'}
 - Kilometraža: ${d.km ? Number(d.km).toLocaleString() + ' km' : 'nije navedena'}
 - Godište: ${d.godiste || 'nije navedeno'}
-- Snaga: ${d.kw ? d.kw + ' kW' : 'nije navedena'}
+- Snaga: ${d.kw ? d.kw + ' kW (' + Math.round(d.kw * 1.36) + ' ks)' : 'nije navedena'}
+- Kubikaža: ${d.kubikaza ? d.kubikaza + 'L' : 'nije navedena'}
+- Boja: ${d.boja || 'nije navedena'}
 - Platforma: ${trenutni.platforma || 'OLX'}
 
 SLIČNI OGLASI NA TRŽIŠTU (${slicni.length} pronađenih):
 ${slicni.map((s, i) => {
+    const cijenaS = parseFloat((s.cijena || '').replace(/\./g,'').replace(',','.').replace(/[^0-9.]/g,'')) || 0;
     const dijelovi = [
-        `${i+1}. ${s.naslov}`,
-        `   Cijena: ${s.cijena}`,
-        s.km ? `   Kilometraža: ${Number(s.km).toLocaleString()} km` : '',
-        s.gorivo ? `   Gorivo: ${s.gorivo}` : '',
-        s.transmisija ? `   Transmisija: ${s.transmisija}` : '',
-        s.godiste ? `   Godište: ${s.godiste}` : '',
-        `   Platforma: ${s.platforma || 'OLX'}`
+        `Oglas #${i+1}: ${s.naslov}`,
+        `  → Cijena: ${s.cijena}${cijenaS && oglasCijenaNum ? ' (' + (cijenaS < oglasCijenaNum ? '-' + Math.round((oglasCijenaNum - cijenaS) / oglasCijenaNum * 100) + '% jeftiniji' : '+' + Math.round((cijenaS - oglasCijenaNum) / oglasCijenaNum * 100) + '% skuplji') + ')' : ''}`,
+        s.km ? `  → Kilometraža: ${Number(s.km).toLocaleString()} km${d.km ? ' (' + (parseInt(s.km) < parseInt(d.km) ? 'manje km' : 'više km') + ')' : ''}` : '',
+        s.gorivo ? `  → Gorivo: ${s.gorivo}` : '',
+        s.transmisija ? `  → Transmisija: ${s.transmisija}` : '',
+        s.godiste ? `  → Godište: ${s.godiste}` : '',
+        s.kw ? `  → Snaga: ${s.kw} kW` : '',
+        `  → Platforma: ${s.platforma || 'OLX'}`
     ].filter(Boolean);
     return dijelovi.join('\n');
 }).join('\n\n')}
 
-Napravi analizu u ovom formatu:
+Napravi DETALJNU analizu u TAČNO ovom formatu. Budi konkretan, koristi stvarne brojeve iz oglasa:
 
-ZAKLJUČAK: [2-3 rečenice: je li ovaj oglas dobra kupovina u odnosu na alternativu? Budi konkretan sa brojevima.]
+ZAKLJUČAK: [3-4 rečenice. Navedi tačne cifre — koliko je ovaj oglas jeftiniji/skuplji od prosjeka, koje je godište, koliko km ima u odnosu na alternativu.]
 
-PREPORUKA: [Direktna preporuka — kupi ovaj oglas / pogledaj oglas #X / pregovaraj o cijeni]
+PREPORUKA: [Jedna jasna, direktna preporuka. Npr: "Kupi oglas #4 (VW Touareg, 31.900 KM) — isti motor, 60.000 km manje, 10.000 KM jeftiniji." ili "Pregovaraj o cijeni — tržišna vrijednost je oko X KM." ili "Dobar deal, kupi odmah."]
 
-UPOZORENJE: [Ako postoji nešto čega se kupac treba paziti — visoka kilometraža, cijena iznad tržišne, itd. Ako nema upozorenja, preskoči ovaj dio.]
+UPOZORENJE: [Samo ako postoji KONKRETAN razlog za oprez — visoka kilometraža, cijena iznad tržišne za više od 15%, starije godište za tu cijenu. Ako nema konkretnog upozorenja, preskoči ovaj dio potpuno.]
 
-Odgovaraj na bosanskom. Budi direktan i konkretan. Ne budi generičan.`;
+Odgovaraj na bosanskom. Budi direktan kao prijatelj koji poznaje tržište — bez diplomatisanja.`;
 
     try {
         const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
@@ -734,8 +723,8 @@ Odgovaraj na bosanskom. Budi direktan i konkretan. Ne budi generičan.`;
             body: JSON.stringify({
                 model: 'llama-3.3-70b-versatile',
                 messages: [{ role: 'user', content: prompt }],
-                max_tokens: 500,
-                temperature: 0.7
+                max_tokens: 600,
+                temperature: 0.5
             })
         });
         const data = await response.json();
@@ -745,4 +734,8 @@ Odgovaraj na bosanskom. Budi direktan i konkretan. Ne budi generičan.`;
         res.json({ uspjeh: false, analiza: 'AI analiza nije dostupna.' });
     }
 });
+
+fetchSveKategorije();
+setInterval(fetchSveKategorije, 2 * 60 * 60 * 1000);
+
 app.listen(PORT, () => console.log(`Server radi na portu ${PORT}`));
