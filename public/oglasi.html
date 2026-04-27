@@ -286,7 +286,7 @@ function mapOglas(o){
 function updateNavbar(){
   var k=JSON.parse(localStorage.getItem('korisnik')||'null');
   var navRight=document.getElementById('navRight');
-  if(k){navRight.innerHTML='<span style="font-size:14px;color:var(--text-muted);margin-right:8px;">Zdravo, <strong>'+k.ime.split(' ')[0]+'</strong></span><button class="nav-btn-ghost" onclick="window.location.href='/dashboard.html'">Dashboard</button><button class="nav-btn" onclick="odjava()">Odjava</button>';}
+  if(k){navRight.innerHTML='<span style="font-size:14px;color:var(--text-muted);margin-right:8px;">Zdravo, <strong>'+k.ime.split(' ')[0]+'</strong></span><button class="nav-btn-ghost" onclick="window.location.href=\'/dashboard.html\'">Dashboard</button><button class="nav-btn" onclick="odjava()">Odjava</button>';}
 }
 function odjava(){localStorage.removeItem('korisnik');window.location.href='/login.html';}
 
@@ -303,7 +303,7 @@ function prikaziOglase(oglasi){
     var oglasStranica='/oglas.html?data='+metaData;
     var platformaNaziv=o.platforma==='facebook'?'FACEBOOK':o.platforma==='autobum'?'AUTOBUM':'OLX';
     return '<a href="'+oglasStranica+'" target="_blank" class="card">'+
-      '<div class="card-img">'+(o.slika?'<img src="'+o.slika+'" alt="" loading="lazy" onerror="this.style.display='none'">':'<svg width="56" height="56" viewBox="0 0 56 56" fill="none"><ellipse cx="28" cy="36" rx="18" ry="10" stroke="#aaa" stroke-width="2"/><path d="M10 36 Q10 20 28 17 Q46 20 46 36" stroke="#aaa" stroke-width="2" fill="none"/></svg>')+'</div>'+
+      '<div class="card-img">'+(o.slika?'<img src="'+o.slika+'" alt="" loading="lazy" onerror="this.style.display=\'none\'">':'<svg width="56" height="56" viewBox="0 0 56 56" fill="none"><ellipse cx="28" cy="36" rx="18" ry="10" stroke="#aaa" stroke-width="2"/><path d="M10 36 Q10 20 28 17 Q46 20 46 36" stroke="#aaa" stroke-width="2" fill="none"/></svg>')+'</div>'+
       '<div class="card-body">'+
       '<span class="source-badge '+(badgeClass[o.platforma]||'badge-olx')+'">'+platformaNaziv+'</span>'+
       '<div class="card-title">'+o.naslov+'</div>'+
