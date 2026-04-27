@@ -200,6 +200,94 @@ app.get('/api/oglas-detalji/:id', async (req, res) => {
     } catch(e) { res.json({ uspjeh: false, poruka: e.message }); }
 });
 
+// ── LIVE OGLASI ───────────────────────────────────────────
+app.post('/api/sacuvaj-oglase', async (req, res) => {
+    const { oglasi } = req.body;
+    if (!oglasi || !oglasi.length) return res.json({ uspjeh: false });
+    try {
+        for (const o of oglasi) {
+            await pool.query(
+                `INSERT INTO live_oglasi (naslov, cijena, slika, link, platforma, kategorija) VALUES ($1,$2,$3,$4,$5,$6) ON CONFLICT (link) DO UPDATE SET kategorija = $6`,
+                [o.naslov, o.cijena, o.slika, o.link, o.platforma, o.kategorija || null]
+            );
+        }
+        res.json({ uspjeh: true, sacuvano: oglasi.length });
+    } catch(e) { res.json({ uspjeh: false, poruka: e.message }); }
+});
+
+app.get('/api/live-oglasi', async (req, res) => {
+    try {
+        const { q, kategorija } = req.query;
+        const offset = parseInt(req.query.offset) || 0;
+        const limit = parseInt(req.query.limit) || 48;
+        let uvjeti = [], params = [], i = 1;
+        if (q) { uvjeti.push(`naslov ILIKE $${i++}`); params.push(`%${q}%`); }
+        if (kategorija) {
+            const kats = kategorija.split(',').map(k => k.trim());
+            uvjeti.push(`kategorija IN (${kats.map(() => `$${i++}`).join(',')})`);
+            params.push(...kats);
+        }
+        const where = uvjeti.length ? 'WHERE ' + uvjeti.join(' AND ') : '';
+        const countResult = await pool.query(`SELECT COUNT(*) FROM live_oglasi ${where}`, params);
+        const ukupno = parseInt(countResult.rows[0].count);
+        params.push(limit, offset);
+        const result = await pool.query(
+            `SELECT * FROM live_oglasi ${where} ORDER BY datum DESC LIMIT $${i++} OFFSET $${i++}`,
+            params
+        );
+        res.json({ uspjeh: true, oglasi: result.rows, ukupno, offset, limit });
+    } catch(e) { res.json({ uspjeh: false, oglasi: [] }); }
+});
+
+app.get('/api/kategorije', async (req, res) => {
+    try {
+        const result = await pool.query(`SELECT kategorija, COUNT(*) as broj FROM live_oglasi WHERE kategorija IS NOT NULL GROUP BY kategorija ORDER BY broj DESC`);
+        res.json({ uspjeh: true, kategorije: result.rows });
+    } catch(e) { res.json({ uspjeh: false, kategorije: [] }); }
+});
+
+// ── AI ANALIZA JEDNOG OGLASA ──────────────────────────────
+app.post('/api/analiza-jednog-oglasa', async (req, res) => {
+    const { oglas, slicni } = req.body;
+    const d = oglas.detalji || {};
+    const katTip = d.kategorija_tip || 'ostalo';
+
+    let prompt = '';
+    if (katTip === 'vozila') {
+        prompt = `Ti si iskusan savjetnik za kupovinu vozila u BiH.
+Oglas: ${oglas.naslov} — ${oglas.cijenaStr}
+Godište: ${d.godiste||'—'} | Gorivo: ${d.gorivo||'—'} | KM: ${d.km ? Number(d.km).toLocaleString()+' km' : '—'}
+Kubikaža: ${d.kubikaza||'—'} | Snaga: ${d.kw ? d.kw+' kW' : '—'} | Transmisija: ${d.transmisija||'—'} | Boja: ${d.boja||'—'}
+Daj analizu: OCJENA: [ODLIČNO/FER/PREVISOKO/IZBJEGAVAJ] CIJENA: [komentar] SAVJET: [preporuka] SCORE: [0-100]`;
+    } else if (katTip === 'mobiteli') {
+        prompt = `Ti si iskusan savjetnik za kupovinu mobitela u BiH.
+Oglas: ${oglas.naslov} — ${oglas.cijenaStr}
+OS: ${d.os||'—'} | Memorija: ${d.interna_memorija||'—'} | RAM: ${d.ram_mob||'—'}
+Daj analizu: OCJENA: [ODLIČNO/FER/PREVISOKO/IZBJEGAVAJ] CIJENA: [je li fer za ovaj model] SAVJET: [preporuka i šta fizički provjeriti] SCORE: [0-100]`;
+    } else if (katTip === 'racunari') {
+        prompt = `Ti si iskusan savjetnik za kupovinu računara u BiH.
+Oglas: ${oglas.naslov} — ${oglas.cijenaStr}
+CPU: ${d.procesor||'—'} | RAM: ${d.ram_pc||'—'} | SSD: ${d.ssd ? d.ssd+'GB' : '—'} | GPU: ${d.graficka||'—'}
+Daj analizu: OCJENA: [ODLIČNO/FER/PREVISOKO/IZBJEGAVAJ] CIJENA: [vrijednost komponenti] SAVJET: [preporuka i šta provjeriti] SCORE: [0-100]`;
+    } else if (katTip === 'nekretnine') {
+        const m2 = d.kvadrata && parseCijena(oglas.cijenaStr) ? Math.round(parseCijena(oglas.cijenaStr)/parseFloat(d.kvadrata)) : 0;
+        prompt = `Ti si iskusan agent za nekretnine u BiH.
+Oglas: ${oglas.naslov} — ${oglas.cijenaStr} ${m2 ? '('+m2+' KM/m²)' : ''}
+Površina: ${d.kvadrata||'—'}m² | Sobe: ${d.broj_soba||'—'} | Sprat: ${d.sprat||'—'} | Namješteno: ${d.namjesten||'—'}
+Daj analizu: OCJENA: [ODLIČNO/FER/PREVISOKO/IZBJEGAVAJ] CIJENA: [cijena/m² komentar] SAVJET: [preporuka i šta pravno provjeriti] SCORE: [0-100]`;
+    } else {
+        prompt = `Ti si iskusan savjetnik za kupovinu u BiH.
+Oglas: ${oglas.naslov} — ${oglas.cijenaStr}
+Daj analizu: OCJENA: [ODLIČNO/FER/PREVISOKO/IZBJEGAVAJ] CIJENA: [komentar] SAVJET: [preporuka] SCORE: [0-100]`;
+    }
+
+    try {
+        const tekst = await groqAI(prompt, 350);
+        const scoreMatch = (tekst||'').match(/SCORE:\s*(\d+)/);
+        res.json({ uspjeh: true, analiza: tekst || 'Analiza nije dostupna.', score: scoreMatch ? parseInt(scoreMatch[1]) : 70 });
+    } catch(e) { res.json({ uspjeh: false, analiza: 'Analiza nije dostupna.', score: 70 }); }
+});
+
 // ── STARI ENDPOINT (kompatibilnost) ───────────────────────
 app.get('/api/slicni-oglasi', async (req, res) => res.json({ uspjeh: true, oglasi: [] }));
 
