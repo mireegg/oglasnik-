@@ -323,7 +323,6 @@ function buildUrl(offset){
   var url='/api/live-oglasi?limit='+OGLASI_PO_STRANI+'&offset='+(offset||0);
   if(query) url+='&q='+encodeURIComponent(query);
   if(odabraneKat.length>0) url+='&kategorija='+encodeURIComponent(odabraneKat.join(','));
-  // Filtriraj po platformi ako nije označeno sve (0 označenih = prikaži sve)
   if(platforme.length>0) url+='&platforma='+encodeURIComponent(platforme.join(','));
   return url;
 }
