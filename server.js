@@ -715,6 +715,54 @@ Bosanski. Direktno. Kao iskusan agent.`;
     }
 });
 
+
+// ── FIX KATEGORIJE PO BRAND_ID ────────────────────────────
+// Koristi brand_id iz OLX API-ja — precizniji od keyword matchinga
+app.get('/api/fix-kategorije-brand', async (req, res) => {
+    const mapa = {
+        7: 'vozila-audi',
+        11: 'vozila-bmw',
+        20: 'vozila-ford',
+        29: 'vozila-fiat',
+        30: 'vozila-honda',
+        35: 'vozila-hyundai',
+        39: 'vozila-kia',
+        46: 'vozila-mazda',
+        55: 'vozila-mazda',
+        56: 'vozila-mercedes',
+        64: 'vozila-mitsubishi',
+        65: 'vozila-peugeot',
+        69: 'vozila-porsche',
+        71: 'vozila-renault',
+        77: 'vozila-skoda',
+        89: 'vozila-volkswagen',
+        90: 'vozila-volvo',
+        2: 'vozila-alfaromeo',
+        4: 'vozila-chevrolet',
+        9: 'vozila-citroen',
+        15: 'vozila-dacia',
+        22: 'vozila-jeep',
+        33: 'vozila-landrover',
+        36: 'vozila-mini',
+        41: 'vozila-nissan',
+        47: 'vozila-opel',
+        57: 'vozila-seat',
+        62: 'vozila-subaru',
+        66: 'vozila-suzuki',
+        72: 'vozila-toyota',
+    };
+    let ukupno = 0;
+    for (const [brandId, kat] of Object.entries(mapa)) {
+        const r = await pool.query(
+            `UPDATE live_oglasi SET kategorija = $1 WHERE platforma = 'olx' AND kategorija = 'vozila' AND brand_id = $2`,
+            [kat, parseInt(brandId)]
+        );
+        ukupno += r.rowCount;
+        if (r.rowCount > 0) console.log(`brand_id ${brandId} -> ${kat}: ${r.rowCount}`);
+    }
+    res.json({ uspjeh: true, azurirano: ukupno });
+});
+
 // ── FIX KATEGORIJE ────────────────────────────────────────
 app.get('/api/fix-kategorije', async (req, res) => {
     const brendovi = [
