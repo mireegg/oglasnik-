@@ -227,6 +227,12 @@ app.get('/api/live-oglasi', async (req, res) => {
             uvjeti.push(`kategorija IN (${kats.map(() => `$${i++}`).join(',')})`);
             params.push(...kats);
         }
+        const platforma = req.query.platforma;
+        if (platforma) {
+            const plats = platforma.split(',').map(p => p.trim());
+            uvjeti.push(`platforma IN (${plats.map(() => `$${i++}`).join(',')})`);
+            params.push(...plats);
+        }
         const where = uvjeti.length ? 'WHERE ' + uvjeti.join(' AND ') : '';
         const countResult = await pool.query(`SELECT COUNT(*) FROM live_oglasi ${where}`, params);
         const ukupno = parseInt(countResult.rows[0].count);
