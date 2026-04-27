@@ -872,12 +872,62 @@ async function fetchAutobum() {
     console.log('Autobum fetch završen!');
 }
 
+// ── OLX FETCH SVIH VOZILA (bez filtera po brendu) ─────────
+async function fetchSvaVozila() {
+    console.log('OLX vozila: počinjem fetch svih 49k+ oglasa...');
+    try {
+        const prvaStrana = await axios.get('https://olx.ba/api/search?category_id=18&per_page=40&page=1', {
+            headers: { 'User-Agent': 'Mozilla/5.0', 'Accept': 'application/json', 'Referer': 'https://www.olx.ba/' },
+            timeout: 15000
+        });
+        const lastPage = Math.min(prvaStrana.data.meta?.last_page || 1, 500);
+        console.log('OLX vozila: ukupno ' + (prvaStrana.data.meta?.total||0) + ' oglasa, ' + lastPage + ' stranica');
+
+        let sacuvano = 0;
+        for (const o of (prvaStrana.data.data || [])) {
+            try {
+                const dbRes = await pool.query(
+                    'INSERT INTO live_oglasi (naslov, cijena, slika, link, platforma, kategorija, brand_id) VALUES ($1,$2,$3,$4,$5,$6,$7) ON CONFLICT (link) DO NOTHING',
+                    [o.title, o.display_price || 'Na upit', o.image || '', 'https://www.olx.ba/artikal/' + o.id, 'olx', 'vozila', o.brand_id || null]
+                );
+                if (dbRes.rowCount > 0) sacuvano++;
+            } catch(e) {}
+        }
+
+        for (let stranica = 2; stranica <= lastPage; stranica++) {
+            try {
+                const response = await axios.get('https://olx.ba/api/search?category_id=18&per_page=40&page=' + stranica, {
+                    headers: { 'User-Agent': 'Mozilla/5.0', 'Accept': 'application/json', 'Referer': 'https://www.olx.ba/' },
+                    timeout: 15000
+                });
+                const oglasi = response.data.data || [];
+                if (!oglasi.length) break;
+                for (const o of oglasi) {
+                    try {
+                        const dbRes = await pool.query(
+                            'INSERT INTO live_oglasi (naslov, cijena, slika, link, platforma, kategorija, brand_id) VALUES ($1,$2,$3,$4,$5,$6,$7) ON CONFLICT (link) DO NOTHING',
+                            [o.title, o.display_price || 'Na upit', o.image || '', 'https://www.olx.ba/artikal/' + o.id, 'olx', 'vozila', o.brand_id || null]
+                        );
+                        if (dbRes.rowCount > 0) sacuvano++;
+                    } catch(e) {}
+                }
+                if (stranica % 50 === 0) console.log('OLX vozila: stranica ' + stranica + '/' + lastPage + ', novo: ' + sacuvano);
+                await new Promise(r => setTimeout(r, 1500));
+            } catch(e) {
+                if (e.response?.status === 429) {
+                    console.log('OLX rate limit, čekam 30s...');
+                    await new Promise(r => setTimeout(r, 30000));
+                    stranica--;
+                }
+            }
+        }
+        console.log('OLX vozila ZAVRŠENO. Ukupno novih: ' + sacuvano);
+    } catch(e) { console.log('OLX vozila greška:', e.message); }
+}
+
 async function fetchSveKategorije() {
     console.log('Pokrećem fetch...');
-    for (const brandId of OLX_BRENDOVI) {
-        await fetchBrend(brandId);
-        await new Promise(r => setTimeout(r, 1000));
-    }
+    await fetchSvaVozila();
     const ostale = [
         { id: '21', naziv: 'motocikli' }, { id: '22', naziv: 'bicikli' },
         { id: '426', naziv: 'nautika' }, { id: '2457', naziv: 'atv-quad' },
