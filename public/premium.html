@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="bs">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Oglix Premium — Za pametne kupce</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root{--orange:#e65c00;--orange-light:#ff7a1f;--orange-dim:#fff0e6;--bg:#f7f5f2;--dark:#0a0a0a;--surface:#fff;--border:rgba(0,0,0,0.07);--text:#1a1a1a;--text-muted:#777;--text-faint:#aaa;--r:12px;--r-lg:20px;--r-pill:100px;--green:#16a34a;--green-bg:#dcfce7;}
+    *{box-sizing:border-box;margin:0;padding:0;}
+    html{scroll-behavior:smooth;}
+    body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);font-size:15px;line-height:1.6;}
+    a{text-decoration:none;color:inherit;}
+
+    nav{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(10,10,10,0.9);backdrop-filter:blur(16px);border-bottom:1px solid rgba(255,255,255,0.06);padding:0 48px;height:64px;display:flex;align-items:center;justify-content:space-between;}
+    .logo{font-family:'Syne',sans-serif;font-size:22px;font-weight:800;color:white;}
+    .logo span{color:var(--orange);}
+    .logo-tag{font-size:11px;font-weight:700;color:var(--orange);background:rgba(230,92,0,0.12);border:1px solid rgba(230,92,0,0.25);padding:3px 10px;border-radius:var(--r-pill);margin-left:8px;letter-spacing:0.06em;text-transform:uppercase;}
+    .nav-right{display:flex;gap:10px;}
+    .btn{border:none;border-radius:var(--r-pill);padding:10px 22px;font-size:14px;font-weight:600;font-family:'DM Sans',sans-serif;cursor:pointer;transition:all .2s;}
+    .btn-orange{background:var(--orange);color:white;}
+    .btn-orange:hover{background:var(--orange-light);transform:translateY(-1px);}
+    .btn-outline{background:transparent;color:rgba(255,255,255,0.6);border:1px solid rgba(255,255,255,0.15);}
+    .btn-outline:hover{color:white;border-color:rgba(255,255,255,0.4);}
+
+    /* HERO */
+    .hero{background:var(--dark);padding:140px 24px 100px;text-align:center;position:relative;overflow:hidden;}
+    .hero-glow{position:absolute;top:-10%;left:50%;transform:translateX(-50%);width:700px;height:500px;background:radial-gradient(ellipse,rgba(230,92,0,0.18) 0%,transparent 65%);pointer-events:none;}
+    .hero-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,0.025) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.025) 1px,transparent 1px);background-size:52px 52px;pointer-events:none;}
+    .hero-content{position:relative;max-width:740px;margin:0 auto;}
+    .hero-badge{display:inline-flex;align-items:center;gap:8px;font-size:12px;font-weight:600;color:var(--orange);background:rgba(230,92,0,0.1);border:1px solid rgba(230,92,0,0.2);padding:6px 16px;border-radius:var(--r-pill);margin-bottom:24px;letter-spacing:0.08em;text-transform:uppercase;}
+    .pulse{width:6px;height:6px;border-radius:50%;background:var(--orange);animation:pulse 2s infinite;}
+    @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+    .hero h1{font-family:'Syne',sans-serif;font-size:62px;font-weight:800;line-height:1.05;letter-spacing:-2.5px;color:white;margin-bottom:18px;}
+    .hero h1 em{font-style:normal;color:var(--orange);}
+    .hero p{font-size:17px;color:rgba(255,255,255,0.45);max-width:500px;margin:0 auto 40px;line-height:1.7;font-weight:300;}
+    .hero-btns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;}
+    .btn-hero{padding:16px 32px;font-size:16px;border-radius:var(--r-lg);}
+
+    /* COMPARE PLANS */
+    .plans-section{padding:80px 24px;background:var(--bg);}
+    .plans-inner{max-width:900px;margin:0 auto;}
+    .section-kicker{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:var(--orange);margin-bottom:10px;text-align:center;}
+    .section-title{font-family:'Syne',sans-serif;font-size:40px;font-weight:800;letter-spacing:-1.5px;text-align:center;margin-bottom:40px;}
+
+    .plans-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:48px;}
+    .plan{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:28px;position:relative;}
+    .plan.highlight{border-color:var(--orange);background:white;box-shadow:0 0 0 4px rgba(230,92,0,0.08);}
+    .plan-badge{position:absolute;top:-12px;left:50%;transform:translateX(-50%);background:var(--orange);color:white;font-size:11px;font-weight:700;padding:4px 14px;border-radius:var(--r-pill);white-space:nowrap;letter-spacing:0.05em;text-transform:uppercase;}
+    .plan-tip{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-faint);margin-bottom:12px;}
+    .plan-cijena{font-family:'Syne',sans-serif;font-size:44px;font-weight:800;line-height:1;margin-bottom:4px;}
+    .plan-cijena small{font-size:16px;font-weight:400;color:var(--text-muted);}
+    .plan-opis{font-size:13px;color:var(--text-muted);margin-bottom:20px;padding-bottom:20px;border-bottom:1px solid var(--border);line-height:1.6;}
+    .plan-features{list-style:none;margin-bottom:24px;}
+    .plan-features li{font-size:13px;color:var(--text-muted);padding:5px 0;display:flex;align-items:flex-start;gap:8px;line-height:1.5;}
+    .plan-features li .check{color:var(--orange);font-weight:700;flex-shrink:0;margin-top:1px;}
+    .plan-features li .x{color:var(--text-faint);flex-shrink:0;margin-top:1px;}
+    .plan-btn{width:100%;padding:13px;border-radius:var(--r);font-size:14px;font-weight:600;font-family:'DM Sans',sans-serif;cursor:pointer;border:none;transition:all .2s;}
+    .plan-btn-orange{background:var(--orange);color:white;}
+    .plan-btn-orange:hover{background:var(--orange-light);}
+    .plan-btn-outline{background:transparent;border:1px solid var(--border);color:var(--text-muted);}
+    .plan-btn-outline:hover{border-color:var(--orange);color:var(--orange);}
+
+    /* FEATURES DETALJI */
+    .features-section{background:var(--dark);padding:80px 24px;}
+    .features-inner{max-width:1000px;margin:0 auto;}
+    .features-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:48px;}
+    .feat{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:var(--r-lg);padding:28px;transition:border-color .2s;}
+    .feat:hover{border-color:rgba(230,92,0,0.3);}
+    .feat-icon{font-size:28px;margin-bottom:14px;}
+    .feat-title{font-family:'Syne',sans-serif;font-size:16px;font-weight:700;color:white;margin-bottom:8px;}
+    .feat-text{font-size:13px;color:rgba(255,255,255,0.4);line-height:1.7;}
+    .feat-tag{display:inline-block;font-size:11px;font-weight:600;color:var(--orange);background:rgba(230,92,0,0.1);border:1px solid rgba(230,92,0,0.2);padding:3px 10px;border-radius:var(--r-pill);margin-top:12px;}
+
+    /* FAQ */
+    .faq-section{padding:80px 24px;}
+    .faq-inner{max-width:680px;margin:0 auto;}
+    .faq-item{border-bottom:1px solid var(--border);padding:18px 0;}
+    .faq-q{font-family:'Syne',sans-serif;font-size:15px;font-weight:700;cursor:pointer;display:flex;justify-content:space-between;align-items:center;}
+    .faq-q span{color:var(--orange);font-size:20px;transition:transform .2s;}
+    .faq-a{font-size:14px;color:var(--text-muted);line-height:1.7;margin-top:12px;display:none;}
+    .faq-a.open{display:block;}
+
+    /* CTA */
+    .cta{background:var(--orange);padding:80px 24px;text-align:center;}
+    .cta h2{font-family:'Syne',sans-serif;font-size:44px;font-weight:800;color:white;letter-spacing:-1.5px;margin-bottom:12px;}
+    .cta p{font-size:16px;color:rgba(255,255,255,0.75);margin-bottom:32px;}
+    .btn-white{background:white;color:var(--orange);border:none;border-radius:var(--r-pill);padding:16px 36px;font-size:16px;font-weight:700;font-family:'DM Sans',sans-serif;cursor:pointer;}
+    .btn-white:hover{background:#f5f5f5;transform:translateY(-1px);}
+
+    footer{background:var(--dark);padding:40px 24px;text-align:center;color:rgba(255,255,255,0.3);font-size:13px;}
+    .footer-logo{font-family:'Syne',sans-serif;font-size:20px;font-weight:800;color:white;margin-bottom:8px;}
+    .footer-logo span{color:var(--orange);}
+
+    @media(max-width:768px){
+      nav{padding:0 16px;}
+      .hero h1{font-size:38px;letter-spacing:-1px;}
+      .plans-grid{grid-template-columns:1fr;}
+      .features-grid{grid-template-columns:1fr;}
+      .section-title{font-size:28px;}
+      .cta h2{font-size:30px;}
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <div style="display:flex;align-items:center;">
+    <a href="/oglasi.html" class="logo">oglix<span>.ba</span></a>
+    <span class="logo-tag">Premium</span>
+  </div>
+  <div class="nav-right">
+    <a href="/oglasi.html" style="font-size:14px;color:rgba(255,255,255,0.4);margin-right:8px;">← Nazad</a>
+    <button class="btn btn-outline" onclick="window.location.href='/login.html'">Prijava</button>
+    <button class="btn btn-orange" onclick="document.getElementById('planovi').scrollIntoView({behavior:'smooth'})">Pogledaj planove</button>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-glow"></div>
+  <div class="hero-grid"></div>
+  <div class="hero-content">
+    <div class="hero-badge"><span class="pulse"></span>Za pametne kupce</div>
+    <h1>Kupi pametnije.<br><em>Plati manje.</em></h1>
+    <p>Oglix Premium ti daje sve alate da nikad više ne platiš previše — ni za auto, ni za stan, ni za mobitel.</p>
+    <div class="hero-btns">
+      <button class="btn btn-orange btn-hero" onclick="document.getElementById('planovi').scrollIntoView({behavior:'smooth'})">Pogledaj planove →</button>
+      <button class="btn btn-outline btn-hero" onclick="window.location.href='/oglasi.html'">Pretraži besplatno</button>
+    </div>
+  </div>
+</section>
+
+<!-- PLANOVI -->
+<section class="plans-section" id="planovi">
+  <div class="plans-inner">
+    <div class="section-kicker">Odaberi plan</div>
+    <div class="section-title">Transparentne cijene</div>
+
+    <div class="plans-grid">
+
+      <!-- FREE -->
+      <div class="plan">
+        <div class="plan-tip">Besplatno</div>
+        <div class="plan-cijena">0 <small>KM/mj</small></div>
+        <div class="plan-opis">Za sve koji žele pretražiti oglase i vidjeti šta nudi tržište BiH.</div>
+        <ul class="plan-features">
+          <li><span class="check">✓</span> Pretraga svih oglasa (OLX, Autobum, FB)</li>
+          <li><span class="check">✓</span> AI analiza cijena</li>
+          <li><span class="check">✓</span> Slični oglasi za poređenje</li>
+          <li><span class="check">✓</span> 3 aktivna alerta</li>
+          <li><span class="check">✓</span> 5 praćenih oglasa</li>
+          <li><span class="x">✗</span> <span style="color:var(--text-faint);">Historija cijena</span></li>
+          <li><span class="x">✗</span> <span style="color:var(--text-faint);">Neograničeni alerti</span></li>
+          <li><span class="x">✗</span> <span style="color:var(--text-faint);">Tržišne statistike</span></li>
+          <li><span class="x">✗</span> <span style="color:var(--text-faint);">Kalkulator vrijednosti</span></li>
+        </ul>
+        <button class="plan-btn plan-btn-outline" onclick="window.location.href='/login.html'">Registruj se besplatno</button>
+      </div>
+
+      <!-- PREMIUM -->
+      <div class="plan highlight">
+        <div class="plan-badge">Najpopularnije</div>
+        <div class="plan-tip">Premium</div>
+        <div class="plan-cijena" style="color:var(--orange);">9 <small>KM/mj</small></div>
+        <div class="plan-opis">Za ozbiljne kupce koji žele sigurnost da ne plaćaju previše. Isplati se već na prvoj kupovini.</div>
+        <ul class="plan-features">
+          <li><span class="check">✓</span> Sve iz besplatnog plana</li>
+          <li><span class="check">✓</span> <strong>Neograničeni alerti</strong></li>
+          <li><span class="check">✓</span> <strong>Neograničeno praćenje cijena</strong></li>
+          <li><span class="check">✓</span> <strong>Historija cijena oglasa</strong></li>
+          <li><span class="check">✓</span> <strong>Tržišne statistike</strong></li>
+          <li><span class="check">✓</span> <strong>Kalkulator tržišne vrijednosti</strong></li>
+          <li><span class="check">✓</span> Email digest svakog ponedjeljka</li>
+          <li><span class="check">✓</span> Prioritetna podrška</li>
+        </ul>
+        <button class="plan-btn plan-btn-orange" onclick="prijaviSe('Premium — 9 KM/mj')">Počni 7 dana besplatno →</button>
+      </div>
+
+      <!-- GODIŠNJI -->
+      <div class="plan">
+        <div class="plan-tip">Premium Godišnji</div>
+        <div class="plan-cijena">79 <small>KM/god</small></div>
+        <div class="plan-opis">Isti Premium plan, ali platiš jednom godišnje i uštediš 2 mjeseca — kao da koristiš besplatno od oktobra.</div>
+        <ul class="plan-features">
+          <li><span class="check">✓</span> Sve iz Premium plana</li>
+          <li><span class="check">✓</span> Uštedite 29 KM godišnje</li>
+          <li><span class="check">✓</span> Jednokratno plaćanje</li>
+          <li><span class="check">✓</span> Bez mjesečnih obaveza</li>
+          <li><span class="check">✓</span> Prioritetni pristup novim funkcijama</li>
+        </ul>
+        <button class="plan-btn plan-btn-outline" onclick="prijaviSe('Premium Godišnji — 79 KM/god')">Odaberi godišnji plan</button>
+      </div>
+
+    </div>
+
+    <!-- GUARANTEE -->
+    <div style="background:var(--green-bg);border:1px solid rgba(22,163,74,0.2);border-radius:var(--r-lg);padding:20px 24px;display:flex;align-items:center;gap:16px;">
+      <div style="font-size:32px;">🛡️</div>
+      <div>
+        <div style="font-weight:700;color:var(--green);margin-bottom:4px;">Garancija povrata novca — 30 dana</div>
+        <div style="font-size:14px;color:var(--text-muted);">Ako nisi zadovoljan u prvih 30 dana, vraćamo ti novac bez pitanja. Nema rizika.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section class="features-section">
+  <div class="features-inner">
+    <div class="section-kicker" style="color:var(--orange);text-align:center;">Šta dobiješ</div>
+    <div class="section-title" style="color:white;text-align:center;">Alati koji ti štede novac</div>
+    <div class="features-grid">
+      <div class="feat">
+        <div class="feat-icon">🔔</div>
+        <div class="feat-title">Neograničeni alerti</div>
+        <div class="feat-text">Postavi alertе za sve što tražiš — Golf 7, iPhone, stan u Sarajevu. Email čim se pojavi. Nikad više ne propusti dobru ponudu.</div>
+        <span class="feat-tag">Instant email</span>
+      </div>
+      <div class="feat">
+        <div class="feat-icon">📉</div>
+        <div class="feat-title">Historija cijena</div>
+        <div class="feat-text">Vidi kako se cijena nekog oglasa mijenjala kroz vrijeme. Znaj kada je pravo vrijeme za pregovaranje — prodavač koji snižava je spreman na dogovor.</div>
+        <span class="feat-tag">Graf cijena</span>
+      </div>
+      <div class="feat">
+        <div class="feat-icon">🧮</div>
+        <div class="feat-title">Kalkulator vrijednosti</div>
+        <div class="feat-text">Uneseš brend, godište i gorivo — dobiješ realnu tržišnu vrijednost na osnovu stvarnih prodaja u BiH. Savršeno za pregovaranje.</div>
+        <span class="feat-tag">Live podaci</span>
+      </div>
+      <div class="feat">
+        <div class="feat-icon">📊</div>
+        <div class="feat-title">Tržišne statistike</div>
+        <div class="feat-text">Koja boja auta se najbrže proda? Koji cjenovni rang je najatraktivniji? Realni podaci iz BiH tržišta koji ti pomažu da kupuješ u pravo vrijeme.</div>
+        <span class="feat-tag">BiH tržište</span>
+      </div>
+      <div class="feat">
+        <div class="feat-icon">📧</div>
+        <div class="feat-title">Tjedni digest</div>
+        <div class="feat-text">Svaki ponedjeljak u 9:00 dobiješ email sa novim oglasima koji odgovaraju tvojim alertima i tržišnim trendovima tog tjedna.</div>
+        <span class="feat-tag">Svaki ponedjeljak</span>
+      </div>
+      <div class="feat">
+        <div class="feat-icon">📌</div>
+        <div class="feat-title">Neograničeno praćenje</div>
+        <div class="feat-text">Prati koliko god oglasa hoćeš. Dobiješ email kad cijena padne ili kad oglas nestane — znak da je prodano ili da je pravo vrijeme.</div>
+        <span class="feat-tag">Automatski</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section class="faq-section">
+  <div class="faq-inner">
+    <div class="section-kicker" style="text-align:center;">FAQ</div>
+    <div class="section-title" style="text-align:center;font-size:32px;">Česta pitanja</div>
+    <div style="margin-top:32px;">
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">Kako radi 7 dana besplatno? <span>+</span></div>
+        <div class="faq-a">Registruješ se, aktiviraš Premium i imaš pun pristup 7 dana bez naplate. Nakon toga odlučuješ hoćeš li nastaviti. Bez kartice za početak.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">Mogu li otkazati pretplatu? <span>+</span></div>
+        <div class="faq-a">Da, u bilo kojem trenutku. Pretplata ostaje aktivna do kraja plaćenog perioda, bez penala.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">Koja je razlika između Premium i Oglix Biznis? <span>+</span></div>
+        <div class="faq-a">Premium je za fizička lica — kupce koji žele bolje alate za kupovinu. Oglix Biznis je za auto kuće i dilere — ima analizu konkurencije, biznis dashboard i mogućnost više korisnika.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">Kako se plaća? <span>+</span></div>
+        <div class="faq-a">Plaćanje se vrši bankovnom karticom ili direktnom uplatom. Kontaktiraj nas na info@oglix.ba za detalje o načinima plaćanja.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">Vrijedi li Premium samo za vozila? <span>+</span></div>
+        <div class="faq-a">Ne, Premium radi za sve kategorije — vozila, nekretnine, elektroniku i sve ostalo što je na Oglixu. Alerti i praćenje cijena rade za svaki oglas.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">Isplati li se 9 KM miesečno? <span>+</span></div>
+        <div class="faq-a">Na prvoj kupovini gdje pregovaraš 200 KM dolje — da, isplati se. Kalkulator vrijednosti i historija cijena ti daju konkretne argumente za pregovaranje. Većina korisnika uštedi daleko više od pretplate.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta">
+  <h2>Počni 7 dana besplatno.</h2>
+  <p>Bez kartice. Bez obaveza. Otkaži kad hoćeš.</p>
+  <button class="btn-white" onclick="prijaviSe('Premium — 9 KM/mj')">Aktiviraj Premium →</button>
+</section>
+
+<footer>
+  <div class="footer-logo">oglix<span>.ba</span></div>
+  <p>Agregator oglasa za BiH · © 2026 oglix.ba</p>
+  <div style="margin-top:12px;display:flex;justify-content:center;gap:20px;">
+    <a href="/oglasi.html" style="color:rgba(255,255,255,0.3);">← Nazad na oglase</a>
+    <a href="/biznis.html" style="color:rgba(255,255,255,0.3);">Oglix Biznis</a>
+    <a href="mailto:info@oglix.ba" style="color:rgba(255,255,255,0.3);">Kontakt</a>
+  </div>
+</footer>
+
+<!-- FORMA MODAL -->
+<div id="modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:999;align-items:center;justify-content:center;padding:16px;">
+  <div style="background:white;border-radius:var(--r-lg);padding:32px;max-width:440px;width:100%;position:relative;">
+    <button onclick="zatvoriModal()" style="position:absolute;top:16px;right:16px;background:none;border:none;font-size:20px;cursor:pointer;color:var(--text-muted);">✕</button>
+    <div style="font-family:'Syne',sans-serif;font-size:20px;font-weight:800;margin-bottom:6px;">Aktiviraj Premium</div>
+    <div style="font-size:13px;color:var(--text-muted);margin-bottom:20px;" id="modalPlan">7 dana besplatno, zatim 9 KM/mj</div>
+    <div style="margin-bottom:12px;"><label style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--text-faint);display:block;margin-bottom:5px;">Ime i prezime</label><input type="text" id="mIme" placeholder="Amir Mehmedović" style="width:100%;border:1px solid var(--border);border-radius:var(--r);padding:11px 14px;font-size:14px;font-family:'DM Sans',sans-serif;outline:none;"></div>
+    <div style="margin-bottom:12px;"><label style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--text-faint);display:block;margin-bottom:5px;">Email</label><input type="email" id="mEmail" placeholder="tvoj@email.com" style="width:100%;border:1px solid var(--border);border-radius:var(--r);padding:11px 14px;font-size:14px;font-family:'DM Sans',sans-serif;outline:none;"></div>
+    <div style="margin-bottom:16px;"><label style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--text-faint);display:block;margin-bottom:5px;">Telefon (opcionalno)</label><input type="tel" id="mTel" placeholder="+387 61 123 456" style="width:100%;border:1px solid var(--border);border-radius:var(--r);padding:11px 14px;font-size:14px;font-family:'DM Sans',sans-serif;outline:none;"></div>
+    <button onclick="posaljiPrijavu()" style="width:100%;background:var(--orange);color:white;border:none;border-radius:var(--r);padding:14px;font-size:15px;font-weight:700;font-family:'DM Sans',sans-serif;cursor:pointer;" id="modalBtn">Aktiviraj 7 dana besplatno →</button>
+    <div id="modalPoruka" style="font-size:13px;margin-top:10px;display:none;"></div>
+    <p style="font-size:11px;color:var(--text-faint);text-align:center;margin-top:12px;">Kontaktiramo te u roku od 24 sata za aktivaciju.</p>
+  </div>
+</div>
+
+<script>
+var odabraniPlan = '';
+
+function prijaviSe(plan) {
+  odabraniPlan = plan;
+  document.getElementById('modalPlan').textContent = plan;
+  document.getElementById('modal').style.display = 'flex';
+  // Prefill ako je ulogovan
+  var k = JSON.parse(localStorage.getItem('korisnik') || 'null');
+  if (k) {
+    document.getElementById('mIme').value = k.ime || '';
+    document.getElementById('mEmail').value = k.email || '';
+  }
+}
+
+function zatvoriModal() {
+  document.getElementById('modal').style.display = 'none';
+}
+
+document.getElementById('modal').addEventListener('click', function(e) {
+  if (e.target === this) zatvoriModal();
+});
+
+async function posaljiPrijavu() {
+  var ime = document.getElementById('mIme').value.trim();
+  var email = document.getElementById('mEmail').value.trim();
+  var tel = document.getElementById('mTel').value.trim();
+  var btn = document.getElementById('modalBtn');
+  var poruka = document.getElementById('modalPoruka');
+
+  if (!ime || !email) {
+    poruka.textContent = 'Unesite ime i email!';
+    poruka.style.color = '#dc2626';
+    poruka.style.display = 'block';
+    return;
+  }
+
+  btn.disabled = true;
+  btn.textContent = 'Šaljem...';
+
+  try {
+    var res = await fetch('/api/biznis-prijava', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({ ime, email, telefon: tel, plan: odabraniPlan, poruka: 'Oglix Premium prijava' })
+    });
+    var data = await res.json();
+    if (data.uspjeh) {
+      poruka.textContent = '✅ Primili smo tvoju prijavu! Kontaktiramo te u roku od 24 sata.';
+      poruka.style.color = '#16a34a';
+      poruka.style.display = 'block';
+      btn.textContent = 'Poslano! ✅';
+    } else {
+      poruka.textContent = 'Greška. Pokušaj ponovo.';
+      poruka.style.color = '#dc2626';
+      poruka.style.display = 'block';
+      btn.disabled = false;
+      btn.textContent = 'Aktiviraj 7 dana besplatno →';
+    }
+  } catch(e) {
+    poruka.textContent = 'Greška. Pokušaj ponovo.';
+    poruka.style.color = '#dc2626';
+    poruka.style.display = 'block';
+    btn.disabled = false;
+    btn.textContent = 'Aktiviraj 7 dana besplatno →';
+  }
+}
+
+function toggleFaq(el) {
+  var a = el.nextElementSibling;
+  var span = el.querySelector('span');
+  var isOpen = a.classList.contains('open');
+  document.querySelectorAll('.faq-a').forEach(function(f){f.classList.remove('open');});
+  document.querySelectorAll('.faq-q span').forEach(function(s){s.textContent='+';});
+  if (!isOpen) { a.classList.add('open'); span.textContent = '−'; }
+}
+</script>
+</body>
+</html>
