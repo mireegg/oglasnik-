@@ -429,13 +429,17 @@ updateNavbar();
 
 async function init(){
   try{
-    var res=await fetch('/api/live-oglasi?limit='+OGLASI_PO_STRANI);
+    // Prvo dohvati ukupan broj bez filtera
+    var res=await fetch('/api/live-oglasi?limit=1');
     var data=await res.json();
-    if(data.uspjeh&&data.oglasi.length>0){
-      ukupnoOglasa=data.ukupno;
+    if(data.uspjeh){
       document.getElementById('statBroj').textContent=(Math.round(data.ukupno/1000))+'k+';
-      if(urlQ){document.getElementById('searchInput').value=urlQ;await pretrazi();}
-      else{prikaziOglase(data.oglasi.map(mapOglas));}
+    }
+    if(urlQ){
+      document.getElementById('searchInput').value=urlQ;
+      await pretrazi();
+    } else {
+      await primijeniFiltre();
     }
   }catch(e){console.log('Greška:',e.message);}
 }
@@ -445,14 +449,13 @@ window.onload=init;
 function toggleMeni() {
   var meni = document.getElementById('mobMeni');
   meni.classList.toggle('open');
-  // Kopiraj navbar stanje u mob meni
   var k = JSON.parse(localStorage.getItem('korisnik') || 'null');
   var mobNavRight = document.getElementById('mobNavRight');
-  if (mobNavRight) {
-    mobNavRight.innerHTML = k
-      ? '<button class="nav-btn" onclick="odjava()" style="width:100%;">Odjava</button>'
-      : '<button class="nav-btn" onclick="window.location.href='/login.html'" style="width:100%;margin-bottom:8px;">Prijava</button>';
-  }
+  if (!mobNavRight) return;
+  var html = k
+    ? '<button class="nav-btn" onclick="odjava()" style="width:100%;">Odjava</button>'
+    : '<a href="/login.html" class="nav-btn" style="width:100%;display:block;text-align:center;padding:10px;">Prijava</a>';
+  mobNavRight.innerHTML = html;
 }
 
 function toggleSidebar() {
