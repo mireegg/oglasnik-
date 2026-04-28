@@ -395,28 +395,49 @@ app.post('/api/sacuvaj-oglase', async (req, res) => {
 
 app.get('/api/live-oglasi', async (req, res) => {
     try {
-        const { q, kategorija } = req.query;
+        const { q, kategorija, platforma, sort } = req.query;
         const offset = parseInt(req.query.offset) || 0;
         const limit = parseInt(req.query.limit) || 48;
         let uvjeti = [], params = [], i = 1;
+
         if (q) { uvjeti.push(`naslov ILIKE $${i++}`); params.push(`%${q}%`); }
         if (kategorija) {
             const kats = kategorija.split(',').map(k => k.trim());
             uvjeti.push(`kategorija IN (${kats.map(() => `$${i++}`).join(',')})`);
             params.push(...kats);
         }
-        const platforma = req.query.platforma;
         if (platforma) {
             const plats = platforma.split(',').map(p => p.trim());
             uvjeti.push(`platforma IN (${plats.map(() => `$${i++}`).join(',')})`);
             params.push(...plats);
         }
+
+        // Cijena filter (server-side)
+        if (req.query.cijena_od) { uvjeti.push(`cijena_num >= $${i++}`); params.push(parseFloat(req.query.cijena_od)); }
+        if (req.query.cijena_do) { uvjeti.push(`cijena_num <= $${i++}`); params.push(parseFloat(req.query.cijena_do)); }
+
+        // Auto filteri
+        if (req.query.gorivo) { uvjeti.push(`gorivo ILIKE $${i++}`); params.push(`%${req.query.gorivo}%`); }
+        if (req.query.transmisija) { uvjeti.push(`naslov ILIKE $${i++}`); params.push(`%${req.query.transmisija}%`); }
+        if (req.query.godiste_od) { uvjeti.push(`godiste >= $${i++}`); params.push(parseInt(req.query.godiste_od)); }
+        if (req.query.godiste_do) { uvjeti.push(`godiste <= $${i++}`); params.push(parseInt(req.query.godiste_do)); }
+        if (req.query.km_od) { uvjeti.push(`km >= $${i++}`); params.push(parseInt(req.query.km_od)); }
+        if (req.query.km_do) { uvjeti.push(`km <= $${i++}`); params.push(parseInt(req.query.km_do)); }
+        if (req.query.kw_od) { uvjeti.push(`kw >= $${i++}`); params.push(parseInt(req.query.kw_od)); }
+        if (req.query.kw_do) { uvjeti.push(`kw <= $${i++}`); params.push(parseInt(req.query.kw_do)); }
+
         const where = uvjeti.length ? 'WHERE ' + uvjeti.join(' AND ') : '';
+
+        // Sortiranje
+        let orderBy = 'datum DESC';
+        if (sort === 'cijena_asc') orderBy = 'cijena_num ASC NULLS LAST';
+        if (sort === 'cijena_desc') orderBy = 'cijena_num DESC NULLS LAST';
+
         const countResult = await pool.query(`SELECT COUNT(*) FROM live_oglasi ${where}`, params);
         const ukupno = parseInt(countResult.rows[0].count);
         params.push(limit, offset);
         const result = await pool.query(
-            `SELECT * FROM live_oglasi ${where} ORDER BY datum DESC LIMIT $${i++} OFFSET $${i++}`,
+            `SELECT * FROM live_oglasi ${where} ORDER BY ${orderBy} LIMIT $${i++} OFFSET $${i++}`,
             params
         );
         res.json({ uspjeh: true, oglasi: result.rows, ukupno, offset, limit });

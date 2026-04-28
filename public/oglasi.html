@@ -241,6 +241,66 @@
       </select>
     </div>
 
+    <!-- AUTO FILTERI - prikazuju se samo kad je odabrana kategorija vozila -->
+    <div class="filter-section" id="autoFilteri" style="display:none;">
+      <div class="filter-label">🚗 Auto filteri</div>
+
+      <div style="margin-bottom:10px;">
+        <div style="font-size:11px;color:var(--text-faint);margin-bottom:5px;">Gorivo</div>
+        <div class="filter-chips" id="filterGorivo">
+          <span class="fchip" onclick="toggleChip(this,'gorivo')">Dizel</span>
+          <span class="fchip" onclick="toggleChip(this,'gorivo')">Benzin</span>
+          <span class="fchip" onclick="toggleChip(this,'gorivo')">Hibrid</span>
+          <span class="fchip" onclick="toggleChip(this,'gorivo')">Električni</span>
+          <span class="fchip" onclick="toggleChip(this,'gorivo')">Plin</span>
+        </div>
+      </div>
+
+      <div style="margin-bottom:10px;">
+        <div style="font-size:11px;color:var(--text-faint);margin-bottom:5px;">Transmisija</div>
+        <div class="filter-chips" id="filterTransmisija">
+          <span class="fchip" onclick="toggleChip(this,'transmisija')">Manuelni</span>
+          <span class="fchip" onclick="toggleChip(this,'transmisija')">Automatski</span>
+        </div>
+      </div>
+
+      <div style="margin-bottom:10px;">
+        <div style="font-size:11px;color:var(--text-faint);margin-bottom:5px;">Godište</div>
+        <div class="price-inputs">
+          <input class="price-input" type="number" placeholder="Od" id="godOd" min="1980" max="2026">
+          <input class="price-input" type="number" placeholder="Do" id="godDo" min="1980" max="2026">
+        </div>
+      </div>
+
+      <div style="margin-bottom:10px;">
+        <div style="font-size:11px;color:var(--text-faint);margin-bottom:5px;">Kilometraža (km)</div>
+        <div class="price-inputs">
+          <input class="price-input" type="number" placeholder="Od" id="kmOd">
+          <input class="price-input" type="number" placeholder="Do" id="kmDo">
+        </div>
+      </div>
+
+      <div style="margin-bottom:10px;">
+        <div style="font-size:11px;color:var(--text-faint);margin-bottom:5px;">Karoserija</div>
+        <div class="filter-chips" id="filterKaroserija">
+          <span class="fchip" onclick="toggleChip(this,'karoserija')">Limuzina</span>
+          <span class="fchip" onclick="toggleChip(this,'karoserija')">Karavan</span>
+          <span class="fchip" onclick="toggleChip(this,'karoserija')">SUV</span>
+          <span class="fchip" onclick="toggleChip(this,'karoserija')">Kupe</span>
+          <span class="fchip" onclick="toggleChip(this,'karoserija')">Kabrio</span>
+          <span class="fchip" onclick="toggleChip(this,'karoserija')">Van</span>
+        </div>
+      </div>
+
+      <div>
+        <div style="font-size:11px;color:var(--text-faint);margin-bottom:5px;">Snaga (kW)</div>
+        <div class="price-inputs">
+          <input class="price-input" type="number" placeholder="Od" id="kwOd">
+          <input class="price-input" type="number" placeholder="Do" id="kwDo">
+        </div>
+      </div>
+    </div>
+
     <button class="apply-btn" onclick="primijeniFiltre()">Primijeni filtere</button>
   </aside>
 
@@ -305,8 +365,10 @@ function filterGlavna(tip,el){
   var podBox=document.getElementById('podkategorijeBox');
   var podList=document.getElementById('podkategorijeList');
   var podLabel=document.getElementById('podkategorijeLabel');
-  if(tip==='sve'){podBox.style.display='none';trenutnaStrana=0;primijeniFiltre();return;}
+  var autoF = document.getElementById('autoFilteri');
+  if(tip==='sve'){podBox.style.display='none';if(autoF)autoF.style.display='none';trenutnaStrana=0;primijeniFiltre();return;}
   podBox.style.display='block';
+  if(autoF) autoF.style.display = tip==='vozila' ? 'block' : 'none';
   podLabel.textContent=tip==='vozila'?'Brend':'Podkategorija';
   var lista=podkategorije[tip]||[];
   podList.innerHTML=lista.map(function(p){return '<label class="check-item"><input type="checkbox" class="kat-checkbox" value="'+p.kat+'" onchange="primijeniFiltre()"> '+p.naziv+'</label>';}).join('');
@@ -349,16 +411,79 @@ function prikaziOglase(oglasi){
   }).join('');
 }
 
+var aktivniSort = 'novo';
+
+function toggleChip(el, grupa) {
+  // Za gorivo i transmisiju — jedan odabir
+  if (grupa === 'gorivo' || grupa === 'transmisija') {
+    var kontejner = el.parentElement;
+    kontejner.querySelectorAll('.fchip').forEach(function(c){ if(c!==el) c.classList.remove('active'); });
+  }
+  el.classList.toggle('active');
+  primijeniFiltre();
+}
+
+function getAutoFilteri() {
+  var f = {};
+  // Gorivo
+  var gorivo = document.querySelector('#filterGorivo .fchip.active');
+  if (gorivo) f.gorivo = gorivo.textContent.trim();
+  // Transmisija
+  var trans = document.querySelector('#filterTransmisija .fchip.active');
+  if (trans) f.transmisija = trans.textContent.trim();
+  // Godiste
+  var godOd = document.getElementById('godOd').value;
+  var godDo = document.getElementById('godDo').value;
+  if (godOd) f.godiste_od = godOd;
+  if (godDo) f.godiste_do = godDo;
+  // KM
+  var kmOd = document.getElementById('kmOd').value;
+  var kmDo = document.getElementById('kmDo').value;
+  if (kmOd) f.km_od = kmOd;
+  if (kmDo) f.km_do = kmDo;
+  // Karoserija
+  var kar = document.querySelector('#filterKaroserija .fchip.active');
+  if (kar) f.karoserija = kar.textContent.trim();
+  // kW
+  var kwOd = document.getElementById('kwOd').value;
+  var kwDo = document.getElementById('kwDo').value;
+  if (kwOd) f.kw_od = kwOd;
+  if (kwDo) f.kw_do = kwDo;
+  return f;
+}
+
 function buildUrl(offset){
   var query=document.getElementById('searchInput').value.trim();
   var odabraneKat=[];
   document.querySelectorAll('.kat-checkbox:checked').forEach(function(cb){odabraneKat.push(cb.value);});
   if(odabraneKat.length===0&&aktivnaGlavnaKat!=='sve'){odabraneKat=(podkategorije[aktivnaGlavnaKat]||[]).map(function(p){return p.kat;});}
   var platforme=getAktivnePlatforme();
+  var cijenaOd=document.getElementById('cijenaOd').value;
+  var cijenaDo=document.getElementById('cijenaDo').value;
+
   var url='/api/live-oglasi?limit='+OGLASI_PO_STRANI+'&offset='+(offset||0);
   if(query) url+='&q='+encodeURIComponent(query);
   if(odabraneKat.length>0) url+='&kategorija='+encodeURIComponent(odabraneKat.join(','));
   if(platforme.length>0) url+='&platforma='+encodeURIComponent(platforme.join(','));
+  if(cijenaOd) url+='&cijena_od='+cijenaOd;
+  if(cijenaDo) url+='&cijena_do='+cijenaDo;
+  if(aktivniSort==='cijena_asc') url+='&sort=cijena_asc';
+  if(aktivniSort==='cijena_desc') url+='&sort=cijena_desc';
+
+  // Auto filteri
+  if(aktivnaGlavnaKat==='vozila' || odabraneKat.some(function(k){return k.startsWith('vozila');})) {
+    var af = getAutoFilteri();
+    if(af.gorivo) url+='&gorivo='+encodeURIComponent(af.gorivo);
+    if(af.transmisija) url+='&transmisija='+encodeURIComponent(af.transmisija);
+    if(af.godiste_od) url+='&godiste_od='+af.godiste_od;
+    if(af.godiste_do) url+='&godiste_do='+af.godiste_do;
+    if(af.km_od) url+='&km_od='+af.km_od;
+    if(af.km_do) url+='&km_do='+af.km_do;
+    if(af.karoserija) url+='&q='+(query?query+' ':'')+encodeURIComponent(af.karoserija);
+    if(af.kw_od) url+='&kw_od='+af.kw_od;
+    if(af.kw_do) url+='&kw_do='+af.kw_do;
+  }
+
   return url;
 }
 
@@ -382,23 +507,19 @@ async function pretrazi(){
 function quickSearch(q){document.getElementById('searchInput').value=q;pretrazi();}
 
 function sortirajSelect(tip){
-  var lista=[...trenutnoFiltrirani];
-  if(tip==='cijena_asc') lista.sort(function(a,b){return a.cijena-b.cijena;});
-  if(tip==='cijena_desc') lista.sort(function(a,b){return b.cijena-a.cijena;});
-  prikaziOglase(lista);
+  aktivniSort = tip;
+  trenutnaStrana = 0;
+  primijeniFiltre();
 }
 
 async function primijeniFiltre(){
-  var cijenaOd=parseFloat(document.getElementById('cijenaOd').value)||0;
-  var cijenaDo=parseFloat(document.getElementById('cijenaDo').value)||Infinity;
   try{
     var res=await fetch(buildUrl(0));
     var data=await res.json();
     if(data.uspjeh){
       ukupnoOglasa=data.ukupno;
-      var oglasi=data.oglasi.map(mapOglas).filter(function(o){return o.cijena>=cijenaOd&&(cijenaDo===Infinity||o.cijena<=cijenaDo);});
       trenutnaStrana=0;
-      prikaziOglase(oglasi);
+      prikaziOglase(data.oglasi.map(mapOglas));
     }
   }catch(e){console.log('Greška filtera:',e.message);}
 }
@@ -416,6 +537,15 @@ function resetujFiltre(){
   document.querySelectorAll('#glavneKategorije .fchip').forEach(function(c){c.classList.remove('active');});
   document.querySelector('#glavneKategorije .fchip').classList.add('active');
   document.getElementById('podkategorijeBox').style.display='none';
+  document.getElementById('autoFilteri').style.display='none';
+  document.querySelectorAll('#autoFilteri .fchip').forEach(function(c){c.classList.remove('active');});
+  document.getElementById('godOd').value='';
+  document.getElementById('godDo').value='';
+  document.getElementById('kmOd').value='';
+  document.getElementById('kmDo').value='';
+  document.getElementById('kwOd').value='';
+  document.getElementById('kwDo').value='';
+  aktivniSort='novo';
   trenutnaStrana=0;init();
 }
 
