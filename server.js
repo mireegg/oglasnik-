@@ -1078,18 +1078,21 @@ async function fetchAutobum() {
     try {
         let sacuvano = 0;
         let page = 1;
-        let hasNext = true;
+        let imaSljedece = true;
 
-        while (hasNext) {
+        while (imaSljedece) {
             try {
                 const r = await autobumGet(page, 1);
                 const oglasi = r.data || [];
-                if (!oglasi.length) break;
+
+                if (!oglasi.length) {
+                    console.log('Autobum: nema više oglasa, zaustavljam.');
+                    break;
+                }
 
                 for (const o of oglasi) {
                     try {
                         const link = `https://autobum.ba/oglas/${o.id}`;
-                        // Koristi year, mileage, fuel direktno iz search rezultata
                         const dbRes = await pool.query(
                             `INSERT INTO live_oglasi (naslov, cijena, slika, link, platforma, kategorija, godiste, km, gorivo)
                              VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9)
@@ -1114,19 +1117,22 @@ async function fetchAutobum() {
                     } catch(e) {}
                 }
 
-                hasNext = !!r.links?.next;
+                // Provjeri ima li sljedeće stranice
+                const nextUrl = r.links && r.links.next;
+                imaSljedece = !!nextUrl;
                 page++;
 
-                if (page % 100 === 0) console.log(`Autobum: stranica ${page}, sacuvano ${sacuvano}`);
-                await new Promise(r => setTimeout(r, 800));
+                if (page % 50 === 0) console.log(`Autobum: stranica ${page}, sacuvano ${sacuvano}`);
+                await new Promise(resolve => setTimeout(resolve, 800));
+
             } catch(e) {
                 console.log(`Autobum stranica ${page} greška:`, e.message);
-                await new Promise(r => setTimeout(r, 5000));
+                await new Promise(resolve => setTimeout(resolve, 5000));
                 break;
             }
         }
 
-        console.log(`Autobum ZAVRŠENO: ${sacuvano} novih oglasa, ${page} stranica`);
+        console.log(`Autobum ZAVRŠENO: ${sacuvano} novih oglasa, prošlo ${page} stranica`);
     } catch(e) { console.log('Autobum greška:', e.message); }
 }
 
@@ -1528,8 +1534,20 @@ async function fetchSveKategorije() {
 }
 
 app.get('/api/run-autobum', async (req, res) => {
-    res.json({ uspjeh: true, poruka: 'Autobum fetch pokrenut!' });
+    res.json({ uspjeh: true, poruka: 'Autobum fetch pokrenut! Prati Railway logs za napredak.' });
     fetchAutobum();
+});
+
+app.get('/api/autobum-status', async (req, res) => {
+    try {
+        const r = await pool.query(`SELECT COUNT(*) as ukupno FROM live_oglasi WHERE platforma = 'autobum'`);
+        const zadnji = await pool.query(`SELECT datum FROM live_oglasi WHERE platforma = 'autobum' ORDER BY datum DESC LIMIT 1`);
+        res.json({ 
+            uspjeh: true, 
+            ukupno: parseInt(r.rows[0].ukupno),
+            zadnji_oglas: zadnji.rows[0]?.datum || null
+        });
+    } catch(e) { res.json({ uspjeh: false }); }
 });
 app.get('/api/test-autobum', async (req, res) => {
     try {
