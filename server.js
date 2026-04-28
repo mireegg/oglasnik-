@@ -216,6 +216,51 @@ app.get('/api/oglas-detalji/:id', async (req, res) => {
     } catch(e) { res.json({ uspjeh: false, poruka: e.message }); }
 });
 
+
+// ── AUTOBUM DETALJI OGLASA ────────────────────────────────
+app.get('/api/autobum-detalji/:id', async (req, res) => {
+    try {
+        const id = req.params.id;
+        const response = await fetch2(`https://api.autobum.ba/api/v1/articles/${id}`, {
+            headers: { 'User-Agent': 'Mozilla/5.0', 'Accept': 'application/json', 'Referer': 'https://autobum.ba/' }
+        });
+        const data = await response.json();
+        const o = data.data || data;
+
+        // Izvuci atribute
+        const attrs = {};
+        if (o.attributes) o.attributes.forEach(a => { attrs[a.name] = a.value; });
+        if (o.fields) o.fields.forEach(f => { attrs[f.name] = f.value; });
+
+        res.json({
+            uspjeh: true,
+            detalji: {
+                id: o.id,
+                naslov: o.title,
+                kategorija_tip: 'vozila',
+                brand: o.brand?.name || o.make || '',
+                model: o.model?.name || o.model_name || '',
+                brand_id: null,
+                model_id: null,
+                grad: o.city?.name || o.location || 'BiH',
+                slike: o.images || (o.image ? [o.image] : []),
+                // Vozila
+                godiste: attrs['Godina'] || attrs['year'] || o.year || null,
+                gorivo: attrs['Gorivo'] || attrs['fuel_type'] || o.fuel_type || null,
+                transmisija: attrs['Mjenjač'] || attrs['transmission'] || o.transmission || null,
+                km: attrs['Kilometraža'] || attrs['mileage'] || o.mileage || null,
+                kubikaza: attrs['Zapremina motora'] || attrs['engine_displacement'] || o.engine_displacement || null,
+                kw: attrs['Snaga motora'] || attrs['engine_power'] || o.engine_power || null,
+                boja: attrs['Boja'] || attrs['color'] || o.color || null,
+                tip_vozila: attrs['Tip vozila'] || o.body_type || null,
+                pogon: attrs['Pogon'] || o.drive_type || null,
+            }
+        });
+    } catch(e) {
+        res.json({ uspjeh: false, poruka: e.message });
+    }
+});
+
 // ── LIVE OGLASI ───────────────────────────────────────────
 app.post('/api/sacuvaj-oglase', async (req, res) => {
     const { oglasi } = req.body;

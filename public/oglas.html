@@ -727,19 +727,41 @@ async function init(){
 
   renderOglasTop(oglasMeta, null);
 
-  var olxId = oglasLink ? oglasLink.split('/artikal/')[1] : null;
   var d = null;
 
-  if (olxId && oglasPlatforma === 'olx') {
-    try {
-      var res = await fetch('/api/oglas-detalji/'+olxId);
-      var data = await res.json();
-      if (data.uspjeh) {
-        d = data.detalji;
-        detaljiGlobal = d;
-        renderOglasTop(oglasMeta, d);
-      }
-    } catch(e) {}
+  if (oglasPlatforma === 'olx') {
+    var olxId = oglasLink ? oglasLink.split('/artikal/')[1] : null;
+    if (olxId) {
+      try {
+        var res = await fetch('/api/oglas-detalji/' + olxId);
+        var data = await res.json();
+        if (data.uspjeh) {
+          d = data.detalji;
+          detaljiGlobal = d;
+          renderOglasTop(oglasMeta, d);
+        }
+      } catch(e) {}
+    }
+  } else if (oglasPlatforma === 'autobum') {
+    var autobumId = oglasLink ? oglasLink.split('/oglas/')[1] : null;
+    if (autobumId) {
+      try {
+        var res = await fetch('/api/autobum-detalji/' + autobumId);
+        var data = await res.json();
+        if (data.uspjeh) {
+          d = data.detalji;
+          detaljiGlobal = d;
+          renderOglasTop(oglasMeta, d);
+        }
+      } catch(e) {}
+    }
+  } else if (oglasPlatforma === 'facebook') {
+    // Facebook nema API — koristi samo meta podatke
+    d = {
+      kategorija_tip: oglasMeta.kategorija && oglasMeta.kategorija.includes('vozila') ? 'vozila' : 'ostalo',
+      grad: 'BiH'
+    };
+    renderOglasTop(oglasMeta, d);
   }
 
   // Paralelno
