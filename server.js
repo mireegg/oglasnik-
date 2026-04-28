@@ -38,6 +38,20 @@ async function initDB() {
     await pool.query(`ALTER TABLE pracenja ADD COLUMN IF NOT EXISTS slika TEXT`);
     await pool.query(`ALTER TABLE live_oglasi ADD COLUMN IF NOT EXISTS kategorija VARCHAR(100)`);
     await pool.query(`ALTER TABLE live_oglasi ADD COLUMN IF NOT EXISTS brand_id INTEGER`);
+    // Kolone za praćenje prodanih oglasa i statistike
+    await pool.query(`ALTER TABLE live_oglasi ADD COLUMN IF NOT EXISTS available BOOLEAN DEFAULT true`);
+    await pool.query(`ALTER TABLE live_oglasi ADD COLUMN IF NOT EXISTS datum_nestanka TIMESTAMP`);
+    await pool.query(`ALTER TABLE live_oglasi ADD COLUMN IF NOT EXISTS dana_do_prodaje INTEGER`);
+    await pool.query(`ALTER TABLE live_oglasi ADD COLUMN IF NOT EXISTS cijena_num NUMERIC`);
+    await pool.query(`ALTER TABLE live_oglasi ADD COLUMN IF NOT EXISTS godiste INTEGER`);
+    await pool.query(`ALTER TABLE live_oglasi ADD COLUMN IF NOT EXISTS boja VARCHAR(50)`);
+    await pool.query(`ALTER TABLE live_oglasi ADD COLUMN IF NOT EXISTS gorivo VARCHAR(50)`);
+    await pool.query(`ALTER TABLE live_oglasi ADD COLUMN IF NOT EXISTS km INTEGER`);
+    await pool.query(`ALTER TABLE live_oglasi ADD COLUMN IF NOT EXISTS grad VARCHAR(100)`);
+    // Index za brže upite
+    await pool.query(`CREATE INDEX IF NOT EXISTS idx_live_oglasi_kategorija ON live_oglasi(kategorija)`);
+    await pool.query(`CREATE INDEX IF NOT EXISTS idx_live_oglasi_available ON live_oglasi(available)`);
+    await pool.query(`CREATE INDEX IF NOT EXISTS idx_live_oglasi_datum ON live_oglasi(datum)`);
     console.log('Baza inicijalizovana!');
 }
 initDB();
@@ -1012,6 +1026,237 @@ app.get('/api/test-autobum', async (req, res) => {
         const data = await autobumGet(1, 1);
         res.json({ uspjeh: true, keys: Object.keys(data), count: data.data?.length, oglas: data.data?.[0] });
     } catch(e) { res.json({ uspjeh: false, greska: e.message }); }
+});
+
+
+// ════════════════════════════════════════════════════════════
+// ── PRAĆENJE PRODANIH OGLASA ──────────────────────────────
+// ════════════════════════════════════════════════════════════
+
+// Checkira koji oglasi su nestali (prodani) — pokreće se svakih sat
+async function checkajProdaneOglase() {
+    try {
+        console.log('Checkam prodane oglase...');
+        // Uzmi aktivne OLX oglase iz baze (samo olx jer imamo API)
+        const aktivni = await pool.query(
+            `SELECT id, link, datum FROM live_oglasi WHERE platforma = 'olx' AND available = true AND datum > NOW() - INTERVAL '90 days' LIMIT 500`
+        );
+        
+        let prodano = 0;
+        for (const oglas of aktivni.rows) {
+            try {
+                const olxId = oglas.link.split('/artikal/')[1];
+                if (!olxId) continue;
+                
+                const res = await axios.get(`https://olx.ba/api/listings/${olxId}`, {
+                    headers: { 'User-Agent': 'Mozilla/5.0', 'Accept': 'application/json' },
+                    timeout: 5000
+                });
+                
+                const available = res.data.available !== false;
+                
+                if (!available) {
+                    const danaDo = Math.round((new Date() - new Date(oglas.datum)) / (1000 * 60 * 60 * 24));
+                    await pool.query(
+                        `UPDATE live_oglasi SET available = false, datum_nestanka = NOW(), dana_do_prodaje = $1 WHERE id = $2`,
+                        [danaDo, oglas.id]
+                    );
+                    prodano++;
+                }
+                
+                await new Promise(r => setTimeout(r, 500));
+            } catch(e) {
+                // 404 = oglas obrisan = prodano
+                if (e.response?.status === 404) {
+                    const danaDo = Math.round((new Date() - new Date(oglas.datum)) / (1000 * 60 * 60 * 24));
+                    await pool.query(
+                        `UPDATE live_oglasi SET available = false, datum_nestanka = NOW(), dana_do_prodaje = $1 WHERE id = $2`,
+                        [danaDo, oglas.id]
+                    );
+                    prodano++;
+                }
+            }
+        }
+        console.log(`Prodani oglasi: ${prodano} novih prodaja detektovano`);
+    } catch(e) {
+        console.log('Greška checkanja prodanih:', e.message);
+    }
+}
+
+// Pokreni checkanje svakih sat
+setInterval(checkajProdaneOglase, 60 * 60 * 1000);
+
+// ── STATISTIKE API ────────────────────────────────────────
+
+// Glavni statistike endpoint
+app.get('/api/statistike', async (req, res) => {
+    try {
+        const kategorija = req.query.kategorija || 'vozila';
+
+        // 1. Ukupno oglasa i prodanih
+        const ukupno = await pool.query(
+            `SELECT COUNT(*) as ukupno, COUNT(CASE WHEN available = false THEN 1 END) as prodano FROM live_oglasi WHERE kategorija LIKE $1`,
+            [kategorija + '%']
+        );
+
+        // 2. Prosječno dana do prodaje
+        const prosjecno = await pool.query(
+            `SELECT ROUND(AVG(dana_do_prodaje)) as prosjek, MIN(dana_do_prodaje) as min, MAX(dana_do_prodaje) as max FROM live_oglasi WHERE kategorija LIKE $1 AND dana_do_prodaje IS NOT NULL`,
+            [kategorija + '%']
+        );
+
+        // 3. Prodaja po mjesecu
+        const poBrojevu = await pool.query(
+            `SELECT TO_CHAR(datum_nestanka, 'YYYY-MM') as mjesec, COUNT(*) as prodano FROM live_oglasi WHERE kategorija LIKE $1 AND datum_nestanka IS NOT NULL GROUP BY mjesec ORDER BY mjesec DESC LIMIT 12`,
+            [kategorija + '%']
+        );
+
+        // 4. Najbrže prodane kategorije/brendovi
+        const brendovi = await pool.query(
+            `SELECT kategorija, ROUND(AVG(dana_do_prodaje)) as prosjek_dana, COUNT(*) as prodano FROM live_oglasi WHERE kategorija LIKE $1 AND dana_do_prodaje IS NOT NULL GROUP BY kategorija ORDER BY prosjek_dana ASC LIMIT 10`,
+            [kategorija + '%']
+        );
+
+        // 5. Raspon cijena prodanih
+        const cijene = await pool.query(
+            `SELECT 
+                ROUND(AVG(cijena_num)) as prosjek,
+                MIN(cijena_num) as min,
+                MAX(cijena_num) as max,
+                PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY cijena_num) as medijana
+            FROM live_oglasi WHERE kategorija LIKE $1 AND available = false AND cijena_num > 0`,
+            [kategorija + '%']
+        );
+
+        res.json({
+            uspjeh: true,
+            ukupno: parseInt(ukupno.rows[0].ukupno),
+            prodano: parseInt(ukupno.rows[0].prodano),
+            prosjekDana: prosjecno.rows[0],
+            poBrojevu: poBrojevu.rows,
+            brendovi: brendovi.rows,
+            cijene: cijene.rows[0]
+        });
+    } catch(e) {
+        res.json({ uspjeh: false, poruka: e.message });
+    }
+});
+
+// Statistike za vozila — detaljan breakdown
+app.get('/api/statistike/vozila', async (req, res) => {
+    try {
+        // Najbrže po boji
+        const boje = await pool.query(
+            `SELECT boja, ROUND(AVG(dana_do_prodaje)) as prosjek_dana, COUNT(*) as prodano FROM live_oglasi WHERE kategorija LIKE 'vozila%' AND boja IS NOT NULL AND dana_do_prodaje IS NOT NULL GROUP BY boja ORDER BY prosjek_dana ASC LIMIT 10`
+        );
+
+        // Najbrže po gorivu
+        const gorivo = await pool.query(
+            `SELECT gorivo, ROUND(AVG(dana_do_prodaje)) as prosjek_dana, COUNT(*) as prodano FROM live_oglasi WHERE kategorija LIKE 'vozila%' AND gorivo IS NOT NULL AND dana_do_prodaje IS NOT NULL GROUP BY gorivo ORDER BY prosjek_dana ASC`
+        );
+
+        // Prodaja po godištu
+        const godista = await pool.query(
+            `SELECT godiste, COUNT(*) as prodano, ROUND(AVG(dana_do_prodaje)) as prosjek_dana FROM live_oglasi WHERE kategorija LIKE 'vozila%' AND godiste IS NOT NULL AND dana_do_prodaje IS NOT NULL GROUP BY godiste ORDER BY prodano DESC LIMIT 15`
+        );
+
+        // Najpopularniji brendovi
+        const brendovi = await pool.query(
+            `SELECT kategorija, COUNT(*) as ukupno, COUNT(CASE WHEN available = false THEN 1 END) as prodano, ROUND(AVG(CASE WHEN available = false THEN dana_do_prodaje END)) as prosjek_dana FROM live_oglasi WHERE kategorija LIKE 'vozila-%' GROUP BY kategorija ORDER BY prodano DESC LIMIT 15`
+        );
+
+        // Prosjek km prodanih vozila
+        const kilometraza = await pool.query(
+            `SELECT 
+                CASE 
+                    WHEN km < 50000 THEN '0-50k km'
+                    WHEN km < 100000 THEN '50-100k km'
+                    WHEN km < 150000 THEN '100-150k km'
+                    WHEN km < 200000 THEN '150-200k km'
+                    ELSE '200k+ km'
+                END as rang,
+                COUNT(*) as prodano,
+                ROUND(AVG(dana_do_prodaje)) as prosjek_dana
+            FROM live_oglasi WHERE kategorija LIKE 'vozila%' AND km IS NOT NULL AND dana_do_prodaje IS NOT NULL
+            GROUP BY rang ORDER BY prosjek_dana ASC`
+        );
+
+        // Cijenovni rangovi
+        const cijenovni = await pool.query(
+            `SELECT 
+                CASE 
+                    WHEN cijena_num < 5000 THEN 'Do 5k KM'
+                    WHEN cijena_num < 10000 THEN '5-10k KM'
+                    WHEN cijena_num < 15000 THEN '10-15k KM'
+                    WHEN cijena_num < 20000 THEN '15-20k KM'
+                    WHEN cijena_num < 30000 THEN '20-30k KM'
+                    ELSE '30k+ KM'
+                END as rang,
+                COUNT(*) as prodano,
+                ROUND(AVG(dana_do_prodaje)) as prosjek_dana
+            FROM live_oglasi WHERE kategorija LIKE 'vozila%' AND cijena_num > 0 AND dana_do_prodaje IS NOT NULL
+            GROUP BY rang ORDER BY prosjek_dana ASC`
+        );
+
+        res.json({
+            uspjeh: true,
+            boje: boje.rows,
+            gorivo: gorivo.rows,
+            godista: godista.rows,
+            brendovi: brendovi.rows,
+            kilometraza: kilometraza.rows,
+            cijenovni: cijenovni.rows
+        });
+    } catch(e) {
+        res.json({ uspjeh: false, poruka: e.message });
+    }
+});
+
+// Kalkulator tržišne vrijednosti
+app.post('/api/kalkulator-vrijednosti', async (req, res) => {
+    try {
+        const { kategorija, brand_kategorija, godiste, km, gorivo, boja } = req.body;
+
+        let uvjeti = [`kategorija = $1`, `available = false`, `cijena_num > 0`];
+        let params = [brand_kategorija || kategorija];
+        let i = 2;
+
+        if (godiste) { uvjeti.push(`ABS(godiste - $${i++}) <= 2`); params.push(parseInt(godiste)); }
+        if (gorivo) { uvjeti.push(`gorivo ILIKE $${i++}`); params.push(gorivo); }
+
+        const result = await pool.query(
+            `SELECT 
+                COUNT(*) as uzorак,
+                ROUND(AVG(cijena_num)) as prosjek,
+                ROUND(MIN(cijena_num)) as min,
+                ROUND(MAX(cijena_num)) as max,
+                ROUND(PERCENTILE_CONT(0.25) WITHIN GROUP (ORDER BY cijena_num)) as q1,
+                ROUND(PERCENTILE_CONT(0.75) WITHIN GROUP (ORDER BY cijena_num)) as q3,
+                ROUND(AVG(dana_do_prodaje)) as prosjek_dana
+            FROM live_oglasi WHERE ${uvjeti.join(' AND ')}`,
+            params
+        );
+
+        const r = result.rows[0];
+        res.json({
+            uspjeh: true,
+            uzorak: parseInt(r.uzorak),
+            prosjek: parseInt(r.prosjek) || 0,
+            min: parseInt(r.min) || 0,
+            max: parseInt(r.max) || 0,
+            preporucenaOd: parseInt(r.q1) || 0,
+            preporucenaDo: parseInt(r.q3) || 0,
+            prosjekDana: parseInt(r.prosjek_dana) || 0
+        });
+    } catch(e) {
+        res.json({ uspjeh: false, poruka: e.message });
+    }
+});
+
+// Ručno pokretanje checkanja
+app.get('/api/check-prodane', async (req, res) => {
+    res.json({ uspjeh: true, poruka: 'Checkanje prodanih pokrenuto!' });
+    checkajProdaneOglase();
 });
 
 fetchSveKategorije();
