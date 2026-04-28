@@ -196,6 +196,20 @@
       .kal-grid { grid-template-columns: 1fr 1fr; }
       .kal-rezultat { grid-template-columns: 1fr 1fr; }
     }
+  
+    @media(max-width:768px){
+      .layout{grid-template-columns:1fr;}
+      .sidebar{display:none;}
+      .main{padding:16px;}
+      .kpi-grid{grid-template-columns:1fr 1fr;}
+      .charts-row{grid-template-columns:1fr;}
+      .kal-grid{grid-template-columns:1fr 1fr;}
+      .kal-rezultat{grid-template-columns:1fr 1fr;}
+      .alerts-grid{grid-template-columns:1fr;}
+      .topbar{flex-direction:column;align-items:flex-start;gap:12px;}
+      .topbar-right{flex-wrap:wrap;}
+      .page-title{font-size:20px;}
+    }
   </style>
 </head>
 <body>
@@ -210,6 +224,17 @@
     <button class="btn-sm btn-ghost" onclick="window.location.href='/biznis.html'" style="padding:14px 28px;font-size:15px;">Saznaj više</button>
   </div>
 </div>
+
+
+<!-- MOBILNI NAV -->
+<nav style="display:none;background:#111;border-bottom:1px solid rgba(255,255,255,0.06);padding:0 16px;height:56px;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;" id="mobNav">
+  <div style="font-family:'Syne',sans-serif;font-size:18px;font-weight:800;color:white;">oglix<span style="color:#e65c00;">.ba</span> <small style="font-size:10px;color:#e65c00;background:rgba(230,92,0,0.1);padding:2px 8px;border-radius:100px;">BIZ</small></div>
+  <div style="display:flex;gap:8px;">
+    <button onclick="window.location.href='/oglasi.html'" style="background:rgba(255,255,255,0.08);color:white;border:none;border-radius:8px;padding:8px 12px;font-size:12px;cursor:pointer;">Oglasi</button>
+    <button onclick="window.location.href='/alerti.html'" style="background:#e65c00;color:white;border:none;border-radius:8px;padding:8px 12px;font-size:12px;cursor:pointer;">🔔</button>
+  </div>
+</nav>
+<style>@media(max-width:1024px){#mobNav{display:flex!important;}}</style>
 
 <div class="layout">
   <!-- SIDEBAR -->

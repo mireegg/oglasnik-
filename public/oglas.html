@@ -136,10 +136,21 @@
     .footer-logo{font-family:'Syne',sans-serif;font-size:18px;font-weight:700;color:var(--text);margin-bottom:8px;}
     .footer-logo span{color:var(--orange);}
 
+
     @media(max-width:768px){
-      nav{padding:0 16px;} .page{padding:16px;}
-      .oglas-top{grid-template-columns:1fr;}
-      .oglas-naslov{font-size:20px;} .oglas-cijena{font-size:28px;}
+      nav{padding:0 16px;flex-wrap:wrap;height:auto;gap:8px;padding-top:10px;padding-bottom:10px;}
+      .nav-links{order:3;width:100%;display:flex;gap:12px;overflow-x:auto;padding-bottom:4px;}
+      .nav-links a{font-size:12px;white-space:nowrap;}
+      .page{padding:12px;}
+      .oglas-top{grid-template-columns:1fr;gap:16px;}
+      .oglas-naslov{font-size:18px;}
+      .oglas-cijena{font-size:26px;}
+      .specs-grid{grid-template-columns:1fr 1fr;}
+      .slicni-kartice{grid-template-columns:repeat(2,1fr);}
+      .ai-box{padding:14px 16px;}
+      .poredi-wrap{border-radius:var(--radius-sm);}
+      .ai-poredi-box{padding:16px;}
+      .sekcija-naslov{font-size:17px;}
     }
   </style>
 </head>
