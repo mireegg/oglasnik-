@@ -1534,7 +1534,14 @@ app.get('/api/run-autobum', async (req, res) => {
 app.get('/api/test-autobum', async (req, res) => {
     try {
         const data = await autobumGet(1, 1);
-        res.json({ uspjeh: true, keys: Object.keys(data), count: data.data?.length, oglas: data.data?.[0] });
+        res.json({ 
+            uspjeh: true, 
+            keys: Object.keys(data), 
+            count: data.data?.length, 
+            oglas: data.data?.[0],
+            links: data.links,
+            meta: data.meta
+        });
     } catch(e) { res.json({ uspjeh: false, greska: e.message }); }
 });
 
