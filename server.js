@@ -1581,6 +1581,52 @@ app.get('/api/check-prodane', async (req, res) => {
     checkajProdaneOglase();
 });
 
+
+// ── OGLIX BIZNIS PRIJAVA ──────────────────────────────────
+app.post('/api/biznis-prijava', async (req, res) => {
+    const { ime, firma, email, telefon, plan, poruka } = req.body;
+    if (!ime || !email || !telefon) return res.json({ uspjeh: false });
+    try {
+        // Sacuvaj u bazu
+        await pool.query(`CREATE TABLE IF NOT EXISTS biznis_prijave (id SERIAL PRIMARY KEY, ime VARCHAR(100), firma VARCHAR(100), email VARCHAR(100), telefon VARCHAR(50), plan VARCHAR(100), poruka TEXT, datum TIMESTAMP DEFAULT NOW())`);
+        await pool.query(`INSERT INTO biznis_prijave (ime, firma, email, telefon, plan, poruka) VALUES ($1,$2,$3,$4,$5,$6)`, [ime, firma||null, email, telefon, plan||null, poruka||null]);
+
+        // Email tebi (obavijest o novoj prijavi)
+        transporter.sendMail({
+            from: process.env.EMAIL_USER,
+            to: process.env.EMAIL_USER,
+            subject: `🎯 Nova Oglix Biznis prijava — ${ime}`,
+            html: `<h2>Nova prijava za Oglix Biznis!</h2>
+                <p><strong>Ime:</strong> ${ime}</p>
+                <p><strong>Firma:</strong> ${firma || '—'}</p>
+                <p><strong>Email:</strong> ${email}</p>
+                <p><strong>Telefon:</strong> ${telefon}</p>
+                <p><strong>Plan:</strong> ${plan || '—'}</p>
+                <p><strong>Poruka:</strong> ${poruka || '—'}</p>`
+        }).catch(() => {});
+
+        // Email njima (potvrda)
+        transporter.sendMail({
+            from: `"Oglix Biznis" <${process.env.EMAIL_USER}>`,
+            to: email,
+            subject: '✅ Primili smo vašu prijavu — Oglix Biznis',
+            html: `<!DOCTYPE html><html><body style="font-family:Arial,sans-serif;background:#f7f5f2;padding:32px;">
+                <div style="max-width:520px;margin:0 auto;background:white;border-radius:16px;padding:32px;">
+                    <h2 style="font-family:sans-serif;color:#1a1a1a;">Zdravo ${ime}! 👋</h2>
+                    <p style="color:#555;line-height:1.6;">Hvala što ste se prijavili za <strong>Oglix Biznis</strong>.</p>
+                    <p style="color:#555;line-height:1.6;">Kontaktiramo vas u roku od <strong>24 sata</strong> na email ili telefon koji ste naveli.</p>
+                    <div style="background:#f7f5f2;border-radius:10px;padding:16px;margin:20px 0;">
+                        <p style="margin:0;color:#777;font-size:13px;">Plan koji ste odabrali: <strong>${plan || 'Pro'}</strong></p>
+                    </div>
+                    <p style="color:#555;font-size:14px;">U međuvremenu, možete istraživati oglase na <a href="https://oglasnik-production.up.railway.app" style="color:#e65c00;">oglix.ba</a>.</p>
+                    <p style="color:#aaa;font-size:12px;margin-top:24px;">oglix.ba Biznis · Tržišna inteligencija za BiH</p>
+                </div></body></html>`
+        }).catch(() => {});
+
+        res.json({ uspjeh: true });
+    } catch(e) { res.json({ uspjeh: false, poruka: e.message }); }
+});
+
 fetchSveKategorije();
 setInterval(fetchSveKategorije, 2 * 60 * 60 * 1000);
 
