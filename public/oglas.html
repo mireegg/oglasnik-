@@ -718,6 +718,64 @@ async function pratiOglas(){
   }
 }
 
+
+// ── FACEBOOK NASLOV PARSER ────────────────────────────────
+function parseNaslovFacebook(naslov) {
+  if (!naslov) return {};
+  var d = { kategorija_tip: 'vozila', grad: 'BiH' };
+  var n = naslov.toLowerCase();
+
+  // Godište — traži 4-cifreni broj između 1980-2026
+  var godMatch = naslov.match(/\b(19[89]\d|20[012]\d)\b/);
+  if (godMatch) d.godiste = godMatch[1];
+
+  // Kilometraža — traži broj + km/kil
+  var kmMatch = naslov.match(/(\d{1,3}[\.\s]?\d{3})\s*km/i) ||
+                naslov.match(/(\d+)\s*000\s*km/i) ||
+                naslov.match(/km[:\s]*(\d+)/i);
+  if (kmMatch) d.km = kmMatch[1].replace(/[\s\.]/g, '');
+
+  // Gorivo
+  if (/dizel|diesel|tdi|cdi|dci|hdi|jtd/i.test(n)) d.gorivo = 'Dizel';
+  else if (/benzin|bensin|tsi|fsi|gdi|mpi/i.test(n)) d.gorivo = 'Benzin';
+  else if (/hibrid|hybrid/i.test(n)) d.gorivo = 'Hibrid';
+  else if (/elektr/i.test(n)) d.gorivo = 'Električni';
+  else if (/plin|lpg|cng/i.test(n)) d.gorivo = 'Plin';
+
+  // Kubikaža — traži pattern kao 2.0, 1.9, 1600ccm
+  var kubMatch = naslov.match(/(\d[.,]\d)\s*[lL]?(?:\s|$)/);
+  if (kubMatch) d.kubikaza = kubMatch[1].replace(',', '.');
+
+  // Snaga — kw ili ks/hp
+  var kwMatch = naslov.match(/(\d{2,3})\s*kw/i);
+  if (kwMatch) d.kw = kwMatch[1];
+  var ksMatch = naslov.match(/(\d{2,3})\s*(?:ks|hp|ps|konja)/i);
+  if (ksMatch && !d.kw) d.kw = Math.round(parseInt(ksMatch[1]) * 0.7355);
+
+  // Transmisija
+  if (/automat|dsg|automatic|tiptronic|steptronic/i.test(n)) d.transmisija = 'Automatski';
+  else if (/manuelni|manual|rucni/i.test(n)) d.transmisija = 'Manuelni';
+
+  // Boja
+  var boje = {
+    'bijel': 'Bijela', 'crn': 'Crna', 'siv': 'Siva', 'srebrn': 'Srebrna',
+    'crven': 'Crvena', 'plavl': 'Plava', 'zeleni': 'Zelena', 'žut': 'Žuta',
+    'smed': 'Smeđa', 'bež': 'Bež', 'narandžast': 'Narandžasta'
+  };
+  for (var kljuc in boje) {
+    if (n.includes(kljuc)) { d.boja = boje[kljuc]; break; }
+  }
+
+  // Grad — BiH gradovi
+  var gradovi = ['Sarajevo', 'Banja Luka', 'Tuzla', 'Zenica', 'Mostar', 'Bijeljina',
+    'Brčko', 'Prijedor', 'Trebinje', 'Živinice', 'Cazin', 'Bihać', 'Doboj', 'Zvornik'];
+  for (var g of gradovi) {
+    if (naslov.toLowerCase().includes(g.toLowerCase())) { d.grad = g; break; }
+  }
+
+  return d;
+}
+
 // ── INIT ─────────────────────────────────────────────────
 async function init(){
   if(!oglasMeta.naslov){
@@ -756,11 +814,12 @@ async function init(){
       } catch(e) {}
     }
   } else if (oglasPlatforma === 'facebook') {
-    // Facebook nema API — koristi samo meta podatke
-    d = {
-      kategorija_tip: oglasMeta.kategorija && oglasMeta.kategorija.includes('vozila') ? 'vozila' : 'ostalo',
-      grad: 'BiH'
-    };
+    // Facebook nema API — parsiramo naslov
+    d = parseNaslovFacebook(oglasMeta.naslov);
+    // Provjeri kategoriju
+    if (oglasMeta.kategorija && !oglasMeta.kategorija.includes('vozila')) {
+      d.kategorija_tip = 'ostalo';
+    }
     renderOglasTop(oglasMeta, d);
   }
 
