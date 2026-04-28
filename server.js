@@ -261,6 +261,107 @@ app.get('/api/autobum-detalji/:id', async (req, res) => {
     }
 });
 
+
+// ── SLIČNI OGLASI PO NAZIVU (za Autobum i Facebook) ──────
+// Pretražuje OLX po brand_id + keyword, koristi special_labels za detalje
+app.post('/api/slicni-po-nazivu', async (req, res) => {
+    try {
+        const { naslov, cijena, brand_id, gorivo, godiste, km } = req.body;
+        if (!naslov && !brand_id) return res.json({ uspjeh: false, grupa1: [], grupa2: [] });
+
+        const cijenaNum = parseCijena(cijena);
+        const cijenaOd = cijenaNum > 0 ? Math.round(cijenaNum * 0.55) : 0;
+        const cijenaDo = cijenaNum > 0 ? Math.round(cijenaNum * 1.55) : 999999;
+
+        // Izvuci kljucne rijeci iz naslova (prve 3 rijeci bez godina i brojeva)
+        const kljucneRijeci = naslov
+            .split(/\s+/)
+            .filter(w => w.length > 2 && !/^\d+$/.test(w))
+            .slice(0, 3)
+            .join(' ');
+
+        let searchUrl = `https://olx.ba/api/search?category_id=18&per_page=40`;
+        if (brand_id) searchUrl += `&brand=${brand_id}&brands=${brand_id}`;
+        if (cijenaOd > 0) searchUrl += `&price_from=${cijenaOd}&price_to=${cijenaDo}`;
+
+        const searchRes = await axios.get(searchUrl, {
+            headers: { 'User-Agent': 'Mozilla/5.0', 'Accept': 'application/json', 'Referer': 'https://www.olx.ba/' },
+            timeout: 12000
+        });
+
+        const sviOglasi = searchRes.data.data || [];
+
+        // Mapiraj oglase koristeći special_labels
+        const mapirani = sviOglasi.map(o => {
+            const labels = {};
+            (o.special_labels || []).forEach(l => {
+                labels[l.label] = l.value;
+            });
+            return {
+                id: o.id,
+                naslov: o.title,
+                cijena: o.display_price || 'Na upit',
+                cijena_num: parseCijena(o.display_price),
+                slika: o.image || '',
+                link: `https://www.olx.ba/artikal/${o.id}`,
+                platforma: 'olx',
+                godiste: labels['Godište'] ? parseInt(labels['Godište']) : null,
+                gorivo: labels['Gorivo'] || null,
+                km: labels['Kilometraža'] ? parseInt(String(labels['Kilometraža']).replace(/[^0-9]/g,'')) : null,
+            };
+        });
+
+        // Filtriraj slicne — isti gorivo i godiste ±2
+        const godNum = parseInt(godiste) || 0;
+        let grupa1 = mapirani.filter(o => {
+            if (gorivo && o.gorivo && o.gorivo.toLowerCase() !== gorivo.toLowerCase()) return false;
+            if (godNum && o.godiste && Math.abs(o.godiste - godNum) > 2) return false;
+            return true;
+        }).slice(0, 6);
+
+        // Ako nema dovoljno — uzmi sve
+        if (grupa1.length < 2) {
+            grupa1 = mapirani.slice(0, 6);
+        }
+
+        const g1ids = new Set(grupa1.map(o => o.id));
+        const grupa2 = mapirani.filter(o => !g1ids.has(o.id)).slice(0, 4);
+
+        // AI analiza
+        let aiAnaliza = null;
+        if (grupa1.length > 0) {
+            const aiPrompt = `Ti si direktan savjetnik za kupovinu vozila u BiH.
+
+OGLAS KOJI KUPAC GLEDA:
+- Naziv: ${naslov}
+- Cijena: ${cijena}
+- Godište: ${godiste||'—'} | Gorivo: ${gorivo||'—'} | KM: ${km ? parseInt(km).toLocaleString()+' km' : '—'}
+
+SLIČNI OGLASI SA OLX.BA:
+${grupa1.map((o,i) => {
+    const c = parseCijena(o.cijena);
+    const odnos = c && cijenaNum ? (c < cijenaNum ? ` (−${Math.round((cijenaNum-c)/cijenaNum*100)}% jeftiniji)` : c > cijenaNum ? ` (+${Math.round((c-cijenaNum)/cijenaNum*100)}% skuplji)` : ' (ista cijena)') : '';
+    return `Oglas #${i+1}: ${o.naslov}
+  Cijena: ${o.cijena}${odnos}
+  KM: ${o.km ? o.km.toLocaleString()+' km' : '—'} | Godište: ${o.godiste||'—'} | Gorivo: ${o.gorivo||'—'}`;
+}).join('\n\n')}
+
+Format odgovora:
+ZAKLJUČAK: [3-4 rečenice — koja je prosječna cijena, koji oglas ima najmanje km, koliko je ovaj oglas jeftiniji/skuplji od prosjeka]
+PREPORUKA: [Jedna direktna rečenica]
+UPOZORENJE: [Samo ako ima konkretan razlog. Ako je sve OK preskoči.]
+
+Bosanski. Direktno.`;
+            aiAnaliza = await groqAI(aiPrompt, 500);
+        }
+
+        res.json({ uspjeh: true, grupa1, grupa2, preciznost: 'Isti brend, slična cijena', aiAnaliza });
+    } catch(e) {
+        console.log('Slicni po nazivu greška:', e.message);
+        res.json({ uspjeh: false, grupa1: [], grupa2: [], poruka: e.message });
+    }
+});
+
 // ── LIVE OGLASI ───────────────────────────────────────────
 app.post('/api/sacuvaj-oglase', async (req, res) => {
     const { oglasi } = req.body;
