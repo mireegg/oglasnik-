@@ -52,6 +52,8 @@ async function initDB() {
     await pool.query(`CREATE INDEX IF NOT EXISTS idx_live_oglasi_kategorija ON live_oglasi(kategorija)`);
     await pool.query(`CREATE INDEX IF NOT EXISTS idx_live_oglasi_available ON live_oglasi(available)`);
     await pool.query(`CREATE INDEX IF NOT EXISTS idx_live_oglasi_datum ON live_oglasi(datum)`);
+    await pool.query(`ALTER TABLE korisnici ADD COLUMN IF NOT EXISTS plan VARCHAR(50) DEFAULT 'free'`);
+    await pool.query(`ALTER TABLE korisnici ADD COLUMN IF NOT EXISTS plan_datum_isteka TIMESTAMP`);
     console.log('Baza inicijalizovana!');
 }
 initDB();
@@ -1624,6 +1626,32 @@ app.post('/api/biznis-prijava', async (req, res) => {
         }).catch(() => {});
 
         res.json({ uspjeh: true });
+    } catch(e) { res.json({ uspjeh: false, poruka: e.message }); }
+});
+
+
+// ── PLAN KORISNIKA ────────────────────────────────────────
+app.get('/api/moj-plan', async (req, res) => {
+    const { email } = req.query;
+    if (!email) return res.json({ uspjeh: false });
+    try {
+        const r = await pool.query('SELECT plan, plan_datum_isteka FROM korisnici WHERE email = $1', [email]);
+        if (!r.rows.length) return res.json({ uspjeh: false });
+        res.json({ uspjeh: true, plan: r.rows[0].plan || 'free', datum_isteka: r.rows[0].plan_datum_isteka });
+    } catch(e) { res.json({ uspjeh: false }); }
+});
+
+// Admin endpoint za promjenu plana (zaštićen tajnim ključem)
+app.post('/api/admin/promijeni-plan', async (req, res) => {
+    const { email, plan, mjeseci, tajni_kljuc } = req.body;
+    if (tajni_kljuc !== process.env.ADMIN_KEY) return res.status(403).json({ uspjeh: false, poruka: 'Nedozvoljen pristup!' });
+    try {
+        const datumIsteka = mjeseci ? new Date(Date.now() + mjeseci * 30 * 24 * 60 * 60 * 1000) : null;
+        await pool.query(
+            'UPDATE korisnici SET plan = $1, plan_datum_isteka = $2 WHERE email = $3',
+            [plan, datumIsteka, email]
+        );
+        res.json({ uspjeh: true, poruka: `Plan za ${email} promijenjen u ${plan}` });
     } catch(e) { res.json({ uspjeh: false, poruka: e.message }); }
 });
 
