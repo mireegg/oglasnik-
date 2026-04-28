@@ -1,0 +1,792 @@
+<!DOCTYPE html>
+<html lang="bs">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Oglix Biznis — Dashboard</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+  <style>
+    :root {
+      --orange: #e65c00;
+      --orange-dim: rgba(230,92,0,0.1);
+      --orange-glow: rgba(230,92,0,0.25);
+      --bg: #080808;
+      --surface: #111111;
+      --surface2: #181818;
+      --border: rgba(255,255,255,0.06);
+      --border-bright: rgba(255,255,255,0.12);
+      --text: #f0f0f0;
+      --text-muted: #888;
+      --text-faint: #444;
+      --green: #22c55e;
+      --green-dim: rgba(34,197,94,0.1);
+      --red: #ef4444;
+      --red-dim: rgba(239,68,68,0.1);
+      --blue: #3b82f6;
+      --blue-dim: rgba(59,130,246,0.1);
+      --r: 12px;
+      --r-lg: 20px;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; font-size: 14px; line-height: 1.5; }
+    a { text-decoration: none; color: inherit; }
+
+    /* SIDEBAR */
+    .layout { display: grid; grid-template-columns: 220px 1fr; min-height: 100vh; }
+    .sidebar {
+      background: var(--surface);
+      border-right: 1px solid var(--border);
+      padding: 24px 16px;
+      position: sticky; top: 0; height: 100vh;
+      display: flex; flex-direction: column;
+      gap: 4px;
+    }
+    .sidebar-logo {
+      font-family: 'Syne', sans-serif;
+      font-size: 18px; font-weight: 800;
+      padding: 8px 12px 20px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 12px;
+    }
+    .sidebar-logo span { color: var(--orange); }
+    .sidebar-logo small { display: block; font-size: 10px; font-weight: 500; color: var(--text-muted); letter-spacing: 0.1em; text-transform: uppercase; margin-top: 2px; }
+    .nav-item {
+      display: flex; align-items: center; gap: 10px;
+      padding: 10px 12px; border-radius: var(--r);
+      font-size: 13px; font-weight: 500; color: var(--text-muted);
+      cursor: pointer; transition: all .15s;
+      border: 1px solid transparent;
+    }
+    .nav-item:hover { background: var(--surface2); color: var(--text); }
+    .nav-item.active { background: var(--orange-dim); color: var(--orange); border-color: rgba(230,92,0,0.2); }
+    .nav-item .icon { font-size: 16px; width: 20px; text-align: center; }
+    .nav-section { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-faint); padding: 16px 12px 6px; }
+    .sidebar-bottom { margin-top: auto; padding-top: 16px; border-top: 1px solid var(--border); }
+    .user-card { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: var(--r); background: var(--surface2); }
+    .user-avatar { width: 32px; height: 32px; border-radius: 50%; background: var(--orange); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 13px; flex-shrink: 0; }
+    .user-name { font-size: 13px; font-weight: 600; }
+    .user-plan { font-size: 11px; color: var(--orange); }
+
+    /* MAIN */
+    .main { padding: 32px; overflow-x: hidden; }
+    .topbar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 32px; }
+    .page-title { font-family: 'Syne', sans-serif; font-size: 24px; font-weight: 800; }
+    .page-sub { font-size: 13px; color: var(--text-muted); margin-top: 2px; }
+    .topbar-right { display: flex; gap: 10px; align-items: center; }
+    .btn-sm { padding: 8px 16px; border-radius: var(--r); font-size: 13px; font-weight: 600; font-family: 'DM Sans', sans-serif; cursor: pointer; border: none; }
+    .btn-orange { background: var(--orange); color: white; }
+    .btn-orange:hover { background: #ff7a1f; }
+    .btn-ghost { background: var(--surface2); color: var(--text-muted); border: 1px solid var(--border); }
+    .btn-ghost:hover { color: var(--text); border-color: var(--border-bright); }
+    .live-badge { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--green); background: var(--green-dim); padding: 6px 12px; border-radius: 100px; border: 1px solid rgba(34,197,94,0.2); }
+    .live-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); animation: blink 2s infinite; }
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.3} }
+
+    /* KPI CARDS */
+    .kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px; }
+    .kpi {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--r-lg);
+      padding: 20px;
+      position: relative;
+      overflow: hidden;
+      transition: border-color .2s;
+    }
+    .kpi:hover { border-color: var(--border-bright); }
+    .kpi::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0; height: 2px;
+      border-radius: var(--r-lg) var(--r-lg) 0 0;
+    }
+    .kpi.orange::before { background: var(--orange); }
+    .kpi.green::before { background: var(--green); }
+    .kpi.blue::before { background: var(--blue); }
+    .kpi.red::before { background: var(--red); }
+    .kpi-label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-muted); margin-bottom: 10px; }
+    .kpi-value { font-family: 'Syne', sans-serif; font-size: 32px; font-weight: 800; line-height: 1; margin-bottom: 8px; }
+    .kpi-value.orange { color: var(--orange); }
+    .kpi-value.green { color: var(--green); }
+    .kpi-value.blue { color: var(--blue); }
+    .kpi-delta { display: inline-flex; align-items: center; gap: 4px; font-size: 12px; font-weight: 600; padding: 2px 8px; border-radius: 100px; }
+    .kpi-delta.up { background: var(--green-dim); color: var(--green); }
+    .kpi-delta.down { background: var(--red-dim); color: var(--red); }
+    .kpi-sub { font-size: 12px; color: var(--text-faint); margin-top: 6px; }
+
+    /* CHARTS ROW */
+    .charts-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px; }
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--r-lg);
+      padding: 22px;
+    }
+    .card-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 18px; }
+    .card-title { font-family: 'Syne', sans-serif; font-size: 15px; font-weight: 700; }
+    .card-sub { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+    .card-badge { font-size: 11px; font-weight: 600; padding: 4px 10px; border-radius: 100px; }
+    .badge-orange { background: var(--orange-dim); color: var(--orange); border: 1px solid rgba(230,92,0,0.2); }
+    .badge-green { background: var(--green-dim); color: var(--green); }
+    .chart-wrap { height: 200px; position: relative; }
+
+    /* TABELA */
+    .tabela { width: 100%; border-collapse: collapse; }
+    .tabela th { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-faint); padding: 8px 12px; text-align: left; border-bottom: 1px solid var(--border); }
+    .tabela td { padding: 12px 12px; font-size: 13px; border-bottom: 1px solid var(--border); }
+    .tabela tr:last-child td { border-bottom: none; }
+    .tabela tr:hover td { background: rgba(255,255,255,0.02); }
+    .brend-ime { font-weight: 600; font-family: 'DM Mono', monospace; font-size: 12px; }
+    .bar-mini { height: 4px; border-radius: 2px; background: var(--orange); display: inline-block; vertical-align: middle; }
+    .tag { display: inline-flex; align-items: center; padding: 2px 8px; border-radius: 100px; font-size: 11px; font-weight: 600; }
+    .tag-green { background: var(--green-dim); color: var(--green); }
+    .tag-orange { background: var(--orange-dim); color: var(--orange); }
+    .tag-red { background: var(--red-dim); color: var(--red); }
+
+    /* KALKULATOR */
+    .kal-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-lg); padding: 24px; margin-bottom: 24px; }
+    .kal-grid { display: grid; grid-template-columns: repeat(4, 1fr) auto; gap: 12px; align-items: end; margin-top: 16px; }
+    .kal-field label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.07em; color: var(--text-faint); display: block; margin-bottom: 6px; }
+    .kal-field select, .kal-field input {
+      width: 100%; background: var(--surface2); border: 1px solid var(--border);
+      border-radius: var(--r); padding: 10px 12px; font-size: 13px;
+      font-family: 'DM Sans', sans-serif; color: var(--text); outline: none;
+    }
+    .kal-field select:focus, .kal-field input:focus { border-color: var(--orange); }
+    .kal-rezultat {
+      display: none; margin-top: 20px; padding: 20px;
+      background: var(--surface2); border-radius: var(--r-lg);
+      border: 1px solid var(--border);
+      display: grid; grid-template-columns: 1fr 1fr 1fr 1fr;
+      gap: 20px;
+    }
+    .kal-stat label { font-size: 11px; color: var(--text-faint); text-transform: uppercase; letter-spacing: 0.07em; display: block; margin-bottom: 6px; }
+    .kal-stat value { font-family: 'Syne', sans-serif; font-size: 24px; font-weight: 800; color: var(--orange); display: block; }
+    .kal-stat small { font-size: 12px; color: var(--text-muted); }
+
+    /* ALERTS */
+    .alerts-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px; }
+    .alert-item { display: flex; align-items: center; gap: 12px; padding: 14px; background: var(--surface2); border-radius: var(--r); border: 1px solid var(--border); }
+    .alert-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+    .alert-info { flex: 1; }
+    .alert-name { font-weight: 600; font-size: 13px; }
+    .alert-meta { font-size: 12px; color: var(--text-muted); }
+    .alert-count { font-family: 'Syne', sans-serif; font-size: 18px; font-weight: 800; color: var(--orange); }
+
+    /* FULL WIDTH CARD */
+    .full-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-lg); padding: 22px; margin-bottom: 24px; }
+
+    /* LOADING */
+    .spin { width: 16px; height: 16px; border: 2px solid #333; border-top-color: var(--orange); border-radius: 50%; animation: spin .7s linear infinite; display: inline-block; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* LOGIN WALL */
+    .login-wall { display: none; position: fixed; inset: 0; background: var(--bg); z-index: 999; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 32px; }
+    .login-wall.show { display: flex; }
+    .login-wall h1 { font-family: 'Syne', sans-serif; font-size: 40px; font-weight: 800; margin-bottom: 12px; }
+    .login-wall h1 span { color: var(--orange); }
+    .login-wall p { font-size: 16px; color: var(--text-muted); max-width: 400px; margin-bottom: 28px; }
+
+    @media(max-width:1024px) {
+      .layout { grid-template-columns: 1fr; }
+      .sidebar { display: none; }
+      .kpi-grid { grid-template-columns: 1fr 1fr; }
+      .charts-row { grid-template-columns: 1fr; }
+      .kal-grid { grid-template-columns: 1fr 1fr; }
+      .kal-rezultat { grid-template-columns: 1fr 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- LOGIN WALL -->
+<div class="login-wall" id="loginWall">
+  <div style="font-family:'Syne',sans-serif;font-size:22px;font-weight:800;margin-bottom:32px;">oglix<span style="color:var(--orange);">.ba</span> <span style="font-size:12px;color:var(--orange);background:rgba(230,92,0,0.1);padding:4px 10px;border-radius:100px;vertical-align:middle;">BIZNIS</span></div>
+  <h1>Pristup<br><span>ograničen</span></h1>
+  <p>Oglix Biznis dashboard dostupan je samo registrovanim poslovnim korisnicima.</p>
+  <div style="display:flex;gap:12px;">
+    <button class="btn-sm btn-orange" onclick="window.location.href='/login.html'" style="padding:14px 28px;font-size:15px;">Prijava →</button>
+    <button class="btn-sm btn-ghost" onclick="window.location.href='/biznis.html'" style="padding:14px 28px;font-size:15px;">Saznaj više</button>
+  </div>
+</div>
+
+<div class="layout">
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      oglix<span>.ba</span>
+      <small>Biznis Dashboard</small>
+    </div>
+
+    <div class="nav-section">Pregled</div>
+    <div class="nav-item active" onclick="showSection('overview')"><span class="icon">📊</span> Overview</div>
+    <div class="nav-item" onclick="showSection('trziste')"><span class="icon">🏎️</span> Tržište</div>
+    <div class="nav-item" onclick="showSection('kalkulator')"><span class="icon">🧮</span> Kalkulator</div>
+
+    <div class="nav-section">Alati</div>
+    <div class="nav-item" onclick="showSection('alerti')"><span class="icon">🔔</span> Alerti <span id="alertBroj" style="margin-left:auto;background:var(--orange);color:white;font-size:10px;padding:2px 7px;border-radius:100px;"></span></div>
+    <div class="nav-item" onclick="showSection('konkurencija')"><span class="icon">🕵️</span> Konkurencija</div>
+
+    <div class="nav-section">Oglix</div>
+    <div class="nav-item" onclick="window.location.href='/oglasi.html'"><span class="icon">🔍</span> Svi oglasi</div>
+    <div class="nav-item" onclick="window.location.href='/statistike.html'"><span class="icon">📈</span> Statistike</div>
+    <div class="nav-item" onclick="window.location.href='/biznis.html'"><span class="icon">💼</span> Biznis plan</div>
+
+    <div class="sidebar-bottom">
+      <div class="user-card">
+        <div class="user-avatar" id="userAvatar">?</div>
+        <div>
+          <div class="user-name" id="userName">—</div>
+          <div class="user-plan">Pro Plan</div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main">
+
+    <!-- TOPBAR -->
+    <div class="topbar">
+      <div>
+        <div class="page-title" id="pageTitle">Dobro jutro 👋</div>
+        <div class="page-sub">Evo šta se dešava na tržištu danas</div>
+      </div>
+      <div class="topbar-right">
+        <div class="live-badge"><div class="live-dot"></div> Live podaci</div>
+        <button class="btn-sm btn-ghost" onclick="window.location.href='/alerti.html'">🔔 Alerti</button>
+        <button class="btn-sm btn-orange" onclick="window.location.href='/oglasi.html'">Pretraži oglase →</button>
+      </div>
+    </div>
+
+    <!-- ══ OVERVIEW SEKCIJA ══ -->
+    <div id="secOverview">
+
+      <!-- KPI -->
+      <div class="kpi-grid">
+        <div class="kpi orange">
+          <div class="kpi-label">Oglasa na tržištu</div>
+          <div class="kpi-value orange" id="kpiUkupno">—</div>
+          <span class="kpi-delta up">↑ Live</span>
+          <div class="kpi-sub">OLX + Autobum + Facebook</div>
+        </div>
+        <div class="kpi green">
+          <div class="kpi-label">Novih danas</div>
+          <div class="kpi-value green" id="kpiNovi">—</div>
+          <span class="kpi-delta up" id="kpiNoviDelta">↑ zadnja 24h</span>
+          <div class="kpi-sub">Automobili i vozila</div>
+        </div>
+        <div class="kpi blue">
+          <div class="kpi-label">Prosj. cijena vozila</div>
+          <div class="kpi-value blue" id="kpiCijena">—</div>
+          <span class="kpi-delta" id="kpiCijenaTag">tržišni prosjek</span>
+          <div class="kpi-sub">OLX.ba sva vozila</div>
+        </div>
+        <div class="kpi">
+          <div class="kpi-label">Facebook oglasi</div>
+          <div class="kpi-value" id="kpiFacebook">—</div>
+          <span class="kpi-delta up">↑ skupljeno</span>
+          <div class="kpi-sub">iz praćenih grupa</div>
+        </div>
+      </div>
+
+      <!-- CHARTS -->
+      <div class="charts-row">
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <div class="card-title">Top brendovi na tržištu</div>
+              <div class="card-sub">Broj aktivnih oglasa po brendu</div>
+            </div>
+            <span class="card-badge badge-orange">Live</span>
+          </div>
+          <div class="chart-wrap"><canvas id="chartBrendovi"></canvas></div>
+        </div>
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <div class="card-title">Kategorije</div>
+              <div class="card-sub">Distribucija oglasa po kategoriji</div>
+            </div>
+            <span class="card-badge badge-green">BiH tržište</span>
+          </div>
+          <div class="chart-wrap"><canvas id="chartKategorije"></canvas></div>
+        </div>
+      </div>
+
+      <!-- TABELA BRENDOVA -->
+      <div class="full-card">
+        <div class="card-header">
+          <div>
+            <div class="card-title">Brendovi — detaljna analiza</div>
+            <div class="card-sub">Broj oglasa i tržišno učešće</div>
+          </div>
+        </div>
+        <div style="overflow-x:auto;">
+          <table class="tabela" id="tabelaBrendova">
+            <thead><tr><th>#</th><th>Brend</th><th>Oglasi</th><th>Udio</th><th>Aktivnost</th><th>Status</th></tr></thead>
+            <tbody id="tabelaBrendovaBody"><tr><td colspan="6" style="text-align:center;color:var(--text-faint);padding:24px;"><div class="spin"></div></td></tr></tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ══ TRŽIŠTE SEKCIJA ══ -->
+    <div id="secTrziste" style="display:none;">
+      <div class="full-card">
+        <div class="card-header">
+          <div><div class="card-title">🏎️ Pregled tržišta vozila</div><div class="card-sub">Brendovi, kategorije i cijene</div></div>
+        </div>
+        <div class="charts-row" style="margin-bottom:0;">
+          <div style="background:var(--surface2);border-radius:var(--r-lg);padding:20px;">
+            <div class="card-title" style="margin-bottom:4px;">Brendovi po broju oglasa</div>
+            <div class="card-sub" style="margin-bottom:16px;">Top 10 brendova na OLX.ba</div>
+            <div class="chart-wrap"><canvas id="chartTrzisteBrendovi"></canvas></div>
+          </div>
+          <div style="background:var(--surface2);border-radius:var(--r-lg);padding:20px;">
+            <div class="card-title" style="margin-bottom:4px;">Platforme</div>
+            <div class="card-sub" style="margin-bottom:16px;">Distribucija po izvorima</div>
+            <div class="chart-wrap"><canvas id="chartPlatforme"></canvas></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ KALKULATOR SEKCIJA ══ -->
+    <div id="secKalkulator" style="display:none;">
+      <div class="kal-card">
+        <div class="card-title">🧮 Kalkulator tržišne vrijednosti</div>
+        <div class="card-sub" style="margin-top:4px;">Unesite karakteristike i saznajte realnu tržišnu vrijednost na osnovu prodanih oglasa</div>
+        <div class="kal-grid">
+          <div class="kal-field">
+            <label>Brend</label>
+            <select id="kalBrend">
+              <option value="vozila-volkswagen">Volkswagen</option>
+              <option value="vozila-mercedes">Mercedes</option>
+              <option value="vozila-bmw">BMW</option>
+              <option value="vozila-audi">Audi</option>
+              <option value="vozila-opel">Opel</option>
+              <option value="vozila-peugeot">Peugeot</option>
+              <option value="vozila-renault">Renault</option>
+              <option value="vozila-skoda">Škoda</option>
+              <option value="vozila-ford">Ford</option>
+              <option value="vozila-citroen">Citroën</option>
+              <option value="vozila-toyota">Toyota</option>
+              <option value="vozila-hyundai">Hyundai</option>
+              <option value="vozila-fiat">Fiat</option>
+            </select>
+          </div>
+          <div class="kal-field">
+            <label>Godište</label>
+            <input type="number" id="kalGodiste" placeholder="npr. 2015" min="1990" max="2026">
+          </div>
+          <div class="kal-field">
+            <label>Gorivo</label>
+            <select id="kalGorivo">
+              <option value="">Sve</option>
+              <option value="Dizel">Dizel</option>
+              <option value="Benzin">Benzin</option>
+              <option value="Hibrid">Hibrid</option>
+            </select>
+          </div>
+          <div class="kal-field">
+            <label>Max km</label>
+            <input type="number" id="kalKm" placeholder="npr. 150000">
+          </div>
+          <div>
+            <button class="btn-sm btn-orange" onclick="izracunaj()" style="padding:10px 20px;width:100%;">Izračunaj →</button>
+          </div>
+        </div>
+
+        <div class="kal-rezultat" id="kalRez">
+          <div class="kal-stat">
+            <label>Preporučena cijena</label>
+            <value id="kalProsjek">—</value>
+            <small>tržišni prosjek</small>
+          </div>
+          <div class="kal-stat">
+            <label>Optimalni raspon</label>
+            <value id="kalRaspon" style="font-size:18px;">—</value>
+            <small>25%-75% percentil</small>
+          </div>
+          <div class="kal-stat">
+            <label>Prosjek do prodaje</label>
+            <value id="kalDana">—</value>
+            <small>dana na tržištu</small>
+          </div>
+          <div class="kal-stat">
+            <label>Uzorak</label>
+            <value id="kalUzorak">—</value>
+            <small>prodanih oglasa</small>
+          </div>
+        </div>
+      </div>
+
+      <!-- Trenutni oglasi tog brenda -->
+      <div class="full-card">
+        <div class="card-header">
+          <div><div class="card-title">Trenutni oglasi odabranog brenda</div><div class="card-sub">Aktivni oglasi na tržištu</div></div>
+          <button class="btn-sm btn-ghost" onclick="ucitajOglaseBrenda()">Osvježi</button>
+        </div>
+        <div id="oglasiBrend" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;"></div>
+      </div>
+    </div>
+
+    <!-- ══ ALERTI SEKCIJA ══ -->
+    <div id="secAlerti" style="display:none;">
+      <div class="full-card">
+        <div class="card-header">
+          <div><div class="card-title">🔔 Moji biznis alerti</div><div class="card-sub">Alerti za nabavne prilike</div></div>
+          <button class="btn-sm btn-orange" onclick="window.location.href='/alerti.html'">+ Novi alert</button>
+        </div>
+        <div id="alertiLista" style="display:grid;grid-template-columns:1fr 1fr;gap:12px;"></div>
+      </div>
+    </div>
+
+    <!-- ══ KONKURENCIJA SEKCIJA ══ -->
+    <div id="secKonkurencija" style="display:none;">
+      <div class="full-card">
+        <div class="card-header">
+          <div><div class="card-title">🕵️ Analiza konkurencije</div><div class="card-sub">Poređenje brendova po tržišnom učešću</div></div>
+        </div>
+        <div class="charts-row" style="margin-bottom:0;">
+          <div style="background:var(--surface2);border-radius:var(--r-lg);padding:20px;">
+            <div class="card-title" style="margin-bottom:16px;">Tržišno učešće</div>
+            <div class="chart-wrap" style="height:280px;"><canvas id="chartKonkurencija"></canvas></div>
+          </div>
+          <div style="background:var(--surface2);border-radius:var(--r-lg);padding:20px;">
+            <div class="card-title" style="margin-bottom:16px;">Top 5 brendova</div>
+            <div id="top5Brendovi"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<script>
+var korisnik = JSON.parse(localStorage.getItem('korisnik') || 'null');
+
+// Login check
+if (!korisnik) {
+  document.getElementById('loginWall').classList.add('show');
+} else {
+  var ime = korisnik.ime || '';
+  document.getElementById('userName').textContent = ime;
+  document.getElementById('userAvatar').textContent = ime.charAt(0).toUpperCase();
+  var h = new Date().getHours();
+  var pozdrav = h < 12 ? 'Dobro jutro' : h < 18 ? 'Dobar dan' : 'Dobro veče';
+  document.getElementById('pageTitle').textContent = pozdrav + ', ' + ime.split(' ')[0] + ' 👋';
+}
+
+// Sekcije
+function showSection(id) {
+  ['Overview','Trziste','Kalkulator','Alerti','Konkurencija'].forEach(function(s) {
+    document.getElementById('sec' + s).style.display = 'none';
+  });
+  document.getElementById('sec' + id.charAt(0).toUpperCase() + id.slice(1)).style.display = 'block';
+  document.querySelectorAll('.nav-item').forEach(function(el) { el.classList.remove('active'); });
+  event.currentTarget.classList.add('active');
+}
+
+function fmt(n) {
+  if (!n || isNaN(n)) return '—';
+  return parseInt(n).toLocaleString('bs-BA');
+}
+
+// Chart defaults
+Chart.defaults.color = '#666';
+Chart.defaults.borderColor = 'rgba(255,255,255,0.06)';
+
+// Ucitaj glavne podatke
+async function ucitajPodatke() {
+  try {
+    // Ukupno oglasa
+    var res = await fetch('/api/live-oglasi?limit=1');
+    var data = await res.json();
+    if (data.uspjeh) {
+      document.getElementById('kpiUkupno').textContent = fmt(data.ukupno);
+    }
+
+    // Facebook oglasi
+    var resFb = await fetch('/api/live-oglasi?limit=1&platforma=facebook');
+    var dataFb = await resFb.json();
+    if (dataFb.uspjeh) {
+      document.getElementById('kpiFacebook').textContent = fmt(dataFb.ukupno);
+    }
+
+    // Novih vozila danas
+    var resNovi = await fetch('/api/live-oglasi?limit=1&kategorija=vozila');
+    var dataNovi = await resNovi.json();
+    if (dataNovi.uspjeh) {
+      document.getElementById('kpiNovi').textContent = fmt(dataNovi.ukupno);
+    }
+
+    // Kategorije
+    var resKat = await fetch('/api/kategorije');
+    var dataKat = await resKat.json();
+    if (dataKat.uspjeh) {
+      renderKategorije(dataKat.kategorije);
+      renderBrendovi(dataKat.kategorije);
+      renderTabelaBrendova(dataKat.kategorije);
+      renderKonkurencija(dataKat.kategorije);
+    }
+
+    // Prosjek cijena vozila iz nekoliko uzoraka
+    var resVozila = await fetch('/api/live-oglasi?limit=100&kategorija=vozila-volkswagen,vozila-bmw,vozila-audi,vozila-mercedes');
+    var dataVozila = await resVozila.json();
+    if (dataVozila.uspjeh && dataVozila.oglasi.length > 0) {
+      var cijene = dataVozila.oglasi
+        .map(function(o) { return parseFloat((o.cijena||'').replace(/\./g,'').replace(/[^0-9]/g,'')); })
+        .filter(function(c) { return c > 500; });
+      if (cijene.length > 0) {
+        var prosjek = Math.round(cijene.reduce(function(a,b){return a+b;},0) / cijene.length);
+        document.getElementById('kpiCijena').textContent = fmt(prosjek) + ' KM';
+      }
+    }
+
+  } catch(e) { console.log('Greška:', e.message); }
+}
+
+function renderKategorije(kategorije) {
+  var glavne = [
+    { label: 'Vozila', kljuc: 'vozila', boja: '#e65c00' },
+    { label: 'Elektronika', kljuc: 'elektronika', boja: '#3b82f6' },
+    { label: 'Nekretnine', kljuc: 'nekretnine', boja: '#22c55e' },
+    { label: 'Moto', kljuc: 'motocikl', boja: '#f59e0b' },
+    { label: 'Mašine', kljuc: 'masine', boja: '#8b5cf6' },
+    { label: 'Ostalo', kljuc: 'ostalo', boja: '#6b7280' },
+  ];
+  var podaci = glavne.map(function(g) {
+    var ukupno = kategorije.filter(function(k) { return k.kategorija && k.kategorija.includes(g.kljuc); })
+      .reduce(function(sum, k) { return sum + parseInt(k.broj); }, 0);
+    return { label: g.label, value: ukupno, boja: g.boja };
+  }).filter(function(d) { return d.value > 0; });
+
+  new Chart(document.getElementById('chartKategorije').getContext('2d'), {
+    type: 'doughnut',
+    data: {
+      labels: podaci.map(function(d){return d.label;}),
+      datasets: [{
+        data: podaci.map(function(d){return d.value;}),
+        backgroundColor: podaci.map(function(d){return d.boja;}),
+        borderWidth: 3, borderColor: '#111'
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { position: 'bottom', labels: { font: { size: 11 }, color: '#888', padding: 12 } } }
+    }
+  });
+
+  // Platform chart
+  try {
+    new Chart(document.getElementById('chartPlatforme').getContext('2d'), {
+      type: 'pie',
+      data: {
+        labels: ['OLX.ba', 'Autobum.ba', 'Facebook'],
+        datasets: [{ data: [85, 12, 3], backgroundColor: ['#22c55e', '#e65c00', '#3b82f6'], borderWidth: 3, borderColor: '#111' }]
+      },
+      options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { font: { size: 11 }, color: '#888' } } } }
+    });
+  } catch(e) {}
+}
+
+function renderBrendovi(kategorije) {
+  var vozilaBrendovi = kategorije.filter(function(k) {
+    return k.kategorija && k.kategorija.startsWith('vozila-');
+  }).sort(function(a,b) { return parseInt(b.broj) - parseInt(a.broj); }).slice(0, 10);
+
+  var labels = vozilaBrendovi.map(function(k) { return k.kategorija.replace('vozila-','').toUpperCase(); });
+  var values = vozilaBrendovi.map(function(k) { return parseInt(k.broj); });
+  var boje = ['#e65c00','#ff7a1f','#f97316','#fb923c','#fdba74','#3b82f6','#60a5fa','#22c55e','#4ade80','#a78bfa'];
+
+  new Chart(document.getElementById('chartBrendovi').getContext('2d'), {
+    type: 'bar',
+    data: {
+      labels: labels,
+      datasets: [{
+        data: values,
+        backgroundColor: boje,
+        borderRadius: 6, borderSkipped: false
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        y: { beginAtZero: true, grid: { color: 'rgba(255,255,255,0.04)' }, ticks: { color: '#555' } },
+        x: { grid: { display: false }, ticks: { color: '#666', font: { size: 10 } } }
+      }
+    }
+  });
+
+  // Kopija za tržište
+  try {
+    new Chart(document.getElementById('chartTrzisteBrendovi').getContext('2d'), {
+      type: 'bar',
+      data: { labels: labels, datasets: [{ data: values, backgroundColor: '#e65c00', borderRadius: 6 }] },
+      options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { beginAtZero: true, grid: { color: 'rgba(255,255,255,0.04)' }, ticks: { color: '#555' } }, y: { grid: { display: false }, ticks: { color: '#888', font: { size: 11 } } } } }
+    });
+  } catch(e) {}
+}
+
+function renderTabelaBrendova(kategorije) {
+  var brendovi = kategorije.filter(function(k) { return k.kategorija && k.kategorija.startsWith('vozila-'); })
+    .sort(function(a,b) { return parseInt(b.broj) - parseInt(a.broj); });
+  var ukupno = brendovi.reduce(function(s,k){return s+parseInt(k.broj);},0);
+  var maxBroj = brendovi[0] ? parseInt(brendovi[0].broj) : 1;
+
+  document.getElementById('tabelaBrendovaBody').innerHTML = brendovi.map(function(k, i) {
+    var ime = k.kategorija.replace('vozila-','');
+    ime = ime.charAt(0).toUpperCase() + ime.slice(1);
+    var broj = parseInt(k.broj);
+    var udio = ukupno > 0 ? (broj/ukupno*100).toFixed(1) : 0;
+    var barW = Math.round(broj/maxBroj*100);
+    var tag = i < 3
+      ? '<span class="tag tag-orange">Top ' + (i+1) + '</span>'
+      : i < 7 ? '<span class="tag tag-green">Aktivan</span>'
+      : '<span style="font-size:11px;color:var(--text-faint);">Mali</span>';
+    return '<tr>' +
+      '<td style="color:var(--text-faint);font-size:12px;">' + (i+1) + '</td>' +
+      '<td><span class="brend-ime">' + ime + '</span></td>' +
+      '<td style="font-weight:600;">' + fmt(broj) + '</td>' +
+      '<td>' +
+        '<div style="display:flex;align-items:center;gap:8px;">' +
+        '<div style="width:80px;height:4px;background:rgba(255,255,255,0.06);border-radius:2px;"><div style="height:4px;border-radius:2px;background:var(--orange);width:'+barW+'%"></div></div>' +
+        '<span style="font-size:12px;color:var(--text-muted);">' + udio + '%</span>' +
+        '</div>' +
+      '</td>' +
+      '<td>' + tag + '</td>' +
+      '<td><span style="width:8px;height:8px;border-radius:50%;background:var(--green);display:inline-block;margin-right:6px;"></span><span style="font-size:12px;color:var(--text-muted);">Aktivan</span></td>' +
+    '</tr>';
+  }).join('');
+}
+
+function renderKonkurencija(kategorije) {
+  var brendovi = kategorije.filter(function(k) { return k.kategorija && k.kategorija.startsWith('vozila-'); })
+    .sort(function(a,b) { return parseInt(b.broj) - parseInt(a.broj); }).slice(0,8);
+
+  try {
+    new Chart(document.getElementById('chartKonkurencija').getContext('2d'), {
+      type: 'doughnut',
+      data: {
+        labels: brendovi.map(function(k){ return k.kategorija.replace('vozila-','').toUpperCase(); }),
+        datasets: [{
+          data: brendovi.map(function(k){ return parseInt(k.broj); }),
+          backgroundColor: ['#e65c00','#3b82f6','#22c55e','#f59e0b','#8b5cf6','#ef4444','#06b6d4','#84cc16'],
+          borderWidth: 3, borderColor: '#111'
+        }]
+      },
+      options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { font:{size:10}, color:'#666' } } } }
+    });
+  } catch(e) {}
+
+  var ukupno = brendovi.reduce(function(s,k){return s+parseInt(k.broj);},0);
+  var boje = ['#e65c00','#3b82f6','#22c55e','#f59e0b','#8b5cf6'];
+  document.getElementById('top5Brendovi').innerHTML = brendovi.slice(0,5).map(function(k,i) {
+    var ime = k.kategorija.replace('vozila-','');
+    ime = ime.charAt(0).toUpperCase() + ime.slice(1);
+    var udio = ukupno > 0 ? (parseInt(k.broj)/ukupno*100).toFixed(1) : 0;
+    return '<div style="margin-bottom:14px;">' +
+      '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">' +
+        '<span style="font-weight:600;font-size:13px;">' + ime + '</span>' +
+        '<span style="font-size:12px;color:var(--text-muted);">' + fmt(k.broj) + ' (' + udio + '%)</span>' +
+      '</div>' +
+      '<div style="height:6px;background:rgba(255,255,255,0.06);border-radius:3px;">' +
+        '<div style="height:6px;border-radius:3px;background:' + boje[i] + ';width:' + udio + '%"></div>' +
+      '</div>' +
+    '</div>';
+  }).join('');
+}
+
+async function izracunaj() {
+  var brend = document.getElementById('kalBrend').value;
+  var godiste = document.getElementById('kalGodiste').value;
+  var gorivo = document.getElementById('kalGorivo').value;
+  var rez = document.getElementById('kalRez');
+  rez.style.display = 'grid';
+  document.getElementById('kalProsjek').textContent = '...';
+
+  try {
+    var res = await fetch('/api/kalkulator-vrijednosti', {
+      method: 'POST', headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({ kategorija: 'vozila', brand_kategorija: brend, godiste: godiste || null, gorivo: gorivo || null })
+    });
+    var data = await res.json();
+    if (data.uspjeh && data.uzorak > 0) {
+      document.getElementById('kalProsjek').textContent = fmt(data.prosjek) + ' KM';
+      document.getElementById('kalRaspon').textContent = fmt(data.preporucenaOd) + ' — ' + fmt(data.preporucenaDo) + ' KM';
+      document.getElementById('kalDana').textContent = (data.prosjekDana || '—') + (data.prosjekDana ? ' dana' : '');
+      document.getElementById('kalUzorak').textContent = fmt(data.uzorak);
+    } else {
+      document.getElementById('kalProsjek').textContent = 'Nema podataka';
+      document.getElementById('kalRaspon').textContent = '—';
+      document.getElementById('kalDana').textContent = '—';
+      document.getElementById('kalUzorak').textContent = '0';
+    }
+    ucitajOglaseBrenda();
+  } catch(e) {}
+}
+
+async function ucitajOglaseBrenda() {
+  var brend = document.getElementById('kalBrend').value;
+  var container = document.getElementById('oglasiBrend');
+  container.innerHTML = '<div style="color:var(--text-faint);padding:12px;"><div class="spin"></div></div>';
+  try {
+    var res = await fetch('/api/live-oglasi?limit=12&kategorija=' + encodeURIComponent(brend));
+    var data = await res.json();
+    if (data.uspjeh && data.oglasi.length > 0) {
+      container.innerHTML = data.oglasi.map(function(o) {
+        var meta = encodeURIComponent(JSON.stringify({naslov:o.naslov,cijena:o.cijena,slika:o.slika||'',link:o.link||'',platforma:o.platforma||'olx',kategorija:o.kategorija||''}));
+        return '<a href="/oglas.html?data=' + meta + '" target="_blank" style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;display:block;transition:border-color .15s;" onmouseover="this.style.borderColor=\'var(--orange)\'" onmouseout="this.style.borderColor=\'var(--border)\'">' +
+          (o.slika ? '<img src="' + o.slika + '" style="width:100%;height:120px;object-fit:cover;" onerror="this.style.display=\'none\'">' : '<div style="width:100%;height:120px;background:#222;"></div>') +
+          '<div style="padding:10px;">' +
+            '<div style="font-size:12px;font-weight:500;color:var(--text-muted);margin-bottom:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + o.naslov + '</div>' +
+            '<div style="font-family:Syne,sans-serif;font-size:15px;font-weight:700;color:var(--orange);">' + o.cijena + '</div>' +
+          '</div>' +
+        '</a>';
+      }).join('');
+    } else {
+      container.innerHTML = '<div style="color:var(--text-faint);padding:24px;grid-column:1/-1;">Nema oglasa za ovaj brend.</div>';
+    }
+  } catch(e) {}
+}
+
+async function ucitajAlerte() {
+  if (!korisnik) return;
+  try {
+    var res = await fetch('/api/alerti?email=' + encodeURIComponent(korisnik.email));
+    var data = await res.json();
+    var lista = document.getElementById('alertiLista');
+    var boje = ['#e65c00','#22c55e','#3b82f6','#f59e0b','#8b5cf6'];
+    if (!data.alerti || !data.alerti.length) {
+      lista.innerHTML = '<div style="color:var(--text-faint);padding:24px;grid-column:1/-1;">Nemaš aktivnih alertā. <a href="/alerti.html" style="color:var(--orange);">Kreiraj alert →</a></div>';
+      return;
+    }
+    document.getElementById('alertBroj').textContent = data.alerti.length;
+    lista.innerHTML = data.alerti.map(function(a, i) {
+      var boja = boje[i % boje.length];
+      var detalji = [];
+      if (a.kategorija) detalji.push(a.kategorija);
+      if (a.cijena_do) detalji.push('do ' + parseInt(a.cijena_do).toLocaleString() + ' KM');
+      return '<div class="alert-item">' +
+        '<div class="alert-dot" style="background:' + boja + ';"></div>' +
+        '<div class="alert-info">' +
+          '<div class="alert-name">' + a.naziv + '</div>' +
+          '<div class="alert-meta">' + (detalji.join(' · ') || 'Sve kategorije') + '</div>' +
+        '</div>' +
+        '<a href="/alerti.html" style="font-size:12px;color:var(--orange);">Uredi →</a>' +
+      '</div>';
+    }).join('');
+  } catch(e) {}
+}
+
+ucitajPodatke();
+ucitajAlerte();
+</script>
+</body>
+</html>
