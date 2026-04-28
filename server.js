@@ -1101,6 +1101,7 @@ async function fetchAutobum() {
         let page = 1;
         let imaSljedece = true;
 
+        let greskeBrojac = 0;
         while (imaSljedece) {
             try {
                 const r = await autobumGet(page, 1);
@@ -1110,6 +1111,8 @@ async function fetchAutobum() {
                     console.log('Autobum: nema više oglasa, zaustavljam.');
                     break;
                 }
+
+                greskeBrojac = 0; // resetuj brojac gresaka
 
                 for (const o of oglasi) {
                     try {
@@ -1147,9 +1150,15 @@ async function fetchAutobum() {
                 await new Promise(resolve => setTimeout(resolve, 800));
 
             } catch(e) {
-                console.log(`Autobum stranica ${page} greška:`, e.message);
+                greskeBrojac++;
+                console.log(`Autobum stranica ${page} greška (${greskeBrojac}/5):`, e.message);
                 await new Promise(resolve => setTimeout(resolve, 5000));
-                break;
+                // Pokusaj ponovo — ali ne vise od 5 puta zaredom
+                if (greskeBrojac >= 5) {
+                    console.log('Autobum: previše grešaka zaredom, zaustavljam.');
+                    break;
+                }
+                // Ne incrementuj page — pokusaj istu stranicu ponovo
             }
         }
 
