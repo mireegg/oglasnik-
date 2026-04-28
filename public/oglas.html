@@ -658,12 +658,53 @@ async function ucitajSlicne(d) {
 }
 
 // ── PRAĆENJE ─────────────────────────────────────────────
-function pratiOglas(){
+async function pratiOglas(){
   var k=JSON.parse(localStorage.getItem('korisnik')||'null');
-  if(!k){alert('Moraš biti prijavljen!');window.location.href='/login.html';return;}
+  if(!k){
+    if(confirm('Moraš biti prijavljen da pratiš oglas. Idi na prijavu?')) window.location.href='/login.html';
+    return;
+  }
+
+  // Prati oglas (staro pracenje)
   fetch('/pracenje',{method:'POST',headers:{'Content-Type':'application/json'},
     body:JSON.stringify({email:k.email,pretraga:oglasMeta.naslov,link:oglasMeta.link,slika:oglasMeta.slika})})
-    .then(function(r){return r.json();}).then(function(d){if(d.uspjeh)alert('Oglas dodan u praćenja! 🔔');});
+    .then(function(r){return r.json();}).catch(()=>{});
+
+  // Prati cijenu (novo — dobij email ako cijena padne)
+  try {
+    var res = await fetch('/api/prati-oglas-cijenu', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({
+        email: k.email,
+        oglas_link: oglasMeta.link,
+        oglas_naslov: oglasMeta.naslov,
+        oglas_slika: oglasMeta.slika,
+        cijena: oglasMeta.cijena,
+        platforma: oglasMeta.platforma || 'olx'
+      })
+    });
+    var data = await res.json();
+    if(data.uspjeh) {
+      // Promijeni dugme
+      var btn = document.querySelector('.btn-sekundarni');
+      if(btn) {
+        btn.textContent = '✅ Pratiš ovaj oglas';
+        btn.style.background = '#dcfce7';
+        btn.style.color = '#16a34a';
+        btn.style.borderColor = '#16a34a';
+        btn.disabled = true;
+      }
+      // Toast notifikacija
+      var toast = document.createElement('div');
+      toast.style.cssText = 'position:fixed;bottom:24px;right:24px;background:#1a1a1a;color:white;padding:14px 20px;border-radius:12px;font-size:14px;z-index:9999;box-shadow:0 4px 20px rgba(0,0,0,0.3);';
+      toast.innerHTML = '🔔 Pratiš ovaj oglas! Dobit ćeš email ako cijena padne.';
+      document.body.appendChild(toast);
+      setTimeout(function(){ toast.remove(); }, 4000);
+    }
+  } catch(e) {
+    alert('Oglas dodan u praćenja! 🔔');
+  }
 }
 
 // ── INIT ─────────────────────────────────────────────────

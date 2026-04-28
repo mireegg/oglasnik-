@@ -96,9 +96,26 @@
   </style>
 </head>
 <body>
+
+<!-- MOBILNI MENI -->
+<div class="mob-meni" id="mobMeni">
+  <div class="mob-meni-header">
+    <div class="logo">oglix<span style="color:var(--orange);">.ba</span></div>
+    <button class="mob-meni-close" onclick="toggleMeni()">✕</button>
+  </div>
+  <a href="/oglasi.html" onclick="toggleMeni()">Oglasi</a>
+  <a href="/statistike.html" onclick="toggleMeni()">Statistike</a>
+  <a href="/alerti.html" onclick="toggleMeni()">🔔 Alerti</a>
+  <a href="/biznis.html" style="color:var(--orange);" onclick="toggleMeni()">Biznis</a>
+  <div style="margin-top:24px;" id="mobNavRight"></div>
+</div>
+<div class="mob-sidebar-overlay" id="mobOverlay" onclick="toggleSidebar()"></div>
+<button class="mob-filter-btn" onclick="toggleSidebar()">⚙️ Filteri</button>
+
 <nav>
   <div class="logo">oglix<span>.ba</span></div>
   <div class="nav-links"><a href="/oglasi.html">Oglasi</a><a href="/statistike.html">Statistike</a><a href="/alerti.html">🔔 Alerti</a><a href="/biznis.html" style="color:var(--orange);font-weight:600;">Biznis</a></div>
+  <button class="hamburger" onclick="toggleMeni()" aria-label="Meni"><span></span><span></span><span></span></button>
   <div class="nav-right" id="navRight">
     <button class="nav-btn-ghost" onclick="window.location.href='/login.html'">Prijava</button>
     <button class="nav-btn" onclick="window.location.href='/login.html'">Registracija</button>
@@ -424,6 +441,27 @@ async function init(){
 }
 
 window.onload=init;
+
+function toggleMeni() {
+  var meni = document.getElementById('mobMeni');
+  meni.classList.toggle('open');
+  // Kopiraj navbar stanje u mob meni
+  var k = JSON.parse(localStorage.getItem('korisnik') || 'null');
+  var mobNavRight = document.getElementById('mobNavRight');
+  if (mobNavRight) {
+    mobNavRight.innerHTML = k
+      ? '<button class="nav-btn" onclick="odjava()" style="width:100%;">Odjava</button>'
+      : '<button class="nav-btn" onclick="window.location.href='/login.html'" style="width:100%;margin-bottom:8px;">Prijava</button>';
+  }
+}
+
+function toggleSidebar() {
+  var sidebar = document.querySelector('.sidebar');
+  var overlay = document.getElementById('mobOverlay');
+  sidebar.classList.toggle('mob-open');
+  overlay.classList.toggle('open');
+}
+
 </script>
 </body>
 </html>
