@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="bs">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Oglix — Moji Alerti</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    :root{--orange:#e65c00;--orange-light:#ff7a1f;--orange-dim:#fff0e6;--bg:#f7f5f2;--surface:#fff;--border:rgba(0,0,0,0.08);--text:#1a1a1a;--text-muted:#777;--text-faint:#aaa;--radius-sm:8px;--radius-md:12px;--radius-lg:18px;--radius-pill:100px;--green:#16a34a;--green-bg:#dcfce7;--red:#dc2626;--red-bg:#fee2e2;}
+    *{box-sizing:border-box;margin:0;padding:0;}
+    body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;font-size:15px;}
+    a{text-decoration:none;color:inherit;}
+    nav{background:var(--surface);border-bottom:1px solid var(--border);padding:0 32px;height:60px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;}
+    .logo{font-family:'Syne',sans-serif;font-size:22px;font-weight:700;letter-spacing:-0.5px;}
+    .logo span{color:var(--orange);}
+    .nav-right{display:flex;gap:10px;align-items:center;}
+    .nav-btn{background:var(--orange);color:white;border:none;border-radius:var(--radius-pill);padding:9px 20px;font-size:14px;font-family:'DM Sans',sans-serif;font-weight:500;cursor:pointer;}
+    .nav-btn-ghost{background:transparent;color:var(--text-muted);border:1px solid var(--border);border-radius:var(--radius-pill);padding:9px 20px;font-size:14px;font-family:'DM Sans',sans-serif;cursor:pointer;}
+
+    .page{max-width:800px;margin:0 auto;padding:32px 16px;}
+    .page-title{font-family:'Syne',sans-serif;font-size:28px;font-weight:800;margin-bottom:6px;}
+    .page-sub{font-size:14px;color:var(--text-muted);margin-bottom:32px;}
+
+    /* NOVI ALERT FORMA */
+    .nova-forma{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:24px;margin-bottom:28px;}
+    .forma-title{font-family:'Syne',sans-serif;font-size:16px;font-weight:700;margin-bottom:16px;}
+    .forma-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;}
+    .forma-field label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;color:var(--text-faint);display:block;margin-bottom:5px;}
+    .forma-field input,.forma-field select{width:100%;border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px 12px;font-size:14px;font-family:'DM Sans',sans-serif;color:var(--text);background:var(--bg);outline:none;}
+    .forma-field input:focus,.forma-field select:focus{border-color:var(--orange);}
+    .forma-field.full{grid-column:1/-1;}
+    .submit-btn{background:var(--orange);color:white;border:none;border-radius:var(--radius-md);padding:12px 24px;font-size:14px;font-weight:600;font-family:'DM Sans',sans-serif;cursor:pointer;width:100%;margin-top:4px;}
+    .submit-btn:hover{background:var(--orange-light);}
+    .poruka{font-size:13px;padding:10px 14px;border-radius:var(--radius-sm);margin-top:10px;display:none;}
+    .poruka.ok{background:var(--green-bg);color:var(--green);}
+    .poruka.err{background:var(--red-bg);color:var(--red);}
+
+    /* TABS */
+    .tabs{display:flex;gap:4px;margin-bottom:20px;border-bottom:1px solid var(--border);}
+    .tab{padding:10px 18px;font-size:14px;font-weight:500;color:var(--text-muted);cursor:pointer;border-bottom:2px solid transparent;background:none;border-top:none;border-left:none;border-right:none;font-family:'DM Sans',sans-serif;}
+    .tab.active{color:var(--orange);border-bottom-color:var(--orange);}
+
+    /* ALERT KARTICE */
+    .alert-kartica{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:18px 20px;margin-bottom:12px;display:flex;align-items:center;gap:16px;}
+    .alert-ikona{width:44px;height:44px;border-radius:var(--radius-md);background:var(--orange-dim);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;}
+    .alert-info{flex:1;}
+    .alert-naziv{font-weight:600;font-size:15px;margin-bottom:3px;}
+    .alert-detalji{font-size:12px;color:var(--text-muted);}
+    .alert-brisanje{background:none;border:1px solid var(--border);border-radius:var(--radius-sm);padding:6px 12px;font-size:12px;color:var(--text-muted);cursor:pointer;font-family:'DM Sans',sans-serif;}
+    .alert-brisanje:hover{border-color:var(--red);color:var(--red);}
+
+    /* PRAĆENJE OGLASA */
+    .pracenje-kartica{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:16px;margin-bottom:12px;display:flex;gap:14px;align-items:center;}
+    .pracenje-slika{width:72px;height:54px;object-fit:cover;border-radius:var(--radius-sm);flex-shrink:0;}
+    .pracenje-slika-ph{width:72px;height:54px;background:var(--bg);border-radius:var(--radius-sm);flex-shrink:0;}
+    .pracenje-info{flex:1;}
+    .pracenje-naziv{font-size:13px;font-weight:500;margin-bottom:4px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+    .pracenje-cijena{font-family:'Syne',sans-serif;font-size:16px;font-weight:700;color:var(--orange);}
+    .pracenje-pad{font-size:12px;color:var(--green);font-weight:600;}
+
+    /* EMPTY */
+    .empty{text-align:center;padding:48px 24px;color:var(--text-muted);}
+    .empty-icon{font-size:48px;margin-bottom:12px;}
+    .empty p{font-size:14px;}
+
+    /* LOGIN PROMPT */
+    .login-prompt{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:32px;text-align:center;}
+    .login-prompt h3{font-family:'Syne',sans-serif;font-size:18px;font-weight:700;margin-bottom:8px;}
+    .login-prompt p{color:var(--text-muted);font-size:14px;margin-bottom:20px;}
+
+    .loading{text-align:center;padding:32px;color:var(--text-muted);}
+    @media(max-width:600px){nav{padding:0 16px;}.forma-grid{grid-template-columns:1fr;}.page{padding:16px;}}
+  </style>
+</head>
+<body>
+
+<nav>
+  <a href="/" class="logo">oglix<span>.ba</span></a>
+  <div class="nav-right" id="navRight">
+    <button class="nav-btn-ghost" onclick="window.location.href='/login.html'">Prijava</button>
+    <button class="nav-btn" onclick="window.location.href='/login.html'">Registracija</button>
+  </div>
+</nav>
+
+<div class="page">
+  <div class="page-title">🔔 Moji Alerti</div>
+  <div class="page-sub">Postavi alertе i dobij email čim se pojavi oglas koji tražiš ili kad cijena padne.</div>
+
+  <div id="sadrzaj"></div>
+</div>
+
+<script>
+var korisnik = JSON.parse(localStorage.getItem('korisnik') || 'null');
+
+function updateNavbar() {
+  if (korisnik) {
+    document.getElementById('navRight').innerHTML =
+      '<span style="font-size:14px;color:var(--text-muted);margin-right:8px;">Zdravo, <strong>' + korisnik.ime.split(' ')[0] + '</strong></span>' +
+      '<button class="nav-btn-ghost" onclick="window.location.href=\'/dashboard.html\'">Dashboard</button>' +
+      '<button class="nav-btn" onclick="odjava()">Odjava</button>';
+  }
+}
+function odjava() { localStorage.removeItem('korisnik'); window.location.href = '/'; }
+
+function render() {
+  if (!korisnik) {
+    document.getElementById('sadrzaj').innerHTML =
+      '<div class="login-prompt">' +
+        '<div style="font-size:48px;margin-bottom:12px;">🔔</div>' +
+        '<h3>Prijavi se za alertе</h3>' +
+        '<p>Moraš biti prijavljen/a da bi postavljao/la alertе i primao/la email notifikacije.</p>' +
+        '<button class="nav-btn" onclick="window.location.href=\'/login.html\'" style="padding:12px 28px;font-size:15px;">Prijavi se →</button>' +
+      '</div>';
+    return;
+  }
+
+  document.getElementById('sadrzaj').innerHTML =
+    // FORMA
+    '<div class="nova-forma">' +
+      '<div class="forma-title">➕ Novi alert</div>' +
+      '<div class="forma-grid">' +
+        '<div class="forma-field full"><label>Ključna riječ</label><input id="fKljuc" type="text" placeholder="npr. Golf 7 TDI, iPhone 15, stan Sarajevo..."></div>' +
+        '<div class="forma-field"><label>Kategorija (opcionalno)</label><select id="fKat"><option value="">Sve kategorije</option><option value="vozila">Vozila</option><option value="elektronika">Elektronika</option><option value="nekretnine">Nekretnine</option><option value="motocikli">Moto</option></select></div>' +
+        '<div class="forma-field"><label>Naziv alerta</label><input id="fNaziv" type="text" placeholder="npr. Golf 7 do 12k"></div>' +
+        '<div class="forma-field"><label>Cijena od (KM)</label><input id="fCijenaOd" type="number" placeholder="npr. 5000"></div>' +
+        '<div class="forma-field"><label>Cijena do (KM)</label><input id="fCijenaDo" type="number" placeholder="npr. 12000"></div>' +
+      '</div>' +
+      '<button class="submit-btn" onclick="kreirajAlert()">🔔 Aktiviraj alert</button>' +
+      '<div class="poruka" id="alertPoruka"></div>' +
+    '</div>' +
+
+    // TABS
+    '<div class="tabs">' +
+      '<button class="tab active" onclick="promijeniTab(\'alerti\',this)" id="tabAlerti">Moji alerti</button>' +
+      '<button class="tab" onclick="promijeniTab(\'pracenja\',this)" id="tabPracenja">Praćeni oglasi</button>' +
+    '</div>' +
+
+    '<div id="listaAlerti"></div>' +
+    '<div id="listaPracenja" style="display:none;"></div>';
+
+  ucitajAlerte();
+  ucitajPracenja();
+}
+
+function promijeniTab(tab, el) {
+  document.querySelectorAll('.tab').forEach(function(t){t.classList.remove('active');});
+  el.classList.add('active');
+  document.getElementById('listaAlerti').style.display = tab === 'alerti' ? 'block' : 'none';
+  document.getElementById('listaPracenja').style.display = tab === 'pracenja' ? 'block' : 'none';
+}
+
+async function kreirajAlert() {
+  var kljuc = document.getElementById('fKljuc').value.trim();
+  var naziv = document.getElementById('fNaziv').value.trim();
+  var kat = document.getElementById('fKat').value;
+  var cijenaOd = document.getElementById('fCijenaOd').value;
+  var cijenaDo = document.getElementById('fCijenaDo').value;
+  var poruka = document.getElementById('alertPoruka');
+
+  if (!kljuc) { poruka.textContent = 'Unesite ključnu riječ!'; poruka.className='poruka err'; poruka.style.display='block'; return; }
+
+  try {
+    var res = await fetch('/api/alert', {
+      method: 'POST', headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({ email: korisnik.email, naziv: naziv || kljuc, kljucna_rijec: kljuc, kategorija: kat || null, cijena_od: cijenaOd || null, cijena_do: cijenaDo || null })
+    });
+    var data = await res.json();
+    if (data.uspjeh) {
+      poruka.textContent = '✅ Alert aktiviran! Primit ćeš email potvrdu.';
+      poruka.className = 'poruka ok'; poruka.style.display = 'block';
+      document.getElementById('fKljuc').value = '';
+      document.getElementById('fNaziv').value = '';
+      document.getElementById('fCijenaOd').value = '';
+      document.getElementById('fCijenaDo').value = '';
+      setTimeout(function() { poruka.style.display='none'; ucitajAlerte(); }, 3000);
+    } else {
+      poruka.textContent = data.poruka || 'Greška!'; poruka.className='poruka err'; poruka.style.display='block';
+    }
+  } catch(e) { poruka.textContent = 'Greška!'; poruka.className='poruka err'; poruka.style.display='block'; }
+}
+
+async function ucitajAlerte() {
+  var lista = document.getElementById('listaAlerti');
+  lista.innerHTML = '<div class="loading">Učitavam...</div>';
+  try {
+    var res = await fetch('/api/alerti?email=' + encodeURIComponent(korisnik.email));
+    var data = await res.json();
+    if (!data.alerti || !data.alerti.length) {
+      lista.innerHTML = '<div class="empty"><div class="empty-icon">🔔</div><p>Nemaš aktivnih alertа.<br>Kreiraj prvi alert gore!</p></div>';
+      return;
+    }
+    lista.innerHTML = data.alerti.map(function(a) {
+      var detalji = [];
+      if (a.kategorija) detalji.push(a.kategorija);
+      if (a.cijena_od) detalji.push('od ' + parseInt(a.cijena_od).toLocaleString() + ' KM');
+      if (a.cijena_do) detalji.push('do ' + parseInt(a.cijena_do).toLocaleString() + ' KM');
+      if (a.zadnje_slanje) detalji.push('Zadnji email: ' + new Date(a.zadnje_slanje).toLocaleDateString('bs-BA'));
+      return '<div class="alert-kartica">' +
+        '<div class="alert-ikona">🔔</div>' +
+        '<div class="alert-info">' +
+          '<div class="alert-naziv">' + a.naziv + '</div>' +
+          '<div class="alert-detalji">' + (detalji.length ? detalji.join(' · ') : 'Sve kategorije, sve cijene') + '</div>' +
+        '</div>' +
+        '<button class="alert-brisanje" onclick="obrisiAlert(' + a.id + ')">Obriši</button>' +
+      '</div>';
+    }).join('');
+  } catch(e) { lista.innerHTML = '<div class="loading">Greška pri učitavanju.</div>'; }
+}
+
+async function obrisiAlert(id) {
+  if (!confirm('Obrisati ovaj alert?')) return;
+  await fetch('/api/alert/' + id, { method: 'DELETE' });
+  ucitajAlerte();
+}
+
+async function ucitajPracenja() {
+  var lista = document.getElementById('listaPracenja');
+  try {
+    var res = await fetch('/api/pracenje-cijena?email=' + encodeURIComponent(korisnik.email));
+    var data = await res.json();
+    if (!data.pracenja || !data.pracenja.length) {
+      lista.innerHTML = '<div class="empty"><div class="empty-icon">📌</div><p>Nemaš praćenih oglasa.<br>Otvori oglas i klikni "Prati oglas".</p></div>';
+      return;
+    }
+    lista.innerHTML = data.pracenja.map(function(p) {
+      var padCijene = p.cijena_pocetna && p.cijena_trenutna && p.cijena_trenutna < p.cijena_pocetna
+        ? '↓ Cijena pala za ' + Math.round(p.cijena_pocetna - p.cijena_trenutna).toLocaleString() + ' KM'
+        : '';
+      return '<div class="pracenje-kartica">' +
+        (p.oglas_slika ? '<img class="pracenje-slika" src="' + p.oglas_slika + '" onerror="this.style.display=\'none\'">' : '<div class="pracenje-slika-ph"></div>') +
+        '<div class="pracenje-info">' +
+          '<div class="pracenje-naziv">' + (p.oglas_naslov || 'Oglas') + '</div>' +
+          '<div class="pracenje-cijena">' + (p.cijena_trenutna ? parseInt(p.cijena_trenutna).toLocaleString() + ' KM' : 'Na upit') + '</div>' +
+          (padCijene ? '<div class="pracenje-pad">' + padCijene + '</div>' : '') +
+        '</div>' +
+        '<div style="display:flex;flex-direction:column;gap:6px;">' +
+          '<a href="' + p.oglas_link + '" target="_blank" style="font-size:12px;color:var(--orange);">Pogledaj →</a>' +
+          '<button class="alert-brisanje" onclick="obrisiPracenje(' + p.id + ')">Obriši</button>' +
+        '</div>' +
+      '</div>';
+    }).join('');
+  } catch(e) {}
+}
+
+async function obrisiPracenje(id) {
+  if (!confirm('Prestati pratiti ovaj oglas?')) return;
+  await fetch('/api/prati-oglas-cijenu/' + id, { method: 'DELETE' });
+  ucitajPracenja();
+}
+
+updateNavbar();
+render();
+</script>
+</body>
+</html>

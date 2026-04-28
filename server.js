@@ -225,6 +225,8 @@ app.post('/api/sacuvaj-oglase', async (req, res) => {
                 [o.naslov, o.cijena, o.slika, o.link, o.platforma, o.kategorija || null]
             );
         }
+        // Provjeri alertе za nove oglase
+        provjeriAlerte(oglasi).catch(() => {});
         res.json({ uspjeh: true, sacuvano: oglasi.length });
     } catch(e) { res.json({ uspjeh: false, poruka: e.message }); }
 });
@@ -992,6 +994,326 @@ async function fetchSvaVozila() {
         console.log('OLX vozila ZAVRŠENO. Ukupno novih: ' + sacuvano);
     } catch(e) { console.log('OLX vozila greška:', e.message); }
 }
+
+
+// ════════════════════════════════════════════════════════════
+// ── EMAIL NOTIFIKACIJE ────────────────────────────────────
+// ════════════════════════════════════════════════════════════
+
+// HTML template za emailove
+function emailTemplate(naslov, sadrzaj) {
+    return `
+    <!DOCTYPE html>
+    <html>
+    <head><meta charset="UTF-8"></head>
+    <body style="margin:0;padding:0;background:#f7f5f2;font-family:'Helvetica Neue',Arial,sans-serif;">
+      <div style="max-width:580px;margin:0 auto;padding:32px 16px;">
+        <div style="text-align:center;margin-bottom:24px;">
+          <span style="font-size:24px;font-weight:800;color:#1a1a1a;">oglix<span style="color:#e65c00;">.ba</span></span>
+        </div>
+        <div style="background:white;border-radius:16px;padding:32px;border:1px solid rgba(0,0,0,0.08);">
+          <h2 style="font-size:20px;font-weight:700;color:#1a1a1a;margin:0 0 16px 0;">${naslov}</h2>
+          ${sadrzaj}
+        </div>
+        <p style="text-align:center;font-size:12px;color:#aaa;margin-top:20px;">
+          oglix.ba · Agregator oglasa za BiH<br>
+          <a href="https://oglasnik-production.up.railway.app/alerti.html" style="color:#e65c00;">Upravljaj alertima</a>
+        </p>
+      </div>
+    </body>
+    </html>`;
+}
+
+function posaljiEmail(to, subject, html) {
+    return transporter.sendMail({
+        from: `"Oglix.ba" <${process.env.EMAIL_USER}>`,
+        to, subject, html
+    }).catch(e => console.log('Email greška:', e.message));
+}
+
+// ── ALERT TABELA U BAZI ───────────────────────────────────
+async function initAlerti() {
+    await pool.query(`CREATE TABLE IF NOT EXISTS alerti (
+        id SERIAL PRIMARY KEY,
+        korisnik_email VARCHAR(100) NOT NULL,
+        naziv VARCHAR(200),
+        kljucna_rijec VARCHAR(200),
+        kategorija VARCHAR(100),
+        cijena_do NUMERIC,
+        cijena_od NUMERIC,
+        aktivan BOOLEAN DEFAULT true,
+        zadnje_slanje TIMESTAMP,
+        datum TIMESTAMP DEFAULT NOW()
+    )`);
+    await pool.query(`ALTER TABLE alerti ADD COLUMN IF NOT EXISTS naziv VARCHAR(200)`);
+    // Tabela za praćenje cijena oglasa
+    await pool.query(`CREATE TABLE IF NOT EXISTS pracenje_cijena (
+        id SERIAL PRIMARY KEY,
+        korisnik_email VARCHAR(100) NOT NULL,
+        oglas_link TEXT NOT NULL,
+        oglas_naslov TEXT,
+        oglas_slika TEXT,
+        cijena_pocetna NUMERIC,
+        cijena_trenutna NUMERIC,
+        platforma VARCHAR(50),
+        aktivan BOOLEAN DEFAULT true,
+        datum TIMESTAMP DEFAULT NOW(),
+        UNIQUE(korisnik_email, oglas_link)
+    )`);
+    console.log('Alerti inicijalizovani!');
+}
+initAlerti();
+
+// ── ALERT ENDPOINTI ───────────────────────────────────────
+
+// Kreiraj novi alert
+app.post('/api/alert', async (req, res) => {
+    const { email, naziv, kljucna_rijec, kategorija, cijena_od, cijena_do } = req.body;
+    if (!email || !kljucna_rijec) return res.json({ uspjeh: false, poruka: 'Email i ključna riječ su obavezni!' });
+    try {
+        const result = await pool.query(
+            `INSERT INTO alerti (korisnik_email, naziv, kljucna_rijec, kategorija, cijena_od, cijena_do) VALUES ($1,$2,$3,$4,$5,$6) RETURNING id`,
+            [email, naziv || kljucna_rijec, kljucna_rijec, kategorija || null, cijena_od || null, cijena_do || null]
+        );
+        // Potvrdan email
+        posaljiEmail(email, '✅ Alert kreiran — Oglix.ba', emailTemplate(
+            'Alert je aktiviran!',
+            `<p style="color:#555;line-height:1.6;">Obavijestit ćemo te čim se pojavi oglas koji odgovara:</p>
+            <div style="background:#f7f5f2;border-radius:10px;padding:16px;margin:16px 0;">
+                <strong style="color:#1a1a1a;">${kljucna_rijec}</strong>
+                ${kategorija ? `<br><span style="color:#777;font-size:13px;">Kategorija: ${kategorija}</span>` : ''}
+                ${cijena_do ? `<br><span style="color:#777;font-size:13px;">Cijena do: ${parseInt(cijena_do).toLocaleString()} KM</span>` : ''}
+                ${cijena_od ? `<br><span style="color:#777;font-size:13px;">Cijena od: ${parseInt(cijena_od).toLocaleString()} KM</span>` : ''}
+            </div>
+            <a href="https://oglasnik-production.up.railway.app" style="display:inline-block;background:#e65c00;color:white;padding:12px 24px;border-radius:10px;text-decoration:none;font-weight:600;">Pretraži oglase →</a>`
+        ));
+        res.json({ uspjeh: true, id: result.rows[0].id });
+    } catch(e) { res.json({ uspjeh: false, poruka: e.message }); }
+});
+
+// Dohvati alerte korisnika
+app.get('/api/alerti', async (req, res) => {
+    const { email } = req.query;
+    if (!email) return res.json({ uspjeh: false });
+    const result = await pool.query(`SELECT * FROM alerti WHERE korisnik_email = $1 AND aktivan = true ORDER BY datum DESC`, [email]);
+    res.json({ uspjeh: true, alerti: result.rows });
+});
+
+// Obriši alert
+app.delete('/api/alert/:id', async (req, res) => {
+    await pool.query(`UPDATE alerti SET aktivan = false WHERE id = $1`, [req.params.id]);
+    res.json({ uspjeh: true });
+});
+
+// Prati oglas (cijena + nestanak)
+app.post('/api/prati-oglas-cijenu', async (req, res) => {
+    const { email, oglas_link, oglas_naslov, oglas_slika, cijena, platforma } = req.body;
+    if (!email || !oglas_link) return res.json({ uspjeh: false });
+    try {
+        await pool.query(
+            `INSERT INTO pracenje_cijena (korisnik_email, oglas_link, oglas_naslov, oglas_slika, cijena_pocetna, cijena_trenutna, platforma)
+             VALUES ($1,$2,$3,$4,$5,$5,$6) ON CONFLICT (korisnik_email, oglas_link) DO NOTHING`,
+            [email, oglas_link, oglas_naslov, oglas_slika, parseCijena(cijena), platforma || 'olx']
+        );
+        res.json({ uspjeh: true });
+    } catch(e) { res.json({ uspjeh: false, poruka: e.message }); }
+});
+
+// Dohvati praćene oglase
+app.get('/api/pracenje-cijena', async (req, res) => {
+    const { email } = req.query;
+    const result = await pool.query(`SELECT * FROM pracenje_cijena WHERE korisnik_email = $1 AND aktivan = true ORDER BY datum DESC`, [email]);
+    res.json({ uspjeh: true, pracenja: result.rows });
+});
+
+// Obriši praćenje
+app.delete('/api/prati-oglas-cijenu/:id', async (req, res) => {
+    await pool.query(`UPDATE pracenje_cijena SET aktivan = false WHERE id = $1`, [req.params.id]);
+    res.json({ uspjeh: true });
+});
+
+// ── PROVJERI ALERTЕ — pokreće se pri svakom fetchu ────────
+async function provjeriAlerte(noviOglasi) {
+    if (!noviOglasi || !noviOglasi.length) return;
+    try {
+        const alerti = await pool.query(`SELECT * FROM alerti WHERE aktivan = true`);
+        if (!alerti.rows.length) return;
+
+        for (const alert of alerti.rows) {
+            // Ne šalji isti alert češće od jednom na sat
+            if (alert.zadnje_slanje && (new Date() - new Date(alert.zadnje_slanje)) < 3600000) continue;
+
+            const kljuc = alert.kljucna_rijec.toLowerCase();
+            const podudarni = noviOglasi.filter(o => {
+                if (!o.naslov.toLowerCase().includes(kljuc)) return false;
+                if (alert.kategorija && o.kategorija && !o.kategorija.includes(alert.kategorija)) return false;
+                const cijenaNum = parseCijena(o.cijena);
+                if (alert.cijena_do && cijenaNum > 0 && cijenaNum > parseFloat(alert.cijena_do)) return false;
+                if (alert.cijena_od && cijenaNum > 0 && cijenaNum < parseFloat(alert.cijena_od)) return false;
+                return true;
+            });
+
+            if (podudarni.length === 0) continue;
+
+            // Pošalji email
+            const oglasHtml = podudarni.slice(0, 5).map(o => `
+                <a href="${o.link}" style="display:block;text-decoration:none;color:inherit;border:1px solid rgba(0,0,0,0.08);border-radius:10px;padding:14px;margin-bottom:10px;">
+                    <div style="display:flex;gap:12px;align-items:center;">
+                        ${o.slika ? `<img src="${o.slika}" style="width:72px;height:54px;object-fit:cover;border-radius:6px;flex-shrink:0;">` : ''}
+                        <div>
+                            <div style="font-weight:600;color:#1a1a1a;font-size:14px;margin-bottom:4px;">${o.naslov.substring(0,80)}</div>
+                            <div style="color:#e65c00;font-weight:700;font-size:16px;">${o.cijena}</div>
+                            <div style="color:#aaa;font-size:12px;">${o.platforma.toUpperCase()} · ${o.kategorija || ''}</div>
+                        </div>
+                    </div>
+                </a>`).join('');
+
+            await posaljiEmail(
+                alert.korisnik_email,
+                `🔔 ${podudarni.length} novi oglas${podudarni.length > 1 ? 'a' : ''} za "${alert.naziv}" — Oglix.ba`,
+                emailTemplate(
+                    `Pronađeno ${podudarni.length} novih oglasa!`,
+                    `<p style="color:#555;margin-bottom:16px;">Novi oglasi koji odgovaraju tvom alertu <strong>"${alert.naziv}"</strong>:</p>
+                    ${oglasHtml}
+                    <a href="https://oglasnik-production.up.railway.app/?q=${encodeURIComponent(alert.kljucna_rijec)}" style="display:inline-block;background:#e65c00;color:white;padding:12px 24px;border-radius:10px;text-decoration:none;font-weight:600;margin-top:8px;">Vidi sve oglase →</a>`
+                )
+            );
+
+            await pool.query(`UPDATE alerti SET zadnje_slanje = NOW() WHERE id = $1`, [alert.id]);
+            console.log(`Alert email poslan: ${alert.korisnik_email} — "${alert.naziv}" (${podudarni.length} oglasa)`);
+        }
+    } catch(e) { console.log('Greška provjere alertā:', e.message); }
+}
+
+// ── PROVJERI PAD CIJENA — svakih sat ─────────────────────
+async function provjeriPadCijena() {
+    try {
+        const pracenja = await pool.query(`SELECT * FROM pracenje_cijena WHERE aktivan = true AND platforma = 'olx'`);
+        if (!pracenja.rows.length) return;
+
+        for (const p of pracenja.rows) {
+            try {
+                const olxId = p.oglas_link.split('/artikal/')[1];
+                if (!olxId) continue;
+
+                const res = await axios.get(`https://olx.ba/api/listings/${olxId}`, {
+                    headers: { 'User-Agent': 'Mozilla/5.0', 'Accept': 'application/json' },
+                    timeout: 5000
+                });
+
+                const novaCijena = parseCijena(res.data.display_price);
+                const staraCijena = parseFloat(p.cijena_trenutna) || 0;
+
+                // Oglas nestao
+                if (res.data.available === false) {
+                    await pool.query(`UPDATE pracenje_cijena SET aktivan = false WHERE id = $1`, [p.id]);
+                    await posaljiEmail(
+                        p.korisnik_email,
+                        `❌ Oglas koji pratiš je prodan — Oglix.ba`,
+                        emailTemplate(
+                            'Oglas je prodan ili uklonjen',
+                            `<p style="color:#555;margin-bottom:16px;">Oglas koji si pratio više nije dostupan:</p>
+                            <div style="border:1px solid rgba(0,0,0,0.08);border-radius:10px;padding:14px;margin-bottom:16px;">
+                                ${p.oglas_slika ? `<img src="${p.oglas_slika}" style="width:100%;height:160px;object-fit:cover;border-radius:6px;margin-bottom:10px;">` : ''}
+                                <div style="font-weight:600;color:#1a1a1a;">${p.oglas_naslov}</div>
+                                <div style="color:#aaa;font-size:13px;margin-top:4px;">Posljednja cijena: ${staraCijena > 0 ? staraCijena.toLocaleString() + ' KM' : 'Na upit'}</div>
+                            </div>
+                            <a href="https://oglasnik-production.up.railway.app" style="display:inline-block;background:#e65c00;color:white;padding:12px 24px;border-radius:10px;text-decoration:none;font-weight:600;">Traži slične oglase →</a>`
+                        )
+                    );
+                    continue;
+                }
+
+                // Cijena pala
+                if (novaCijena > 0 && staraCijena > 0 && novaCijena < staraCijena - 100) {
+                    const razlika = Math.round(staraCijena - novaCijena);
+                    const posto = Math.round(razlika / staraCijena * 100);
+                    await pool.query(`UPDATE pracenje_cijena SET cijena_trenutna = $1 WHERE id = $2`, [novaCijena, p.id]);
+                    await posaljiEmail(
+                        p.korisnik_email,
+                        `📉 Cijena pala za ${razlika} KM — Oglix.ba`,
+                        emailTemplate(
+                            `Cijena je snižena za ${razlika} KM (${posto}%)!`,
+                            `<p style="color:#555;margin-bottom:16px;">Prodavač je snizio cijenu oglasa koji pratiš:</p>
+                            <div style="border:1px solid rgba(0,0,0,0.08);border-radius:10px;padding:14px;margin-bottom:16px;">
+                                ${p.oglas_slika ? `<img src="${p.oglas_slika}" style="width:100%;height:160px;object-fit:cover;border-radius:6px;margin-bottom:10px;">` : ''}
+                                <div style="font-weight:600;color:#1a1a1a;margin-bottom:8px;">${p.oglas_naslov}</div>
+                                <div style="display:flex;align-items:center;gap:12px;">
+                                    <span style="color:#aaa;text-decoration:line-through;font-size:16px;">${staraCijena.toLocaleString()} KM</span>
+                                    <span style="color:#e65c00;font-weight:800;font-size:22px;">→ ${novaCijena.toLocaleString()} KM</span>
+                                </div>
+                                <div style="background:#dcfce7;color:#16a34a;padding:6px 12px;border-radius:6px;font-weight:600;font-size:13px;display:inline-block;margin-top:8px;">Uštedjet ćeš ${razlika.toLocaleString()} KM (${posto}%)</div>
+                            </div>
+                            <a href="${p.oglas_link}" style="display:inline-block;background:#e65c00;color:white;padding:12px 24px;border-radius:10px;text-decoration:none;font-weight:600;">Pogledaj oglas →</a>`
+                        )
+                    );
+                    console.log(`Pad cijene: ${p.oglas_naslov} — ${staraCijena} → ${novaCijena} KM`);
+                } else if (novaCijena > 0 && novaCijena !== staraCijena) {
+                    // Samo ažuriraj cijenu bez emaila
+                    await pool.query(`UPDATE pracenje_cijena SET cijena_trenutna = $1 WHERE id = $2`, [novaCijena, p.id]);
+                }
+
+                await new Promise(r => setTimeout(r, 800));
+            } catch(e) {
+                if (e.response?.status === 404) {
+                    await pool.query(`UPDATE pracenje_cijena SET aktivan = false WHERE id = $1`, [p.id]);
+                }
+            }
+        }
+    } catch(e) { console.log('Greška provjere cijena:', e.message); }
+}
+
+// Pokreni provjeru cijena svakih sat
+setInterval(provjeriPadCijena, 60 * 60 * 1000);
+
+// Tjedni digest — svaki ponedjeljak u 9:00
+async function posaljiTjedniDigest() {
+    try {
+        const korisnici = await pool.query(`SELECT DISTINCT korisnik_email FROM alerti WHERE aktivan = true`);
+        for (const k of korisnici.rows) {
+            const alerti = await pool.query(`SELECT * FROM alerti WHERE korisnik_email = $1 AND aktivan = true`, [k.korisnik_email]);
+            if (!alerti.rows.length) continue;
+
+            // Za svaki alert nađi zadnjih 5 oglasa
+            let sadrzaj = '';
+            for (const alert of alerti.rows.slice(0, 3)) {
+                const oglasi = await pool.query(
+                    `SELECT * FROM live_oglasi WHERE naslov ILIKE $1 AND datum > NOW() - INTERVAL '7 days' ORDER BY datum DESC LIMIT 3`,
+                    [`%${alert.kljucna_rijec}%`]
+                );
+                if (!oglasi.rows.length) continue;
+                sadrzaj += `<h3 style="color:#1a1a1a;font-size:15px;margin:20px 0 10px 0;">🔔 ${alert.naziv}</h3>`;
+                sadrzaj += oglasi.rows.map(o => `
+                    <a href="${o.link}" style="display:block;text-decoration:none;color:inherit;border:1px solid rgba(0,0,0,0.08);border-radius:8px;padding:12px;margin-bottom:8px;">
+                        <span style="font-weight:600;color:#1a1a1a;font-size:13px;">${o.naslov.substring(0,70)}</span>
+                        <span style="color:#e65c00;font-weight:700;margin-left:8px;">${o.cijena}</span>
+                    </a>`).join('');
+            }
+
+            if (!sadrzaj) continue;
+
+            await posaljiEmail(
+                k.korisnik_email,
+                `📊 Tjedni pregled oglasa — Oglix.ba`,
+                emailTemplate(
+                    'Tvoj tjedni pregled',
+                    `<p style="color:#555;margin-bottom:4px;">Evo šta se pojavilo u zadnjih 7 dana za tvoje alertе:</p>
+                    ${sadrzaj}
+                    <a href="https://oglasnik-production.up.railway.app" style="display:inline-block;background:#e65c00;color:white;padding:12px 24px;border-radius:10px;text-decoration:none;font-weight:600;margin-top:16px;">Vidi sve oglase →</a>`
+                )
+            );
+        }
+        console.log('Tjedni digest poslan!');
+    } catch(e) { console.log('Digest greška:', e.message); }
+}
+
+// Provjeri svaki dan u 9:00 je li ponedjeljak
+setInterval(() => {
+    const now = new Date();
+    if (now.getDay() === 1 && now.getHours() === 9 && now.getMinutes() < 5) {
+        posaljiTjedniDigest();
+    }
+}, 5 * 60 * 1000);
 
 async function fetchSveKategorije() {
     console.log('Pokrećem fetch...');
