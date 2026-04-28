@@ -103,6 +103,26 @@
       .mini-stats{grid-template-columns:1fr 1fr;}
       .page{padding:16px;}
     }
+  
+    /* NOVA ALERT FORMA */
+    .nova-forma{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:22px;margin-bottom:16px;}
+    .nova-forma-title{font-family:'Syne',sans-serif;font-size:14px;font-weight:700;margin-bottom:14px;display:flex;align-items:center;gap:8px;}
+    .forma-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;}
+    .forma-field label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;color:var(--text-faint);display:block;margin-bottom:5px;}
+    .forma-field input,.forma-field select{width:100%;border:1px solid var(--border);border-radius:var(--r);padding:10px 12px;font-size:13px;font-family:'DM Sans',sans-serif;color:var(--text);background:var(--bg);outline:none;}
+    .forma-field input:focus,.forma-field select:focus{border-color:var(--orange);}
+    .forma-field.full{grid-column:1/-1;}
+    .forma-submit{background:var(--orange);color:white;border:none;border-radius:var(--r);padding:10px 20px;font-size:13px;font-weight:600;font-family:'DM Sans',sans-serif;cursor:pointer;width:100%;margin-top:4px;}
+    .forma-submit:hover{background:var(--orange-light);}
+    .forma-poruka{font-size:12px;padding:8px 12px;border-radius:var(--r);margin-top:8px;display:none;}
+    .forma-poruka.ok{background:var(--green-bg);color:var(--green);}
+    .forma-poruka.err{background:var(--red-bg);color:var(--red);}
+    /* UPGRADE BANNER */
+    .upgrade-banner{background:linear-gradient(135deg,#1a1a1a,#2a1a0a);border:1px solid rgba(230,92,0,0.3);border-radius:var(--r-lg);padding:20px;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;gap:16px;}
+    .upgrade-text{font-size:13px;color:rgba(255,255,255,0.7);line-height:1.5;}
+    .upgrade-title{font-family:'Syne',sans-serif;font-size:15px;font-weight:700;color:white;margin-bottom:4px;}
+    .upgrade-btn{background:var(--orange);color:white;border:none;border-radius:var(--r-pill);padding:9px 18px;font-size:13px;font-weight:600;font-family:'DM Sans',sans-serif;cursor:pointer;white-space:nowrap;flex-shrink:0;}
+
   </style>
 </head>
 <body>
@@ -184,7 +204,7 @@ async function render() {
         '<div class="profil-email">' + email + '</div>' +
         '<div class="profil-badges">' +
           '<span class="profil-badge badge-free">Besplatni plan</span>' +
-          '<span class="profil-badge badge-pro" style="cursor:pointer;" onclick="window.location.href=\'/biznis.html\'">⬆️ Upgrade na Pro</span>' +
+          '<span class="profil-badge badge-pro" style="cursor:pointer;" onclick="window.location.href=\'/premium.html\'">⬆️ Upgrade na Premium</span>' +
         '</div>' +
       '</div>' +
       '<div class="profil-actions">' +
@@ -219,23 +239,40 @@ async function render() {
 }
 
 function renderAlerti(alerti) {
-  if (!alerti.length) return '<div class="empty"><div class="empty-icon">🔔</div><p>Nemaš aktivnih alertā.</p><p><a href="/alerti.html">Kreiraj prvi alert →</a></p></div>';
-  return alerti.map(function(a) {
-    var detalji = [];
-    if (a.kategorija) detalji.push(a.kategorija);
-    if (a.cijena_od) detalji.push('od ' + parseInt(a.cijena_od).toLocaleString() + ' KM');
-    if (a.cijena_do) detalji.push('do ' + parseInt(a.cijena_do).toLocaleString() + ' KM');
-    var zadnje = a.zadnje_slanje ? 'Zadnji email: ' + new Date(a.zadnje_slanje).toLocaleDateString('bs-BA') : 'Još nije aktiviran';
-    return '<div class="alert-kartica">' +
-      '<div class="alert-ikona">🔔</div>' +
-      '<div class="alert-info">' +
-        '<div class="alert-naziv">' + a.naziv + '</div>' +
-        '<div class="alert-meta">' + (detalji.join(' · ') || 'Sve kategorije') + ' · ' + zadnje + '</div>' +
-      '</div>' +
-      '<button class="btn-delete" onclick="obrisiAlert(' + a.id + ')">Obriši</button>' +
-    '</div>';
-  }).join('') +
-  '<div style="margin-top:12px;"><a href="/alerti.html" style="font-size:14px;color:var(--orange);font-weight:600;">+ Dodaj novi alert</a></div>';
+  var forma = '<div class="nova-forma">' +
+    '<div class="nova-forma-title">🔔 Novi alert</div>' +
+    '<div class="forma-grid">' +
+      '<div class="forma-field full"><label>Ključna riječ</label><input id="fKljuc" type="text" placeholder="npr. Golf 7 TDI, iPhone 15, stan Sarajevo..."></div>' +
+      '<div class="forma-field"><label>Kategorija</label><select id="fKat"><option value="">Sve</option><option value="vozila">Vozila</option><option value="elektronika">Elektronika</option><option value="nekretnine">Nekretnine</option><option value="motocikli">Moto</option></select></div>' +
+      '<div class="forma-field"><label>Naziv alerta</label><input id="fNaziv" type="text" placeholder="npr. Golf 7 do 12k"></div>' +
+      '<div class="forma-field"><label>Cijena od (KM)</label><input id="fCijenaOd" type="number" placeholder="0"></div>' +
+      '<div class="forma-field"><label>Cijena do (KM)</label><input id="fCijenaDo" type="number" placeholder="50000"></div>' +
+    '</div>' +
+    '<button class="forma-submit" onclick="kreirajAlert()">+ Aktiviraj alert</button>' +
+    '<div class="forma-poruka" id="alertFormaPoruka"></div>' +
+  '</div>';
+
+  var lista = '';
+  if (!alerti.length) {
+    lista = '<div class="empty"><div class="empty-icon">🔔</div><p>Nemaš aktivnih alertā.</p><p>Kreiraj prvi alert gore!</p></div>';
+  } else {
+    lista = alerti.map(function(a) {
+      var detalji = [];
+      if (a.kategorija) detalji.push(a.kategorija);
+      if (a.cijena_od) detalji.push('od ' + parseInt(a.cijena_od).toLocaleString() + ' KM');
+      if (a.cijena_do) detalji.push('do ' + parseInt(a.cijena_do).toLocaleString() + ' KM');
+      var zadnje = a.zadnje_slanje ? 'Zadnji email: ' + new Date(a.zadnje_slanje).toLocaleDateString('bs-BA') : 'Čeka novi oglas';
+      return '<div class="alert-kartica">' +
+        '<div class="alert-ikona">🔔</div>' +
+        '<div class="alert-info">' +
+          '<div class="alert-naziv">' + a.naziv + '</div>' +
+          '<div class="alert-meta">' + (detalji.join(' · ') || 'Sve kategorije') + ' · ' + zadnje + '</div>' +
+        '</div>' +
+        '<button class="btn-delete" onclick="obrisiAlert(' + a.id + ')">Obriši</button>' +
+      '</div>';
+    }).join('');
+  }
+  return forma + lista;
 }
 
 function renderPracenja(pracenja) {
@@ -275,7 +312,7 @@ function renderPostavke(ime, email) {
         '<div style="font-weight:600;margin-bottom:4px;">Besplatni plan</div>' +
         '<div style="font-size:13px;color:var(--text-muted);">5 alertā · Praćenje cijena · AI analiza</div>' +
       '</div>' +
-      '<button class="save-btn" onclick="window.location.href=\'/biznis.html\'">Upgrade na Pro →</button>' +
+      '<button class="save-btn" onclick="window.location.href=\'/premium.html\'">Upgrade na Premium →</button>' +
     '</div>' +
   '</div>' +
   '<div class="postavke-card">' +
@@ -308,6 +345,44 @@ function sacuvajPostavke() {
   p.textContent = '✅ Promjene sačuvane!';
   p.style.display = 'block';
   setTimeout(function() { p.style.display = 'none'; }, 3000);
+}
+
+
+async function kreirajAlert() {
+  var kljuc = document.getElementById('fKljuc').value.trim();
+  var naziv = document.getElementById('fNaziv').value.trim();
+  var kat = document.getElementById('fKat').value;
+  var cijenaOd = document.getElementById('fCijenaOd').value;
+  var cijenaDo = document.getElementById('fCijenaDo').value;
+  var poruka = document.getElementById('alertFormaPoruka');
+
+  if (!kljuc) {
+    poruka.textContent = 'Unesite ključnu riječ!';
+    poruka.className = 'forma-poruka err';
+    poruka.style.display = 'block';
+    return;
+  }
+  try {
+    var res = await fetch('/api/alert', {
+      method: 'POST', headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({ email: korisnik.email, naziv: naziv || kljuc, kljucna_rijec: kljuc, kategorija: kat || null, cijena_od: cijenaOd || null, cijena_do: cijenaDo || null })
+    });
+    var data = await res.json();
+    if (data.uspjeh) {
+      poruka.textContent = '✅ Alert aktiviran! Primit ćeš email potvrdu.';
+      poruka.className = 'forma-poruka ok';
+      poruka.style.display = 'block';
+      setTimeout(function() { render(); }, 1500);
+    } else {
+      poruka.textContent = data.poruka || 'Greška!';
+      poruka.className = 'forma-poruka err';
+      poruka.style.display = 'block';
+    }
+  } catch(e) {
+    poruka.textContent = 'Greška. Pokušaj ponovo.';
+    poruka.className = 'forma-poruka err';
+    poruka.style.display = 'block';
+  }
 }
 
 updateNavbar();
