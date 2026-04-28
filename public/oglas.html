@@ -602,7 +602,47 @@ async function ucitajSlicne(d) {
   var katTip = d.kategorija_tip || 'ostalo';
   postaviTekstovePoKategoriji(katTip);
 
-  // Provjeri ima li dovoljno podataka
+  // Za Autobum i Facebook — koristi novi endpoint po nazivu
+  if ((oglasPlatforma === 'autobum' || oglasPlatforma === 'facebook') && katTip === 'vozila') {
+    var brandId = getBrandId(oglasMeta.naslov, d.brand);
+    document.getElementById('grupa1Sekcija').style.display = 'block';
+    document.getElementById('grupa1Kartice').innerHTML = '<div class="loading-inline"><div class="spinner"></div> Tražim slične oglase na OLX.ba...</div>';
+    try {
+      var res = await fetch('/api/slicni-po-nazivu', {
+        method: 'POST', headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({
+          naslov: oglasMeta.naslov,
+          cijena: oglasMeta.cijena,
+          brand_id: brandId,
+          gorivo: d.gorivo || null,
+          godiste: d.godiste || null,
+          km: d.km || null
+        })
+      });
+      var data = await res.json();
+      if (data.uspjeh && (data.grupa1.length || data.grupa2.length)) {
+        document.getElementById('preciznostBadge').textContent = '🎯 ' + (data.preciznost||'Slični oglasi sa OLX.ba');
+        if (data.aiAnaliza) {
+          document.getElementById('aiPorediBox').style.display = 'block';
+          document.getElementById('aiPorediTekst').innerHTML = formatAiTekst(data.aiAnaliza);
+        }
+        renderKartice(data.grupa1, 'grupa1Kartice', false, katTip);
+        if (data.grupa2 && data.grupa2.length) {
+          document.getElementById('grupa2Sekcija').style.display = 'block';
+          renderKartice(data.grupa2, 'grupa2Kartice', true, katTip);
+        }
+      } else {
+        document.getElementById('nemaSlichnih').style.display = 'block';
+        document.getElementById('grupa1Sekcija').style.display = 'none';
+      }
+    } catch(e) {
+      document.getElementById('nemaSlichnih').style.display = 'block';
+      document.getElementById('grupa1Sekcija').style.display = 'none';
+    }
+    return;
+  }
+
+  // Provjeri ima li dovoljno podataka za OLX
   var mozePorediti = (
     (katTip==='vozila' && d.brand_id && d.model_id) ||
     (katTip==='mobiteli' && (d.brand_id || d.model_id)) ||
@@ -718,6 +758,30 @@ async function pratiOglas(){
   }
 }
 
+
+
+// ── BRAND MAPA (naziv → OLX brand_id) ────────────────────
+var BRAND_MAPA = {
+  'volkswagen':89,'vw':89,'golf':89,'passat':89,'tiguan':89,
+  'audi':7,'bmw':11,'mercedes':56,'mercedes-benz':56,
+  'opel':47,'peugeot':65,'renault':71,'toyota':72,
+  'honda':30,'ford':20,'skoda':77,'škoda':77,
+  'seat':57,'fiat':29,'citroen':9,'citroën':9,
+  'hyundai':35,'kia':39,'mazda':46,'nissan':41,
+  'suzuki':66,'volvo':90,'porsche':69,'jeep':22,
+  'land rover':33,'landrover':33,'range rover':33,
+  'mitsubishi':64,'subaru':62,'dacia':15,
+  'alfa romeo':2,'alfa-romeo':2,'mini':36,
+  'chevrolet':4,'lexus':48,'infiniti':38
+};
+
+function getBrandId(naslov, brand) {
+  var tekst = ((brand||'') + ' ' + (naslov||'')).toLowerCase();
+  for (var naziv in BRAND_MAPA) {
+    if (tekst.includes(naziv)) return BRAND_MAPA[naziv];
+  }
+  return null;
+}
 
 // ── FACEBOOK NASLOV PARSER ────────────────────────────────
 function parseNaslovFacebook(naslov) {

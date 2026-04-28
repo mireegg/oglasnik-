@@ -232,6 +232,21 @@ app.get('/api/autobum-detalji/:id', async (req, res) => {
         if (o.attributes) o.attributes.forEach(a => { attrs[a.name] = a.value; });
         if (o.fields) o.fields.forEach(f => { attrs[f.name] = f.value; });
 
+        // Izvuci brend iz naslova
+        const naslovLower = (o.title || '').toLowerCase();
+        const brendovi = {
+            'volkswagen':89,'vw':89,'audi':7,'bmw':11,'mercedes':56,
+            'opel':47,'peugeot':65,'renault':71,'toyota':72,'honda':30,
+            'ford':20,'skoda':77,'škoda':77,'seat':57,'fiat':29,
+            'citroen':9,'citroën':9,'hyundai':35,'kia':39,'mazda':46,
+            'nissan':41,'suzuki':66,'volvo':90,'porsche':69,'jeep':22,
+            'mitsubishi':64,'subaru':62,'dacia':15,'alfa romeo':2,'mini':36
+        };
+        let detectedBrandId = null;
+        for (const [naziv, bid] of Object.entries(brendovi)) {
+            if (naslovLower.includes(naziv)) { detectedBrandId = bid; break; }
+        }
+
         res.json({
             uspjeh: true,
             detalji: {
@@ -240,17 +255,16 @@ app.get('/api/autobum-detalji/:id', async (req, res) => {
                 kategorija_tip: 'vozila',
                 brand: o.brand?.name || o.make || '',
                 model: o.model?.name || o.model_name || '',
-                brand_id: null,
+                brand_id: detectedBrandId,
                 model_id: null,
-                grad: o.city?.name || o.location || 'BiH',
+                grad: o.city?.name || (o.location && o.location.city) || 'BiH',
                 slike: o.images || (o.image ? [o.image] : []),
-                // Vozila
                 godiste: attrs['Godina'] || attrs['year'] || o.year || null,
-                gorivo: attrs['Gorivo'] || attrs['fuel_type'] || o.fuel_type || null,
+                gorivo: attrs['Gorivo'] || attrs['fuel_type'] || o.fuel || o.fuel_type || null,
                 transmisija: attrs['Mjenjač'] || attrs['transmission'] || o.transmission || null,
                 km: attrs['Kilometraža'] || attrs['mileage'] || o.mileage || null,
                 kubikaza: attrs['Zapremina motora'] || attrs['engine_displacement'] || o.engine_displacement || null,
-                kw: attrs['Snaga motora'] || attrs['engine_power'] || o.engine_power || null,
+                kw: attrs['Snaga motora'] || attrs['engine_power'] || o.power_kw || o.engine_power || null,
                 boja: attrs['Boja'] || attrs['color'] || o.color || null,
                 tip_vozila: attrs['Tip vozila'] || o.body_type || null,
                 pogon: attrs['Pogon'] || o.drive_type || null,
@@ -1060,34 +1074,60 @@ async function autobumGet(page, katId) {
 }
 
 async function fetchAutobum() {
+    console.log('Autobum: počinjem fetch svih oglasa...');
     try {
-        const prva = await autobumGet(1, 1);
-        const sveStrane = [prva.data || []];
-        let nextUrl = prva.links?.next;
-        let page = 2;
-        while (nextUrl && page <= 9999) {
+        let sacuvano = 0;
+        let page = 1;
+        let hasNext = true;
+
+        while (hasNext) {
             try {
                 const r = await autobumGet(page, 1);
-                sveStrane.push(r.data || []);
-                nextUrl = r.links?.next;
+                const oglasi = r.data || [];
+                if (!oglasi.length) break;
+
+                for (const o of oglasi) {
+                    try {
+                        const link = `https://autobum.ba/oglas/${o.id}`;
+                        // Koristi year, mileage, fuel direktno iz search rezultata
+                        const dbRes = await pool.query(
+                            `INSERT INTO live_oglasi (naslov, cijena, slika, link, platforma, kategorija, godiste, km, gorivo)
+                             VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9)
+                             ON CONFLICT (link) DO UPDATE SET
+                               cijena = EXCLUDED.cijena,
+                               godiste = EXCLUDED.godiste,
+                               km = EXCLUDED.km,
+                               gorivo = EXCLUDED.gorivo`,
+                            [
+                                o.title,
+                                o.price || 'Na upit',
+                                o.image || '',
+                                link,
+                                'autobum',
+                                'vozila',
+                                o.year ? parseInt(o.year) : null,
+                                o.mileage ? parseInt(o.mileage) : null,
+                                o.fuel || null
+                            ]
+                        );
+                        if (dbRes.rowCount > 0) sacuvano++;
+                    } catch(e) {}
+                }
+
+                hasNext = !!r.links?.next;
                 page++;
-                await new Promise(r => setTimeout(r, 1000));
-            } catch(e) { break; }
-        }
-        let sacuvano = 0;
-        for (const stranica of sveStrane) {
-            for (const o of stranica) {
-                try {
-                    const link = `https://autobum.ba/oglas/${o.id}`;
-                    const dbRes = await pool.query(`INSERT INTO live_oglasi (naslov, cijena, slika, link, platforma, kategorija) VALUES ($1,$2,$3,$4,$5,$6) ON CONFLICT (link) DO NOTHING`,
-                        [o.title, o.price || 'Na upit', o.image || '', link, 'autobum', 'vozila']);
-                    if (dbRes.rowCount > 0) sacuvano++;
-                } catch(e) {}
+
+                if (page % 100 === 0) console.log(`Autobum: stranica ${page}, sacuvano ${sacuvano}`);
+                await new Promise(r => setTimeout(r, 800));
+            } catch(e) {
+                console.log(`Autobum stranica ${page} greška:`, e.message);
+                await new Promise(r => setTimeout(r, 5000));
+                break;
             }
         }
-        console.log(`Autobum: vozila — ${sacuvano} novih oglasa`);
+
+        console.log(`Autobum ZAVRŠENO: ${sacuvano} novih oglasa, ${page} stranica`);
     } catch(e) { console.log('Autobum greška:', e.message); }
-    console.log('Autobum fetch završen!');
 }
 
 // ── OLX FETCH SVIH VOZILA (bez filtera po brendu) ─────────
