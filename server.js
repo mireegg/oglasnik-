@@ -1896,6 +1896,64 @@ app.post('/api/admin/promijeni-plan', async (req, res) => {
     } catch(e) { res.json({ uspjeh: false, poruka: e.message }); }
 });
 
+
+// ── OLX DETALJI — POSTEPENO POPUNJAVANJE ─────────────────
+// Svakih 2h dohvata detalje za 200 OLX vozila koja ih nemaju
+async function popuniOlxDetalje() {
+    try {
+        const oglasi = await pool.query(
+            `SELECT id, link FROM live_oglasi 
+             WHERE platforma = 'olx' 
+             AND kategorija LIKE 'vozila%' 
+             AND godiste IS NULL 
+             AND km IS NULL
+             ORDER BY datum DESC
+             LIMIT 200`
+        );
+        if (!oglasi.rows.length) { console.log('OLX detalji: svi su popunjeni!'); return; }
+        console.log(`OLX detalji: popunjavam ${oglasi.rows.length} oglasa...`);
+        let popunjeno = 0;
+        for (const oglas of oglasi.rows) {
+            try {
+                const olxId = oglas.link.split('/artikal/')[1];
+                if (!olxId) continue;
+                const { data, attrs } = await dohvatiOlxDetalje(olxId);
+                const godiste = attrs['godiste'] ? parseInt(attrs['godiste']) : null;
+                const km = attrs['kilometra-a'] ? parseInt(attrs['kilometra-a']) : null;
+                const gorivo = attrs['gorivo'] || null;
+                const kw = attrs['kilovata-kw'] ? parseInt(attrs['kilovata-kw']) : null;
+                const boja = attrs['boja'] || null;
+                const grad = data.cities?.[0]?.name || null;
+                const cijena_num = parseCijena(data.display_price);
+                await pool.query(
+                    `UPDATE live_oglasi SET 
+                        godiste = $1, km = $2, gorivo = $3, kw = $4, 
+                        boja = $5, grad = $6, cijena_num = $7
+                     WHERE id = $8`,
+                    [godiste, km, gorivo, kw, boja, grad, cijena_num || null, oglas.id]
+                );
+                popunjeno++;
+                await new Promise(r => setTimeout(r, 600));
+            } catch(e) {
+                if (e.response?.status === 404) {
+                    await pool.query(`UPDATE live_oglasi SET available = false WHERE id = $1`, [oglas.id]);
+                }
+            }
+        }
+        console.log(`OLX detalji: popunjeno ${popunjeno} oglasa.`);
+    } catch(e) { console.log('OLX detalji greška:', e.message); }
+}
+
+// Pokreni svakih 2 sata (između fetchova)
+setInterval(popuniOlxDetalje, 2 * 60 * 60 * 1000 + 30 * 60 * 1000); // 2.5h offset
+setTimeout(popuniOlxDetalje, 5 * 60 * 1000); // Pokreni 5 minuta nakon starta
+
+// Ručno pokretanje
+app.get('/api/popuni-olx-detalje', async (req, res) => {
+    res.json({ uspjeh: true, poruka: 'Pokrenuto! Prati Railway logs.' });
+    popuniOlxDetalje();
+});
+
 fetchSveKategorije();
 setInterval(fetchSveKategorije, 2 * 60 * 60 * 1000);
 
