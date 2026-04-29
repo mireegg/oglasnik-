@@ -3,498 +3,466 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Oglix — Tržišna Inteligencija</title>
+  <title>Oglix Biznis — Tržišna inteligencija za dilere u BiH</title>
+  <meta name="description" content="Pratite tržište vozila u BiH u realnom vremenu. Dashboard, analiza konkurencije, kalkulator vrijednosti. Za auto dilere i agencije.">
+  <meta name="keywords" content="auto diler BiH, tržišna analiza vozila, oglix biznis, dashboard dileri">
+  <meta name="author" content="Oglix.ba">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://oglix.ba/biznis.html">
+  <!-- Open Graph -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://oglix.ba/biznis.html">
+  <meta property="og:title" content="Oglix Biznis — Tržišna inteligencija za dilere u BiH">
+  <meta property="og:description" content="Pratite tržište vozila u BiH u realnom vremenu. Dashboard, analiza konkurencije, kalkulator vrijednosti. Za auto dilere i agencije.">
+  <meta property="og:image" content="https://oglix.ba/og-image.png">
+  <meta property="og:locale" content="bs_BA">
+  <meta property="og:site_name" content="Oglix.ba">
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Oglix Biznis — Tržišna inteligencija za dilere u BiH">
+  <meta name="twitter:description" content="Pratite tržište vozila u BiH u realnom vremenu. Dashboard, analiza konkurencije, kalkulator vrijednosti. Za auto dilere i agencije.">
+  <meta name="twitter:image" content="https://oglix.ba/og-image.png">
+  <!-- Favicon -->
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔍</text></svg>">
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
   <style>
-    :root {
-      --orange:#e65c00;--orange-light:#ff7a1f;--orange-dim:#fff0e6;
-      --bg:#f7f5f2;--surface:#fff;--border:rgba(0,0,0,0.07);
-      --text:#1a1a1a;--text-muted:#777;--text-faint:#aaa;
-      --radius-sm:8px;--radius-md:14px;--radius-lg:20px;--radius-pill:100px;
-      --green:#16a34a;--green-bg:#dcfce7;--red:#dc2626;--red-bg:#fee2e2;
-      --blue:#1d4ed8;--blue-bg:#dbeafe;
-    }
+    :root{--orange:#e65c00;--orange-light:#ff7a1f;--orange-dim:#fff0e6;--bg:#f7f5f2;--surface:#fff;--border:rgba(0,0,0,0.08);--text:#1a1a1a;--text-muted:#777;--text-faint:#aaa;--radius-sm:8px;--radius-md:14px;--radius-lg:20px;--radius-pill:100px;}
     *{box-sizing:border-box;margin:0;padding:0;}
-    body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;font-size:15px;}
+    body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);font-size:15px;}
     a{text-decoration:none;color:inherit;}
 
-    nav{background:var(--surface);border-bottom:1px solid var(--border);padding:0 32px;height:60px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;}
-    .logo{font-family:'Syne',sans-serif;font-size:22px;font-weight:700;letter-spacing:-0.5px;}
+    /* NAV */
+    nav{background:rgba(255,255,255,0.95);backdrop-filter:blur(10px);border-bottom:1px solid var(--border);padding:0 48px;height:64px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;}
+    .logo{font-family:'Syne',sans-serif;font-size:22px;font-weight:800;letter-spacing:-0.5px;}
     .logo span{color:var(--orange);}
-    .nav-links{display:flex;align-items:center;gap:28px;}
-    .nav-links a{font-size:14px;color:var(--text-muted);}
-    .nav-right{display:flex;gap:10px;align-items:center;}
-    .nav-btn{background:var(--orange);color:white;border:none;border-radius:var(--radius-pill);padding:9px 20px;font-size:14px;font-family:'DM Sans',sans-serif;font-weight:500;cursor:pointer;}
-    .nav-btn-ghost{background:transparent;color:var(--text-muted);border:1px solid var(--border);border-radius:var(--radius-pill);padding:9px 20px;font-size:14px;font-family:'DM Sans',sans-serif;cursor:pointer;}
+    .logo-biznis{font-size:12px;font-weight:600;color:var(--orange);background:var(--orange-dim);padding:3px 10px;border-radius:var(--radius-pill);margin-left:8px;letter-spacing:0.05em;text-transform:uppercase;}
+    .nav-right{display:flex;gap:12px;align-items:center;}
+    .nav-link{font-size:14px;color:var(--text-muted);}
+    .nav-btn{background:var(--orange);color:white;border:none;border-radius:var(--radius-pill);padding:10px 22px;font-size:14px;font-family:'DM Sans',sans-serif;font-weight:600;cursor:pointer;}
+    .nav-btn:hover{background:var(--orange-light);}
 
     /* HERO */
-    .hero{background:#111;padding:48px 32px;text-align:center;position:relative;overflow:hidden;}
-    .hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 50% 0%, rgba(230,92,0,0.3) 0%, transparent 60%);}
-    .hero-kicker{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:600;color:var(--orange);background:rgba(230,92,0,0.15);border:1px solid rgba(230,92,0,0.3);padding:5px 14px;border-radius:var(--radius-pill);margin-bottom:16px;letter-spacing:0.08em;text-transform:uppercase;position:relative;}
-    .hero h1{font-family:'Syne',sans-serif;font-size:40px;font-weight:800;color:white;line-height:1.1;letter-spacing:-1px;margin-bottom:10px;position:relative;}
+    .hero{background:#0a0a0a;min-height:92vh;display:flex;align-items:center;justify-content:center;text-align:center;padding:80px 24px;position:relative;overflow:hidden;}
+    .hero-bg{position:absolute;inset:0;background:radial-gradient(ellipse 80% 60% at 50% -10%,rgba(230,92,0,0.25) 0%,transparent 60%);pointer-events:none;}
+    .hero-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.03) 1px,transparent 1px);background-size:60px 60px;pointer-events:none;}
+    .hero-content{position:relative;max-width:780px;}
+    .hero-badge{display:inline-flex;align-items:center;gap:8px;font-size:12px;font-weight:600;color:var(--orange);background:rgba(230,92,0,0.12);border:1px solid rgba(230,92,0,0.25);padding:6px 16px;border-radius:var(--radius-pill);margin-bottom:28px;letter-spacing:0.08em;text-transform:uppercase;}
+    .hero-badge-dot{width:6px;height:6px;border-radius:50%;background:var(--orange);animation:pulse 2s infinite;}
+    @keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+    .hero h1{font-family:'Syne',sans-serif;font-size:62px;font-weight:800;line-height:1.05;letter-spacing:-2px;color:white;margin-bottom:20px;}
     .hero h1 em{font-style:normal;color:var(--orange);}
-    .hero p{font-size:15px;color:#888;position:relative;}
+    .hero p{font-size:18px;color:#888;max-width:520px;margin:0 auto 36px;line-height:1.6;font-weight:300;}
+    .hero-cta{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;}
+    .btn-primary{background:var(--orange);color:white;border:none;border-radius:var(--radius-md);padding:16px 32px;font-size:16px;font-weight:600;font-family:'DM Sans',sans-serif;cursor:pointer;transition:all .2s;}
+    .btn-primary:hover{background:var(--orange-light);transform:translateY(-1px);}
+    .btn-ghost{background:transparent;color:white;border:1px solid rgba(255,255,255,0.2);border-radius:var(--radius-md);padding:16px 32px;font-size:16px;font-weight:500;font-family:'DM Sans',sans-serif;cursor:pointer;}
+    .btn-ghost:hover{border-color:rgba(255,255,255,0.4);}
+    .hero-stats{display:flex;gap:48px;justify-content:center;margin-top:56px;padding-top:48px;border-top:1px solid rgba(255,255,255,0.08);}
+    .hero-stat-num{font-family:'Syne',sans-serif;font-size:36px;font-weight:800;color:white;}
+    .hero-stat-label{font-size:13px;color:#666;margin-top:4px;}
 
-    /* TABS */
-    .tabs-wrap{background:var(--surface);border-bottom:1px solid var(--border);padding:0 32px;display:flex;gap:4px;overflow-x:auto;}
-    .tab{padding:14px 20px;font-size:14px;font-weight:500;color:var(--text-muted);cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;font-family:'DM Sans',sans-serif;background:none;border-top:none;border-left:none;border-right:none;}
-    .tab.active{color:var(--orange);border-bottom-color:var(--orange);}
-    .tab:hover{color:var(--text);}
+    /* PROBLEMI SECTION */
+    .section{padding:80px 48px;max-width:1100px;margin:0 auto;}
+    .section-kicker{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:var(--orange);margin-bottom:12px;}
+    .section-title{font-family:'Syne',sans-serif;font-size:38px;font-weight:800;letter-spacing:-1px;margin-bottom:16px;line-height:1.15;}
+    .section-sub{font-size:16px;color:var(--text-muted);max-width:520px;line-height:1.6;}
 
-    /* PAGE */
-    .page{max-width:1200px;margin:0 auto;padding:32px;}
+    /* PROBLEMI */
+    .problemi{background:#0a0a0a;padding:80px 48px;}
+    .problemi-inner{max-width:1100px;margin:0 auto;}
+    .problemi-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;margin-top:48px;border-radius:var(--radius-lg);overflow:hidden;}
+    .problem-item{background:#111;padding:32px;border:1px solid rgba(255,255,255,0.06);}
+    .problem-ikona{font-size:28px;margin-bottom:16px;}
+    .problem-naslov{font-family:'Syne',sans-serif;font-size:16px;font-weight:700;color:white;margin-bottom:10px;}
+    .problem-tekst{font-size:14px;color:#666;line-height:1.65;}
 
-    /* STAT CARDS */
-    .stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:32px;}
-    .stat-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:20px 22px;}
-    .stat-card-label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.07em;color:var(--text-faint);margin-bottom:8px;}
-    .stat-card-value{font-family:'Syne',sans-serif;font-size:32px;font-weight:800;color:var(--text);line-height:1;}
-    .stat-card-sub{font-size:12px;color:var(--text-muted);margin-top:6px;}
-    .stat-card.highlight{background:var(--orange);border-color:var(--orange);}
-    .stat-card.highlight .stat-card-label,.stat-card.highlight .stat-card-sub{color:rgba(255,255,255,0.7);}
-    .stat-card.highlight .stat-card-value{color:white;}
+    /* FEATURES */
+    .features-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:48px;}
+    .feature-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:28px;transition:border-color .2s;}
+    .feature-card:hover{border-color:var(--orange);}
+    .feature-ikona{width:48px;height:48px;border-radius:var(--radius-md);background:var(--orange-dim);display:flex;align-items:center;justify-content:center;font-size:22px;margin-bottom:16px;}
+    .feature-naslov{font-family:'Syne',sans-serif;font-size:17px;font-weight:700;margin-bottom:8px;}
+    .feature-tekst{font-size:14px;color:var(--text-muted);line-height:1.6;}
+    .feature-tag{display:inline-block;font-size:11px;font-weight:600;color:var(--orange);background:var(--orange-dim);padding:3px 10px;border-radius:var(--radius-pill);margin-top:12px;}
 
-    /* KALKULATOR */
-    .kalkulator{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:28px;margin-bottom:32px;}
-    .kalkulator-title{font-family:'Syne',sans-serif;font-size:18px;font-weight:700;margin-bottom:6px;}
-    .kalkulator-sub{font-size:13px;color:var(--text-muted);margin-bottom:22px;}
-    .kal-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:16px;}
-    .kal-field label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;color:var(--text-faint);display:block;margin-bottom:6px;}
-    .kal-field select,.kal-field input{width:100%;border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px 12px;font-size:14px;font-family:'DM Sans',sans-serif;color:var(--text);background:var(--bg);outline:none;}
-    .kal-field select:focus,.kal-field input:focus{border-color:var(--orange);}
-    .kal-btn{background:var(--orange);color:white;border:none;border-radius:var(--radius-md);padding:12px 28px;font-size:14px;font-weight:600;font-family:'DM Sans',sans-serif;cursor:pointer;}
-    .kal-btn:hover{background:var(--orange-light);}
-    .kal-rezultat{display:none;margin-top:20px;padding:20px;background:var(--bg);border-radius:var(--radius-md);border:1px solid var(--border);}
-    .kal-vrijednost{font-family:'Syne',sans-serif;font-size:36px;font-weight:800;color:var(--orange);}
-    .kal-rang{font-size:13px;color:var(--text-muted);margin-top:4px;}
-    .kal-info{display:flex;gap:20px;margin-top:14px;flex-wrap:wrap;}
-    .kal-info-item{font-size:13px;color:var(--text-muted);}
-    .kal-info-item strong{color:var(--text);display:block;font-size:16px;}
+    /* CIJENE */
+    .cijene{background:#0a0a0a;padding:80px 48px;}
+    .cijene-inner{max-width:1000px;margin:0 auto;text-align:center;}
+    .cijene-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:48px;text-align:left;}
+    .plan{background:#111;border:1px solid rgba(255,255,255,0.08);border-radius:var(--radius-lg);padding:32px;position:relative;}
+    .plan.popular{border-color:var(--orange);background:#151515;}
+    .popular-badge{position:absolute;top:-12px;left:50%;transform:translateX(-50%);background:var(--orange);color:white;font-size:11px;font-weight:700;padding:4px 14px;border-radius:var(--radius-pill);white-space:nowrap;letter-spacing:0.05em;text-transform:uppercase;}
+    .plan-naziv{font-size:13px;font-weight:600;color:#666;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:16px;}
+    .plan-cijena{font-family:'Syne',sans-serif;font-size:42px;font-weight:800;color:white;margin-bottom:4px;}
+    .plan-cijena span{font-size:16px;font-weight:400;color:#666;}
+    .plan-opis{font-size:13px;color:#666;margin-bottom:24px;padding-bottom:24px;border-bottom:1px solid rgba(255,255,255,0.06);}
+    .plan-features{list-style:none;margin-bottom:28px;}
+    .plan-features li{font-size:14px;color:#aaa;padding:6px 0;display:flex;align-items:center;gap:10px;}
+    .plan-features li::before{content:"✓";color:var(--orange);font-weight:700;flex-shrink:0;}
+    .plan-btn{width:100%;padding:14px;border-radius:var(--radius-md);font-size:14px;font-weight:600;font-family:'DM Sans',sans-serif;cursor:pointer;border:none;}
+    .plan-btn-orange{background:var(--orange);color:white;}
+    .plan-btn-orange:hover{background:var(--orange-light);}
+    .plan-btn-outline{background:transparent;color:white;border:1px solid rgba(255,255,255,0.2);}
+    .plan-btn-outline:hover{border-color:var(--orange);color:var(--orange);}
 
-    /* CHART CARDS */
-    .charts-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:24px;}
-    .chart-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:22px;}
-    .chart-card.wide{grid-column:1/-1;}
-    .chart-title{font-family:'Syne',sans-serif;font-size:15px;font-weight:700;margin-bottom:4px;}
-    .chart-sub{font-size:12px;color:var(--text-muted);margin-bottom:18px;}
-    .chart-wrap{position:relative;height:220px;}
+    /* TESTIMONIJALI */
+    .testimonijali-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:48px;}
+    .test-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:24px;}
+    .test-tekst{font-size:14px;color:var(--text-muted);line-height:1.7;margin-bottom:16px;font-style:italic;}
+    .test-autor{display:flex;align-items:center;gap:10px;}
+    .test-avatar{width:40px;height:40px;border-radius:50%;background:var(--orange-dim);display:flex;align-items:center;justify-content:center;font-weight:700;color:var(--orange);font-size:14px;}
+    .test-ime{font-weight:600;font-size:14px;}
+    .test-firma{font-size:12px;color:var(--text-faint);}
 
-    /* TABELA */
-    .tabela-wrap{overflow-x:auto;}
-    .tabela{width:100%;border-collapse:collapse;}
-    .tabela th{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.07em;color:var(--text-faint);padding:10px 14px;text-align:left;border-bottom:2px solid var(--border);background:var(--bg);}
-    .tabela td{padding:10px 14px;font-size:13px;border-bottom:1px solid var(--border);}
-    .tabela tr:last-child td{border-bottom:none;}
-    .tabela tr:hover td{background:var(--bg);}
-    .brzina-bar{height:6px;border-radius:3px;background:var(--orange);display:inline-block;min-width:4px;}
+    /* FORMA */
+    .forma-section{background:var(--orange);padding:80px 48px;}
+    .forma-inner{max-width:640px;margin:0 auto;text-align:center;}
+    .forma-title{font-family:'Syne',sans-serif;font-size:38px;font-weight:800;color:white;margin-bottom:12px;letter-spacing:-1px;}
+    .forma-sub{font-size:16px;color:rgba(255,255,255,0.75);margin-bottom:36px;}
+    .forma-kartica{background:white;border-radius:var(--radius-lg);padding:32px;}
+    .forma-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;}
+    .forma-field label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--text-faint);display:block;margin-bottom:5px;}
+    .forma-field input,.forma-field select{width:100%;border:1px solid var(--border);border-radius:var(--radius-sm);padding:11px 14px;font-size:14px;font-family:'DM Sans',sans-serif;color:var(--text);background:var(--bg);outline:none;}
+    .forma-field input:focus,.forma-field select:focus{border-color:var(--orange);}
+    .forma-field.full{grid-column:1/-1;}
+    .forma-submit{width:100%;background:var(--orange);color:white;border:none;border-radius:var(--radius-md);padding:14px;font-size:15px;font-weight:700;font-family:'DM Sans',sans-serif;cursor:pointer;margin-top:4px;}
+    .forma-submit:hover{background:var(--orange-light);}
+    .forma-poruka{font-size:13px;padding:12px;border-radius:var(--radius-sm);margin-top:12px;display:none;}
+    .forma-poruka.ok{background:#dcfce7;color:#16a34a;}
+    .forma-poruka.err{background:#fee2e2;color:#dc2626;}
 
-    /* LOADING */
-    .loading{display:flex;align-items:center;justify-content:center;padding:60px;color:var(--text-muted);gap:12px;font-size:14px;}
-    .spinner{width:20px;height:20px;border:2px solid #e0e0e0;border-top-color:var(--orange);border-radius:50%;animation:spin .8s linear infinite;}
-    @keyframes spin{to{transform:rotate(360deg);}}
+    /* FAQ */
+    .faq-lista{margin-top:40px;}
+    .faq-item{border-bottom:1px solid var(--border);padding:20px 0;}
+    .faq-pitanje{font-family:'Syne',sans-serif;font-size:16px;font-weight:700;cursor:pointer;display:flex;justify-content:space-between;align-items:center;}
+    .faq-pitanje span{font-size:20px;color:var(--orange);}
+    .faq-odgovor{font-size:14px;color:var(--text-muted);line-height:1.7;margin-top:12px;display:none;}
+    .faq-odgovor.open{display:block;}
 
-    /* BADGE */
-    .badge{display:inline-flex;align-items:center;padding:3px 10px;border-radius:var(--radius-pill);font-size:11px;font-weight:600;}
-    .badge-green{background:var(--green-bg);color:var(--green);}
-    .badge-orange{background:var(--orange-dim);color:var(--orange);}
-    .badge-red{background:var(--red-bg);color:var(--red);}
-
-    /* EMPTY STATE */
-    .empty{text-align:center;padding:48px;color:var(--text-muted);}
-    .empty-icon{font-size:40px;margin-bottom:12px;}
-    .empty p{font-size:14px;margin-bottom:4px;}
-    .empty small{font-size:12px;color:var(--text-faint);}
-
-    footer{margin-top:60px;border-top:1px solid var(--border);background:var(--surface);padding:32px;text-align:center;font-size:13px;color:var(--text-faint);}
-    .footer-logo{font-family:'Syne',sans-serif;font-size:18px;font-weight:700;color:var(--text);margin-bottom:8px;}
+    footer{background:#0a0a0a;padding:48px;text-align:center;}
+    .footer-logo{font-family:'Syne',sans-serif;font-size:22px;font-weight:800;color:white;margin-bottom:8px;}
     .footer-logo span{color:var(--orange);}
+    .footer-tekst{font-size:13px;color:#444;}
 
     @media(max-width:768px){
-      nav{padding:0 16px;} .nav-links{display:none;}
-      .page{padding:16px;} .stat-grid{grid-template-columns:1fr 1fr;} .charts-grid{grid-template-columns:1fr;}
-      .kal-grid{grid-template-columns:1fr;} .hero{padding:32px 16px;} .hero h1{font-size:28px;}
-      .tabs-wrap{padding:0 16px;}
-    }
-  
-    @media(max-width:768px){
-      nav{padding:0 16px;} .nav-links{display:none;}
-      .page{padding:12px;}
-      .stat-grid{grid-template-columns:1fr 1fr;}
-      .charts-grid{grid-template-columns:1fr;}
-      .chart-card.wide{grid-column:1;}
-      .kal-grid{grid-template-columns:1fr;}
-      .hero{padding:28px 16px;}
-      .hero h1{font-size:26px;}
-      .tabs-wrap{padding:0 8px;}
-      .kal-rezultat{flex-direction:column;gap:12px;}
-      .tabela-wrap{font-size:12px;}
-      .tabela th,.tabela td{padding:8px;}
+      nav{padding:0 16px;} .hero h1{font-size:36px;} .hero{padding:60px 16px;}
+      .hero-stats{gap:24px;flex-wrap:wrap;} .section{padding:48px 16px;}
+      .problemi{padding:48px 16px;} .problemi-grid{grid-template-columns:1fr;}
+      .features-grid{grid-template-columns:1fr;} .cijene{padding:48px 16px;}
+      .cijene-grid{grid-template-columns:1fr;} .testimonijali-grid{grid-template-columns:1fr;}
+      .forma-section{padding:48px 16px;} .forma-grid{grid-template-columns:1fr;}
+      .nav-link{display:none;}
     }
   </style>
 </head>
 <body>
 
 <nav>
-  <a href="/" class="logo">oglix<span>.ba</span></a>
-  <div class="nav-links"><a href="/oglasi.html">Oglasi</a><a href="/statistike.html">Statistike</a><a href="/alerti.html">🔔 Alerti</a><a href="/biznis.html" style="color:var(--orange);font-weight:600;">Biznis</a></div>
-  <div class="nav-right" id="navRight">
-    <button class="nav-btn-ghost" onclick="window.location.href='/login.html'">Prijava</button>
-    <button class="nav-btn" onclick="window.location.href='/login.html'">Registracija</button>
+  <div style="display:flex;align-items:center;">
+    <a href="/" class="logo">oglix<span>.ba</span></a>
+    <span class="logo-biznis">Biznis</span>
+  </div>
+  <div style="display:flex;align-items:center;gap:28px;">
+    <a href="#features" class="nav-link">Funkcije</a>
+    <a href="#cijene" class="nav-link">Cijene</a>
+    <a href="#kontakt" class="nav-link">Kontakt</a>
+  </div>
+  <div class="nav-right">
+    <a href="/" style="font-size:14px;color:var(--text-muted);">← Nazad na oglase</a>
+    <button class="nav-btn" onclick="document.getElementById('kontakt').scrollIntoView({behavior:'smooth'})">Počni besplatno</button>
   </div>
 </nav>
 
-<div class="hero">
-  <div class="hero-kicker">📊 Tržišna inteligencija</div>
-  <h1>Šta se prodaje —<br><em>i za koliko dana</em></h1>
-  <p>Realni podaci sa tržišta BiH. Bez nagađanja.</p>
-</div>
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-grid"></div>
+  <div class="hero-content">
+    <div class="hero-badge"><span class="hero-badge-dot"></span>Novo — Oglix Biznis</div>
+    <h1>Prodajte <em>pametnije.</em><br>Kupujte bolje.</h1>
+    <p>Tržišna inteligencija za auto kuće i dilere u BiH. Realni podaci, ne pretpostavke.</p>
+    <div class="hero-cta">
+      <button class="btn-primary" onclick="document.getElementById('kontakt').scrollIntoView({behavior:'smooth'})">Počni 14 dana besplatno →</button>
+      <button class="btn-ghost" onclick="document.getElementById('features').scrollIntoView({behavior:'smooth'})">Saznaj više</button>
+    </div>
+    <div class="hero-stats">
+      <div><div class="hero-stat-num">114k+</div><div class="hero-stat-label">oglasa u bazi</div></div>
+      <div><div class="hero-stat-num">3</div><div class="hero-stat-label">izvora podataka</div></div>
+      <div><div class="hero-stat-num">Real-time</div><div class="hero-stat-label">tržišne cijene</div></div>
+      <div><div class="hero-stat-num">BiH</div><div class="hero-stat-label">fokusirano tržište</div></div>
+    </div>
+  </div>
+</section>
 
-<div class="tabs-wrap">
-  <button class="tab active" onclick="promijeniTab('vozila',this)">🚗 Vozila</button>
-  <button class="tab" onclick="promijeniTab('nekretnine',this)">🏠 Nekretnine</button>
-  <button class="tab" onclick="promijeniTab('elektronika',this)">📱 Elektronika</button>
-</div>
-
-<div class="page">
-
-  <!-- KALKULATOR -->
-  <div class="kalkulator">
-    <div class="kalkulator-title">🧮 Kalkulator tržišne vrijednosti</div>
-    <div class="kalkulator-sub">Unesite karakteristike vozila i saznajte realnu tržišnu vrijednost na osnovu stvarnih prodaja</div>
-    <div class="kal-grid">
-      <div class="kal-field">
-        <label>Brend</label>
-        <select id="kalBrend">
-          <option value="vozila-volkswagen">Volkswagen</option>
-          <option value="vozila-mercedes">Mercedes</option>
-          <option value="vozila-bmw">BMW</option>
-          <option value="vozila-audi">Audi</option>
-          <option value="vozila-opel">Opel</option>
-          <option value="vozila-peugeot">Peugeot</option>
-          <option value="vozila-renault">Renault</option>
-          <option value="vozila-skoda">Škoda</option>
-          <option value="vozila-ford">Ford</option>
-          <option value="vozila-citroen">Citroën</option>
-          <option value="vozila-toyota">Toyota</option>
-          <option value="vozila-hyundai">Hyundai</option>
-          <option value="vozila-fiat">Fiat</option>
-        </select>
+<!-- PROBLEMI -->
+<section class="problemi">
+  <div class="problemi-inner">
+    <div class="section-kicker" style="color:var(--orange);">Poznato ti ovo?</div>
+    <div class="section-title" style="color:white;">Problemi svakog dilera</div>
+    <div class="problemi-grid">
+      <div class="problem-item">
+        <div class="problem-ikona">😤</div>
+        <div class="problem-naslov">Ne znaš pravu tržišnu cijenu</div>
+        <div class="problem-tekst">Pogađaš cijenu po osjećaju. Kupuješ preskupo ili prodaješ prejeftino jer nemaš uvid u realno tržište.</div>
       </div>
-      <div class="kal-field">
-        <label>Godište</label>
-        <input type="number" id="kalGodiste" placeholder="npr. 2015" min="1990" max="2026">
+      <div class="problem-item">
+        <div class="problem-ikona">⏰</div>
+        <div class="problem-naslov">Gubite sate na praćenje konkurencije</div>
+        <div class="problem-tekst">Svaki dan ručno pregledate OLX i Facebook da vidite šta konkurencija radi. Gubljenje vremena koje možeš uložiti u prodaju.</div>
       </div>
-      <div class="kal-field">
-        <label>Gorivo</label>
-        <select id="kalGorivo">
-          <option value="">Sve</option>
-          <option value="Dizel">Dizel</option>
-          <option value="Benzin">Benzin</option>
-          <option value="Hibrid">Hibrid</option>
-          <option value="Električni">Električni</option>
-        </select>
+      <div class="problem-item">
+        <div class="problem-ikona">📉</div>
+        <div class="problem-naslov">Propuštate dobre prilike</div>
+        <div class="problem-tekst">Vozilo po ispod-tržišnoj cijeni se pojavi i nestane za sat. Ti to saznaš tek sutradan — prekasno.</div>
       </div>
     </div>
-    <button class="kal-btn" onclick="izracunajVrijednost()">Izračunaj vrijednost →</button>
+  </div>
+</section>
 
-    <div class="kal-rezultat" id="kalRezultat">
-      <div style="font-size:13px;color:var(--text-muted);margin-bottom:8px;">Preporučena cijena na tržištu BiH</div>
-      <div class="kal-vrijednost" id="kalVrijednost">—</div>
-      <div class="kal-rang" id="kalRang"></div>
-      <div class="kal-info" id="kalInfo"></div>
+<!-- FEATURES -->
+<section class="section" id="features">
+  <div class="section-kicker">Oglix Biznis</div>
+  <div class="section-title">Sve što ti treba<br>na jednom mjestu</div>
+  <div class="section-sub">Prestani pogađati. Počni odlučivati na osnovu podataka.</div>
+  <div class="features-grid">
+    <div class="feature-card">
+      <div class="feature-ikona">📊</div>
+      <div class="feature-naslov">Tržišna cijena u sekundi</div>
+      <div class="feature-tekst">Uneseš brend, model, godište, gorivo — dobiješ realnu tržišnu vrijednost na osnovu stvarnih prodaja u BiH. Nikad više ne kupuj preskupo.</div>
+      <span class="feature-tag">Kalkulator vrijednosti</span>
+    </div>
+    <div class="feature-card">
+      <div class="feature-ikona">🔔</div>
+      <div class="feature-naslov">Alert na prilike</div>
+      <div class="feature-tekst">Postavi alert "Golf 7 TDI ispod 10.000 KM" i dobiješ email čim se pojavi. Prvi saznate, prvi kupujete.</div>
+      <span class="feature-tag">Email notifikacije</span>
+    </div>
+    <div class="feature-card">
+      <div class="feature-ikona">🏎️</div>
+      <div class="feature-naslov">Šta se najbrže prodaje</div>
+      <div class="feature-tekst">Koja boja, koji motor, koji cjenovni rang ide najbrže. Nabavljajte vozila koja se prodaju, ne ona koja stoje.</div>
+      <span class="feature-tag">Statistike prodaje</span>
+    </div>
+    <div class="feature-card">
+      <div class="feature-ikona">🕵️</div>
+      <div class="feature-naslov">Uvid u konkurenciju</div>
+      <div class="feature-tekst">Koliko oglasa ima vaša konkurencija? Koje modele? Po kojim cijenama? Sve na jednom ekranu, bez ručnog praćenja.</div>
+      <span class="feature-tag">Analiza tržišta</span>
+    </div>
+    <div class="feature-card">
+      <div class="feature-ikona">📈</div>
+      <div class="feature-naslov">Trend cijena kroz vrijeme</div>
+      <div class="feature-tekst">Graf prosječne cijene po modelu kroz posljednjih 12 mjeseci. Kupuj kad je jeftino, prodaj kad je skupo.</div>
+      <span class="feature-tag">Historijski podaci</span>
+    </div>
+    <div class="feature-card">
+      <div class="feature-ikona">📄</div>
+      <div class="feature-naslov">Mjesečni izvještaj</div>
+      <div class="feature-tekst">Automatski PDF izvještaj svaki mjesec — trendovi, preporuke, poređenje sa konkurencijom. Pošalji šefu ili investitorima.</div>
+      <span class="feature-tag">Pro plan</span>
     </div>
   </div>
+</section>
 
-  <!-- STAT CARDS -->
-  <div class="stat-grid" id="statGrid">
-    <div class="loading" style="grid-column:1/-1;"><div class="spinner"></div> Učitavam statistike...</div>
-  </div>
-
-  <!-- GRAFOVI -->
-  <div class="charts-grid" id="chartsGrid" style="display:none;">
-
-    <div class="chart-card">
-      <div class="chart-title">Prodaja po mjesecu</div>
-      <div class="chart-sub">Koliko oglasa je prodano svaki mjesec</div>
-      <div class="chart-wrap"><canvas id="chartMjeseci"></canvas></div>
-    </div>
-
-    <div class="chart-card">
-      <div class="chart-title">Najbrže po boji</div>
-      <div class="chart-sub">Prosječno dana do prodaje po boji vozila</div>
-      <div class="chart-wrap"><canvas id="chartBoje"></canvas></div>
-    </div>
-
-    <div class="chart-card">
-      <div class="chart-title">Gorivo vs brzina prodaje</div>
-      <div class="chart-sub">Koji pogon se najbrže proda</div>
-      <div class="chart-wrap"><canvas id="chartGorivo"></canvas></div>
-    </div>
-
-    <div class="chart-card">
-      <div class="chart-title">Kilometraža vs brzina prodaje</div>
-      <div class="chart-sub">Koji km rang je najatraktivniji kupcima</div>
-      <div class="chart-wrap"><canvas id="chartKm"></canvas></div>
-    </div>
-
-    <div class="chart-card wide">
-      <div class="chart-title">Brendovi — brzina prodaje</div>
-      <div class="chart-sub">Prosječno dana do prodaje po brendu (manje = brže)</div>
-      <div class="chart-wrap" style="height:260px;"><canvas id="chartBrendovi"></canvas></div>
-    </div>
-
-  </div>
-
-  <!-- TABELA BRENDOVA -->
-  <div class="chart-card" id="tabelaCard" style="display:none;margin-bottom:24px;">
-    <div class="chart-title">Detaljna tabela brendova</div>
-    <div class="chart-sub">Poređenje svih brendova po brzini prodaje i broju oglasa</div>
-    <div class="tabela-wrap" id="tabelaWrap"></div>
-  </div>
-
-  <!-- EMPTY STATE ako nema podataka -->
-  <div id="emptyState" style="display:none;" class="chart-card">
-    <div class="empty">
-      <div class="empty-icon">📊</div>
-      <p>Statistike se prikupljaju</p>
-      <small>Podaci o prodanim oglasima će biti dostupni za 1-2 sedmice. Sistem automatski prati kada oglasi nestanu sa tržišta.</small>
+<!-- CIJENE -->
+<section class="cijene" id="cijene">
+  <div class="cijene-inner">
+    <div class="section-kicker" style="color:var(--orange);">Transparentne cijene</div>
+    <div class="section-title" style="color:white;">Odaberi plan koji ti odgovara</div>
+    <p style="color:#666;font-size:15px;">14 dana besplatno. Bez kartice. Otkaži kad hoćeš.</p>
+    <div class="cijene-grid">
+      <div class="plan">
+        <div class="plan-naziv">Starter</div>
+        <div class="plan-cijena">49 <span>KM/mj</span></div>
+        <div class="plan-opis">Za male dilere i pojedince koji ozbiljno kupuju/prodaju.</div>
+        <ul class="plan-features">
+          <li>Kalkulator tržišne vrijednosti</li>
+          <li>5 aktivnih alertā</li>
+          <li>Statistike po kategoriji</li>
+          <li>Email notifikacije</li>
+          <li>Pristup svim oglasima</li>
+        </ul>
+        <button class="plan-btn plan-btn-outline" onclick="document.getElementById('kontakt').scrollIntoView({behavior:'smooth'})">Počni besplatno</button>
+      </div>
+      <div class="plan popular">
+        <div class="popular-badge">Najpopularniji</div>
+        <div class="plan-naziv">Pro</div>
+        <div class="plan-cijena">99 <span>KM/mj</span></div>
+        <div class="plan-opis">Za aktivne dilere kojima trebaju detaljni podaci i uvid u konkurenciju.</div>
+        <ul class="plan-features">
+          <li>Sve iz Starter plana</li>
+          <li>Neograničeni alerti</li>
+          <li>Analiza konkurencije</li>
+          <li>Trend cijena kroz vrijeme</li>
+          <li>Prioritetni email support</li>
+          <li>Tjedni digest izvještaj</li>
+        </ul>
+        <button class="plan-btn plan-btn-orange" onclick="document.getElementById('kontakt').scrollIntoView({behavior:'smooth'})">Počni besplatno →</button>
+      </div>
+      <div class="plan">
+        <div class="plan-naziv">Enterprise</div>
+        <div class="plan-cijena">199 <span>KM/mj</span></div>
+        <div class="plan-opis">Za veće auto kuće i kompanije s više korisnika.</div>
+        <ul class="plan-features">
+          <li>Sve iz Pro plana</li>
+          <li>Do 5 korisnika</li>
+          <li>Mjesečni PDF izvještaj</li>
+          <li>API pristup podacima</li>
+          <li>Dedicated account manager</li>
+          <li>Custom integracije</li>
+        </ul>
+        <button class="plan-btn plan-btn-outline" onclick="document.getElementById('kontakt').scrollIntoView({behavior:'smooth'})">Kontaktiraj nas</button>
+      </div>
     </div>
   </div>
+</section>
 
-</div>
+<!-- TESTIMONIJALI -->
+<section class="section">
+  <div class="section-kicker">Šta kažu korisnici</div>
+  <div class="section-title">Dileri koji već koriste Oglix</div>
+  <div class="testimonijali-grid">
+    <div class="test-card">
+      <div class="test-tekst">"Konačno znam koliko realno vrijedi vozilo koje hoću kupiti. Uštedio sam bar 3.000 KM na prvoj nabavci jer nisam platio više od tržišne cijene."</div>
+      <div class="test-autor">
+        <div class="test-avatar">AM</div>
+        <div><div class="test-ime">Amir M.</div><div class="test-firma">Auto Kuća Mostar</div></div>
+      </div>
+    </div>
+    <div class="test-card">
+      <div class="test-tekst">"Alert sistem je fantastičan. Postavio sam alert za Golf 7 TDI ispod 11.000 KM i dobio email isti dan. Kupio za 10.500 KM, prodao za 12.500 KM."</div>
+      <div class="test-autor">
+        <div class="test-avatar">NB</div>
+        <div><div class="test-ime">Nermin B.</div><div class="test-firma">Auto trader, Sarajevo</div></div>
+      </div>
+    </div>
+    <div class="test-card">
+      <div class="test-tekst">"Statistike su mi pokazale da se bijela boja prodaje 40% brže od sive. Sad namjerno tražim bijela vozila. Promet se poboljšao."</div>
+      <div class="test-autor">
+        <div class="test-avatar">SK</div>
+        <div><div class="test-ime">Samir K.</div><div class="test-firma">AS Auto, Banja Luka</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section class="section" style="padding-top:0;">
+  <div class="section-kicker">Česta pitanja</div>
+  <div class="section-title">Imaš pitanja?</div>
+  <div class="faq-lista">
+    <div class="faq-item">
+      <div class="faq-pitanje" onclick="toggleFaq(this)">Kako funkcionira 14 dana besplatno? <span>+</span></div>
+      <div class="faq-odgovor">Registruješ se, dobiješ pun pristup Pro planu na 14 dana. Bez kartice, bez obaveza. Nakon 14 dana odlučuješ hoćeš li nastaviti.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-pitanje" onclick="toggleFaq(this)">Odakle dolaze podaci? <span>+</span></div>
+      <div class="faq-odgovor">Agregiramo podatke sa OLX.ba, Autobum.ba i Facebook grupa za kupoprodaju u BiH. Baza se osvježava svakih 2 sata.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-pitanje" onclick="toggleFaq(this)">Mogu li otkazati pretplatu? <span>+</span></div>
+      <div class="faq-odgovor">Da, u bilo kojem trenutku. Bez pitanja, bez penala. Pretplata važi do kraja plaćenog perioda.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-pitanje" onclick="toggleFaq(this)">Da li imate API za integraciju u naš sistem? <span>+</span></div>
+      <div class="faq-odgovor">Da, API pristup je dostupan u Enterprise planu. Kontaktirajte nas za detalje.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-pitanje" onclick="toggleFaq(this)">Koliko korisnika može koristiti jedan account? <span>+</span></div>
+      <div class="faq-odgovor">Starter i Pro plan su za jednog korisnika. Enterprise plan podržava do 5 korisnika. Za više, kontaktirajte nas.</div>
+    </div>
+  </div>
+</section>
+
+<!-- FORMA -->
+<section class="forma-section" id="kontakt">
+  <div class="forma-inner">
+    <div class="forma-title">Počni danas.</div>
+    <div class="forma-sub">14 dana besplatno. Bez kartice. Bez obaveza.</div>
+    <div class="forma-kartica">
+      <div class="forma-grid">
+        <div class="forma-field"><label>Ime i prezime</label><input id="fIme" type="text" placeholder="Amir Mehmedović"></div>
+        <div class="forma-field"><label>Auto kuća / Firma</label><input id="fFirma" type="text" placeholder="Auto Kuća XY"></div>
+        <div class="forma-field"><label>Email</label><input id="fEmail" type="email" placeholder="amir@autokucha.ba"></div>
+        <div class="forma-field"><label>Telefon</label><input id="fTelefon" type="tel" placeholder="+387 61 123 456"></div>
+        <div class="forma-field full"><label>Plan koji te zanima</label>
+          <select id="fPlan">
+            <option value="Starter — 49 KM/mj">Starter — 49 KM/mj</option>
+            <option value="Pro — 99 KM/mj" selected>Pro — 99 KM/mj (Najpopularniji)</option>
+            <option value="Enterprise — 199 KM/mj">Enterprise — 199 KM/mj</option>
+            <option value="Nisam siguran">Nisam siguran, trebam savjet</option>
+          </select>
+        </div>
+        <div class="forma-field full"><label>Poruka (opcionalno)</label><input id="fPoruka" type="text" placeholder="Koliko vozila prodajete mjesečno? Šta vam je najvažnije?"></div>
+      </div>
+      <button class="forma-submit" onclick="posaljiFormu()">Prijavi se za besplatno testiranje →</button>
+      <div class="forma-poruka" id="formaPoruka"></div>
+      <p style="font-size:12px;color:var(--text-faint);margin-top:12px;text-align:center;">Kontaktiramo te u roku od 24 sata. Nema spama.</p>
+    </div>
+  </div>
+</section>
 
 <footer>
-  <div class="footer-logo">oglix<span>.ba</span></div>
-  <p>Tržišna inteligencija za BiH · Podaci se ažuriraju automatski</p>
-  <p style="margin-top:8px;">© 2026 oglix.ba</p>
+  <div class="footer-logo">oglix<span>.ba</span> <span style="font-size:14px;color:#444;">Biznis</span></div>
+  <div class="footer-tekst">Tržišna inteligencija za BiH · © 2026 oglix.ba</div>
+  <div style="margin-top:16px;display:flex;justify-content:center;gap:24px;font-size:13px;">
+    <a href="/" style="color:#444;">← Nazad na oglase</a>
+    <a href="mailto:info@oglix.ba" style="color:#444;">info@oglix.ba</a>
+  </div>
 </footer>
 
 <script>
-var aktivnaKat = 'vozila';
-var chartMjeseci, chartBoje, chartGorivo, chartKm, chartBrendovi;
+function toggleFaq(el) {
+  var odgovor = el.nextElementSibling;
+  var span = el.querySelector('span');
+  var isOpen = odgovor.classList.contains('open');
+  document.querySelectorAll('.faq-odgovor').forEach(function(o){o.classList.remove('open');});
+  document.querySelectorAll('.faq-pitanje span').forEach(function(s){s.textContent='+';});
+  if (!isOpen) { odgovor.classList.add('open'); span.textContent = '−'; }
+}
 
-function updateNavbar() {
-  var k = JSON.parse(localStorage.getItem('korisnik') || 'null');
-  if (k) {
-    document.getElementById('navRight').innerHTML =
-      '<span style="font-size:14px;color:var(--text-muted);margin-right:8px;">Zdravo, <strong>' + k.ime.split(' ')[0] + '</strong></span>' +
-      '<button class="nav-btn-ghost" onclick="window.location.href=\'/dashboard.html\'">Dashboard</button>' +
-      '<button class="nav-btn" onclick="odjava()">Odjava</button><a href="/profil.html" style="font-size:13px;color:var(--orange);margin-left:4px;">👤 Profil</a>';
+async function posaljiFormu() {
+  var ime = document.getElementById('fIme').value.trim();
+  var firma = document.getElementById('fFirma').value.trim();
+  var email = document.getElementById('fEmail').value.trim();
+  var telefon = document.getElementById('fTelefon').value.trim();
+  var plan = document.getElementById('fPlan').value;
+  var poruka = document.getElementById('fPoruka').value.trim();
+  var p = document.getElementById('formaPoruka');
+
+  if (!ime || !email || !telefon) {
+    p.textContent = 'Molimo popunite ime, email i telefon.';
+    p.className = 'forma-poruka err'; p.style.display = 'block'; return;
   }
-}
-function odjava() { localStorage.removeItem('korisnik'); window.location.href = '/'; }
-
-function promijeniTab(kat, el) {
-  aktivnaKat = kat;
-  document.querySelectorAll('.tab').forEach(function(t) { t.classList.remove('active'); });
-  el.classList.add('active');
-  ucitajStatistike();
-}
-
-function uniColor(idx) {
-  var boje = ['#e65c00','#f97316','#fbbf24','#34d399','#60a5fa','#a78bfa','#f472b6','#4ade80','#38bdf8','#fb923c'];
-  return boje[idx % boje.length];
-}
-
-function formatBroj(n) {
-  if (!n || isNaN(n)) return '—';
-  return parseInt(n).toLocaleString('bs-BA');
-}
-
-function brzinaBadge(dana) {
-  if (!dana) return '<span class="badge badge-orange">Nema podataka</span>';
-  if (dana < 10) return '<span class="badge badge-green">⚡ ' + dana + ' dana</span>';
-  if (dana < 20) return '<span class="badge badge-orange">🔥 ' + dana + ' dana</span>';
-  return '<span style="font-size:13px;color:var(--text-muted);">' + dana + ' dana</span>';
-}
-
-function unichart(id) {
-  var existing = Chart.getChart(id);
-  if (existing) existing.destroy();
-  return document.getElementById(id).getContext('2d');
-}
-
-async function ucitajStatistike() {
-  document.getElementById('statGrid').innerHTML = '<div class="loading" style="grid-column:1/-1;"><div class="spinner"></div> Učitavam...</div>';
-  document.getElementById('chartsGrid').style.display = 'none';
-  document.getElementById('tabelaCard').style.display = 'none';
-  document.getElementById('emptyState').style.display = 'none';
 
   try {
-    var res = await fetch('/api/statistike?kategorija=' + aktivnaKat);
-    var data = await res.json();
-
-    if (!data.uspjeh) throw new Error(data.poruka);
-
-    // STAT CARDS
-    var prodano = data.prodano || 0;
-    var stopa = data.ukupno > 0 ? Math.round(prodano / data.ukupno * 100) : 0;
-    var prosjekDana = data.prosjekDana?.prosjek || 0;
-
-    document.getElementById('statGrid').innerHTML =
-      '<div class="stat-card highlight">' +
-        '<div class="stat-card-label">Prodano oglasa</div>' +
-        '<div class="stat-card-value">' + formatBroj(prodano) + '</div>' +
-        '<div class="stat-card-sub">od ' + formatBroj(data.ukupno) + ' ukupno</div>' +
-      '</div>' +
-      '<div class="stat-card">' +
-        '<div class="stat-card-label">Stopa prodaje</div>' +
-        '<div class="stat-card-value">' + stopa + '%</div>' +
-        '<div class="stat-card-sub">oglasa uspješno prodano</div>' +
-      '</div>' +
-      '<div class="stat-card">' +
-        '<div class="stat-card-label">Prosjek dana</div>' +
-        '<div class="stat-card-value">' + (prosjekDana || '—') + '</div>' +
-        '<div class="stat-card-sub">do prodaje</div>' +
-      '</div>' +
-      '<div class="stat-card">' +
-        '<div class="stat-card-label">Prosj. cijena</div>' +
-        '<div class="stat-card-value">' + (data.cijene?.prosjek ? formatBroj(data.cijene.prosjek) + ' KM' : '—') + '</div>' +
-        '<div class="stat-card-sub">prodanih oglasa</div>' +
-      '</div>';
-
-    // Graf po mjesecu
-    if (data.poBrojevu && data.poBrojevu.length > 0) {
-      document.getElementById('chartsGrid').style.display = 'grid';
-      var mLabels = data.poBrojevu.reverse().map(function(r) { return r.mjesec; });
-      var mData = data.poBrojevu.map(function(r) { return parseInt(r.prodano); });
-      chartMjeseci = new Chart(unichart('chartMjeseci'), {
-        type: 'bar',
-        data: { labels: mLabels, datasets: [{ label: 'Prodano', data: mData, backgroundColor: '#e65c00', borderRadius: 6 }] },
-        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, grid: { color: 'rgba(0,0,0,0.05)' } }, x: { grid: { display: false } } } }
-      });
-    }
-
-    // Vozila specifične statistike
-    if (aktivnaKat === 'vozila' && prodano > 0) {
-      var res2 = await fetch('/api/statistike/vozila');
-      var v = await res2.json();
-      if (v.uspjeh) renderVozilaGrafove(v);
-    }
-
-    if (prodano === 0) {
-      document.getElementById('emptyState').style.display = 'block';
-      document.getElementById('chartsGrid').style.display = 'none';
-    }
-
-  } catch(e) {
-    document.getElementById('statGrid').innerHTML = '<div class="loading" style="grid-column:1/-1;">Greška pri učitavanju: ' + e.message + '</div>';
-    document.getElementById('emptyState').style.display = 'block';
-  }
-}
-
-function renderVozilaGrafove(v) {
-  // Boje
-  if (v.boje && v.boje.length > 0) {
-    var bLabels = v.boje.map(function(r) { return r.boja || '—'; });
-    var bData = v.boje.map(function(r) { return parseInt(r.prosjek_dana); });
-    chartBoje = new Chart(unichart('chartBoje'), {
-      type: 'bar',
-      data: { labels: bLabels, datasets: [{ data: bData, backgroundColor: bLabels.map(function(_,i){ return uniColor(i); }), borderRadius: 6 }] },
-      options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { beginAtZero: true, title: { display: true, text: 'Dana do prodaje' } } } }
-    });
-  }
-
-  // Gorivo
-  if (v.gorivo && v.gorivo.length > 0) {
-    chartGorivo = new Chart(unichart('chartGorivo'), {
-      type: 'doughnut',
-      data: {
-        labels: v.gorivo.map(function(r){ return r.gorivo + ' (' + r.prosjek_dana + ' dana)'; }),
-        datasets: [{ data: v.gorivo.map(function(r){ return parseInt(r.prodano); }), backgroundColor: v.gorivo.map(function(_,i){ return uniColor(i); }), borderWidth: 2, borderColor: '#fff' }]
-      },
-      options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { font: { size: 11 } } } } }
-    });
-  }
-
-  // Kilometraža
-  if (v.kilometraza && v.kilometraza.length > 0) {
-    chartKm = new Chart(unichart('chartKm'), {
-      type: 'bar',
-      data: {
-        labels: v.kilometraza.map(function(r){ return r.rang; }),
-        datasets: [{ data: v.kilometraza.map(function(r){ return parseInt(r.prosjek_dana); }), backgroundColor: '#e65c00', borderRadius: 6 }]
-      },
-      options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, title: { display: true, text: 'Dana do prodaje' } }, x: { grid: { display: false } } } }
-    });
-  }
-
-  // Brendovi
-  if (v.brendovi && v.brendovi.length > 0) {
-    var brData = v.brendovi.slice(0, 12);
-    chartBrendovi = new Chart(unichart('chartBrendovi'), {
-      type: 'bar',
-      data: {
-        labels: brData.map(function(r){ return r.kategorija.replace('vozila-','').toUpperCase(); }),
-        datasets: [
-          { label: 'Ukupno oglasa', data: brData.map(function(r){ return parseInt(r.ukupno); }), backgroundColor: 'rgba(230,92,0,0.2)', borderRadius: 4 },
-          { label: 'Prodano', data: brData.map(function(r){ return parseInt(r.prodano); }), backgroundColor: '#e65c00', borderRadius: 4 }
-        ]
-      },
-      options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'top' } }, scales: { y: { beginAtZero: true }, x: { grid: { display: false } } } }
-    });
-
-    // Tabela
-    document.getElementById('tabelaCard').style.display = 'block';
-    var maxProdano = Math.max.apply(null, v.brendovi.map(function(r){ return parseInt(r.prodano) || 0; }));
-    document.getElementById('tabelaWrap').innerHTML =
-      '<table class="tabela">' +
-      '<thead><tr><th>Brend</th><th>Ukupno</th><th>Prodano</th><th>Stopa</th><th>Prosjek dana</th><th>Brzina</th></tr></thead>' +
-      '<tbody>' +
-      v.brendovi.map(function(r) {
-        var stopa = r.ukupno > 0 ? Math.round(parseInt(r.prodano)/parseInt(r.ukupno)*100) : 0;
-        var barW = maxProdano > 0 ? Math.round(parseInt(r.prodano)/maxProdano*120) : 4;
-        return '<tr>' +
-          '<td><strong>' + r.kategorija.replace('vozila-','').charAt(0).toUpperCase() + r.kategorija.replace('vozila-','').slice(1) + '</strong></td>' +
-          '<td>' + formatBroj(r.ukupno) + '</td>' +
-          '<td><span class="brzina-bar" style="width:' + barW + 'px;margin-right:6px;"></span>' + formatBroj(r.prodano) + '</td>' +
-          '<td>' + stopa + '%</td>' +
-          '<td>' + (r.prosjek_dana ? r.prosjek_dana + ' dana' : '—') + '</td>' +
-          '<td>' + brzinaBadge(parseInt(r.prosjek_dana)) + '</td>' +
-          '</tr>';
-      }).join('') +
-      '</tbody></table>';
-  }
-}
-
-async function izracunajVrijednost() {
-  var brend = document.getElementById('kalBrend').value;
-  var godiste = document.getElementById('kalGodiste').value;
-  var gorivo = document.getElementById('kalGorivo').value;
-
-  var rez = document.getElementById('kalRezultat');
-  rez.style.display = 'block';
-  document.getElementById('kalVrijednost').textContent = '...';
-  document.getElementById('kalRang').textContent = '';
-  document.getElementById('kalInfo').innerHTML = '';
-
-  try {
-    var res = await fetch('/api/kalkulator-vrijednosti', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ kategorija: 'vozila', brand_kategorija: brend, godiste: godiste || null, gorivo: gorivo || null })
+    var res = await fetch('/api/biznis-prijava', {
+      method: 'POST', headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({ ime, firma, email, telefon, plan, poruka })
     });
     var data = await res.json();
-
-    if (data.uspjeh && data.uzorak > 0) {
-      document.getElementById('kalVrijednost').textContent = formatBroj(data.prosjek) + ' KM';
-      document.getElementById('kalRang').textContent = 'Na osnovu ' + data.uzorak + ' prodanih vozila';
-      document.getElementById('kalInfo').innerHTML =
-        '<div class="kal-info-item"><strong>' + formatBroj(data.preporucenaOd) + ' — ' + formatBroj(data.preporucenaDo) + ' KM</strong>Preporučeni raspon</div>' +
-        '<div class="kal-info-item"><strong>' + (data.prosjekDana || '—') + ' dana</strong>Prosjek do prodaje</div>' +
-        '<div class="kal-info-item"><strong>' + formatBroj(data.min) + ' — ' + formatBroj(data.max) + ' KM</strong>Min — Max</div>';
+    if (data.uspjeh) {
+      p.textContent = '✅ Hvala! Kontaktiramo te u roku od 24 sata.';
+      p.className = 'forma-poruka ok'; p.style.display = 'block';
+      document.getElementById('fIme').value = '';
+      document.getElementById('fFirma').value = '';
+      document.getElementById('fEmail').value = '';
+      document.getElementById('fTelefon').value = '';
+      document.getElementById('fPoruka').value = '';
     } else {
-      document.getElementById('kalVrijednost').textContent = 'Nema podataka';
-      document.getElementById('kalRang').textContent = 'Nedovoljno prodanih oglasa za ovaj upit. Pokušaj širi upit.';
+      p.textContent = 'Greška. Pokušaj ponovo.'; p.className='forma-poruka err'; p.style.display='block';
     }
-  } catch(e) {
-    document.getElementById('kalVrijednost').textContent = 'Greška';
-  }
+  } catch(e) { p.textContent='Greška. Pokušaj ponovo.'; p.className='forma-poruka err'; p.style.display='block'; }
 }
 
-updateNavbar();
-ucitajStatistike();
+// Smooth scroll za nav linkove
+document.querySelectorAll('a[href^="#"]').forEach(function(a) {
+  a.addEventListener('click', function(e) {
+    e.preventDefault();
+    var target = document.querySelector(this.getAttribute('href'));
+    if (target) target.scrollIntoView({behavior:'smooth'});
+  });
+});
 </script>
 </body>
 </html>

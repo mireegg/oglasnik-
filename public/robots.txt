@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+Disallow: /api/
+Disallow: /profil.html
+Disallow: /biznis-dashboard.html
+Sitemap: https://oglix.ba/sitemap.xml
