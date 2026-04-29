@@ -470,19 +470,17 @@ function buildUrl(offset){
   if(aktivniSort==='cijena_asc') url+='&sort=cijena_asc';
   if(aktivniSort==='cijena_desc') url+='&sort=cijena_desc';
 
-  // Auto filteri
-  if(aktivnaGlavnaKat==='vozila' || odabraneKat.some(function(k){return k.startsWith('vozila');})) {
-    var af = getAutoFilteri();
-    if(af.gorivo) url+='&gorivo='+encodeURIComponent(af.gorivo);
-    if(af.transmisija) url+='&transmisija='+encodeURIComponent(af.transmisija);
-    if(af.godiste_od) url+='&godiste_od='+af.godiste_od;
-    if(af.godiste_do) url+='&godiste_do='+af.godiste_do;
-    if(af.km_od) url+='&km_od='+af.km_od;
-    if(af.km_do) url+='&km_do='+af.km_do;
-    if(af.karoserija) url+='&q='+(query?query+' ':'')+encodeURIComponent(af.karoserija);
-    if(af.kw_od) url+='&kw_od='+af.kw_od;
-    if(af.kw_do) url+='&kw_do='+af.kw_do;
-  }
+  // Auto filteri — uvijek ih salji ako ima aktivnih
+  var af = getAutoFilteri();
+  if(af.gorivo) url+='&gorivo='+encodeURIComponent(af.gorivo);
+  if(af.transmisija) url+='&transmisija='+encodeURIComponent(af.transmisija);
+  if(af.godiste_od) url+='&godiste_od='+af.godiste_od;
+  if(af.godiste_do) url+='&godiste_do='+af.godiste_do;
+  if(af.km_od) url+='&km_od='+af.km_od;
+  if(af.km_do) url+='&km_do='+af.km_do;
+  if(af.karoserija) url+='&q='+(query?(query+' '):'')+encodeURIComponent(af.karoserija);
+  if(af.kw_od) url+='&kw_od='+af.kw_od;
+  if(af.kw_do) url+='&kw_do='+af.kw_do;
 
   return url;
 }

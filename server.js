@@ -416,8 +416,12 @@ app.get('/api/live-oglasi', async (req, res) => {
         if (req.query.cijena_od) { uvjeti.push(`cijena_num >= $${i++}`); params.push(parseFloat(req.query.cijena_od)); }
         if (req.query.cijena_do) { uvjeti.push(`cijena_num <= $${i++}`); params.push(parseFloat(req.query.cijena_do)); }
 
-        // Auto filteri
-        if (req.query.gorivo) { uvjeti.push(`gorivo ILIKE $${i++}`); params.push(`%${req.query.gorivo}%`); }
+        // Auto filteri — gorivo radi i kao keyword (za OLX koji nemaju kolonu)
+        if (req.query.gorivo) {
+            uvjeti.push(`(gorivo ILIKE $${i} OR naslov ILIKE $${i+1})`);
+            params.push(`%${req.query.gorivo}%`, `%${req.query.gorivo}%`);
+            i += 2;
+        }
         if (req.query.transmisija) { uvjeti.push(`naslov ILIKE $${i++}`); params.push(`%${req.query.transmisija}%`); }
         if (req.query.godiste_od) { uvjeti.push(`godiste >= $${i++}`); params.push(parseInt(req.query.godiste_od)); }
         if (req.query.godiste_do) { uvjeti.push(`godiste <= $${i++}`); params.push(parseInt(req.query.godiste_do)); }
