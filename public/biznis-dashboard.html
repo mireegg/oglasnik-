@@ -191,11 +191,11 @@
 
     <!-- OVERVIEW -->
     <div id="secOverview">
-      <div class="kpi-grid">
-        <div class="kpi orange"><div class="kpi-label">Oglasa na tržištu</div><div class="kpi-value orange" id="kpiUkupno">—</div><span class="kpi-delta up">↑ Live</span><div class="kpi-sub">OLX + Autobum + Facebook</div></div>
-        <div class="kpi green"><div class="kpi-label">Vozila ukupno</div><div class="kpi-value green" id="kpiVozila">—</div><span class="kpi-delta up">↑ aktivnih</span><div class="kpi-sub">sve kategorije vozila</div></div>
-        <div class="kpi blue"><div class="kpi-label">Autobum oglasi</div><div class="kpi-value blue" id="kpiAutobum">—</div><span class="kpi-delta up">↑ skupljeno</span><div class="kpi-sub">autobum.ba</div></div>
-        <div class="kpi gold"><div class="kpi-label">Facebook oglasi</div><div class="kpi-value gold" id="kpiFacebook">—</div><span class="kpi-delta up">↑ skupljeno</span><div class="kpi-sub">iz BiH grupa</div></div>
+      <div class="kpi-grid" style="grid-template-columns:repeat(4,1fr);">
+        <div class="kpi orange"><div class="kpi-label">Ukupno oglasa</div><div class="kpi-value orange" id="kpiUkupno">—</div><span class="kpi-delta up">↑ Live</span><div class="kpi-sub">sve platforme zajedno</div></div>
+        <div class="kpi green"><div class="kpi-label">OLX.ba</div><div class="kpi-value green" id="kpiOlx">—</div><span class="kpi-delta up">↑ aktivnih</span><div class="kpi-sub">olx.ba oglasi</div></div>
+        <div class="kpi blue"><div class="kpi-label">Autobum.ba</div><div class="kpi-value blue" id="kpiAutobum">—</div><span class="kpi-delta up">↑ skupljeno</span><div class="kpi-sub">autobum.ba oglasi</div></div>
+        <div class="kpi gold"><div class="kpi-label">Facebook</div><div class="kpi-value gold" id="kpiFacebook">—</div><span class="kpi-delta up">↑ skupljeno</span><div class="kpi-sub">BiH grupe</div></div>
       </div>
 
       <div class="charts-row">
@@ -365,14 +365,14 @@ async function ucitajPodatke() {
   try {
     var [r1,r2,r3,r4,r5] = await Promise.all([
       fetch('/api/live-oglasi?limit=1').then(r=>r.json()),
-      fetch('/api/live-oglasi?limit=1&kategorija_like=vozila').then(r=>r.json()),
+      fetch('/api/live-oglasi?limit=1&platforma=olx').then(r=>r.json()),
       fetch('/api/live-oglasi?limit=1&platforma=autobum').then(r=>r.json()),
       fetch('/api/live-oglasi?limit=1&platforma=facebook').then(r=>r.json()),
       fetch('/api/kategorije').then(r=>r.json()),
     ]);
 
     if(r1.uspjeh) document.getElementById('kpiUkupno').textContent = fmt(r1.ukupno);
-    if(r2.uspjeh) document.getElementById('kpiVozila').textContent = fmt(r2.ukupno);
+    if(r2.uspjeh) document.getElementById('kpiOlx').textContent = fmt(r2.ukupno);
     if(r3.uspjeh) document.getElementById('kpiAutobum').textContent = fmt(r3.ukupno);
     if(r4.uspjeh) document.getElementById('kpiFacebook').textContent = fmt(r4.ukupno);
 
