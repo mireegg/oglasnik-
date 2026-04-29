@@ -406,6 +406,11 @@ app.get('/api/live-oglasi', async (req, res) => {
             uvjeti.push(`kategorija IN (${kats.map(() => `$${i++}`).join(',')})`);
             params.push(...kats);
         }
+        // kategorija_like — za pretrage tipa 'vozila%'
+        if (req.query.kategorija_like) {
+            uvjeti.push(`kategorija LIKE $${i++}`);
+            params.push(req.query.kategorija_like + '%');
+        }
         if (platforma) {
             const plats = platforma.split(',').map(p => p.trim());
             uvjeti.push(`platforma IN (${plats.map(() => `$${i++}`).join(',')})`);

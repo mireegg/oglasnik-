@@ -225,7 +225,7 @@
       <div class="kpi-grid" style="grid-template-columns:repeat(3,1fr);">
         <div class="kpi orange"><div class="kpi-label">Prosj. cijena vozila</div><div class="kpi-value orange" id="trzCijena">—</div><div class="kpi-sub">prosjek iz uzorka</div></div>
         <div class="kpi green"><div class="kpi-label">Najpopularniji brend</div><div class="kpi-value green" style="font-size:20px;margin-top:8px;" id="trzTop">—</div><div class="kpi-sub">po broju oglasa</div></div>
-        <div class="kpi blue"><div class="kpi-label">Dizel vs Benzin</div><div class="kpi-value blue" id="trzDizel">—</div><div class="kpi-sub">dizel oglasa u bazi</div></div>
+        <div class="kpi blue"><div class="kpi-label">Dizel vs Benzin</div><div class="kpi-value blue" id="trzDizel">—</div><div class="kpi-sub">dizel % / benzin %</div></div>
       </div>
       <div class="charts-row">
         <div class="card">
@@ -365,7 +365,7 @@ async function ucitajPodatke() {
   try {
     var [r1,r2,r3,r4,r5] = await Promise.all([
       fetch('/api/live-oglasi?limit=1').then(r=>r.json()),
-      fetch('/api/live-oglasi?limit=1&kategorija=vozila').then(r=>r.json()),
+      fetch('/api/live-oglasi?limit=1&kategorija_like=vozila').then(r=>r.json()),
       fetch('/api/live-oglasi?limit=1&platforma=autobum').then(r=>r.json()),
       fetch('/api/live-oglasi?limit=1&platforma=facebook').then(r=>r.json()),
       fetch('/api/kategorije').then(r=>r.json()),
@@ -464,11 +464,17 @@ async function ucitajTrziste(kategorije) {
     }
   } catch(e){}
 
-  // Dizel count
+  // Dizel vs Benzin
   try {
-    var resDiz = await fetch('/api/live-oglasi?limit=1&gorivo=Dizel');
-    var dataDiz = await resDiz.json();
-    if(dataDiz.uspjeh) document.getElementById('trzDizel').textContent = fmt(dataDiz.ukupno);
+    var [resDiz, resBenz] = await Promise.all([
+      fetch('/api/live-oglasi?limit=1&gorivo=Dizel').then(r=>r.json()),
+      fetch('/api/live-oglasi?limit=1&gorivo=Benzin').then(r=>r.json())
+    ]);
+    var diz = resDiz.uspjeh ? parseInt(resDiz.ukupno) : 0;
+    var benz = resBenz.uspjeh ? parseInt(resBenz.ukupno) : 0;
+    var ukupnoDB = diz + benz;
+    var dizPosto = ukupnoDB > 0 ? Math.round(diz/ukupnoDB*100) : 0;
+    document.getElementById('trzDizel').textContent = dizPosto + '% / ' + (100-dizPosto) + '%';
   } catch(e){}
 
   // Cijene po brendu
