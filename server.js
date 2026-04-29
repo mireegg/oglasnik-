@@ -53,6 +53,8 @@ async function initDB() {
     await pool.query(`CREATE INDEX IF NOT EXISTS idx_live_oglasi_datum ON live_oglasi(datum)`);
     await pool.query(`ALTER TABLE korisnici ADD COLUMN IF NOT EXISTS plan VARCHAR(50) DEFAULT 'free'`);
     await pool.query(`ALTER TABLE korisnici ADD COLUMN IF NOT EXISTS plan_datum_isteka TIMESTAMP`);
+    await pool.query(`ALTER TABLE live_oglasi ADD COLUMN IF NOT EXISTS cijena_stara NUMERIC`);
+    await pool.query(`ALTER TABLE live_oglasi ADD COLUMN IF NOT EXISTS datum_pada_cijene TIMESTAMP`);
     console.log('Baza inicijalizovana!');
 }
 initDB();
@@ -325,10 +327,25 @@ app.post('/api/sacuvaj-oglase', async (req, res) => {
     if (!oglasi || !oglasi.length) return res.json({ uspjeh: false });
     try {
         for (const o of oglasi) {
-            await pool.query(
-                `INSERT INTO live_oglasi (naslov, cijena, slika, link, platforma, kategorija) VALUES ($1,$2,$3,$4,$5,$6) ON CONFLICT (link) DO UPDATE SET kategorija = $6`,
-                [o.naslov, o.cijena, o.slika, o.link, o.platforma, o.kategorija || null]
-            );
+            const existing = await pool.query('SELECT cijena_num FROM live_oglasi WHERE link = $1', [o.link]);
+            const novaCijenaNum = parseCijena(o.cijena);
+            if (existing.rows.length > 0) {
+                const staraCijenaNum = parseFloat(existing.rows[0].cijena_num) || 0;
+                const pala = staraCijenaNum > 0 && novaCijenaNum > 0 && novaCijenaNum < staraCijenaNum - 50;
+                await pool.query(
+                    `UPDATE live_oglasi SET cijena = $1, slika = $2, kategorija = $3, cijena_num = $4
+                     ${pala ? ', cijena_stara = $5, datum_pada_cijene = NOW()' : ''}
+                     WHERE link = $${pala ? 6 : 5}`,
+                    pala
+                        ? [o.cijena, o.slika, o.kategorija || null, novaCijenaNum, staraCijenaNum, o.link]
+                        : [o.cijena, o.slika, o.kategorija || null, novaCijenaNum, o.link]
+                );
+            } else {
+                await pool.query(
+                    `INSERT INTO live_oglasi (naslov, cijena, slika, link, platforma, kategorija, cijena_num) VALUES ($1,$2,$3,$4,$5,$6,$7) ON CONFLICT (link) DO NOTHING`,
+                    [o.naslov, o.cijena, o.slika, o.link, o.platforma, o.kategorija || null, novaCijenaNum || null]
+                );
+            }
         }
         provjeriAlerte(oglasi).catch(() => {});
         res.json({ uspjeh: true, sacuvano: oglasi.length });
@@ -392,7 +409,7 @@ app.get('/api/live-oglasi', async (req, res) => {
         const ukupno = parseInt(countResult.rows[0].count);
         params.push(limit, offset);
         const result = await pool.query(
-            `SELECT * FROM live_oglasi ${where} ORDER BY ${orderBy} LIMIT $${i++} OFFSET $${i++}`,
+            `SELECT *, (datum_pada_cijene > NOW() - INTERVAL '7 days') as cijena_pala FROM live_oglasi ${where} ORDER BY ${orderBy} LIMIT $${i++} OFFSET $${i++}`,
             params
         );
         res.json({ uspjeh: true, oglasi: result.rows, ukupno, offset, limit });

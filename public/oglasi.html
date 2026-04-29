@@ -159,6 +159,11 @@
     .verdict-box{background:linear-gradient(135deg,rgba(34,197,94,0.08),rgba(34,197,94,0.03));border:1px solid rgba(34,197,94,0.2);border-radius:12px;padding:16px;margin-top:16px;}
     .verdict-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:#22c55e;margin-bottom:6px;}
     .verdict-text{font-size:14px;color:#ddd;line-height:1.6;}
+
+    /* BADGES */
+    .badge-novo{position:absolute;top:8px;left:8px;background:#22c55e;color:white;font-size:10px;font-weight:700;padding:3px 8px;border-radius:100px;letter-spacing:0.05em;z-index:2;}
+    .badge-pad{position:absolute;top:8px;left:8px;background:#ef4444;color:white;font-size:10px;font-weight:700;padding:3px 8px;border-radius:100px;letter-spacing:0.05em;z-index:2;}
+    .badge-pad-cijena{position:absolute;bottom:8px;left:8px;background:rgba(239,68,68,0.9);color:white;font-size:10px;font-weight:700;padding:3px 8px;border-radius:100px;z-index:2;backdrop-filter:blur(4px);}
   </style>
 </head>
 <body>
@@ -455,7 +460,10 @@ function filterGlavna(tip, el) {
 
 function mapOglas(o) {
   var cijena = parseFloat((o.cijena || '').replace(/\./g, '').replace(',', '.').replace(/[^0-9]/g, '')) || 0;
-  return { id: o.id, naslov: o.naslov, cijena: cijena, cijenaStr: o.cijena, lokacija: 'BiH', platforma: o.platforma || 'olx', slika: o.slika, link: o.link, datum: new Date(o.datum).toLocaleDateString('bs-BA'), score: 75, aiTag: 'good', aiLabel: 'Live oglas', kategorija: o.kategorija || 'ostalo' };
+  var datumObjekta = new Date(o.datum);
+  var sada = new Date();
+  var jeNov = (sada - datumObjekta) < 24 * 60 * 60 * 1000; // zadnjih 24h
+  return { id: o.id, naslov: o.naslov, cijena: cijena, cijenaStr: o.cijena, lokacija: 'BiH', platforma: o.platforma || 'olx', slika: o.slika, link: o.link, datum: datumObjekta.toLocaleDateString('bs-BA'), score: 75, aiTag: 'good', aiLabel: 'Live oglas', kategorija: o.kategorija || 'ostalo', jeNov: jeNov, cijenaPala: !!o.cijena_pala, cijenaStara: o.cijena_stara };
 }
 
 function updateNavbar() {
@@ -484,7 +492,14 @@ function prikaziOglase(oglasi) {
     var platformaNaziv = o.platforma === 'facebook' ? 'FACEBOOK' : o.platforma === 'autobum' ? 'AUTOBUM' : 'OLX';
     var isAdded = compareOglasi.some(function(c) { return c.id === o.id; });
     var compareDataStr = JSON.stringify(o).replace(/&/g, '&amp;').replace(/"/g, '&quot;');
+    var badgeHtml = '';
+    if (o.jeNov) badgeHtml = '<span class="badge-novo">&#x2728; NOVO</span>';
+    else if (o.cijenaPala && o.cijenaStara) {
+      var razlika = Math.round(parseFloat(o.cijenaStara) - o.cijena);
+      badgeHtml = '<span class="badge-pad">&#x2193; -' + razlika.toLocaleString() + ' KM</span>';
+    }
     return '<a href="' + oglasStranica + '" target="_blank" class="card">' +
+      badgeHtml +
       '<button class="card-compare-btn' + (isAdded ? ' added' : '') + '" onclick="toggleCompare(event,' + compareDataStr + ')" title="Dodaj u usporedbu">' + (isAdded ? '&#x2713;' : '+') + ' Usporedi</button>' +
       '<div class="card-img">' + (o.slika ? '<img src="' + o.slika + '" alt="" loading="lazy" onerror="this.style.display=\'none\'">' : '<svg width="56" height="56" viewBox="0 0 56 56" fill="none"><ellipse cx="28" cy="36" rx="18" ry="10" stroke="#aaa" stroke-width="2"/><path d="M10 36 Q10 20 28 17 Q46 20 46 36" stroke="#aaa" stroke-width="2" fill="none"/></svg>') + '</div>' +
       '<div class="card-body">' +
