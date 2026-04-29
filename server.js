@@ -416,17 +416,35 @@ app.get('/api/live-oglasi', async (req, res) => {
         if (req.query.cijena_od) { uvjeti.push(`cijena_num >= $${i++}`); params.push(parseFloat(req.query.cijena_od)); }
         if (req.query.cijena_do) { uvjeti.push(`cijena_num <= $${i++}`); params.push(parseFloat(req.query.cijena_do)); }
 
-        // Auto filteri — gorivo radi i kao keyword (za OLX koji nemaju kolonu)
+        // Auto filteri — rade po koloni (Autobum) I po naslovu (OLX)
         if (req.query.gorivo) {
             uvjeti.push(`(gorivo ILIKE $${i} OR naslov ILIKE $${i+1})`);
             params.push(`%${req.query.gorivo}%`, `%${req.query.gorivo}%`);
             i += 2;
         }
-        if (req.query.transmisija) { uvjeti.push(`naslov ILIKE $${i++}`); params.push(`%${req.query.transmisija}%`); }
-        if (req.query.godiste_od) { uvjeti.push(`godiste >= $${i++}`); params.push(parseInt(req.query.godiste_od)); }
-        if (req.query.godiste_do) { uvjeti.push(`godiste <= $${i++}`); params.push(parseInt(req.query.godiste_do)); }
+        if (req.query.transmisija) {
+            uvjeti.push(`(naslov ILIKE $${i})`);
+            params.push(`%${req.query.transmisija}%`);
+            i += 1;
+        }
+        // Godiste — po koloni ako postoji, inace po naslovu (4-cifreni broj)
+        if (req.query.godiste_od && req.query.godiste_do) {
+            uvjeti.push(`(godiste BETWEEN $${i} AND $${i+1} OR (godiste IS NULL AND naslov ~ '[0-9]{4}' AND CAST(SUBSTRING(naslov FROM '[0-9]{4}') AS INTEGER) BETWEEN $${i} AND $${i+1}))`);
+            params.push(parseInt(req.query.godiste_od), parseInt(req.query.godiste_do));
+            i += 2;
+        } else if (req.query.godiste_od) {
+            uvjeti.push(`(godiste >= $${i} OR (godiste IS NULL AND naslov ~ '[0-9]{4}' AND CAST(SUBSTRING(naslov FROM '[0-9]{4}') AS INTEGER) >= $${i}))`);
+            params.push(parseInt(req.query.godiste_od));
+            i += 1;
+        } else if (req.query.godiste_do) {
+            uvjeti.push(`(godiste <= $${i} OR (godiste IS NULL AND naslov ~ '[0-9]{4}' AND CAST(SUBSTRING(naslov FROM '[0-9]{4}') AS INTEGER) <= $${i}))`);
+            params.push(parseInt(req.query.godiste_do));
+            i += 1;
+        }
+        // Kilometraza — samo po koloni (nema u naslovu pouzdano)
         if (req.query.km_od) { uvjeti.push(`km >= $${i++}`); params.push(parseInt(req.query.km_od)); }
         if (req.query.km_do) { uvjeti.push(`km <= $${i++}`); params.push(parseInt(req.query.km_do)); }
+        // Snaga kW — samo po koloni
         if (req.query.kw_od) { uvjeti.push(`kw >= $${i++}`); params.push(parseInt(req.query.kw_od)); }
         if (req.query.kw_do) { uvjeti.push(`kw <= $${i++}`); params.push(parseInt(req.query.kw_do)); }
 
