@@ -29,6 +29,21 @@ const pool = new Pool({
     ssl: { rejectUnauthorized: false }
 });
 
+async function getModelProsjekHelper(pool, naslov, fallback) {
+    const rijeci = (naslov || '').split(' ').filter(r => r.length > 2).slice(0, 3);
+    if (rijeci.length < 2) return fallback;
+    try {
+        const res = await pool.query(
+            `SELECT AVG(cijena_num) as avg, COUNT(*) as broj FROM live_oglasi
+             WHERE cijena_num > 1000 AND cijena_num < 500000 AND naslov ILIKE $1`,
+            ['%' + rijeci.slice(0,2).join('%') + '%']
+        );
+        const avg = parseFloat(res.rows[0]?.avg);
+        const broj = parseInt(res.rows[0]?.broj) || 0;
+        return (avg && broj >= 3) ? avg : fallback;
+    } catch(e) { return fallback; }
+}
+
 async function initDB() {
     await pool.query(`CREATE TABLE IF NOT EXISTS korisnici (id SERIAL PRIMARY KEY, ime VARCHAR(100), email VARCHAR(100) UNIQUE, lozinka VARCHAR(100), datum TIMESTAMP DEFAULT NOW())`);
     await pool.query(`CREATE TABLE IF NOT EXISTS prijave (id SERIAL PRIMARY KEY, ime VARCHAR(100), email VARCHAR(100), telefon VARCHAR(50), datum TIMESTAMP DEFAULT NOW())`);
@@ -1824,29 +1839,10 @@ app.post('/api/konkurent-slabosti', async (req, res) => {
         );
         const avgGlobalni = parseFloat(trzisniProsjek.rows[0]?.avg) || 20000;
 
-        // Funkcija za dohvat preciznog prosjeka po modelu
-        async function getModelProsjek(naslov) {
-            // Izvuci kljucne rijeci iz naslova (brend + model)
-            const rijeci = naslov.split(' ').filter(r => r.length > 2).slice(0, 3);
-            if (!rijeci.length) return avgGlobalni;
-            try {
-                const res = await pool.query(
-                    `SELECT AVG(cijena_num) as avg, COUNT(*) as broj
-                     FROM live_oglasi
-                     WHERE cijena_num > 1000 AND cijena_num < 500000
-                     AND naslov ILIKE $1`,
-                    ['%' + rijeci.slice(0,2).join('%') + '%']
-                );
-                const avg = parseFloat(res.rows[0]?.avg);
-                const broj = parseInt(res.rows[0]?.broj) || 0;
-                // Koristi model prosjek samo ako ima dovoljno uzoraka
-                return (avg && broj >= 3) ? avg : avgGlobalni;
-            } catch(e) { return avgGlobalni; }
-        }
-
+        // Dohvat preciznog prosjeka po modelu (vanjska helper funkcija)
         // Izracunaj prosjek za svaki oglas posebno
         const oglasiSaProsjekom = await Promise.all(oglasiData.map(async (o) => {
-            const modelAvg = await getModelProsjek(o.naslov);
+            const modelAvg = await getModelProsjekHelper(pool, o.naslov, avgGlobalni);
             return { ...o, modelAvg };
         }));
 
@@ -1936,25 +1932,10 @@ app.get('/api/predict/:konkurent_id', async (req, res) => {
         );
         const globalAvg = parseFloat(globalAvgRes.rows[0]?.avg) || 20000;
 
-        // Helper za model prosjek
-        async function getAvgZaModel(naslov, cijenaNum) {
-            const rijeci = (naslov || '').split(' ').filter(r => r.length > 2).slice(0, 3);
-            if (rijeci.length < 2) return globalAvg;
-            try {
-                const r = await pool.query(
-                    `SELECT AVG(cijena_num) as avg, COUNT(*) as broj FROM live_oglasi
-                     WHERE cijena_num BETWEEN $1 AND $2 AND naslov ILIKE $3`,
-                    [cijenaNum * 0.4, cijenaNum * 2.5, '%' + rijeci.slice(0,2).join('%') + '%']
-                );
-                const avg = parseFloat(r.rows[0]?.avg);
-                const broj = parseInt(r.rows[0]?.broj) || 0;
-                return (avg && broj >= 3) ? avg : globalAvg;
-            } catch(e) { return globalAvg; }
-        }
-
+        // Model prosjek helper (vanjska funkcija getModelProsjekHelper)
         // Obogati oglase sa model prosjekom
         const oglasiObogaceni = await Promise.all(oglasi.rows.map(async (o) => {
-            const modelAvg = await getAvgZaModel(o.naslov, parseFloat(o.cijena_num));
+            const modelAvg = await getModelProsjekHelper(pool, o.naslov, globalAvg);
             return { ...o, modelAvg };
         }));
 
@@ -2051,6 +2032,44 @@ async function initImport() {
     )`);
 }
 initImport().catch(e => console.log('Import init:', e.message));
+
+
+// ── DOHVATI SLIKU OGLASA ─────────────────────────────────
+app.get('/api/oglas-slika/:olx_id', async (req, res) => {
+    try {
+        const { olx_id } = req.params;
+        // Provjeri bazu prvo
+        const db = await pool.query('SELECT slika FROM konkurent_oglasi WHERE olx_id = $1', [olx_id]);
+        if (db.rows[0]?.slika) return res.json({ uspjeh: true, slika: db.rows[0].slika });
+        
+        // Dohvati sa OLX API
+        const olxRes = await fetch2(`https://api.olx.ba/listings/${olx_id}`, {
+            headers: { 'Authorization': `Bearer ${process.env.OLX_TOKEN}`, 'Content-Type': 'application/json' }
+        });
+        if (!olxRes.ok) return res.json({ uspjeh: false });
+        const det = await olxRes.json();
+        
+        let slika = null;
+        // OLX vraca razlicite formate
+        if (det.images && det.images.length) {
+            slika = det.images[0]?.url || det.images[0]?.thumb || det.images[0];
+        } else if (det.image) {
+            slika = det.image.startsWith('http') ? det.image : 
+                    `https://d4n0y8dshd77z.cloudfront.net/listings/${olx_id}/sm/${det.image}`;
+        } else if (det.gallery && det.gallery.length) {
+            slika = det.gallery[0]?.url || det.gallery[0];
+        }
+        
+        if (slika) {
+            // Spremi u bazu za sljedeći put
+            await pool.query('UPDATE konkurent_oglasi SET slika = $1 WHERE olx_id = $2', [slika, olx_id]);
+        }
+        
+        res.json({ uspjeh: !!slika, slika });
+    } catch(e) {
+        res.json({ uspjeh: false });
+    }
+});
 
 // Import Intel koristi staticki model iz /api/import-prilike
 
