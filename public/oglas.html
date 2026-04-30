@@ -54,17 +54,6 @@
     .akcije{display:flex;flex-direction:column;gap:10px;}
     .btn-primarni{background:var(--orange);color:white;border:none;border-radius:var(--radius-md);padding:16px 24px;font-size:15px;font-weight:600;font-family:'DM Sans',sans-serif;cursor:pointer;text-align:center;transition:background .15s;display:block;}
     .btn-primarni:hover{background:var(--orange-light);}
-    
-    .btn-whatsapp{display:block;width:100%;padding:13px;background:#25D366;color:white;border:none;border-radius:var(--radius-md);font-size:15px;font-family:'DM Sans',sans-serif;font-weight:600;cursor:pointer;text-align:center;text-decoration:none;margin-top:8px;}
-    .btn-whatsapp:hover{background:#128C7E;}
-    .historija-box{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:20px;margin-top:20px;}
-    .historija-title{font-family:'Syne',sans-serif;font-size:15px;font-weight:700;margin-bottom:14px;display:flex;align-items:center;gap:8px;}
-    .historija-stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:16px;}
-    .hstat{background:var(--bg);border-radius:10px;padding:12px;text-align:center;}
-    .hstat-val{font-family:'Syne',sans-serif;font-size:16px;font-weight:700;color:var(--orange);}
-    .hstat-label{font-size:11px;color:var(--text-muted);margin-top:3px;}
-    .chart-wrap{position:relative;height:120px;}
-    
     .btn-sekundarni{background:white;color:var(--orange);border:2px solid var(--orange);border-radius:var(--radius-md);padding:14px 24px;font-size:15px;font-weight:600;font-family:'DM Sans',sans-serif;cursor:pointer;text-align:center;}
     .btn-sekundarni:hover{background:var(--orange-dim);}
 
@@ -148,6 +137,22 @@
     .footer-logo span{color:var(--orange);}
 
 
+
+    .btn-ponuda{width:100%;padding:13px;background:#fff0e6;color:#993C1D;border:1px solid #F0997B;border-radius:var(--radius-md);font-size:15px;font-family:'DM Sans',sans-serif;font-weight:500;cursor:pointer;margin-top:8px;}
+    .btn-ponuda:hover{background:#F5C4B3;}
+    .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:400;align-items:center;justify-content:center;padding:20px;}
+    .modal-overlay.open{display:flex;}
+    .modal-box{background:#fff;border-radius:20px;padding:28px;width:100%;max-width:420px;position:relative;}
+    .modal-close{position:absolute;top:16px;right:16px;background:none;border:none;font-size:20px;cursor:pointer;color:#aaa;}
+    .ponuda-presets{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;}
+    .ponuda-preset{padding:7px 14px;border-radius:100px;border:1px solid rgba(0,0,0,0.1);font-size:13px;cursor:pointer;color:#777;background:#f7f5f2;font-family:'DM Sans',sans-serif;}
+    .ponuda-preset.sel{background:#fff0e6;border-color:#e65c00;color:#993C1D;}
+    .ponuda-input{font-size:22px;font-weight:700;border:1px solid rgba(0,0,0,0.12);border-radius:10px;padding:10px 14px;width:100%;font-family:'DM Sans',sans-serif;color:#1a1a1a;outline:none;margin-bottom:8px;}
+    .ponuda-diff{font-size:12px;padding:6px 12px;border-radius:8px;margin-bottom:14px;}
+    .ponuda-msg{width:100%;border:1px solid rgba(0,0,0,0.1);border-radius:10px;padding:10px 12px;font-size:13px;font-family:'DM Sans',sans-serif;color:#1a1a1a;resize:none;height:90px;outline:none;margin-bottom:14px;}
+    .ai-hint-ponuda{border-radius:10px;padding:10px 12px;margin-bottom:14px;font-size:12px;line-height:1.5;border:1px solid;}
+    .btn-posalji{width:100%;padding:13px;background:#e65c00;color:white;border:none;border-radius:10px;font-size:15px;font-family:'DM Sans',sans-serif;font-weight:600;cursor:pointer;}
+
     @media(max-width:768px){
       nav{padding:0 16px;flex-wrap:wrap;height:auto;gap:8px;padding-top:10px;padding-bottom:10px;}
       .nav-links{order:3;width:100%;display:flex;gap:12px;overflow-x:auto;padding-bottom:4px;}
@@ -222,12 +227,25 @@
   </div>
 </div>
 
-<div id="historijaCijeneBox" style="display:none;max-width:900px;margin:20px auto 0;padding:0 32px;" class="historija-box">
-  <div class="historija-title">&#x1F4C8; Historija cijene i trhisni kontekst</div>
-  <div class="historija-stats" id="historijaStats"></div>
-  <div class="chart-wrap"><canvas id="historijaChart"></canvas></div>
+<div class="modal-overlay" id="ponudaModal" onclick="if(event.target===this)zatvoriPonudu()">
+  <div class="modal-box">
+    <button class="modal-close" onclick="zatvoriPonudu()">&#x2715;</button>
+    <div style="font-family:'Syne',sans-serif;font-size:18px;font-weight:700;margin-bottom:4px;">&#x1F4AC; Pošalji ponudu</div>
+    <div style="font-size:13px;color:#777;margin-bottom:16px;" id="ponudaSub">Za oglas...</div>
+    <div class="ponuda-presets">
+      <div class="ponuda-preset" onclick="setPonuda(0.95,this)">-5%</div>
+      <div class="ponuda-preset sel" onclick="setPonuda(0.90,this)">-10%</div>
+      <div class="ponuda-preset" onclick="setPonuda(0.85,this)">-15%</div>
+      <div class="ponuda-preset" onclick="setPonuda(0.80,this)">-20%</div>
+    </div>
+    <input class="ponuda-input" type="number" id="ponudaInput" oninput="updatePonudaDiff()">
+    <div class="ponuda-diff" id="ponudaDiff" style="background:#fff0e6;color:#993C1D;"></div>
+    <div class="ai-hint-ponuda" id="ponudaAiHint" style="background:#fff0e6;color:#712B13;border-color:#F0997B;"></div>
+    <textarea class="ponuda-msg" id="ponudaMsg" placeholder="Poruka se generira automatski..."></textarea>
+    <button class="btn-posalji" onclick="posaljiPonudu()">Kopiraj poruku i otvori oglas &#x2192;</button>
+    <div style="text-align:center;font-size:12px;color:#aaa;margin-top:8px;">Poruka se kopira u clipboard — paste-aj je u chat sa prodavačem</div>
+  </div>
 </div>
-
 
 <footer>
   <div class="footer-logo">oglix<span>.ba</span></div>
@@ -239,7 +257,6 @@
 // ── INIT PARAMS ─────────────────────────────────────────
 var params = new URLSearchParams(window.location.search);
 var oglasMeta = {};
-var telefon = '';
 try { oglasMeta = JSON.parse(decodeURIComponent(params.get('data') || '{}')); } catch(e) {}
 
 var oglasPlatforma = oglasMeta.platforma || 'olx';
@@ -339,14 +356,12 @@ function renderOglasTop(meta, d) {
         '<div class="akcije">'+
           '<a href="'+meta.link+'" target="_blank" class="btn-primarni">Pogledaj na '+platformaNaziv+' →</a>'+
           '<button class="btn-sekundarni" onclick="pratiOglas()">🔔 Prati oglas</button>'+
+          '<button class="btn-ponuda" onclick="otvoriPonudu()">💬 Pošalji ponudu</button>'+
+          (telefon ? '<a href="https://wa.me/'+telefon+'" target="_blank" class="btn-whatsapp">📱 WhatsApp</a>' : '')+
         '</div>'+
       '</div>'+
     '</div>';
   document.title = meta.naslov+' — Oglix.ba';
-  // Ucitaj historiju cijene
-  ucitajHistorijuCijene(meta.id);
-  // Ucitaj telefon za WhatsApp
-  izvuciTelefon(meta);
 }
 
 function promijeniSliku(el,src){
@@ -862,6 +877,186 @@ function parseNaslovFacebook(naslov) {
 
   return d;
 }
+
+// ── WHATSAPP & TELEFON ───────────────────────────────────
+function izvuciTelefon(meta) {
+  // WhatsApp dugme se dodaje samo ako ima telefona u opisu
+  // Za sada ostavljamo bez - OLX ne daje telefone javno
+}
+
+// ── HISTORIJA CIJENE ─────────────────────────────────────
+async function ucitajHistorijuCijene(id) {
+  if (!id) return;
+  try {
+    var res = await fetch('/api/historija-cijene/' + id);
+    var data = await res.json();
+    if (!data.uspjeh) return;
+
+    var box = document.getElementById('historijaCijeneBox');
+    if (!box) return;
+    box.style.display = 'block';
+
+    var stats = document.getElementById('historijaStats');
+    var danas = data.cijena || (data.cijenaTrenutna ? Math.round(data.cijenaTrenutna).toLocaleString('bs-BA') + ' KM' : 'N/A');
+    var avg = data.avgKat ? Math.round(data.avgKat).toLocaleString('bs-BA') + ' KM' : 'N/A';
+    var danaNaT = data.danaNaTrzistu || 0;
+    var razlikaProsjek = data.cijenaTrenutna && data.avgKat
+      ? Math.round(((data.cijenaTrenutna - data.avgKat) / data.avgKat) * 100)
+      : null;
+    var razlikaHtml = razlikaProsjek !== null
+      ? (razlikaProsjek > 0 ? '+' : '') + razlikaProsjek + '% od prosjeka'
+      : '';
+
+    stats.innerHTML =
+      '<div class="hstat"><div class="hstat-val">' + danas + '</div><div class="hstat-label">Trenutna cijena</div></div>' +
+      '<div class="hstat"><div class="hstat-val" style="color:' + (razlikaProsjek !== null && razlikaProsjek < 0 ? '#15803d' : '#dc2626') + ';">' + avg + '</div><div class="hstat-label">Prosjek kategorije' + (razlikaHtml ? ' (' + razlikaHtml + ')' : '') + '</div></div>' +
+      '<div class="hstat"><div class="hstat-val" style="color:' + (danaNaT > 30 ? '#e65c00' : '#1a1a1a') + ';">' + danaNaT + '</div><div class="hstat-label">Dana na trzistu' + (danaNaT > 30 ? ' — pregovaraj' : '') + '</div></div>';
+
+    // Chart
+    var canvas = document.getElementById('historijaChart');
+    if (!canvas || !data.historija || data.historija.length < 2) return;
+
+    var script = document.createElement('script');
+    script.src = 'https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js';
+    script.onload = function() {
+      var labels = data.historija.map(function(h) { return new Date(h.datum).toLocaleDateString('bs-BA'); });
+      var values = data.historija.map(function(h) { return Math.round(parseFloat(h.cijena_num)); });
+      new Chart(canvas, {
+        type: 'line',
+        data: {
+          labels: labels,
+          datasets: [{
+            data: values,
+            borderColor: '#e65c00',
+            backgroundColor: 'rgba(230,92,0,0.08)',
+            borderWidth: 2,
+            pointBackgroundColor: '#e65c00',
+            pointRadius: 4,
+            fill: true,
+            tension: 0.3
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { display: false } },
+          scales: {
+            x: { grid: { display: false }, ticks: { font: { size: 11 } } },
+            y: {
+              grid: { color: 'rgba(0,0,0,0.05)' },
+              ticks: { font: { size: 11 }, callback: function(v) { return v.toLocaleString('bs-BA') + ' KM'; } }
+            }
+          }
+        }
+      });
+    };
+    document.head.appendChild(script);
+  } catch(e) { console.log('Historija greska:', e.message); }
+}
+
+// ── MAKE AN OFFER ────────────────────────────────────────
+var ponudaCijena = 0;
+
+function otvoriPonudu() {
+  var modal = document.getElementById('ponudaModal');
+  if (!modal) return;
+  var sub = document.getElementById('ponudaSub');
+  var cijenaStr = oglasMeta.cijena || '';
+  ponudaCijena = parseFloat(cijenaStr.replace(/\./g, '').replace(/[^0-9]/g, '')) || 0;
+  if (sub) sub.textContent = (oglasMeta.naslov || 'Oglas').substring(0, 50) + '...';
+  setPonuda(0.90, document.querySelector('.ponuda-preset.sel'));
+  modal.classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function zatvoriPonudu() {
+  var modal = document.getElementById('ponudaModal');
+  if (modal) modal.classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+function setPonuda(faktor, el) {
+  var val = Math.round(ponudaCijena * faktor);
+  var inp = document.getElementById('ponudaInput');
+  if (inp) inp.value = val || '';
+  document.querySelectorAll('.ponuda-preset').forEach(function(p) { p.classList.remove('sel'); });
+  if (el) el.classList.add('sel');
+  updatePonudaDiff();
+  azurirajSavjet(faktor);
+  azurirajPoruku(faktor);
+}
+
+function updatePonudaDiff() {
+  var val = parseInt((document.getElementById('ponudaInput') || {}).value) || 0;
+  var diff = document.getElementById('ponudaDiff');
+  if (!diff || !ponudaCijena || !val) return;
+  var razlika = ponudaCijena - val;
+  var pct = Math.round(razlika / ponudaCijena * 100);
+  if (razlika > 0) {
+    diff.style.background = pct > 25 ? '#fee2e2' : '#fff0e6';
+    diff.style.color = pct > 25 ? '#991b1b' : '#993C1D';
+    diff.textContent = 'Nudis ' + razlika.toLocaleString('bs-BA') + ' KM ispod trazene cijene (' + pct + '% popust)';
+  } else {
+    diff.style.background = '#f7f5f2';
+    diff.style.color = '#777';
+    diff.textContent = 'Nudis trazenu cijenu ili vise';
+  }
+  if (ponudaCijena > 0 && val > 0) azurirajSavjet(val / ponudaCijena);
+}
+
+function azurirajSavjet(faktor) {
+  var hint = document.getElementById('ponudaAiHint');
+  if (!hint || !ponudaCijena) return;
+  var pct = Math.round((1 - faktor) * 100);
+  var ponuda = Math.round(ponudaCijena * faktor);
+  var usteda = ponudaCijena - ponuda;
+  var tekst, boja, bojaTxt, bojaBorder;
+  if (pct <= 5) {
+    tekst = 'Blaga ponuda koja se gotovo uvijek prihvata. Prodavaci u BiH ocekuju pregovor pa ce biti prijatno iznenadjeni.';
+    boja = '#f0fdf4'; bojaTxt = '#166534'; bojaBorder = '#86efac';
+  } else if (pct <= 10) {
+    tekst = 'Klasicna pregovaracka ponuda u BiH — 10% nize je norma. Ustedjeces ' + usteda.toLocaleString('bs-BA') + ' KM.';
+    boja = '#fff0e6'; bojaTxt = '#712B13'; bojaBorder = '#F0997B';
+  } else if (pct <= 15) {
+    tekst = 'Agresivnija ponuda — prodavac ce vjerovatno kontrirati. Pripremi se na kompromis oko ' + Math.round(ponudaCijena * 0.92).toLocaleString('bs-BA') + ' KM.';
+    boja = '#fefce8'; bojaTxt = '#713f12'; bojaBorder = '#fde68a';
+  } else {
+    tekst = 'Visok rizik odbijanja. Preporucujemo poceti sa -10% i ostaviti prostor za pregovor.';
+    boja = '#fef2f2'; bojaTxt = '#991b1b'; bojaBorder = '#fca5a5';
+  }
+  hint.style.background = boja;
+  hint.style.borderColor = bojaBorder;
+  hint.style.color = bojaTxt;
+  hint.innerHTML = '<strong style="display:block;font-size:10px;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:5px;">&#x2728; Oglix AI savjet &#x2014; ' + pct + '% popust</strong>' + tekst;
+}
+
+function azurirajPoruku(faktor) {
+  var pct = Math.round((1 - faktor) * 100);
+  var ponuda = Math.round(ponudaCijena * faktor);
+  var naslov = (oglasMeta.naslov || 'oglas').substring(0, 50);
+  var linija3;
+  if (pct >= 15) linija3 = 'Na osnovu stanja vozila i trhista, nudim ' + ponuda.toLocaleString('bs-BA') + ' KM.';
+  else if (pct >= 10) linija3 = 'Detaljno sam pratio trziste i nudim ' + ponuda.toLocaleString('bs-BA') + ' KM sto smatram fer cijenom.';
+  else linija3 = 'Jako mi se svidja vas oglas. Nudim ' + ponuda.toLocaleString('bs-BA') + ' KM.';
+  var msg = document.getElementById('ponudaMsg');
+  if (msg) msg.value = 'Zdravo,\n\nZainteresovan/a sam za vas oglas: ' + naslov + '.\n\n' + linija3 + ' Spreman/na sam odmah na pregled i placanje gotovinom.\n\nMozemo li se dogovoriti? Hvala!';
+}
+
+function posaljiPonudu() {
+  var val = parseInt((document.getElementById('ponudaInput') || {}).value) || 0;
+  var poruka = ((document.getElementById('ponudaMsg') || {}).value || '').trim();
+  if (!poruka) poruka = 'Zdravo, zainteresovan/a sam za vas oglas. Nudim ' + val.toLocaleString('bs-BA') + ' KM. Mozemo li se dogovoriti? Hvala!';
+  if (navigator.clipboard) navigator.clipboard.writeText(poruka).catch(function() {});
+  else { var ta = document.createElement('textarea'); ta.value = poruka; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); ta.remove(); }
+  if (oglasMeta.link) window.open(oglasMeta.link, '_blank');
+  zatvoriPonudu();
+  var t = document.createElement('div');
+  t.style.cssText = 'position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#1a1a1a;color:white;padding:12px 24px;border-radius:100px;font-size:14px;z-index:9999;font-family:DM Sans,sans-serif;white-space:nowrap;';
+  t.textContent = '\u2713 Poruka kopirana! Paste-aj je u chat sa prodavacem';
+  document.body.appendChild(t);
+  setTimeout(function() { t.remove(); }, 3500);
+}
+
 
 // ── INIT ─────────────────────────────────────────────────
 async function init(){
