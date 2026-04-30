@@ -112,32 +112,7 @@
     footer{margin-top:60px;border-top:1px solid var(--border);background:var(--surface);padding:32px;text-align:center;font-size:13px;color:var(--text-faint);}
     footer .footer-logo{font-family:'Syne',sans-serif;font-size:18px;font-weight:700;color:var(--text);margin-bottom:8px;}
     footer .footer-logo span{color:var(--orange);}
-
-    /* DEAL RATING BADGE */
-    .deal-badge{position:absolute;bottom:8px;left:8px;font-size:10px;font-weight:700;padding:3px 8px;border-radius:100px;z-index:2;letter-spacing:0.03em;}
-    /* SCAM FLAG */
-    .scam-flag{position:absolute;top:8px;left:8px;background:#FCEBEB;color:#791F1F;font-size:10px;font-weight:700;padding:3px 8px;border-radius:100px;z-index:3;}
-    /* TRHISTE BADGE */
-    .trg-badge{font-size:10px;color:var(--text-faint);display:flex;align-items:center;gap:3px;margin-top:3px;}
-    /* AI PRETRAGA */
-    .ai-search-box{background:#111;border-radius:var(--radius-lg);padding:16px 20px;margin-bottom:16px;display:none;}
-    .ai-search-box.open{display:block;}
-    .ai-search-title{font-size:12px;font-weight:700;color:var(--orange);margin-bottom:10px;display:flex;align-items:center;gap:6px;}
-    .ai-search-input{width:100%;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.1);border-radius:10px;padding:10px 14px;font-size:14px;color:white;font-family:'DM Sans',sans-serif;outline:none;}
-    .ai-search-input::placeholder{color:#555;}
-    .ai-search-input:focus{border-color:var(--orange);}
-    .ai-search-btn{background:var(--orange);color:white;border:none;border-radius:8px;padding:8px 16px;font-size:13px;font-family:'DM Sans',sans-serif;cursor:pointer;margin-top:8px;}
-    /* JOBS TAB */
-    .category-tabs{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;}
-    .cat-tab{padding:7px 16px;border-radius:var(--radius-pill);border:1px solid var(--border);font-size:13px;cursor:pointer;color:var(--text-muted);background:var(--surface);font-family:'DM Sans',sans-serif;}
-    .cat-tab.active{background:var(--orange);color:white;border-color:var(--orange);}
-    .job-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:16px;display:flex;flex-direction:column;gap:6px;cursor:pointer;transition:border-color .15s;}
-    .job-card:hover{border-color:var(--border-hover);}
-    .job-title{font-size:14px;font-weight:500;color:var(--text);}
-    .job-meta{font-size:12px;color:var(--text-muted);display:flex;gap:10px;flex-wrap:wrap;}
-    .job-badge{font-size:10px;font-weight:600;padding:2px 8px;border-radius:100px;background:#E6F1FB;color:#042C53;display:inline-block;}
-    .job-plata{font-size:13px;font-weight:600;color:var(--orange);}
-        @media(max-width:768px){nav{padding:0 16px;}.nav-links{display:none;}.hero{padding:40px 16px 32px;}.hero h1{font-size:32px;}.main{grid-template-columns:1fr;padding:16px;}.sidebar{display:none;}.stats-bar{gap:20px;flex-wrap:wrap;}}
+    @media(max-width:768px){nav{padding:0 16px;}.nav-links{display:none;}.hero{padding:40px 16px 32px;}.hero h1{font-size:32px;}.main{grid-template-columns:1fr;padding:16px;}.sidebar{display:none;}.stats-bar{gap:20px;flex-wrap:wrap;}}
     .hamburger{display:none;flex-direction:column;gap:5px;cursor:pointer;padding:8px;background:none;border:none;}
     .hamburger span{width:22px;height:2px;background:var(--text);border-radius:2px;}
     .mob-meni{display:none;position:fixed;inset:0;background:var(--surface);z-index:200;padding:24px;flex-direction:column;}
@@ -313,7 +288,7 @@
     <div class="search-icon"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><circle cx="8" cy="8" r="5.5" stroke="currentColor" stroke-width="1.5"/><line x1="12.5" y1="12.5" x2="16" y2="16" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></div>
     <input class="search-input" id="searchInput" type="text" placeholder="Šta tražiš? npr. Golf 7 DSG, iPhone 15, sofa...">
     <div class="search-divider"></div>
-    <button class="ai-btn" onclick="toggleAiSearch()">&#x1F9E0; AI Pretraga</button><button class="ai-btn" style="margin-left:4px;" onclick="aiAnaliza()">&#x1F4CA; AI Analiza</button>
+    <button class="ai-btn" onclick="aiAnaliza()">&#x1F916; AI Analiza</button>
     <button class="search-btn" onclick="pretrazi()">Traži</button>
   </div>
   <div class="popular">
@@ -445,19 +420,6 @@
       <div class="ai-box-title"><div class="ai-dot"></div> Oglix AI Analiza</div>
       <div class="ai-box-text" id="ai-analiza-tekst">Analiziram oglase...</div>
     </div>
-    <div class="category-tabs" id="categoryTabs">
-      <div class="cat-tab active" onclick="switchCatTab('oglasi',this)">&#x1F4CB; Oglasi</div>
-      <div class="cat-tab" onclick="switchCatTab('jobs',this)">&#x1F4BC; Poslovi</div>
-    </div>
-
-    <div class="ai-search-box" id="aiSearchBox">
-      <div class="ai-search-title">&#x1F916; AI pretraga</div>
-      <input class="ai-search-input" id="aiSearchInput" placeholder="npr. Golf 7 dizel do 15.000 KM malo km, ili laptop za video editing do 2000 KM...">
-      <br><button class="ai-search-btn" onclick="pokreniAiPretragu()">Pretraži &#x2192;</button>
-    </div>
-
-    <div id="jobsGrid" style="display:none;"></div>
-
     <div class="results-header">
       <div class="results-count">Pronađeno <strong id="rezultatiBroj">0</strong> oglasa</div>
       <select class="sort-select" onchange="sortirajSelect(this.value)">
@@ -535,8 +497,7 @@ function mapOglas(o) {
   var datumObjekta = new Date(o.datum);
   var sada = new Date();
   var jeNov = (sada - datumObjekta) < 24 * 60 * 60 * 1000; // zadnjih 24h
-  var danaNaTrzistu = Math.floor((new Date() - datumObjekta) / (1000 * 60 * 60 * 24));
-  return { id: o.id, naslov: o.naslov, cijena: cijena, cijenaStr: o.cijena, lokacija: 'BiH', platforma: o.platforma || 'olx', slika: o.slika, link: o.link, datum: datumObjekta.toLocaleDateString('bs-BA'), score: 75, aiTag: 'good', aiLabel: 'Live oglas', kategorija: o.kategorija || 'ostalo', jeNov: jeNov, cijenaPala: !!o.cijena_pala, cijenaStara: o.cijena_stara, danaNaTrzistu: danaNaTrzistu };
+  return { id: o.id, naslov: o.naslov, cijena: cijena, cijenaStr: o.cijena, lokacija: 'BiH', platforma: o.platforma || 'olx', slika: o.slika, link: o.link, datum: datumObjekta.toLocaleDateString('bs-BA'), score: 75, aiTag: 'good', aiLabel: 'Live oglas', kategorija: o.kategorija || 'ostalo', jeNov: jeNov, cijenaPala: !!o.cijena_pala, cijenaStara: o.cijena_stara };
 }
 
 function updateNavbar() {
@@ -559,7 +520,6 @@ function prikaziOglase(oglasi) {
     return;
   }
   var scoreColor = function(s) { return s >= 75 ? '#639922' : s >= 50 ? '#BA7517' : '#A32D2D'; };
-  var _oglasi_ref = oglasi;
   grid.innerHTML = oglasi.map(function(o) {
     var metaData = encodeURIComponent(JSON.stringify({ id: o.id, naslov: o.naslov, cijena: o.cijenaStr, slika: o.slika || '', link: o.link || '', platforma: o.platforma || 'olx', kategorija: o.kategorija || '' }));
     var oglasStranica = '/oglas.html?data=' + metaData;
@@ -581,12 +541,9 @@ function prikaziOglase(oglasi) {
       '<div class="card-title">' + o.naslov + '</div>' +
       '<div class="card-price">' + o.cijenaStr + '</div>' +
       '<div class="card-meta">&#x1F4CD; ' + o.lokacija + ' &middot; ' + o.datum + '</div>' +
-      '<div class="card-score"><span class="score-tag tag-' + o.aiTag + '" id="deal-' + o.id + '">' + o.aiLabel + '</span><div class="score-bar-wrap"><div class="score-bar-fill" style="width:' + o.score + '%;background:' + scoreColor(o.score) + ';"></div></div></div>' +
-      '<div class="trg-badge">' + (o.danaNaTrzistu > 0 ? '&#x1F4C5; ' + o.danaNaTrzistu + ' dana na trhistu' + (o.danaNaTrzistu > 30 ? ' &mdash; pregovaraj' : '') : '') + '</div>' +
+      '<div class="card-score"><span class="score-tag tag-' + o.aiTag + '">' + o.aiLabel + '</span><div class="score-bar-wrap"><div class="score-bar-fill" style="width:' + o.score + '%;background:' + scoreColor(o.score) + ';"></div></div></div>' +
       '</div></a>';
   }).join('');
-  // Async: deal rating i scam check
-  setTimeout(function() { ucitajDealRatings(_oglasi_ref); ucitajScamCheck(_oglasi_ref); }, 200);
 }
 
 function toggleChip(el, grupa) {
@@ -885,170 +842,6 @@ async function init() {
     if (urlQ) { document.getElementById('searchInput').value = urlQ; await pretrazi(); }
     else { await primijeniFiltre(); }
   } catch(e) { console.log('Greška:', e.message); }
-}
-
-
-// ── DEAL RATING ──────────────────────────────────────────
-function ucitajDealRatings(oglasi) {
-  oglasi.forEach(function(o) {
-    if (!o.id || !o.kategorija) return;
-    fetch('/api/deal-rating/' + o.id)
-      .then(function(r) { return r.json(); })
-      .then(function(data) {
-        if (!data.uspjeh || data.rating === 'unknown') return;
-        var el = document.getElementById('deal-' + o.id);
-        if (!el) return;
-        var labels = { odlicno: 'Odlicno', dobro: 'Dobra cijena', fer: 'Fer cijena', skupo: 'Skuplje', izbjegavaj: 'Izbjegavaj' };
-        var boje = { odlicno: 'tag-good', dobro: 'tag-good', fer: 'tag-warn', skupo: 'tag-bad', izbjegavaj: 'tag-bad' };
-        el.textContent = labels[data.rating] || data.rating;
-        el.className = 'score-tag ' + (boje[data.rating] || 'tag-warn');
-
-        // Dodaj deal badge na sliku
-        var wrap = document.getElementById('imgwrap-' + o.id);
-        if (wrap && (data.rating === 'odlicno' || data.rating === 'dobro')) {
-          var badge = document.createElement('span');
-          badge.className = 'deal-badge';
-          badge.style.cssText = 'background:' + data.pozadina + ';color:' + data.boja + ';';
-          badge.textContent = data.rating === 'odlicno' ? 'Odlicno' : 'Dobra cijena';
-          wrap.appendChild(badge);
-        }
-      }).catch(function(){});
-  });
-}
-
-// ── SCAM CHECK ───────────────────────────────────────────
-function ucitajScamCheck(oglasi) {
-  oglasi.slice(0, 20).forEach(function(o) {
-    if (!o.id) return;
-    fetch('/api/scam-check', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ id: o.id, naslov: o.naslov, cijena: o.cijenaStr, platforma: o.platforma, kategorija: o.kategorija })
-    }).then(function(r) { return r.json(); })
-      .then(function(data) {
-        if (!data.uspjeh || data.rizik === 'nizak') return;
-        var wrap = document.getElementById('imgwrap-' + o.id);
-        if (!wrap) return;
-        var existing = wrap.querySelector('.scam-flag');
-        if (existing) existing.remove();
-        if (data.rizik === 'visok') {
-          var flag = document.createElement('span');
-          flag.className = 'scam-flag';
-          flag.textContent = '&#x26A0; Provjeri';
-          flag.innerHTML = '&#x26A0;&#xFE0F; Provjeri';
-          flag.title = data.flags.join(', ');
-          wrap.appendChild(flag);
-        }
-      }).catch(function(){});
-  });
-}
-
-// ── AI PRETRAGA ──────────────────────────────────────────
-function toggleAiSearch() {
-  var box = document.getElementById('aiSearchBox');
-  box.classList.toggle('open');
-  if (box.classList.contains('open')) document.getElementById('aiSearchInput').focus();
-}
-
-async function pokreniAiPretragu() {
-  var upit = document.getElementById('aiSearchInput').value.trim();
-  if (!upit) return;
-  var btn = document.querySelector('.ai-search-btn');
-  btn.textContent = 'AI razmislja...';
-  btn.disabled = true;
-  try {
-    var res = await fetch('/api/ai-pretraga', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ upit: upit })
-    });
-    var data = await res.json();
-    if (data.uspjeh && data.params) {
-      var p = data.params;
-      if (p.q) document.getElementById('searchInput').value = p.q;
-      if (p.cijena_od) document.getElementById('cijenaOd').value = p.cijena_od;
-      if (p.cijena_do) document.getElementById('cijenaDo').value = p.cijena_do;
-      if (p.gorivo) {
-        document.querySelectorAll('#filterGorivo .fchip').forEach(function(ch) {
-          if (ch.textContent.trim().toLowerCase() === p.gorivo.toLowerCase()) ch.classList.add('active');
-        });
-      }
-      if (p.godiste_od) document.getElementById('godOd').value = p.godiste_od;
-      if (p.km_do) document.getElementById('kmDo').value = p.km_do;
-      if (p.kategorija && p.kategorija !== 'ostalo') {
-        var chipMap = { vozila: 1, elektronika: 2, nekretnine: 3, motocikli: 4, masine: 5 };
-        var chips = document.querySelectorAll('#glavneKategorije .fchip');
-        if (chipMap[p.kategorija]) filterGlavna(p.kategorija, chips[chipMap[p.kategorija]]);
-      }
-      document.getElementById('aiSearchBox').classList.remove('open');
-      primijeniFiltre();
-    }
-  } catch(e) { console.log(e); }
-  btn.textContent = 'Pretrazi';
-  btn.disabled = false;
-}
-
-document.addEventListener('keydown', function(e) {
-  if (e.key === 'Enter' && document.getElementById('aiSearchBox').classList.contains('open')) {
-    pokreniAiPretragu();
-  }
-});
-
-// ── JOBS TAB ─────────────────────────────────────────────
-var aktivniTab = 'oglasi';
-
-async function switchCatTab(tab, el) {
-  aktivniTab = tab;
-  document.querySelectorAll('.cat-tab').forEach(function(t) { t.classList.remove('active'); });
-  el.classList.add('active');
-  var oglasiSect = document.querySelector('.results-header');
-  var oglasiGrid = document.getElementById('oglasiGrid');
-  var loadMore = document.querySelector('.load-more');
-  var jobsGrid = document.getElementById('jobsGrid');
-
-  if (tab === 'jobs') {
-    oglasiSect.style.display = 'none';
-    oglasiGrid.style.display = 'none';
-    loadMore.style.display = 'none';
-    jobsGrid.style.display = 'grid';
-    jobsGrid.style.gridTemplateColumns = 'repeat(auto-fill,minmax(280px,1fr))';
-    jobsGrid.style.gap = '12px';
-    ucitajJobs();
-  } else {
-    oglasiSect.style.display = '';
-    oglasiGrid.style.display = '';
-    loadMore.style.display = '';
-    jobsGrid.style.display = 'none';
-  }
-}
-
-async function ucitajJobs() {
-  var q = document.getElementById('searchInput').value.trim();
-  var jobsGrid = document.getElementById('jobsGrid');
-  jobsGrid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--text-muted);">Ucitavam poslove...</div>';
-  try {
-    var res = await fetch('/api/jobs' + (q ? '?q=' + encodeURIComponent(q) : ''));
-    var data = await res.json();
-    if (data.uspjeh && data.jobs.length > 0) {
-      jobsGrid.innerHTML = data.jobs.map(function(j) {
-        var datum = j.datum ? new Date(j.datum).toLocaleDateString('bs-BA') : '';
-        return '<div class="job-card" onclick="window.open('' + j.link + '','_blank')">' +
-          '<span class="job-badge">MojPosao.ba</span>' +
-          '<div class="job-title">' + (j.naslov || '') + '</div>' +
-          (j.plata ? '<div class="job-plata">' + j.plata + '</div>' : '') +
-          '<div class="job-meta">' +
-          (j.grad ? '<span>&#x1F4CD; ' + j.grad + '</span>' : '') +
-          (datum ? '<span>&#x1F4C5; ' + datum + '</span>' : '') +
-          '</div>' +
-          (j.opis ? '<div style="font-size:12px;color:var(--text-muted);line-height:1.5;">' + j.opis + '</div>' : '') +
-          '</div>';
-      }).join('');
-    } else {
-      jobsGrid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--text-muted);">Nema pronadjenih poslova.</div>';
-    }
-  } catch(e) {
-    jobsGrid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--text-muted);">Greska pri ucitavanju.</div>';
-  }
 }
 
 window.onload = init;
