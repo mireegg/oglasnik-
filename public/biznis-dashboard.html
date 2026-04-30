@@ -955,7 +955,7 @@ async function ucitajSlabosti(id) {
           return '<div class="slabost-item" style="border-left-color:var(--gold);">' +
             '<a href="' + (o.link || '#') + '" target="_blank" style="flex:1;">' +
             '<div class="slabost-naslov">' + o.naslov + '</div>' +
-            '<div class="slabost-detalj" style="color:var(--gold);">💰 +' + o.visokoZa + '% iznad tržišnog prosjeka</div>' +
+            '<div class="slabost-detalj" style="color:var(--gold);">💰 +' + o.visokoZa + '% iznad prosjeka za ovaj model (' + (o.modelAvg ? o.modelAvg.toLocaleString('bs-BA') + ' KM' : 'N/A') + ')</div>' +
             '</a><div class="slabost-cijena">' + o.cijena + '</div></div>';
         }).join('')
       : '<div style="color:var(--text-faint);font-size:13px;padding:12px;">Svi oglasi su u tržišnom rangu.</div>';

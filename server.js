@@ -1606,13 +1606,33 @@ app.post('/api/konkurent-dodaj', async (req, res) => {
         for (const o of oglasi.slice(0, 50)) {
             const cijenaNum = o.price || 0;
             const link = `https://www.olx.ba/artikal/${o.id}`;
-            const slika = o.image ? (o.image.startsWith('http') ? o.image : `https://d4n0y8dshd77z.cloudfront.net/listings/${o.id}/sm/${o.image}`) : null;
+            // OLX image: moze biti null, filename ili URL
+            let slika = null;
+            if (o.image) {
+                if (o.image.startsWith('http')) slika = o.image;
+                else slika = `https://d4n0y8dshd77z.cloudfront.net/listings/${o.id}/sm/${o.image}`;
+            } else if (o.thumbnail) {
+                slika = o.thumbnail.startsWith('http') ? o.thumbnail : `https://d4n0y8dshd77z.cloudfront.net/listings/${o.id}/sm/${o.thumbnail}`;
+            }
+            // Fallback - probaj direktni oglas API za sliku
+            if (!slika) {
+                try {
+                    const detRes = await fetch2(`https://api.olx.ba/listings/${o.id}`, {
+                        headers: { 'Authorization': `Bearer ${process.env.OLX_TOKEN}`, 'Content-Type': 'application/json' }
+                    });
+                    if (detRes.ok) {
+                        const det = await detRes.json();
+                        const imgs = det.images || det.gallery || [];
+                        if (imgs.length) slika = imgs[0].url || imgs[0].thumb || imgs[0];
+                    }
+                } catch(e) {}
+            }
             const datumObjave = o.date ? new Date(o.date * 1000) : new Date();
 
             await pool.query(
                 `INSERT INTO konkurent_oglasi (konkurent_id, olx_id, naslov, cijena, cijena_num, slika, link, kategorija_id, status, datum_objave)
                  VALUES ($1, $2, $3, $4, $5, $6, $7, $8, 'active', $9)
-                 ON CONFLICT (olx_id) DO UPDATE SET cijena = $4, cijena_num = $5, status = 'active', slika = $6`,
+                 ON CONFLICT (olx_id) DO UPDATE SET cijena = $4, cijena_num = $5, status = 'active', slika = COALESCE($6, konkurent_oglasi.slika)`,
                 [konkurentId, o.id, o.title, o.display_price, cijenaNum, slika, link, o.category_id, datumObjave]
             );
 
@@ -1797,11 +1817,40 @@ app.post('/api/konkurent-slabosti', async (req, res) => {
             [konkurent_id]
         );
 
-        // Dohvati prosjek tržišta za poređenje
+        // Precizan prosjek po modelu iz naslova za svaki oglas
+        // Globalni prosjek kao fallback
         const trzisniProsjek = await pool.query(
             `SELECT AVG(cijena_num) as avg FROM live_oglasi WHERE cijena_num > 1000 AND cijena_num < 500000 AND platforma = 'olx'`
         );
-        const avgTrziste = parseFloat(trzisniProsjek.rows[0]?.avg) || 0;
+        const avgGlobalni = parseFloat(trzisniProsjek.rows[0]?.avg) || 20000;
+
+        // Funkcija za dohvat preciznog prosjeka po modelu
+        async function getModelProsjek(naslov) {
+            // Izvuci kljucne rijeci iz naslova (brend + model)
+            const rijeci = naslov.split(' ').filter(r => r.length > 2).slice(0, 3);
+            if (!rijeci.length) return avgGlobalni;
+            try {
+                const res = await pool.query(
+                    `SELECT AVG(cijena_num) as avg, COUNT(*) as broj
+                     FROM live_oglasi
+                     WHERE cijena_num > 1000 AND cijena_num < 500000
+                     AND naslov ILIKE $1`,
+                    ['%' + rijeci.slice(0,2).join('%') + '%']
+                );
+                const avg = parseFloat(res.rows[0]?.avg);
+                const broj = parseInt(res.rows[0]?.broj) || 0;
+                // Koristi model prosjek samo ako ima dovoljno uzoraka
+                return (avg && broj >= 3) ? avg : avgGlobalni;
+            } catch(e) { return avgGlobalni; }
+        }
+
+        // Izracunaj prosjek za svaki oglas posebno
+        const oglasiSaProsjekom = await Promise.all(oglasiData.map(async (o) => {
+            const modelAvg = await getModelProsjek(o.naslov);
+            return { ...o, modelAvg };
+        }));
+
+        const avgTrziste = avgGlobalni;
 
         // Prodana vozila
         const prodana = await pool.query(
@@ -1811,8 +1860,9 @@ app.post('/api/konkurent-slabosti', async (req, res) => {
         );
 
         const oglasiData = oglasi.rows;
-        const dugoCekaju = oglasiData.filter(o => parseFloat(o.dana_na_trzistu) > 30);
-        const previsoko = oglasiData.filter(o => o.cijena_num > avgTrziste * 1.15);
+        const dugoCekaju = oglasiSaProsjekom.filter(o => parseFloat(o.dana_na_trzistu) > 30);
+        // Previsoko - poredi sa prosjekom TOG MODELA, ne globalnim
+        const previsoko = oglasiSaProsjekom.filter(o => o.modelAvg > 0 && o.cijena_num > o.modelAvg * 1.12);
 
         // Izgradnja AI prompta
         const dugoCekaListaTxt = dugoCekaju.slice(0, 5).map(function(o) { return '- ' + o.naslov + ': ' + o.cijena + ' (' + Math.round(o.dana_na_trzistu) + ' dana)'; }).join('\n');
@@ -1847,7 +1897,8 @@ app.post('/api/konkurent-slabosti', async (req, res) => {
                 naslov: o.naslov,
                 cijena: o.cijena,
                 cijenaNum: o.cijena_num,
-                visokoZa: Math.round((o.cijena_num - avgTrziste) / avgTrziste * 100),
+                modelAvg: Math.round(o.modelAvg),
+                visokoZa: Math.round((o.cijena_num - o.modelAvg) / o.modelAvg * 100),
                 link: o.link
             })),
             ukupnoAktivnih: oglasiData.length,
@@ -1879,11 +1930,35 @@ app.get('/api/predict/:konkurent_id', async (req, res) => {
             [konkurent_id]
         );
 
-        // Tržišni prosjek
-        const avgRes = await pool.query(
+        // Za svaki oglas dohvati prosjek specificnog modela
+        const globalAvgRes = await pool.query(
             `SELECT AVG(cijena_num) as avg FROM live_oglasi WHERE cijena_num > 1000 AND cijena_num < 500000`
         );
-        const avgTrziste = parseFloat(avgRes.rows[0]?.avg) || 20000;
+        const globalAvg = parseFloat(globalAvgRes.rows[0]?.avg) || 20000;
+
+        // Helper za model prosjek
+        async function getAvgZaModel(naslov, cijenaNum) {
+            const rijeci = (naslov || '').split(' ').filter(r => r.length > 2).slice(0, 3);
+            if (rijeci.length < 2) return globalAvg;
+            try {
+                const r = await pool.query(
+                    `SELECT AVG(cijena_num) as avg, COUNT(*) as broj FROM live_oglasi
+                     WHERE cijena_num BETWEEN $1 AND $2 AND naslov ILIKE $3`,
+                    [cijenaNum * 0.4, cijenaNum * 2.5, '%' + rijeci.slice(0,2).join('%') + '%']
+                );
+                const avg = parseFloat(r.rows[0]?.avg);
+                const broj = parseInt(r.rows[0]?.broj) || 0;
+                return (avg && broj >= 3) ? avg : globalAvg;
+            } catch(e) { return globalAvg; }
+        }
+
+        // Obogati oglase sa model prosjekom
+        const oglasiObogaceni = await Promise.all(oglasi.rows.map(async (o) => {
+            const modelAvg = await getAvgZaModel(o.naslov, parseFloat(o.cijena_num));
+            return { ...o, modelAvg };
+        }));
+
+        const avgTrziste = globalAvg;
 
         // Kraj mjeseca bonus
         const danas = new Date();
@@ -1891,7 +1966,7 @@ app.get('/api/predict/:konkurent_id', async (req, res) => {
         const danaDoKraja = Math.floor((krajMjeseca - danas) / (1000 * 60 * 60 * 24));
         const krajMjesecaFaktor = danaDoKraja <= 7 ? 15 : 0;
 
-        const predictions = oglasi.rows.map(o => {
+        const predictions = oglasiObogaceni.map(o => {
             const dana = parseFloat(o.dana_na_trzistu) || 0;
             const cijenaNum = parseFloat(o.cijena_num) || 0;
             const maxCijena = parseFloat(o.max_cijena) || cijenaNum;
@@ -1906,8 +1981,9 @@ app.get('/api/predict/:konkurent_id', async (req, res) => {
             else if (dana > 30) { score += 20; razlozi.push('Na tržištu ' + Math.round(dana) + ' dana'); }
             else if (dana > 15) { score += 8; }
 
-            // 2. Cijena iznad prosjeka
-            const odnosProsjeka = cijenaNum / avgTrziste;
+            // 2. Cijena iznad prosjeka MODELA (ne globalnog!)
+            const modelAvg = parseFloat(o.modelAvg) || avgTrziste;
+            const odnosProsjeka = modelAvg > 0 ? cijenaNum / modelAvg : 1;
             if (odnosProsjeka > 1.20) { score += 30; razlozi.push('Cijena ' + Math.round((odnosProsjeka-1)*100) + '% iznad prosjeka'); }
             else if (odnosProsjeka > 1.10) { score += 15; razlozi.push('Cijena ' + Math.round((odnosProsjeka-1)*100) + '% iznad prosjeka'); }
 
