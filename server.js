@@ -1518,6 +1518,264 @@ app.get('/api/jobs', async (req, res) => {
     }
 });
 
+// ── KONKURENTI — INICIJALIZACIJA TABELA ──────────────────
+async function initKonkurenti() {
+    await pool.query(`CREATE TABLE IF NOT EXISTS konkurenti (
+        id SERIAL PRIMARY KEY,
+        korisnik_email VARCHAR(100) NOT NULL,
+        olx_username VARCHAR(100) NOT NULL,
+        naziv VARCHAR(200),
+        user_id INTEGER,
+        user_type VARCHAR(50),
+        grad VARCHAR(100),
+        slika TEXT,
+        ukupno_oglasa INTEGER DEFAULT 0,
+        prosjecna_cijena NUMERIC,
+        datum_dodavanja TIMESTAMP DEFAULT NOW(),
+        zadnji_fetch TIMESTAMP,
+        UNIQUE(korisnik_email, olx_username)
+    )`);
+    await pool.query(`CREATE TABLE IF NOT EXISTS konkurent_oglasi (
+        id SERIAL PRIMARY KEY,
+        konkurent_id INTEGER REFERENCES konkurenti(id) ON DELETE CASCADE,
+        olx_id INTEGER UNIQUE,
+        naslov TEXT,
+        cijena TEXT,
+        cijena_num NUMERIC,
+        slika TEXT,
+        link TEXT,
+        kategorija_id INTEGER,
+        status VARCHAR(50) DEFAULT 'active',
+        datum_objave TIMESTAMP,
+        datum_prodaje TIMESTAMP,
+        datum_fetch TIMESTAMP DEFAULT NOW()
+    )`);
+    await pool.query(`CREATE TABLE IF NOT EXISTS konkurent_cijena_historija (
+        id SERIAL PRIMARY KEY,
+        olx_id INTEGER,
+        cijena_num NUMERIC,
+        datum TIMESTAMP DEFAULT NOW()
+    )`);
+}
+initKonkurenti().catch(e => console.log('Konkurenti init greska:', e.message));
+
+// ── DODAJ KONKURENTA ─────────────────────────────────────
+app.post('/api/konkurent-dodaj', async (req, res) => {
+    try {
+        const { korisnik_email, olx_username } = req.body;
+        if (!korisnik_email || !olx_username) return res.json({ uspjeh: false, poruka: 'Nedostaju podaci' });
+
+        const username = olx_username.trim().toLowerCase().replace(/^@/, '');
+
+        // Dohvati profil sa OLX API-ja
+        const olxRes = await fetch2(`https://api.olx.ba/users/${username}/listings?page=1`, {
+            headers: {
+                'Authorization': `Bearer ${process.env.OLX_TOKEN}`,
+                'Content-Type': 'application/json'
+            }
+        });
+
+        if (!olxRes.ok) return res.json({ uspjeh: false, poruka: 'Korisnik nije pronađen na OLX.ba. Provjeri username.' });
+
+        const olxData = await olxRes.json();
+        const oglasi = olxData.data || [];
+        const meta = olxData.meta || {};
+        const prviOglas = oglasi[0] || {};
+
+        const userId = prviOglas.user_id || null;
+        const userType = prviOglas.user_type || 'private';
+        const ukupno = meta.total || oglasi.length;
+
+        // Prosjecna cijena
+        const cijene = oglasi.map(o => o.price).filter(p => p > 100 && p < 500000);
+        const prosjek = cijene.length ? Math.round(cijene.reduce((a,b) => a+b, 0) / cijene.length) : null;
+
+        // Spremi u bazu
+        const result = await pool.query(
+            `INSERT INTO konkurenti (korisnik_email, olx_username, naziv, user_id, user_type, ukupno_oglasa, prosjecna_cijena, zadnji_fetch)
+             VALUES ($1, $2, $3, $4, $5, $6, $7, NOW())
+             ON CONFLICT (korisnik_email, olx_username) DO UPDATE SET
+             naziv = $3, ukupno_oglasa = $6, prosjecna_cijena = $7, zadnji_fetch = NOW()
+             RETURNING id`,
+            [korisnik_email, username, username, userId, userType, ukupno, prosjek]
+        );
+
+        const konkurentId = result.rows[0].id;
+
+        // Spremi prve oglase
+        for (const o of oglasi.slice(0, 50)) {
+            const cijenaNum = o.price || 0;
+            const link = `https://www.olx.ba/artikal/${o.id}`;
+            const slika = o.image ? `https://d4n0y8dshd77z.cloudfront.net/listings/${o.id}/sm/${o.image}` : null;
+            const datumObjave = o.date ? new Date(o.date * 1000) : new Date();
+
+            await pool.query(
+                `INSERT INTO konkurent_oglasi (konkurent_id, olx_id, naslov, cijena, cijena_num, slika, link, kategorija_id, status, datum_objave)
+                 VALUES ($1, $2, $3, $4, $5, $6, $7, $8, 'active', $9)
+                 ON CONFLICT (olx_id) DO UPDATE SET cijena = $4, cijena_num = $5, status = 'active'`,
+                [konkurentId, o.id, o.title, o.display_price, cijenaNum, slika, link, o.category_id, datumObjave]
+            );
+
+            // Historija cijene
+            await pool.query(
+                `INSERT INTO konkurent_cijena_historija (olx_id, cijena_num) VALUES ($1, $2)`,
+                [o.id, cijenaNum]
+            ).catch(() => {});
+        }
+
+        res.json({
+            uspjeh: true,
+            poruka: `Konkurent ${username} dodan! Praćenje ${ukupno} oglasa.`,
+            konkurent: { id: konkurentId, username, userType, ukupno, prosjek }
+        });
+    } catch(e) {
+        res.json({ uspjeh: false, poruka: 'Greška: ' + e.message });
+    }
+});
+
+// ── LISTA KONKURENATA ────────────────────────────────────
+app.get('/api/konkurenti', async (req, res) => {
+    try {
+        const { email } = req.query;
+        if (!email) return res.json({ uspjeh: false });
+        const result = await pool.query(
+            'SELECT * FROM konkurenti WHERE korisnik_email = $1 ORDER BY datum_dodavanja DESC',
+            [email]
+        );
+        res.json({ uspjeh: true, konkurenti: result.rows });
+    } catch(e) {
+        res.json({ uspjeh: false, poruka: e.message });
+    }
+});
+
+// ── OGLASI KONKURENTA ────────────────────────────────────
+app.get('/api/konkurent-oglasi/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { status } = req.query;
+        let where = 'WHERE konkurent_id = $1';
+        const params = [id];
+        if (status) { where += ' AND status = $2'; params.push(status); }
+
+        const oglasi = await pool.query(
+            `SELECT * FROM konkurent_oglasi ${where} ORDER BY datum_objave DESC LIMIT 100`,
+            params
+        );
+        const historija = await pool.query(
+            `SELECT h.olx_id, h.cijena_num, h.datum FROM konkurent_cijena_historija h
+             JOIN konkurent_oglasi o ON h.olx_id = o.olx_id
+             WHERE o.konkurent_id = $1
+             ORDER BY h.datum DESC LIMIT 200`,
+            [id]
+        );
+
+        // Stats
+        const stats = await pool.query(
+            `SELECT
+                COUNT(*) FILTER (WHERE status='active') as aktivnih,
+                COUNT(*) FILTER (WHERE status='finished') as prodanih,
+                AVG(cijena_num) FILTER (WHERE status='active' AND cijena_num > 100) as prosjek_aktivnih,
+                MIN(datum_objave) as najstariji,
+                MAX(datum_objave) as najnoviji
+             FROM konkurent_oglasi WHERE konkurent_id = $1`,
+            [id]
+        );
+
+        res.json({
+            uspjeh: true,
+            oglasi: oglasi.rows,
+            historija: historija.rows,
+            stats: stats.rows[0]
+        });
+    } catch(e) {
+        res.json({ uspjeh: false, poruka: e.message });
+    }
+});
+
+// ── REFRESH KONKURENTA ───────────────────────────────────
+app.post('/api/konkurent-refresh/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const konkurent = await pool.query('SELECT * FROM konkurenti WHERE id = $1', [id]);
+        if (!konkurent.rows.length) return res.json({ uspjeh: false, poruka: 'Nije pronađen' });
+
+        const k = konkurent.rows[0];
+        const username = k.olx_username;
+
+        let stranica = 1, noviOglasi = 0, ukupnoFetchano = 0;
+        while (stranica <= 5) {
+            const olxRes = await fetch2(`https://api.olx.ba/users/${username}/listings?page=${stranica}`, {
+                headers: { 'Authorization': `Bearer ${process.env.OLX_TOKEN}`, 'Content-Type': 'application/json' }
+            });
+            if (!olxRes.ok) break;
+            const olxData = await olxRes.json();
+            const oglasi = olxData.data || [];
+            if (!oglasi.length) break;
+
+            for (const o of oglasi) {
+                const cijenaNum = o.price || 0;
+                const link = `https://www.olx.ba/artikal/${o.id}`;
+                const slika = o.image ? `https://d4n0y8dshd77z.cloudfront.net/listings/${o.id}/sm/${o.image}` : null;
+                const datumObjave = o.date ? new Date(o.date * 1000) : new Date();
+
+                const existing = await pool.query('SELECT cijena_num FROM konkurent_oglasi WHERE olx_id = $1', [o.id]);
+                if (existing.rows.length) {
+                    const staraCijena = parseFloat(existing.rows[0].cijena_num);
+                    if (Math.abs(staraCijena - cijenaNum) > 50) {
+                        // Cijena se promijenila — zabilježi
+                        await pool.query(
+                            'INSERT INTO konkurent_cijena_historija (olx_id, cijena_num) VALUES ($1, $2)',
+                            [o.id, cijenaNum]
+                        ).catch(() => {});
+                    }
+                    await pool.query(
+                        'UPDATE konkurent_oglasi SET cijena = $1, cijena_num = $2, status = $3 WHERE olx_id = $4',
+                        [o.display_price, cijenaNum, 'active', o.id]
+                    );
+                } else {
+                    await pool.query(
+                        `INSERT INTO konkurent_oglasi (konkurent_id, olx_id, naslov, cijena, cijena_num, slika, link, kategorija_id, status, datum_objave)
+                         VALUES ($1,$2,$3,$4,$5,$6,$7,$8,'active',$9)`,
+                        [id, o.id, o.title, o.display_price, cijenaNum, slika, link, o.category_id, datumObjave]
+                    );
+                    noviOglasi++;
+                    // Historija
+                    await pool.query('INSERT INTO konkurent_cijena_historija (olx_id, cijena_num) VALUES ($1,$2)', [o.id, cijenaNum]).catch(() => {});
+                }
+                ukupnoFetchano++;
+            }
+
+            if (stranica >= (olxData.meta?.last_page || 1)) break;
+            stranica++;
+            await new Promise(r => setTimeout(r, 300));
+        }
+
+        // Ažuriraj stats
+        const prosjekRes = await pool.query(
+            'SELECT AVG(cijena_num) as prosjek, COUNT(*) as ukupno FROM konkurent_oglasi WHERE konkurent_id = $1 AND status = $2 AND cijena_num > 100',
+            [id, 'active']
+        );
+        await pool.query(
+            'UPDATE konkurenti SET zadnji_fetch = NOW(), ukupno_oglasa = $1, prosjecna_cijena = $2 WHERE id = $3',
+            [prosjekRes.rows[0].ukupno, prosjekRes.rows[0].prosjek, id]
+        );
+
+        res.json({ uspjeh: true, noviOglasi, ukupnoFetchano });
+    } catch(e) {
+        res.json({ uspjeh: false, poruka: e.message });
+    }
+});
+
+// ── UKLONI KONKURENTA ────────────────────────────────────
+app.delete('/api/konkurent/:id', async (req, res) => {
+    try {
+        await pool.query('DELETE FROM konkurenti WHERE id = $1', [req.params.id]);
+        res.json({ uspjeh: true });
+    } catch(e) {
+        res.json({ uspjeh: false });
+    }
+});
+
 fetchSveKategorije();
 setInterval(fetchSveKategorije, 2 * 60 * 60 * 1000);
 

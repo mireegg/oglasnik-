@@ -126,6 +126,39 @@
     .tag-orange{background:var(--orange-dim);color:var(--orange);}
     .tag-red{background:var(--red-dim);color:var(--red);}
 
+
+    /* KONKURENCIJA */
+    .konk-add-box{background:var(--surface2);border:1px solid var(--border);border-radius:var(--r-lg);padding:20px;margin-bottom:20px;}
+    .konk-input-row{display:flex;gap:10px;align-items:flex-end;margin-top:14px;flex-wrap:wrap;}
+    .konk-input{flex:1;min-width:200px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:10px 14px;font-size:14px;font-family:'DM Sans',sans-serif;color:var(--text);outline:none;}
+    .konk-input:focus{border-color:var(--orange);}
+    .konk-input::placeholder{color:var(--text-faint);}
+    .konk-kartica{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:20px;margin-bottom:14px;transition:border-color .15s;}
+    .konk-kartica:hover{border-color:var(--border-bright);}
+    .konk-header{display:flex;align-items:center;gap:14px;margin-bottom:16px;}
+    .konk-avatar{width:44px;height:44px;border-radius:50%;background:var(--orange-dim);border:2px solid rgba(230,92,0,0.3);display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-size:16px;font-weight:800;color:var(--orange);flex-shrink:0;}
+    .konk-naziv{font-family:'Syne',sans-serif;font-size:15px;font-weight:700;}
+    .konk-meta{font-size:12px;color:var(--text-muted);}
+    .konk-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px;}
+    .konk-stat{background:var(--surface2);border-radius:var(--r);padding:12px;text-align:center;}
+    .konk-stat-val{font-family:'Syne',sans-serif;font-size:18px;font-weight:700;color:var(--orange);}
+    .konk-stat-label{font-size:11px;color:var(--text-faint);margin-top:3px;}
+    .konk-oglasi{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px;margin-top:14px;}
+    .konk-oglas{background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;display:block;transition:border-color .15s;color:inherit;}
+    .konk-oglas:hover{border-color:rgba(230,92,0,0.4);}
+    .konk-oglas img{width:100%;height:90px;object-fit:cover;}
+    .konk-oglas-ph{width:100%;height:90px;background:#222;}
+    .konk-oglas-body{padding:8px;}
+    .konk-oglas-naslov{font-size:11px;color:var(--text-muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:3px;}
+    .konk-oglas-cijena{font-family:'Syne',sans-serif;font-size:13px;font-weight:700;color:var(--orange);}
+    .konk-empty{padding:40px;text-align:center;color:var(--text-faint);}
+    .konk-badge-shop{background:rgba(34,197,94,0.1);color:var(--green);font-size:10px;font-weight:700;padding:2px 8px;border-radius:100px;display:inline-block;}
+    .konk-badge-private{background:var(--blue-dim);color:var(--blue);font-size:10px;font-weight:700;padding:2px 8px;border-radius:100px;display:inline-block;}
+    .konk-actions{display:flex;gap:8px;margin-top:14px;}
+    .konk-refresh-badge{font-size:11px;color:var(--text-faint);margin-left:auto;align-self:center;}
+    .konk-trend-up{color:var(--green);font-size:11px;}
+    .konk-trend-down{color:var(--red);font-size:11px;}
+
     @media(max-width:1024px){.layout{grid-template-columns:1fr;}.sidebar{display:none;}.kpi-grid{grid-template-columns:1fr 1fr;}.charts-row{grid-template-columns:1fr;}.kal-grid{grid-template-columns:1fr 1fr;}.kal-rezultat{grid-template-columns:1fr 1fr;}}
     @media(max-width:768px){.main{padding:16px;}.kpi-grid{grid-template-columns:1fr 1fr;}.topbar{flex-direction:column;align-items:flex-start;gap:12px;}.page-title{font-size:20px;}}
   </style>
@@ -303,24 +336,18 @@
 
     <!-- KONKURENCIJA -->
     <div id="secKonkurencija" style="display:none;">
-      <div class="charts-row">
-        <div class="card">
-          <div class="card-header"><div><div class="card-title">🕵️ Tržišno učešće brendova</div><div class="card-sub">Distribucija po broju oglasa</div></div></div>
-          <div class="chart-wrap" style="height:260px;"><canvas id="chartKonkurencija"></canvas></div>
+      <div class="konk-add-box">
+        <div class="card-title">🕵️ Prati konkurenta</div>
+        <div class="card-sub" style="margin-top:4px;">Unesi OLX username salona kojeg želiš pratiti. Username je vidljiv na njihovom OLX profilu.</div>
+        <div class="konk-input-row">
+          <input class="konk-input" id="konkUsername" placeholder="npr. auto-centar-sarajevo ili bmw-premium-ba" onkeydown="if(event.key==='Enter')dodajKonkurenta()">
+          <button class="btn-sm btn-orange" onclick="dodajKonkurenta()" id="btnDodajKonk">+ Dodaj konkurenta</button>
         </div>
-        <div class="card">
-          <div class="card-header"><div><div class="card-title">Top 5 brendova</div><div class="card-sub">Progress barovi tržišnog učešća</div></div></div>
-          <div id="top5Brendovi" style="padding-top:8px;"></div>
-        </div>
+        <div id="konkDodajPoruka" style="margin-top:10px;font-size:13px;display:none;"></div>
       </div>
-      <div class="full-card">
-        <div class="card-header"><div><div class="card-title">Brendovi — kompletna lista</div><div class="card-sub">Sve kategorije sa tržišnim udjelom</div></div></div>
-        <div style="overflow-x:auto;">
-          <table class="tabela">
-            <thead><tr><th>#</th><th>Brend</th><th>Oglasi</th><th>Udio</th><th>Tržišna pozicija</th></tr></thead>
-            <tbody id="konkurencijaTabela"></tbody>
-          </table>
-        </div>
+
+      <div id="konkLista">
+        <div class="konk-empty"><div class="spin"></div></div>
       </div>
     </div>
 
@@ -359,6 +386,7 @@ function showSection(id, el) {
   // Lazy load
   if(id==='novi') ucitajNoveOglase();
   if(id==='alerti') ucitajAlerte();
+  if(id==='konkurencija') ucitajKonkurente();
 }
 
 async function ucitajPodatke() {
@@ -580,6 +608,163 @@ async function ucitajAlerte() {
       return '<div class="alert-item"><div class="alert-dot" style="background:'+boja+';"></div><div style="flex:1;"><div style="font-weight:600;font-size:13px;">'+a.naziv+'</div><div style="font-size:12px;color:var(--text-muted);">'+(detalji.join(' · ')||'Sve kategorije')+' · Zadnji: '+zadnje+'</div></div><a href="/profil.html" style="font-size:12px;color:var(--orange);">Uredi →</a></div>';
     }).join('');
   } catch(e){}
+}
+
+
+// ── KONKURENTI JS ────────────────────────────────────────
+var konkurentiData = [];
+
+async function ucitajKonkurente() {
+  if (!korisnik) return;
+  var lista = document.getElementById('konkLista');
+  try {
+    var res = await fetch('/api/konkurenti?email=' + encodeURIComponent(korisnik.email));
+    var data = await res.json();
+    konkurentiData = data.konkurenti || [];
+    if (!konkurentiData.length) {
+      lista.innerHTML = '<div class="konk-empty">Nemaš dodanih konkurenata.<br><span style="font-size:13px;color:var(--text-faint);">Dodaj OLX username salona gore ↑</span></div>';
+      return;
+    }
+    lista.innerHTML = '';
+    for (var k of konkurentiData) {
+      renderKonkurentKartica(k);
+    }
+  } catch(e) {
+    lista.innerHTML = '<div class="konk-empty">Greška učitavanja.</div>';
+  }
+}
+
+async function renderKonkurentKartica(k) {
+  var lista = document.getElementById('konkLista');
+  var div = document.createElement('div');
+  div.className = 'konk-kartica';
+  div.id = 'konk-' + k.id;
+  var badge = k.user_type === 'shop' ? '<span class="konk-badge-shop">✓ Salon</span>' : '<span class="konk-badge-private">Privatni</span>';
+  var zadnji = k.zadnji_fetch ? new Date(k.zadnji_fetch).toLocaleString('bs-BA') : 'Nikad';
+  var prosjek = k.prosjecna_cijena ? Math.round(k.prosjecna_cijena).toLocaleString('bs-BA') + ' KM' : 'N/A';
+  div.innerHTML =
+    '<div class="konk-header">' +
+      '<div class="konk-avatar">' + k.olx_username.charAt(0).toUpperCase() + '</div>' +
+      '<div style="flex:1;">' +
+        '<div class="konk-naziv">' + k.olx_username + ' ' + badge + '</div>' +
+        '<div class="konk-meta">Dodan ' + new Date(k.datum_dodavanja).toLocaleDateString('bs-BA') + ' · Zadnji refresh: ' + zadnji + '</div>' +
+      '</div>' +
+      '<div style="display:flex;gap:8px;">' +
+        '<button class="btn-sm btn-ghost" onclick="refreshKonkurent(' + k.id + ', this)">🔄 Osvježi</button>' +
+        '<button class="btn-sm" style="background:var(--red-dim);color:var(--red);border:1px solid rgba(239,68,68,0.2);" onclick="ukloniKonkurent(' + k.id + ')">✕</button>' +
+      '</div>' +
+    '</div>' +
+    '<div class="konk-stats">' +
+      '<div class="konk-stat"><div class="konk-stat-val">' + (k.ukupno_oglasa || 0) + '</div><div class="konk-stat-label">Aktivnih oglasa</div></div>' +
+      '<div class="konk-stat"><div class="konk-stat-val">' + prosjek + '</div><div class="konk-stat-label">Prosj. cijena</div></div>' +
+      '<div class="konk-stat"><div class="konk-stat-val" id="konk-prodanih-' + k.id + '">—</div><div class="konk-stat-label">Prodano</div></div>' +
+      '<div class="konk-stat"><div class="konk-stat-val" id="konk-novi-' + k.id + '">—</div><div class="konk-stat-label">Novih danas</div></div>' +
+    '</div>' +
+    '<div style="font-size:12px;font-weight:600;color:var(--text-faint);margin-bottom:10px;text-transform:uppercase;letter-spacing:0.06em;">Aktivni oglasi</div>' +
+    '<div class="konk-oglasi" id="konk-oglasi-' + k.id + '"><div style="color:var(--text-faint);font-size:12px;">Učitavam...</div></div>';
+  lista.appendChild(div);
+  ucitajKonkurentOglase(k.id);
+}
+
+async function ucitajKonkurentOglase(id) {
+  try {
+    var res = await fetch('/api/konkurent-oglasi/' + id + '?status=active');
+    var data = await res.json();
+    if (!data.uspjeh) return;
+
+    var stats = data.stats || {};
+    var prodanih = document.getElementById('konk-prodanih-' + id);
+    var noviEl = document.getElementById('konk-novi-' + id);
+    if (prodanih) prodanih.textContent = stats.prodanih || 0;
+
+    // Novi danas
+    var noviDanas = (data.oglasi || []).filter(function(o) {
+      return new Date(o.datum_objave) > new Date(Date.now() - 24*60*60*1000);
+    }).length;
+    if (noviEl) noviEl.textContent = noviDanas;
+
+    var container = document.getElementById('konk-oglasi-' + id);
+    if (!container) return;
+    if (!data.oglasi || !data.oglasi.length) {
+      container.innerHTML = '<div style="color:var(--text-faint);font-size:12px;grid-column:1/-1;">Nema aktivnih oglasa.</div>';
+      return;
+    }
+
+    container.innerHTML = data.oglasi.slice(0, 12).map(function(o) {
+      var link = o.link || '#';
+      return '<a href="' + link + '" target="_blank" class="konk-oglas">' +
+        (o.slika ? '<img src="' + o.slika + '" onerror="this.style.display='none'">' : '<div class="konk-oglas-ph"></div>') +
+        '<div class="konk-oglas-body">' +
+          '<div class="konk-oglas-naslov">' + (o.naslov || '') + '</div>' +
+          '<div class="konk-oglas-cijena">' + (o.cijena || '') + '</div>' +
+          '<div style="font-size:10px;color:var(--text-faint);">' + new Date(o.datum_objave).toLocaleDateString('bs-BA') + '</div>' +
+        '</div>' +
+      '</a>';
+    }).join('');
+  } catch(e) {}
+}
+
+async function dodajKonkurenta() {
+  if (!korisnik) return;
+  var username = document.getElementById('konkUsername').value.trim();
+  if (!username) return;
+  var btn = document.getElementById('btnDodajKonk');
+  var poruka = document.getElementById('konkDodajPoruka');
+  btn.disabled = true;
+  btn.textContent = 'Dodajem...';
+  poruka.style.display = 'block';
+  poruka.style.color = 'var(--text-muted)';
+  poruka.textContent = 'Pretražujem OLX profil...';
+  try {
+    var res = await fetch('/api/konkurent-dodaj', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ korisnik_email: korisnik.email, olx_username: username })
+    });
+    var data = await res.json();
+    if (data.uspjeh) {
+      poruka.style.color = 'var(--green)';
+      poruka.textContent = '✓ ' + data.poruka;
+      document.getElementById('konkUsername').value = '';
+      setTimeout(function() {
+        poruka.style.display = 'none';
+        ucitajKonkurente();
+      }, 1500);
+    } else {
+      poruka.style.color = 'var(--red)';
+      poruka.textContent = '✕ ' + (data.poruka || 'Greška');
+    }
+  } catch(e) {
+    poruka.style.color = 'var(--red)';
+    poruka.textContent = 'Greška: ' + e.message;
+  }
+  btn.disabled = false;
+  btn.textContent = '+ Dodaj konkurenta';
+}
+
+async function refreshKonkurent(id, btn) {
+  var origText = btn.textContent;
+  btn.disabled = true;
+  btn.textContent = 'Osvježavam...';
+  try {
+    var res = await fetch('/api/konkurent-refresh/' + id, { method: 'POST' });
+    var data = await res.json();
+    if (data.uspjeh) {
+      ucitajKonkurentOglase(id);
+      ucitajKonkurente();
+    }
+  } catch(e) {}
+  btn.disabled = false;
+  btn.textContent = origText;
+}
+
+async function ukloniKonkurent(id) {
+  if (!confirm('Ukloniti ovog konkurenta iz praćenja?')) return;
+  try {
+    await fetch('/api/konkurent/' + id, { method: 'DELETE' });
+    var el = document.getElementById('konk-' + id);
+    if (el) el.remove();
+  } catch(e) {}
 }
 
 ucitajPodatke();
