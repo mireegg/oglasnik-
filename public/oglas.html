@@ -958,10 +958,10 @@ function otvoriPonudu() {
   var hint = document.getElementById('ponudaAiHint');
 
   // Uzmi cijenu iz meta
-  var cijenaStr = meta.cijena || '';
+  var cijenaStr = oglasMeta.cijena || '';
   ponudaCijena = parseFloat(cijenaStr.replace(/\./g,'').replace(/[^0-9]/g,'')) || 0;
 
-  sub.textContent = meta.naslov ? meta.naslov.substring(0,50) + '...' : 'Oglas';
+  sub.textContent = oglasMeta.naslov ? oglasMeta.naslov.substring(0,50) + '...' : 'Oglas';
 
   // Postavi default -10%
   setPonuda(0.90, document.querySelector('.ponuda-preset.sel'));
@@ -1016,7 +1016,7 @@ function posaljiPonudu() {
   var val = parseInt(document.getElementById('ponudaInput').value) || 0;
   var poruka = document.getElementById('ponudaMsg').value.trim();
 
-  var tekst = 'Zdravo! Zainteresovan/a sam za vaš oglas "' + (meta.naslov || 'oglas').substring(0,60) + '".' +
+  var tekst = 'Zdravo! Zainteresovan/a sam za vaš oglas "' + (oglasMeta.naslov || 'oglas').substring(0,60) + '".' +
     (val ? ' Nudim ' + val.toLocaleString('bs-BA') + ' KM' : '') +
     (poruka ? ' — ' + poruka : '') +
     '. Možemo li se dogovoriti? Hvala!';
@@ -1034,8 +1034,8 @@ function posaljiPonudu() {
   }
 
   // Otvori originalni oglas
-  if (meta.link) {
-    window.open(meta.link, '_blank');
+  if (oglasMeta.link) {
+    window.open(oglasMeta.link, '_blank');
   }
 
   zatvoriPonudu();
