@@ -1308,6 +1308,216 @@ Budi konkretan. Koristi cijene i procente. Bosanski jezik.`;
     }
 });
 
+// ── DEAL RATING ENDPOINT ─────────────────────────────────
+app.get('/api/deal-rating/:id', async (req, res) => {
+    try {
+        const oglas = await pool.query('SELECT * FROM live_oglasi WHERE id = $1', [req.params.id]);
+        if (!oglas.rows.length) return res.json({ uspjeh: false });
+        const o = oglas.rows[0];
+        const cijena = parseFloat(o.cijena_num) || 0;
+        if (!cijena || !o.kategorija) return res.json({ uspjeh: true, rating: 'unknown', score: 50 });
+
+        // Uzmi prosjek slicnih oglasa (ista kategorija, +-3 god ako ima)
+        const slicni = await pool.query(
+            `SELECT AVG(cijena_num) as avg, MIN(cijena_num) as min, MAX(cijena_num) as max, COUNT(*) as broj
+             FROM live_oglasi WHERE kategorija = $1 AND cijena_num > 0 AND cijena_num < 500000 AND id != $2`,
+            [o.kategorija, o.id]
+        );
+        if (!slicni.rows[0] || slicni.rows[0].broj < 3) return res.json({ uspjeh: true, rating: 'unknown', score: 50 });
+
+        const avg = parseFloat(slicni.rows[0].avg);
+        const min = parseFloat(slicni.rows[0].min);
+        const ratio = cijena / avg;
+
+        let rating, score, label, boja;
+        if (ratio < 0.82) { rating = 'odlicno'; score = 95; label = 'Odlicno'; boja = '#27500A'; pozadina = '#EAF3DE'; }
+        else if (ratio < 0.93) { rating = 'dobro'; score = 78; label = 'Dobra cijena'; boja = '#3B6D11'; pozadina = '#EAF3DE'; }
+        else if (ratio < 1.05) { rating = 'fer'; score = 60; label = 'Fer cijena'; boja = '#633806'; pozadina = '#FAEEDA'; }
+        else if (ratio < 1.18) { rating = 'skupo'; score = 35; label = 'Skuplje'; boja = '#791F1F'; pozadina = '#FCEBEB'; }
+        else { rating = 'izbjegavaj'; score = 15; label = 'Izbjegavaj'; boja = '#501313'; pozadina = '#FCEBEB'; }
+
+        res.json({ uspjeh: true, rating, score, label, boja, pozadina, avg: Math.round(avg), broj: parseInt(slicni.rows[0].broj) });
+    } catch(e) {
+        res.json({ uspjeh: false, poruka: e.message });
+    }
+});
+
+// ── SCAM DETECTION ENDPOINT ──────────────────────────────
+app.post('/api/scam-check', async (req, res) => {
+    try {
+        const { id, naslov, cijena, platforma, kategorija } = req.body;
+        const cijenaNum = parseCijena(cijena) || 0;
+        let flags = [];
+        let scamScore = 0;
+
+        // 1. Provjeri cijenu vs prosjek
+        if (cijenaNum > 0 && kategorija) {
+            const avg = await pool.query(
+                'SELECT AVG(cijena_num) as avg FROM live_oglasi WHERE kategorija = $1 AND cijena_num > 0 AND cijena_num < 500000',
+                [kategorija]
+            );
+            if (avg.rows[0]?.avg) {
+                const ratio = cijenaNum / parseFloat(avg.rows[0].avg);
+                if (ratio < 0.50) { flags.push('Cijena je vise od 50% ispod prosjeka za ovu kategoriju'); scamScore += 40; }
+                else if (ratio < 0.65) { flags.push('Cijena je znatno ispod trhisnog prosjeka'); scamScore += 20; }
+            }
+        }
+
+        // 2. Kljucne rijeci prevare u naslovu
+        const prevaraRijeci = ['inostranstvo', 'njemacka', 'austrija', 'uk', 'western union', 'avans', 'depozit', 'kurirska', 'pouzecem', 'garantujem'];
+        const naslovLower = (naslov || '').toLowerCase();
+        prevaraRijeci.forEach(r => { if (naslovLower.includes(r)) { flags.push('Oglas spominje: "' + r + '" — cestacrvena zastavica prevare'); scamScore += 25; } });
+
+        // 3. Preniska cijena apsolutno
+        if (cijenaNum > 0 && cijenaNum < 50 && kategorija && kategorija.includes('vozila')) {
+            flags.push('Cijena vozila je nerealno niska');
+            scamScore += 50;
+        }
+
+        scamScore = Math.min(scamScore, 100);
+        let rizik, boja, poruka;
+        if (scamScore >= 60) { rizik = 'visok'; boja = '#FCEBEB'; poruka = 'Visok rizik prevare — budi oprezan'; }
+        else if (scamScore >= 30) { rizik = 'srednji'; boja = '#FAEEDA'; poruka = 'Provjeri prodavaca prije kupovine'; }
+        else { rizik = 'nizak'; boja = '#EAF3DE'; poruka = 'Bez ociglednih znakova prevare'; }
+
+        res.json({ uspjeh: true, scamScore, rizik, boja, poruka, flags });
+    } catch(e) {
+        res.json({ uspjeh: false, poruka: e.message });
+    }
+});
+
+// ── AI PRETRAGA PRIRODNIM JEZIKOM ────────────────────────
+app.post('/api/ai-pretraga', async (req, res) => {
+    try {
+        const { upit } = req.body;
+        const prompt = `Korisnik trazi oglas na BiH marketplace: "${upit}"
+
+Izvuci parametre pretrage i vrati SAMO JSON bez objasnjenja:
+{
+  "q": "kljucna rijec za pretragu",
+  "kategorija": "vozila|elektronika|nekretnine|masine|motocikli|ostalo",
+  "cijena_od": null_ili_broj,
+  "cijena_do": null_ili_broj,
+  "gorivo": null_ili_"Dizel|Benzin|Hibrid|Elektricni",
+  "godiste_od": null_ili_godina,
+  "km_do": null_ili_broj,
+  "sort": "novo|cijena_asc|cijena_desc"
+}`;
+        const odgovor = await groqAI(prompt, 300);
+        let params;
+        try {
+            const json = odgovor.replace(/```json|```/g, '').trim();
+            params = JSON.parse(json);
+        } catch(e) {
+            params = { q: upit };
+        }
+        res.json({ uspjeh: true, params });
+    } catch(e) {
+        res.json({ uspjeh: false, poruka: e.message });
+    }
+});
+
+// ── HISTORIJA CIJENE ─────────────────────────────────────
+app.get('/api/historija-cijene/:id', async (req, res) => {
+    try {
+        // Uzmi trenutni oglas
+        const oglas = await pool.query('SELECT * FROM live_oglasi WHERE id = $1', [req.params.id]);
+        if (!oglas.rows.length) return res.json({ uspjeh: false });
+        const o = oglas.rows[0];
+
+        // Uzmi historiju iz tabele (ako postoji)
+        let historija = [];
+        try {
+            const hist = await pool.query(
+                'SELECT cijena_num, datum FROM cijena_historija WHERE oglas_link = $1 ORDER BY datum ASC',
+                [o.link]
+            );
+            historija = hist.rows;
+        } catch(e) { /* tabela mozda ne postoji jos */ }
+
+        // Ako nema historije, simuliraj na osnovu cijena_stara
+        if (historija.length === 0) {
+            const sad = new Date();
+            if (o.cijena_stara && o.datum_pada_cijene) {
+                historija = [
+                    { cijena_num: parseFloat(o.cijena_stara), datum: o.datum },
+                    { cijena_num: parseFloat(o.cijena_num), datum: o.datum_pada_cijene }
+                ];
+            } else {
+                historija = [{ cijena_num: parseFloat(o.cijena_num), datum: o.datum }];
+            }
+        }
+
+        // Uzmi prosjek kategorije za kontekst
+        let avgKat = null;
+        if (o.kategorija) {
+            const avg = await pool.query(
+                'SELECT AVG(cijena_num) as avg FROM live_oglasi WHERE kategorija = $1 AND cijena_num > 0 AND cijena_num < 500000',
+                [o.kategorija]
+            );
+            avgKat = avg.rows[0]?.avg ? Math.round(parseFloat(avg.rows[0].avg)) : null;
+        }
+
+        const danaNaTrzistu = Math.floor((new Date() - new Date(o.datum)) / (1000 * 60 * 60 * 24));
+
+        res.json({ uspjeh: true, historija, avgKat, danaNaTrzistu, cijenaTrenutna: parseFloat(o.cijena_num), cijena: o.cijena });
+    } catch(e) {
+        res.json({ uspjeh: false, poruka: e.message });
+    }
+});
+
+// ── JOBS AGREGACIJA (MojPosao) ───────────────────────────
+app.get('/api/jobs', async (req, res) => {
+    try {
+        const q = req.query.q || '';
+        const grad = req.query.grad || '';
+        // MojPosao RSS feed - javno dostupan
+        const https = require('https');
+        const rssUrl = 'https://www.mojposao.ba/rss/jobs' + (q ? '?keywords=' + encodeURIComponent(q) : '');
+
+        const rssData = await new Promise((resolve, reject) => {
+            https.get(rssUrl, { headers: { 'User-Agent': 'Mozilla/5.0' } }, r => {
+                let d = '';
+                r.on('data', c => d += c);
+                r.on('end', () => resolve(d));
+            }).on('error', reject);
+        });
+
+        // Parse RSS
+        const items = [];
+        const itemRegex = /<item>([\s\S]*?)<\/item>/g;
+        let match;
+        while ((match = itemRegex.exec(rssData)) !== null && items.length < 20) {
+            const item = match[1];
+            const title = (item.match(/<title><!\[CDATA\[(.*?)\]\]><\/title>/) || item.match(/<title>(.*?)<\/title>/))?.[1] || '';
+            const link = (item.match(/<link>(.*?)<\/link>/))?.[1] || '';
+            const desc = (item.match(/<description><!\[CDATA\[(.*?)\]\]><\/description>/) || item.match(/<description>(.*?)<\/description>/))?.[1] || '';
+            const pubDate = (item.match(/<pubDate>(.*?)<\/pubDate>/))?.[1] || '';
+            if (title && link) {
+                const descClean = desc.replace(/<[^>]*>/g, '').substring(0, 150);
+                items.push({ naslov: title, link, opis: descClean, datum: pubDate, platforma: 'mojposao', tip: 'posao' });
+            }
+        }
+
+        // Ako RSS ne radi, vrati mock podatke
+        if (items.length === 0) {
+            const mockJobs = [
+                { naslov: 'Web Developer (React/Node.js)', link: 'https://www.mojposao.ba', opis: 'Trazimo iskusnog web developera za rad na SaaS platformi. Rad od kuce moguc.', grad: 'Sarajevo', plata: '2.500 - 4.000 KM', datum: new Date().toISOString(), platforma: 'mojposao', tip: 'posao' },
+                { naslov: 'Vozac C/E kategorije', link: 'https://www.mojposao.ba', opis: 'Potreban vozac za medjunarodne relacije. Iskustvo minimum 2 godine.', grad: 'Tuzla', plata: '2.000 - 3.000 KM', datum: new Date().toISOString(), platforma: 'mojposao', tip: 'posao' },
+                { naslov: 'Konobar/ica — sezona 2025', link: 'https://www.mojposao.ba', opis: 'Ugostitelsjki objekat u centru trazi konobare za ljetnu sezonu.', grad: 'Mostar', plata: '900 - 1.200 KM', datum: new Date().toISOString(), platforma: 'mojposao', tip: 'posao' },
+                { naslov: 'Racunovodja — certifikovani', link: 'https://www.mojposao.ba', opis: 'Potrebna osoba sa iskustvom u PDV prijavi i finansijskim izvjestajima.', grad: 'Banja Luka', plata: '1.800 - 2.500 KM', datum: new Date().toISOString(), platforma: 'mojposao', tip: 'posao' },
+                { naslov: 'Prodavac/ica u maloprodaji', link: 'https://www.mojposao.ba', opis: 'Lancani maloprodajni objekat prima radnike za rad u smjenama.', grad: 'Zenica', plata: '900 - 1.100 KM', datum: new Date().toISOString(), platforma: 'mojposao', tip: 'posao' },
+                { naslov: 'Graficki dizajner — freelance', link: 'https://www.mojposao.ba', opis: 'Agencija trazi dizajnera za projektnu saradnju. Adobe CC obavezan.', grad: 'Sarajevo', plata: 'Po dogovoru', datum: new Date().toISOString(), platforma: 'mojposao', tip: 'posao' },
+            ];
+            return res.json({ uspjeh: true, jobs: mockJobs, izvor: 'demo' });
+        }
+
+        res.json({ uspjeh: true, jobs: items, izvor: 'mojposao' });
+    } catch(e) {
+        res.json({ uspjeh: false, poruka: e.message });
+    }
+});
+
 fetchSveKategorije();
 setInterval(fetchSveKategorije, 2 * 60 * 60 * 1000);
 
