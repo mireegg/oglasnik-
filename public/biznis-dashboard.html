@@ -935,8 +935,7 @@ async function ucitajSlabosti(id) {
         .replace(/SLABOSTI:/gi, '<strong style="color:var(--red);display:block;margin:8px 0 4px;">⚠️ SLABOSTI:</strong>')
         .replace(/PRILIKE:/gi, '<strong style="color:var(--green);display:block;margin:8px 0 4px;">✅ PRILIKE:</strong>')
         .replace(/PREPORUKA:/gi, '<strong style="color:var(--orange);display:block;margin:8px 0 4px;">💡 PREPORUKA:</strong>')
-        .replace(/
-/g, '<br>');
+        .split('\n').join('<br>');
     }
 
     // Dugo na trzistu
