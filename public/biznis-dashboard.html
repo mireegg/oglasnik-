@@ -929,61 +929,84 @@ function otvoriIntelligence(konkurentId, naziv) {
 }
 
 async function ucitajSlabosti(id) {
-  document.getElementById('slabostStats').innerHTML = '<div style="grid-column:1/-1;padding:20px;text-align:center;"><div class="spin"></div></div>';
-  document.getElementById('aiIntelBox').style.display = 'none';
-  document.getElementById('slabostDugo').innerHTML = '';
-  document.getElementById('slabostPrevisoko').innerHTML = '';
+  var slabostStatsEl = document.getElementById('slabostStats');
+  var aiIntelBoxEl = document.getElementById('aiIntelBox');
+  var slabostDugoEl = document.getElementById('slabostDugo');
+  var slabostPrevisEl = document.getElementById('slabostPrevisoko');
+  
+  if (!slabostStatsEl) { console.log('GRESKA: slabostStats element ne postoji'); return; }
+  
+  slabostStatsEl.innerHTML = '<div style="grid-column:1/-1;padding:20px;text-align:center;"><div class="spin"></div></div>';
+  if (aiIntelBoxEl) aiIntelBoxEl.style.display = 'none';
+  if (slabostDugoEl) slabostDugoEl.innerHTML = '';
+  if (slabostPrevisEl) slabostPrevisEl.innerHTML = '';
+  
   try {
     var res = await fetch('/api/konkurent-slabosti', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ konkurent_id: id })
     });
-    var data = await res.json();
-    if (!data.uspjeh) { document.getElementById('slabostStats').innerHTML = '<div style="color:var(--text-faint);padding:20px;">Greška.</div>'; return; }
+    var responseText = await res.text();
+    var data;
+    try {
+      data = JSON.parse(responseText);
+    } catch(parseErr) {
+      console.log('JSON parse greska:', responseText.substring(0, 200));
+      slabostStatsEl.innerHTML = '<div style="color:var(--red);padding:20px;grid-column:1/-1;">Server greska. Provjeri Railway logove.</div>';
+      return;
+    }
+    
+    if (!data.uspjeh) {
+      slabostStatsEl.innerHTML = '<div style="color:var(--red);padding:20px;grid-column:1/-1;">Greska: ' + (data.poruka || 'Nepoznata greska') + '</div>';
+      return;
+    }
+    
     var s = data.slabosti;
-
-    // Stats
-    document.getElementById('slabostStats').innerHTML =
+    slabostStatsEl.innerHTML =
       '<div class="slabost-stat"><div class="slabost-stat-val">' + s.ukupnoDugo + '</div><div class="slabost-stat-label">Stoje 30+ dana</div></div>' +
-      '<div class="slabost-stat"><div class="slabost-stat-val">' + s.ukupnoPrevisoko + '</div><div class="slabost-stat-label">Iznad tržišnog prosjeka</div></div>' +
-      '<div class="slabost-stat"><div class="slabost-stat-val" style="color:var(--green);">' + (s.avgDanaDoProdaje || '—') + '</div><div class="slabost-stat-label">Prosjek dana do prodaje</div></div>';
+      '<div class="slabost-stat"><div class="slabost-stat-val">' + s.ukupnoPrevisoko + '</div><div class="slabost-stat-label">Iznad modelskog prosjeka</div></div>' +
+      '<div class="slabost-stat"><div class="slabost-stat-val" style="color:var(--green);">' + (s.avgDanaDoProdaje || '—') + '</div><div class="slabost-stat-label">Dana do prodaje (prosjek)</div></div>';
 
-    // AI analiza
-    if (s.aiAnaliza) {
-      document.getElementById('aiIntelBox').style.display = 'block';
-      document.getElementById('aiIntelTekst').innerHTML = s.aiAnaliza
+    if (s.aiAnaliza && aiIntelBoxEl) {
+      aiIntelBoxEl.style.display = 'block';
+      var aiTekstEl = document.getElementById('aiIntelTekst');
+      if (aiTekstEl) aiTekstEl.innerHTML = s.aiAnaliza
         .replace(/SLABOSTI:/gi, '<strong style="color:var(--red);display:block;margin:8px 0 4px;">⚠️ SLABOSTI:</strong>')
         .replace(/PRILIKE:/gi, '<strong style="color:var(--green);display:block;margin:8px 0 4px;">✅ PRILIKE:</strong>')
         .replace(/PREPORUKA:/gi, '<strong style="color:var(--orange);display:block;margin:8px 0 4px;">💡 PREPORUKA:</strong>')
         .split('\n').join('<br>');
     }
 
-    // Dugo na trzistu
-    document.getElementById('slabostDugo').innerHTML = s.dugoCekaju.length
-      ? s.dugoCekaju.map(function(o) {
-          return '<div class="slabost-item">' +
-            '<a href="' + (o.link || '#') + '" target="_blank" style="flex:1;">' +
-            '<div class="slabost-naslov">' + o.naslov + '</div>' +
-            '<div class="slabost-detalj">⏰ ' + o.dana + ' dana na tržištu — vjerovatno spreman sniziti</div>' +
-            '</a><div class="slabost-cijena">' + o.cijena + '</div></div>';
-        }).join('')
-      : '<div style="color:var(--text-faint);font-size:13px;padding:12px;">Nema oglasa koji dugo stoje.</div>';
+    if (slabostDugoEl) {
+      slabostDugoEl.innerHTML = s.dugoCekaju && s.dugoCekaju.length
+        ? s.dugoCekaju.map(function(o) {
+            return '<div class="slabost-item">' +
+              '<a href="' + (o.link || '#') + '" target="_blank" style="flex:1;">' +
+              '<div class="slabost-naslov">' + o.naslov + '</div>' +
+              '<div class="slabost-detalj">⏰ ' + o.dana + ' dana na tržištu</div>' +
+              '</a><div class="slabost-cijena">' + o.cijena + '</div></div>';
+          }).join('')
+        : '<div style="color:var(--text-faint);font-size:13px;padding:12px;">Nema oglasa koji dugo stoje.</div>';
+    }
 
-    // Previsoko
-    document.getElementById('slabostPrevisoko').innerHTML = s.previsoko.length
-      ? s.previsoko.map(function(o) {
-          return '<div class="slabost-item" style="border-left-color:var(--gold);">' +
-            '<a href="' + (o.link || '#') + '" target="_blank" style="flex:1;">' +
-            '<div class="slabost-naslov">' + o.naslov + '</div>' +
-            '<div class="slabost-detalj" style="color:var(--gold);">💰 +' + o.visokoZa + '% iznad prosjeka za ovaj model (' + (o.modelAvg ? o.modelAvg.toLocaleString('bs-BA') + ' KM' : 'N/A') + ')</div>' +
-            '</a><div class="slabost-cijena">' + o.cijena + '</div></div>';
-        }).join('')
-      : '<div style="color:var(--text-faint);font-size:13px;padding:12px;">Svi oglasi su u tržišnom rangu.</div>';
+    if (slabostPrevisEl) {
+      slabostPrevisEl.innerHTML = s.previsoko && s.previsoko.length
+        ? s.previsoko.map(function(o) {
+            return '<div class="slabost-item" style="border-left-color:var(--gold);">' +
+              '<a href="' + (o.link || '#') + '" target="_blank" style="flex:1;">' +
+              '<div class="slabost-naslov">' + o.naslov + '</div>' +
+              '<div class="slabost-detalj" style="color:var(--gold);">💰 +' + o.visokoZa + '% iznad prosjeka modela (' + (o.modelAvg ? o.modelAvg.toLocaleString('bs-BA') + ' KM' : 'N/A') + ')</div>' +
+              '</a><div class="slabost-cijena">' + o.cijena + '</div></div>';
+          }).join('')
+        : '<div style="color:var(--text-faint);font-size:13px;padding:12px;">Svi oglasi su u normalnom rangu.</div>';
+    }
   } catch(e) {
-    document.getElementById('slabostStats').innerHTML = '<div style="color:var(--text-faint);">Greška: ' + e.message + '</div>';
+    console.log('Slabosti greska:', e);
+    if (slabostStatsEl) slabostStatsEl.innerHTML = '<div style="color:var(--red);padding:20px;grid-column:1/-1;">Greška: ' + e.message + '</div>';
   }
 }
+
 
 async function ucitajPredict(id) {
   document.getElementById('predictLista').innerHTML = '<div style="padding:20px;text-align:center;"><div class="spin"></div></div>';

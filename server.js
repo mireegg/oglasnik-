@@ -1843,7 +1843,11 @@ app.post('/api/konkurent-slabosti', async (req, res) => {
         // Izracunaj prosjek za svaki oglas posebno
         const oglasiSaProsjekom = await Promise.all(oglasiData.map(async (o) => {
             const modelAvg = await getModelProsjekHelper(pool, o.naslov, avgGlobalni);
-            return { ...o, modelAvg };
+            return {
+                id: o.id, naslov: o.naslov, cijena: o.cijena, cijena_num: o.cijena_num,
+                slika: o.slika, link: o.link, dana_na_trzistu: o.dana_na_trzistu,
+                modelAvg
+            };
         }));
 
         const avgTrziste = avgGlobalni;
@@ -1936,7 +1940,12 @@ app.get('/api/predict/:konkurent_id', async (req, res) => {
         // Obogati oglase sa model prosjekom
         const oglasiObogaceni = await Promise.all(oglasi.rows.map(async (o) => {
             const modelAvg = await getModelProsjekHelper(pool, o.naslov, globalAvg);
-            return { ...o, modelAvg };
+            return {
+                olx_id: o.olx_id, naslov: o.naslov, cijena: o.cijena, cijena_num: o.cijena_num,
+                slika: o.slika, link: o.link, dana_na_trzistu: o.dana_na_trzistu,
+                broj_promjena: o.broj_promjena, max_cijena: o.max_cijena, min_cijena: o.min_cijena,
+                modelAvg
+            };
         }));
 
         const avgTrziste = globalAvg;
