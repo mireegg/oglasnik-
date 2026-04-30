@@ -544,7 +544,7 @@ async function ucitajNoveOglase() {
       if(o.gorivo) detalji.push(o.gorivo);
       if(o.km) detalji.push(parseInt(o.km).toLocaleString()+' km');
       return '<a href="/oglas.html?data='+meta+'" target="_blank" class="novi-oglas">' +
-        (o.slika?'<img src="'+o.slika+'" onerror="this.style.display=\'none\'">':"<div class='novi-oglas-ph'></div>") +
+        (o.slika?'<img src="'+o.slika+'" onerror=\"this.onerror=null\">':"<div class='novi-oglas-ph'></div>") +
         '<div class="novi-oglas-info"><div class="novi-oglas-naziv">'+o.naslov+'</div><div class="novi-oglas-cijena">'+o.cijena+'</div><div class="novi-oglas-meta">'+platBadge+(detalji.length?' · '+detalji.join(' · '):'')+'</div></div>' +
         '<div style="font-size:12px;color:var(--text-faint);white-space:nowrap;">'+new Date(o.datum).toLocaleDateString('bs-BA')+'</div>' +
       '</a>';
@@ -583,7 +583,7 @@ async function ucitajOglaseBrenda() {
     if(data.uspjeh&&data.oglasi.length){
       container.innerHTML=data.oglasi.map(function(o){
         var meta=encodeURIComponent(JSON.stringify({naslov:o.naslov,cijena:o.cijena,slika:o.slika||'',link:o.link||'',platforma:o.platforma||'olx',kategorija:o.kategorija||''}));
-        return '<a href="/oglas.html?data='+meta+'" target="_blank" class="oglas-mini">'+(o.slika?'<img src="'+o.slika+'" style="width:100%;height:110px;object-fit:cover;" onerror="this.style.display=\'none\'">':"<div style='width:100%;height:110px;background:#222;'></div>")+'<div style="padding:10px;"><div style="font-size:12px;font-weight:500;color:var(--text-muted);margin-bottom:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">'+o.naslov+'</div><div style="font-family:Syne,sans-serif;font-size:14px;font-weight:700;color:var(--orange);">'+o.cijena+'</div></div></a>';
+        return '<a href="/oglas.html?data='+meta+'" target="_blank" class="oglas-mini">'+(o.slika?'<img src="'+o.slika+'" style="width:100%;height:110px;object-fit:cover;" onerror=\"this.onerror=null\">':"<div style='width:100%;height:110px;background:#222;'></div>")+'<div style="padding:10px;"><div style="font-size:12px;font-weight:500;color:var(--text-muted);margin-bottom:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">'+o.naslov+'</div><div style="font-family:Syne,sans-serif;font-size:14px;font-weight:700;color:var(--orange);">'+o.cijena+'</div></div></a>';
       }).join('');
     } else { container.innerHTML='<div style="color:var(--text-faint);padding:24px;grid-column:1/-1;">Nema oglasa.</div>'; }
   } catch(e){}
@@ -671,38 +671,36 @@ async function ucitajKonkurentOglase(id) {
     var res = await fetch('/api/konkurent-oglasi/' + id + '?status=active');
     var data = await res.json();
     if (!data.uspjeh) return;
-
     var stats = data.stats || {};
     var prodanih = document.getElementById('konk-prodanih-' + id);
     var noviEl = document.getElementById('konk-novi-' + id);
     if (prodanih) prodanih.textContent = stats.prodanih || 0;
-
-    // Novi danas
     var noviDanas = (data.oglasi || []).filter(function(o) {
       return new Date(o.datum_objave) > new Date(Date.now() - 24*60*60*1000);
     }).length;
     if (noviEl) noviEl.textContent = noviDanas;
-
     var container = document.getElementById('konk-oglasi-' + id);
     if (!container) return;
     if (!data.oglasi || !data.oglasi.length) {
       container.innerHTML = '<div style="color:var(--text-faint);font-size:12px;grid-column:1/-1;">Nema aktivnih oglasa.</div>';
       return;
     }
-
-    container.innerHTML = data.oglasi.slice(0, 12).map(function(o) {
+    var html = '';
+    data.oglasi.slice(0, 12).forEach(function(o) {
       var link = o.link || '#';
-      return '<a href="' + link + '" target="_blank" class="konk-oglas">' +
-        (o.slika ? '<img src="' + o.slika + '" onerror="this.style.display='none'">' : '<div class="konk-oglas-ph"></div>') +
+      var imgHtml = o.slika ? '<img src="' + o.slika + '" onerror=\"this.onerror=null\">' : '<div class="konk-oglas-ph"></div>';
+      var datum = o.datum_objave ? new Date(o.datum_objave).toLocaleDateString('bs-BA') : '';
+      html += '<a href="' + link + '" target="_blank" class="konk-oglas">' + imgHtml +
         '<div class="konk-oglas-body">' +
-          '<div class="konk-oglas-naslov">' + (o.naslov || '') + '</div>' +
-          '<div class="konk-oglas-cijena">' + (o.cijena || '') + '</div>' +
-          '<div style="font-size:10px;color:var(--text-faint);">' + new Date(o.datum_objave).toLocaleDateString('bs-BA') + '</div>' +
-        '</div>' +
-      '</a>';
-    }).join('');
-  } catch(e) {}
+        '<div class="konk-oglas-naslov">' + (o.naslov || '') + '</div>' +
+        '<div class="konk-oglas-cijena">' + (o.cijena || '') + '</div>' +
+        '<div style="font-size:10px;color:var(--text-faint);">' + datum + '</div>' +
+        '</div></a>';
+    });
+    container.innerHTML = html;
+  } catch(e) { console.log('Greska oglasi:', e.message); }
 }
+
 
 async function dodajKonkurenta() {
   if (!korisnik) return;
