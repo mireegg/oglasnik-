@@ -948,28 +948,15 @@ init();
 </div>
 
 <script>
-// ── MAKE AN OFFER ────────────────────────────────────────
 var ponudaCijena = 0;
 
 function otvoriPonudu() {
   var modal = document.getElementById('ponudaModal');
-  var input = document.getElementById('ponudaInput');
   var sub = document.getElementById('ponudaSub');
-  var hint = document.getElementById('ponudaAiHint');
-
-  // Uzmi cijenu iz meta
   var cijenaStr = oglasMeta.cijena || '';
-  ponudaCijena = parseFloat(cijenaStr.replace(/\./g,'').replace(/[^0-9]/g,'')) || 0;
-
-  sub.textContent = oglasMeta.naslov ? oglasMeta.naslov.substring(0,50) + '...' : 'Oglas';
-
-  // Postavi default -10%
+  ponudaCijena = parseFloat(cijenaStr.replace(/\./g, '').replace(/[^0-9]/g, '')) || 0;
+  sub.textContent = (oglasMeta.naslov || 'Oglas').substring(0, 50) + '...';
   setPonuda(0.90, document.querySelector('.ponuda-preset.sel'));
-  azurirajPoruku(0.90);
-
-  // AI hint
-  azurirajSavjet(0.90);
-
   modal.classList.add('open');
   document.body.style.overflow = 'hidden';
 }
@@ -982,79 +969,11 @@ function zatvoriPonudu() {
 function setPonuda(faktor, el) {
   var val = Math.round(ponudaCijena * faktor);
   document.getElementById('ponudaInput').value = val || '';
-  document.querySelectorAll('.ponuda-preset').forEach(function(p){p.classList.remove('sel');});
+  document.querySelectorAll('.ponuda-preset').forEach(function(p) { p.classList.remove('sel'); });
   if (el) el.classList.add('sel');
   updatePonudaDiff();
   azurirajSavjet(faktor);
   azurirajPoruku(faktor);
-}
-
-function azurirajSavjet(faktor) {
-  var hint = document.getElementById('ponudaAiHint');
-  if (!ponudaCijena) return;
-  var pct = Math.round((1 - faktor) * 100);
-  var ponuda = Math.round(ponudaCijena * faktor);
-  var ustedjeno = ponudaCijena - ponuda;
-
-  var savjet = '';
-  var boja = '#fff0e6'; var bojaTxt = '#712B13'; var bojaBorder = '#F0997B';
-
-  if (pct <= 5) {
-    savjet = 'Ovo je blaga ponuda — prodavači u BiH gotovo uvijek prihvataju 5% niže, ' +
-      'posebno ako je oglas stariji od 2 sedmice. Sigurna opcija, malo rizika od odbijanja.';
-    boja = '#f0fdf4'; bojaTxt = '#166534'; bojaBorder = '#86efac';
-  } else if (pct <= 10) {
-    savjet = 'Klasična pregovaračka ponuda u BiH — 10% niže je norma i prodavači to očekuju. ' +
-      'Ako oglas stoji duže od mjesec dana, šansa prihvatanja je visoka. ' +
-      'Uštedjet ćeš ' + ustedjeno.toLocaleString('bs-BA') + ' KM.';
-    boja = '#fff0e6'; bojaTxt = '#712B13'; bojaBorder = '#F0997B';
-  } else if (pct <= 15) {
-    savjet = 'Agresivnija ponuda — prodavač može odbiti, ali vjerovatno će kontrirati. ' +
-      'Preporučujemo napomenuti konkretan razlog u poruci (npr. potrebna popravka, ' +
-      'visoka kilometraža). Postoji prostor za kompromis između ' +
-      ponuda.toLocaleString('bs-BA') + ' i ' + Math.round(ponudaCijena * 0.92).toLocaleString('bs-BA') + ' KM.';
-    boja = '#fefce8'; bojaTxt = '#713f12'; bojaBorder = '#fde68a';
-  } else {
-    savjet = 'Vrlo agresivna ponuda — visok rizik odbijanja bez odgovora. ' +
-      'Preporučujemo početi sa -10% i ostaviti prostor za pregovor. ' +
-      'Ipak, ako vozilo ima vidljive nedostatke ili je dugo na tržištu, može proći.';
-    boja = '#fef2f2'; bojaTxt = '#991b1b'; bojaBorder = '#fca5a5';
-  }
-
-  hint.style.background = boja;
-  hint.style.borderColor = bojaBorder;
-  hint.style.color = bojaTxt;
-  hint.innerHTML = '<strong style="display:block;font-size:10px;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:5px;">&#x2728; Oglix AI savjet — ' + pct + '% popust</strong>' + savjet;
-}
-
-function azurirajPoruku(faktor) {
-  var pct = Math.round((1 - faktor) * 100);
-  var ponuda = Math.round(ponudaCijena * faktor);
-  var naslov = (oglasMeta.naslov || 'oglas').substring(0, 50);
-  
-  var razlog = '';
-  if (pct >= 15) razlog = ' Vozilo zahtijeva određenu investiciju i to uzimam u obzir pri ponudi.';
-  else if (pct >= 10) razlog = ' Detaljno sam pregledao tržište i smatram da je ovo fer cijena.';
-  else razlog = ' Jako mi se sviđa vaš oglas i ozbiljan sam kupac.';
-
-  var poruka = 'Zdravo!
-
-' +
-    'Zainteresovan/a sam za vaš oglas — ' + naslov + '.
-
-' +
-    razlog.trim() + '
-
-' +
-    'Nudim ' + ponuda.toLocaleString('bs-BA') + ' KM.' +
-    ' Spreman/na sam odmah doći na pregled i platiti gotovinom.
-
-' +
-    'Možemo li se dogovoriti?
-
-Hvala!';
-
-  document.getElementById('ponudaMsg').value = poruka;
 }
 
 function updatePonudaDiff() {
@@ -1066,55 +985,88 @@ function updatePonudaDiff() {
   if (razlika > 0) {
     diff.style.background = pct > 25 ? '#fee2e2' : '#fff0e6';
     diff.style.color = pct > 25 ? '#991b1b' : '#993C1D';
-    diff.textContent = 'Nudis ' + razlika.toLocaleString('bs-BA') + ' KM ispod tražene cijene (' + pct + '% popust)';
+    diff.textContent = 'Nudis ' + razlika.toLocaleString('bs-BA') + ' KM ispod trazene cijene (' + pct + '% popust)';
   } else if (razlika < 0) {
     diff.style.background = '#f0fdf4';
     diff.style.color = '#166534';
-    diff.textContent = 'Nudis ' + Math.abs(razlika).toLocaleString('bs-BA') + ' KM iznad tražene cijene';
+    diff.textContent = 'Nudis ' + Math.abs(razlika).toLocaleString('bs-BA') + ' KM iznad trazene cijene';
   } else {
     diff.style.background = '#f7f5f2';
     diff.style.color = '#777';
-    diff.textContent = 'Nudis tačno traženu cijenu';
+    diff.textContent = 'Nudis tacno trazenu cijenu';
   }
-  // Azuriraj savjet na osnovu rucnog unosa
-  if (ponudaCijena > 0 && val > 0) {
-    azurirajSavjet(val / ponudaCijena);
+  if (ponudaCijena > 0 && val > 0) azurirajSavjet(val / ponudaCijena);
+}
+
+function azurirajSavjet(faktor) {
+  var hint = document.getElementById('ponudaAiHint');
+  if (!ponudaCijena || !hint) return;
+  var pct = Math.round((1 - faktor) * 100);
+  var ponuda = Math.round(ponudaCijena * faktor);
+  var usteda = ponudaCijena - ponuda;
+  var tekst, boja, bojaTxt, bojaBorder;
+  if (pct <= 5) {
+    tekst = 'Blaga ponuda koja se gotovo uvijek prihvata. Prodavaci u BiH ocekuju pregovor pa ce biti prijatno iznenadjeni. Idealno ako vam se automobil jako svida i ne zelite riskirati odbijanje.';
+    boja = '#f0fdf4'; bojaTxt = '#166534'; bojaBorder = '#86efac';
+  } else if (pct <= 10) {
+    tekst = 'Klasicna pregovaracka ponuda u BiH — 10% nize je norma i prodavaci to ocekuju. Ustedjeces ' + usteda.toLocaleString('bs-BA') + ' KM. Sansa prihvatanja je visoka, posebno ako oglas stoji duze od 3 sedmice.';
+    boja = '#fff0e6'; bojaTxt = '#712B13'; bojaBorder = '#F0997B';
+  } else if (pct <= 15) {
+    tekst = 'Agresivnija ponuda — prodavac ce vjerovatno kontrirati. Pripremi se na kompromis oko ' + Math.round(ponudaCijena * 0.92).toLocaleString('bs-BA') + ' KM. U poruci navedi konkretan razlog (visoka km, potrebna guma/kocnice, stara guma). Dobre sanse ako oglas stoji duze od mjesec dana.';
+    boja = '#fefce8'; bojaTxt = '#713f12'; bojaBorder = '#fde68a';
+  } else {
+    tekst = 'Visok rizik odbijanja bez odgovora. Preporucujemo poceti sa -10% i ostaviti prostor za pregovor. Ako vozilo ima vidljive nedostatke ili oglas stoji dugo, opravdaj ponudu konkretnim razlozima u poruci.';
+    boja = '#fef2f2'; bojaTxt = '#991b1b'; bojaBorder = '#fca5a5';
   }
+  hint.style.background = boja;
+  hint.style.borderColor = bojaBorder;
+  hint.style.color = bojaTxt;
+  hint.innerHTML = '<strong style="display:block;font-size:10px;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:5px;">&#x2728; Oglix AI savjet &#x2014; ' + pct + '% popust</strong>' + tekst;
+}
+
+function azurirajPoruku(faktor) {
+  var pct = Math.round((1 - faktor) * 100);
+  var ponuda = Math.round(ponudaCijena * faktor);
+  var naslov = (oglasMeta.naslov || 'oglas').substring(0, 50);
+  var linija1 = 'Zdravo,';
+  var linija2 = 'Zainteresovan/a sam za vas oglas: ' + naslov + '.';
+  var linija3;
+  if (pct >= 15) {
+    linija3 = 'Na osnovu stanja vozila i trhista, nudim ' + ponuda.toLocaleString('bs-BA') + ' KM. Vozilo zahtijeva odredjenu investiciju sto uzimam u obzir.';
+  } else if (pct >= 10) {
+    linija3 = 'Detaljno sam pratio trziste i nudim ' + ponuda.toLocaleString('bs-BA') + ' KM sto smatram fer cijenom za ovaj model i godiste.';
+  } else {
+    linija3 = 'Jako mi se svidja vas oglas. Nudim ' + ponuda.toLocaleString('bs-BA') + ' KM.';
+  }
+  var linija4 = 'Spreman/na sam odmah na pregled i placanje gotovinom.';
+  var linija5 = 'Mozemo li se dogovoriti? Hvala!';
+  var msg = linija1 + '\n\n' + linija2 + '\n\n' + linija3 + ' ' + linija4 + '\n\n' + linija5;
+  document.getElementById('ponudaMsg').value = msg;
 }
 
 function posaljiPonudu() {
   var val = parseInt(document.getElementById('ponudaInput').value) || 0;
   var poruka = document.getElementById('ponudaMsg').value.trim();
-
-  var tekst = poruka || ('Zdravo! Zainteresovan/a sam za vaš oglas "' + (oglasMeta.naslov || 'oglas').substring(0,60) + '".' +
-    (val ? ' Nudim ' + val.toLocaleString('bs-BA') + ' KM.' : '') +
-    ' Možemo li se dogovoriti? Hvala!');
-
-  // Kopiraj u clipboard
+  if (!poruka) {
+    poruka = 'Zdravo, zainteresovan/a sam za vas oglas. Nudim ' + val.toLocaleString('bs-BA') + ' KM. Mozemo li se dogovoriti? Hvala!';
+  }
   if (navigator.clipboard) {
-    navigator.clipboard.writeText(tekst).catch(function(){});
+    navigator.clipboard.writeText(poruka).catch(function() {});
   } else {
     var ta = document.createElement('textarea');
-    ta.value = tekst;
+    ta.value = poruka;
     document.body.appendChild(ta);
     ta.select();
     document.execCommand('copy');
     ta.remove();
   }
-
-  // Otvori originalni oglas
-  if (oglasMeta.link) {
-    window.open(oglasMeta.link, '_blank');
-  }
-
+  if (oglasMeta.link) window.open(oglasMeta.link, '_blank');
   zatvoriPonudu();
-
-  // Toast poruku
   var t = document.createElement('div');
-  t.style.cssText = 'position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#1a1a1a;color:white;padding:12px 24px;border-radius:100px;font-size:14px;z-index:999;font-family:DM Sans,sans-serif;';
-  t.textContent = '\u2713 Poruka kopirana! Paste-aj je u chat sa prodavačem';
+  t.style.cssText = 'position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#1a1a1a;color:white;padding:12px 24px;border-radius:100px;font-size:14px;z-index:9999;font-family:DM Sans,sans-serif;white-space:nowrap;';
+  t.textContent = '✓ Poruka kopirana! Paste-aj je u chat sa prodavacern';
   document.body.appendChild(t);
-  setTimeout(function(){t.remove();}, 3500);
+  setTimeout(function() { t.remove(); }, 3500);
 }
 </script>
 </body>
