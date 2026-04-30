@@ -54,6 +54,28 @@
     .akcije{display:flex;flex-direction:column;gap:10px;}
     .btn-primarni{background:var(--orange);color:white;border:none;border-radius:var(--radius-md);padding:16px 24px;font-size:15px;font-weight:600;font-family:'DM Sans',sans-serif;cursor:pointer;text-align:center;transition:background .15s;display:block;}
     .btn-primarni:hover{background:var(--orange-light);}
+    .btn-ponuda{width:100%;padding:13px;background:#fff0e6;color:#993C1D;border:1px solid #F0997B;border-radius:var(--radius-md);font-size:15px;font-family:'DM Sans',sans-serif;font-weight:500;cursor:pointer;margin-top:8px;transition:background .15s;}
+    .btn-ponuda:hover{background:#F5C4B3;}
+    .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:400;align-items:center;justify-content:center;padding:20px;}
+    .modal-overlay.open{display:flex;}
+    .modal-box{background:#fff;border-radius:20px;padding:28px;width:100%;max-width:420px;position:relative;}
+    .modal-title{font-family:'Syne',sans-serif;font-size:18px;font-weight:700;margin-bottom:4px;}
+    .modal-sub{font-size:13px;color:#777;margin-bottom:20px;}
+    .modal-close{position:absolute;top:16px;right:16px;background:none;border:none;font-size:20px;cursor:pointer;color:#aaa;}
+    .ponuda-presets{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;}
+    .ponuda-preset{padding:7px 14px;border-radius:100px;border:1px solid rgba(0,0,0,0.1);font-size:13px;cursor:pointer;color:#777;background:#f7f5f2;font-family:'DM Sans',sans-serif;}
+    .ponuda-preset:hover{border-color:#e65c00;color:#e65c00;}
+    .ponuda-preset.sel{background:#fff0e6;border-color:#e65c00;color:#993C1D;}
+    .ponuda-input-wrap{display:flex;align-items:center;gap:8px;margin-bottom:8px;}
+    .ponuda-input{font-size:22px;font-weight:700;border:1px solid rgba(0,0,0,0.12);border-radius:10px;padding:10px 14px;width:100%;font-family:'DM Sans',sans-serif;color:#1a1a1a;outline:none;}
+    .ponuda-input:focus{border-color:#e65c00;}
+    .ponuda-diff{font-size:12px;padding:6px 12px;border-radius:8px;margin-bottom:14px;}
+    .ponuda-msg{width:100%;border:1px solid rgba(0,0,0,0.1);border-radius:10px;padding:10px 12px;font-size:13px;font-family:'DM Sans',sans-serif;color:#1a1a1a;resize:none;height:80px;outline:none;margin-bottom:14px;}
+    .ponuda-msg:focus{border-color:#e65c00;}
+    .ai-hint{background:#fff0e6;border:1px solid #F0997B;border-radius:10px;padding:10px 12px;margin-bottom:14px;font-size:12px;color:#712B13;line-height:1.5;}
+    .btn-posalji{width:100%;padding:13px;background:#e65c00;color:white;border:none;border-radius:10px;font-size:15px;font-family:'DM Sans',sans-serif;font-weight:600;cursor:pointer;}
+    .btn-posalji:hover{background:#ff7a1f;}
+    .copy-hint{text-align:center;font-size:12px;color:#aaa;margin-top:10px;}
     .btn-sekundarni{background:white;color:var(--orange);border:2px solid var(--orange);border-radius:var(--radius-md);padding:14px 24px;font-size:15px;font-weight:600;font-family:'DM Sans',sans-serif;cursor:pointer;text-align:center;}
     .btn-sekundarni:hover{background:var(--orange-dim);}
 
@@ -320,6 +342,7 @@ function renderOglasTop(meta, d) {
         '<div class="akcije">'+
           '<a href="'+meta.link+'" target="_blank" class="btn-primarni">Pogledaj na '+platformaNaziv+' →</a>'+
           '<button class="btn-sekundarni" onclick="pratiOglas()">🔔 Prati oglas</button>'+
+          '<button class="btn-ponuda" onclick="otvoriPonudu()">💬 Pošalji ponudu</button>'+
         '</div>'+
       '</div>'+
     '</div>';
@@ -893,6 +916,137 @@ async function init(){
 }
 
 init();
+</script>
+
+<!-- MODAL PONUDE -->
+<div class="modal-overlay" id="ponudaModal" onclick="if(event.target===this)zatvoriPonudu()">
+  <div class="modal-box">
+    <button class="modal-close" onclick="zatvoriPonudu()">&#x2715;</button>
+    <div class="modal-title">&#x1F4AC; Pošalji ponudu</div>
+    <div class="modal-sub" id="ponudaSub">Za oglas: ...</div>
+
+    <div class="ponuda-presets" id="ponudaPresets">
+      <div class="ponuda-preset" onclick="setPonuda(0.95,this)">-5%</div>
+      <div class="ponuda-preset sel" onclick="setPonuda(0.90,this)">-10%</div>
+      <div class="ponuda-preset" onclick="setPonuda(0.85,this)">-15%</div>
+      <div class="ponuda-preset" onclick="setPonuda(0.80,this)">-20%</div>
+    </div>
+
+    <div class="ponuda-input-wrap">
+      <input class="ponuda-input" type="number" id="ponudaInput" oninput="updatePonudaDiff()">
+      <span style="font-size:16px;color:#777;">KM</span>
+    </div>
+    <div class="ponuda-diff" id="ponudaDiff" style="background:#fff0e6;color:#993C1D;"></div>
+
+    <div class="ai-hint" id="ponudaAiHint"></div>
+
+    <textarea class="ponuda-msg" id="ponudaMsg" placeholder="Dodaj poruku prodavaču (opcionalno)..."></textarea>
+
+    <button class="btn-posalji" onclick="posaljiPonudu()">Kopiraj poruku i otvori oglas &#x2192;</button>
+    <div class="copy-hint">Poruka se kopira u clipboard — samo je paste-aj u chat sa prodavačem</div>
+  </div>
+</div>
+
+<script>
+// ── MAKE AN OFFER ────────────────────────────────────────
+var ponudaCijena = 0;
+
+function otvoriPonudu() {
+  var modal = document.getElementById('ponudaModal');
+  var input = document.getElementById('ponudaInput');
+  var sub = document.getElementById('ponudaSub');
+  var hint = document.getElementById('ponudaAiHint');
+
+  // Uzmi cijenu iz meta
+  var cijenaStr = meta.cijena || '';
+  ponudaCijena = parseFloat(cijenaStr.replace(/\./g,'').replace(/[^0-9]/g,'')) || 0;
+
+  sub.textContent = meta.naslov ? meta.naslov.substring(0,50) + '...' : 'Oglas';
+
+  // Postavi default -10%
+  setPonuda(0.90, document.querySelector('.ponuda-preset.sel'));
+
+  // AI hint
+  if (ponudaCijena > 0) {
+    hint.innerHTML = '<strong style="display:block;font-size:10px;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:4px;">&#x2728; Oglix savjet</strong>' +
+      'Prodavač traži ' + ponudaCijena.toLocaleString('bs-BA') + ' KM. ' +
+      'Pregovaranje je normalno u BiH — većina prodavača prihvata 5-15% niže. ' +
+      'Ponuda od ' + Math.round(ponudaCijena * 0.90).toLocaleString('bs-BA') + ' KM je dobar početak.';
+  }
+
+  modal.classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function zatvoriPonudu() {
+  document.getElementById('ponudaModal').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+function setPonuda(faktor, el) {
+  var val = Math.round(ponudaCijena * faktor);
+  document.getElementById('ponudaInput').value = val || '';
+  document.querySelectorAll('.ponuda-preset').forEach(function(p){p.classList.remove('sel');});
+  if (el) el.classList.add('sel');
+  updatePonudaDiff();
+}
+
+function updatePonudaDiff() {
+  var val = parseInt(document.getElementById('ponudaInput').value) || 0;
+  var diff = document.getElementById('ponudaDiff');
+  if (!ponudaCijena || !val) { diff.textContent = ''; return; }
+  var razlika = ponudaCijena - val;
+  var pct = Math.round(razlika / ponudaCijena * 100);
+  if (razlika > 0) {
+    diff.style.background = pct > 25 ? '#fee2e2' : '#fff0e6';
+    diff.style.color = pct > 25 ? '#991b1b' : '#993C1D';
+    diff.textContent = 'Nudis ' + razlika.toLocaleString('bs-BA') + ' KM ispod tražene cijene (' + pct + '% popust)';
+  } else if (razlika < 0) {
+    diff.style.background = '#f0fdf4';
+    diff.style.color = '#166534';
+    diff.textContent = 'Nudis ' + Math.abs(razlika).toLocaleString('bs-BA') + ' KM iznad tražene cijene';
+  } else {
+    diff.style.background = '#f7f5f2';
+    diff.style.color = '#777';
+    diff.textContent = 'Nudis tačno traženu cijenu';
+  }
+}
+
+function posaljiPonudu() {
+  var val = parseInt(document.getElementById('ponudaInput').value) || 0;
+  var poruka = document.getElementById('ponudaMsg').value.trim();
+
+  var tekst = 'Zdravo! Zainteresovan/a sam za vaš oglas "' + (meta.naslov || 'oglas').substring(0,60) + '".' +
+    (val ? ' Nudim ' + val.toLocaleString('bs-BA') + ' KM' : '') +
+    (poruka ? ' — ' + poruka : '') +
+    '. Možemo li se dogovoriti? Hvala!';
+
+  // Kopiraj u clipboard
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(tekst).catch(function(){});
+  } else {
+    var ta = document.createElement('textarea');
+    ta.value = tekst;
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    ta.remove();
+  }
+
+  // Otvori originalni oglas
+  if (meta.link) {
+    window.open(meta.link, '_blank');
+  }
+
+  zatvoriPonudu();
+
+  // Toast poruku
+  var t = document.createElement('div');
+  t.style.cssText = 'position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#1a1a1a;color:white;padding:12px 24px;border-radius:100px;font-size:14px;z-index:999;font-family:DM Sans,sans-serif;';
+  t.textContent = '\u2713 Poruka kopirana! Paste-aj je u chat sa prodavačem';
+  document.body.appendChild(t);
+  setTimeout(function(){t.remove();}, 3500);
+}
 </script>
 </body>
 </html>
