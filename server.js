@@ -1776,6 +1776,278 @@ app.delete('/api/konkurent/:id', async (req, res) => {
     }
 });
 
+
+// ════════════════════════════════════════════════════════
+// OGLIX INTELLIGENCE — 3 KILLER FEATUREA
+// ════════════════════════════════════════════════════════
+
+// ── 1. SLABOSTI KONKURENTA — AI analiza ──────────────────
+app.post('/api/konkurent-slabosti', async (req, res) => {
+    try {
+        const { konkurent_id } = req.body;
+        const konkurent = await pool.query('SELECT * FROM konkurenti WHERE id = $1', [konkurent_id]);
+        if (!konkurent.rows.length) return res.json({ uspjeh: false });
+        const k = konkurent.rows[0];
+
+        // Dohvati sve aktivne oglase
+        const oglasi = await pool.query(
+            `SELECT *, EXTRACT(DAY FROM NOW() - datum_objave) as dana_na_trzistu
+             FROM konkurent_oglasi WHERE konkurent_id = $1 AND status = 'active' AND cijena_num > 0
+             ORDER BY dana_na_trzistu DESC`,
+            [konkurent_id]
+        );
+
+        // Dohvati prosjek tržišta za poređenje
+        const trzisniProsjek = await pool.query(
+            `SELECT AVG(cijena_num) as avg FROM live_oglasi WHERE cijena_num > 1000 AND cijena_num < 500000 AND platforma = 'olx'`
+        );
+        const avgTrziste = parseFloat(trzisniProsjek.rows[0]?.avg) || 0;
+
+        // Prodana vozila
+        const prodana = await pool.query(
+            `SELECT COUNT(*) as broj, AVG(EXTRACT(DAY FROM datum_prodaje - datum_objave)) as avg_dana
+             FROM konkurent_oglasi WHERE konkurent_id = $1 AND status = 'finished'`,
+            [konkurent_id]
+        );
+
+        const oglasiData = oglasi.rows;
+        const dugoCekaju = oglasiData.filter(o => parseFloat(o.dana_na_trzistu) > 30);
+        const previsoko = oglasiData.filter(o => o.cijena_num > avgTrziste * 1.15);
+
+        // Izgradnja AI prompta
+        const dugoCekaListaTxt = dugoCekaju.slice(0, 5).map(function(o) { return '- ' + o.naslov + ': ' + o.cijena + ' (' + Math.round(o.dana_na_trzistu) + ' dana)'; }).join('\n');
+        const preVisListaTxt = previsoko.slice(0, 5).map(function(o) { return '- ' + o.naslov + ': ' + o.cijena; }).join('\n');
+        const prompt = 'Ti si ekspert za automobilsko tržište u Bosni i Hercegovini. Analiziraj konkurenta i pronađi njihove slabosti.\n\n' +
+            'Konkurent: ' + k.olx_username + '\n' +
+            'Tip: ' + (k.user_type === 'shop' ? 'Salon' : 'Privatni') + '\n' +
+            'Ukupno aktivnih oglasa: ' + oglasiData.length + '\n' +
+            'Prosječna cijena: ' + (k.prosjecna_cijena ? Math.round(k.prosjecna_cijena).toLocaleString() + ' KM' : 'N/A') + '\n' +
+            'Tržišni prosjek: ' + Math.round(avgTrziste).toLocaleString() + ' KM\n\n' +
+            'Oglasi koji stoje dugo (30+ dana): ' + dugoCekaju.length + ' vozila\n' + dugoCekaListaTxt + '\n\n' +
+            'Oglasi iznad tržišnog prosjeka: ' + previsoko.length + ' vozila\n' + preVisListaTxt + '\n\n' +
+            'Prodana vozila: ' + (prodana.rows[0]?.broj || 0) + '\n' +
+            'Prosječno dana do prodaje: ' + (prodana.rows[0]?.avg_dana ? Math.round(prodana.rows[0].avg_dana) : 'N/A') + '\n\n' +
+            'Na osnovu ovih podataka, daj mi:\n' +
+            '1. SLABOSTI: 3 konkretne slabosti ovog konkurenta (kratko, direktno)\n' +
+            '2. PRILIKE: 3 konkretne tržišne prilike koje mogu iskoristiti dileri\n' +
+            '3. PREPORUKA: 1 konkretna akcija koju diler treba odmah poduzeti\n\n' +
+            'Odgovori kratko i konkretno. Svaka stavka max 2 rečenice.'
+
+        const analiza = await groqAI(prompt, 600);
+
+        // Formatiraj output
+        const slabosti = {
+            dugoCekaju: dugoCekaju.slice(0, 5).map(o => ({
+                naslov: o.naslov,
+                cijena: o.cijena,
+                dana: Math.round(parseFloat(o.dana_na_trzistu)),
+                link: o.link
+            })),
+            previsoko: previsoko.slice(0, 5).map(o => ({
+                naslov: o.naslov,
+                cijena: o.cijena,
+                cijenaNum: o.cijena_num,
+                visokoZa: Math.round((o.cijena_num - avgTrziste) / avgTrziste * 100),
+                link: o.link
+            })),
+            ukupnoAktivnih: oglasiData.length,
+            ukupnoDugo: dugoCekaju.length,
+            ukupnoPrevisoko: previsoko.length,
+            avgDanaDoProdaje: prodana.rows[0]?.avg_dana ? Math.round(prodana.rows[0].avg_dana) : null,
+            aiAnaliza: analiza
+        };
+
+        res.json({ uspjeh: true, slabosti });
+    } catch(e) {
+        res.json({ uspjeh: false, poruka: e.message });
+    }
+});
+
+// ── 2. OGLIX PREDICT™ — predviđanje pada cijene ──────────
+app.get('/api/predict/:konkurent_id', async (req, res) => {
+    try {
+        const { konkurent_id } = req.params;
+        const oglasi = await pool.query(
+            `SELECT o.*,
+                EXTRACT(DAY FROM NOW() - o.datum_objave) as dana_na_trzistu,
+                (SELECT COUNT(*) FROM konkurent_cijena_historija h WHERE h.olx_id = o.olx_id) as broj_promjena,
+                (SELECT MIN(h.cijena_num) FROM konkurent_cijena_historija h WHERE h.olx_id = o.olx_id) as min_cijena,
+                (SELECT MAX(h.cijena_num) FROM konkurent_cijena_historija h WHERE h.olx_id = o.olx_id) as max_cijena
+             FROM konkurent_oglasi o
+             WHERE o.konkurent_id = $1 AND o.status = 'active' AND o.cijena_num > 1000
+             ORDER BY dana_na_trzistu DESC`,
+            [konkurent_id]
+        );
+
+        // Tržišni prosjek
+        const avgRes = await pool.query(
+            `SELECT AVG(cijena_num) as avg FROM live_oglasi WHERE cijena_num > 1000 AND cijena_num < 500000`
+        );
+        const avgTrziste = parseFloat(avgRes.rows[0]?.avg) || 20000;
+
+        // Kraj mjeseca bonus
+        const danas = new Date();
+        const krajMjeseca = new Date(danas.getFullYear(), danas.getMonth() + 1, 0);
+        const danaDoKraja = Math.floor((krajMjeseca - danas) / (1000 * 60 * 60 * 24));
+        const krajMjesecaFaktor = danaDoKraja <= 7 ? 15 : 0;
+
+        const predictions = oglasi.rows.map(o => {
+            const dana = parseFloat(o.dana_na_trzistu) || 0;
+            const cijenaNum = parseFloat(o.cijena_num) || 0;
+            const maxCijena = parseFloat(o.max_cijena) || cijenaNum;
+            const minCijena = parseFloat(o.min_cijena) || cijenaNum;
+
+            // Score faktori (0-100)
+            let score = 0;
+            let razlozi = [];
+
+            // 1. Dugo na tržištu
+            if (dana > 45) { score += 35; razlozi.push('Na tržištu ' + Math.round(dana) + ' dana'); }
+            else if (dana > 30) { score += 20; razlozi.push('Na tržištu ' + Math.round(dana) + ' dana'); }
+            else if (dana > 15) { score += 8; }
+
+            // 2. Cijena iznad prosjeka
+            const odnosProsjeka = cijenaNum / avgTrziste;
+            if (odnosProsjeka > 1.20) { score += 30; razlozi.push('Cijena ' + Math.round((odnosProsjeka-1)*100) + '% iznad prosjeka'); }
+            else if (odnosProsjeka > 1.10) { score += 15; razlozi.push('Cijena ' + Math.round((odnosProsjeka-1)*100) + '% iznad prosjeka'); }
+
+            // 3. Prethodne promjene cijene
+            if (parseInt(o.broj_promjena) > 1) { score += 20; razlozi.push('Cijena već mijenjana ' + o.broj_promjena + 'x'); }
+
+            // 4. Kraj mjeseca
+            if (krajMjesecaFaktor > 0) { score += krajMjesecaFaktor; razlozi.push('Kraj mjeseca — saloni imaju targete'); }
+
+            // 5. Pad od max cijene
+            if (maxCijena > cijenaNum + 500) {
+                score += 15;
+                razlozi.push('Već sniženo za ' + Math.round(maxCijena - cijenaNum).toLocaleString('bs-BA') + ' KM');
+            }
+
+            score = Math.min(score, 99);
+
+            // Procjena iznosa sniženja
+            const procijenjeniPad = cijenaNum > 50000 ? Math.round(cijenaNum * 0.07) :
+                cijenaNum > 20000 ? Math.round(cijenaNum * 0.08) :
+                Math.round(cijenaNum * 0.10);
+
+            return {
+                olx_id: o.olx_id,
+                naslov: o.naslov,
+                cijena: o.cijena,
+                cijenaNum,
+                slika: o.slika,
+                link: o.link,
+                dana: Math.round(dana),
+                score,
+                razlozi,
+                procijenjeniPad,
+                novaCijena: cijenaNum - procijenjeniPad,
+                vjerojatnost: score >= 70 ? 'Visoka' : score >= 40 ? 'Srednja' : 'Niska'
+            };
+        }).filter(p => p.score >= 20).sort((a, b) => b.score - a.score);
+
+        res.json({ uspjeh: true, predictions, danaDoKrajaMjeseca: danaDoKraja });
+    } catch(e) {
+        res.json({ uspjeh: false, poruka: e.message });
+    }
+});
+
+// ── 3. OGLIX IMPORT INTEL™ — uvozne prilike ──────────────
+async function initImport() {
+    await pool.query(`CREATE TABLE IF NOT EXISTS import_prilike (
+        id SERIAL PRIMARY KEY,
+        izvor VARCHAR(50),
+        ext_id VARCHAR(100),
+        naslov TEXT,
+        cijena_eur NUMERIC,
+        cijena_import_km NUMERIC,
+        cijena_trziste_km NUMERIC,
+        zarada_km NUMERIC,
+        slika TEXT,
+        link TEXT,
+        godiste INTEGER,
+        km INTEGER,
+        gorivo VARCHAR(50),
+        grad VARCHAR(100),
+        zemlja VARCHAR(50),
+        datum_fetch TIMESTAMP DEFAULT NOW(),
+        UNIQUE(izvor, ext_id)
+    )`);
+}
+initImport().catch(e => console.log('Import init:', e.message));
+
+// Import Intel koristi staticki model iz /api/import-prilike
+
+app.get('/api/import-prilike', async (req, res) => {
+    try {
+        // Dohvati prosjecne cijene po modelima iz nase baze za kalkulaciju
+        const modeli = [
+            { kljuc: 'golf', naziv: 'VW Golf', kw_od: 85, cijena_eur: 11500, godiste: 2016, km: 120000, zemlja: 'Njemačka', gorivo: 'Dizel' },
+            { kljuc: 'passat', naziv: 'VW Passat', kw_od: 110, cijena_eur: 14000, godiste: 2017, km: 150000, zemlja: 'Austrija', gorivo: 'Dizel' },
+            { kljuc: 'bmw+x5', naziv: 'BMW X5', kw_od: 140, cijena_eur: 28000, godiste: 2016, km: 160000, zemlja: 'Njemačka', gorivo: 'Dizel' },
+            { kljuc: 'mercedes+gle', naziv: 'Mercedes GLE', kw_od: 150, cijena_eur: 32000, godiste: 2017, km: 140000, zemlja: 'Slovenija', gorivo: 'Dizel' },
+            { kljuc: 'audi+a6', naziv: 'Audi A6', kw_od: 130, cijena_eur: 18000, godiste: 2016, km: 130000, zemlja: 'Austrija', gorivo: 'Dizel' },
+            { kljuc: 'tiguan', naziv: 'VW Tiguan', kw_od: 110, cijena_eur: 16000, godiste: 2017, km: 110000, zemlja: 'Njemačka', gorivo: 'Dizel' },
+            { kljuc: 'skoda+octavia', naziv: 'Škoda Octavia', kw_od: 85, cijena_eur: 9500, godiste: 2016, km: 140000, zemlja: 'Češka', gorivo: 'Dizel' },
+            { kljuc: 'ford+focus', naziv: 'Ford Focus', kw_od: 70, cijena_eur: 8500, godiste: 2016, km: 130000, zemlja: 'Austrija', gorivo: 'Dizel' },
+        ];
+
+        const TECAJ = 1.956;
+        const CARINA = 0.065;
+        const PDV = 0.17;
+
+        const prilike = await Promise.all(modeli.map(async (m) => {
+            // Dohvati realni tržišni prosjek iz naše baze
+            const trziste = await pool.query(
+                `SELECT AVG(cijena_num) as avg, COUNT(*) as broj FROM live_oglasi
+                 WHERE kategorija LIKE 'vozila%' AND cijena_num > 3000 AND cijena_num < 200000
+                 AND naslov ILIKE $1`,
+                ['%' + m.naziv.split(' ').pop() + '%']
+            );
+            const avgBiH = parseFloat(trziste.rows[0]?.avg) || 0;
+            const brojOglasa = parseInt(trziste.rows[0]?.broj) || 0;
+
+            if (!avgBiH) return null;
+
+            // Kalkulacija uvoza
+            const cijenaKM = m.cijena_eur * TECAJ;
+            const carina = cijenaKM * CARINA;
+            const pdv = (cijenaKM + carina) * PDV;
+            const transport = m.zemlja === 'Slovenija' ? 400 : m.zemlja === 'Austrija' ? 550 : 800;
+            const ukupnoKostanje = Math.round(cijenaKM + carina + pdv + transport);
+            const zaradaPotencijal = Math.round(avgBiH - ukupnoKostanje);
+            const zaradaPosto = avgBiH > 0 ? Math.round((zaradaPotencijal / ukupnoKostanje) * 100) : 0;
+
+            return {
+                naziv: m.naziv,
+                zemlja: m.zemlja,
+                godiste: m.godiste,
+                km: m.km,
+                gorivo: m.gorivo,
+                cijenaEur: m.cijena_eur,
+                cijenaKM: Math.round(cijenaKM),
+                carina: Math.round(carina),
+                pdv: Math.round(pdv),
+                transport,
+                ukupnoKostanje,
+                avgBiH: Math.round(avgBiH),
+                zaradaPotencijal,
+                zaradaPosto,
+                brojOglasaBiH: brojOglasa,
+                autoscout24Link: `https://www.autoscout24.de/lst?sort=standard&desc=0&ustate=N%2CU&size=20&atype=C&search_id=1&mmvmk0=${m.kljuc}&priceto=${m.cijena_eur + 2000}&fregfrom=${m.godiste - 1}&fregto=${m.godiste + 2}`,
+                mobileDe: `https://suchen.mobile.de/fahrzeuge/search.html?isSearchRequest=true&makeModelVariant1.makeId=1900&makeModelVariant1.modelDescription=${m.kljuc}&maxPrice=${m.cijena_eur + 2000}&minFirstRegistrationDate=${m.godiste - 1}-01-01`,
+                isplativo: zaradaPotencijal > 2000
+            };
+        }));
+
+        const filtrirano = prilike.filter(p => p && p.isplativo).sort((a, b) => b.zaradaPotencijal - a.zaradaPotencijal);
+
+        res.json({ uspjeh: true, prilike: filtrirano, tecaj: TECAJ });
+    } catch(e) {
+        res.json({ uspjeh: false, poruka: e.message });
+    }
+});
+
 fetchSveKategorije();
 setInterval(fetchSveKategorije, 2 * 60 * 60 * 1000);
 
