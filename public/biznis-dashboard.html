@@ -159,6 +159,67 @@
     .konk-trend-up{color:var(--green);font-size:11px;}
     .konk-trend-down{color:var(--red);font-size:11px;}
 
+
+    /* INTELLIGENCE FEATURES */
+    .intel-tabs{display:flex;gap:6px;margin-bottom:20px;flex-wrap:wrap;}
+    .intel-tab{padding:8px 16px;border-radius:var(--r);border:1px solid var(--border);font-size:13px;font-weight:600;cursor:pointer;color:var(--text-muted);background:var(--surface2);font-family:'DM Sans',sans-serif;transition:all .15s;}
+    .intel-tab.active{background:var(--orange);color:white;border-color:var(--orange);}
+    .intel-section{display:none;}
+    .intel-section.active{display:block;}
+
+    /* SLABOSTI */
+    .slabost-item{background:var(--surface2);border:1px solid var(--border);border-left:3px solid var(--red);border-radius:var(--r);padding:14px 16px;margin-bottom:10px;display:flex;align-items:center;gap:12px;}
+    .slabost-item a{color:inherit;text-decoration:none;flex:1;}
+    .slabost-naslov{font-size:13px;font-weight:500;color:var(--text-muted);margin-bottom:3px;}
+    .slabost-detalj{font-size:12px;color:var(--red);}
+    .slabost-cijena{font-family:'Syne',sans-serif;font-size:14px;font-weight:700;color:var(--orange);white-space:nowrap;}
+    .ai-intel-box{background:#0a0a0a;border:1px solid rgba(230,92,0,0.2);border-radius:var(--r-lg);padding:22px;margin-bottom:20px;}
+    .ai-intel-title{font-family:'Syne',sans-serif;font-size:15px;font-weight:700;color:var(--orange);margin-bottom:14px;display:flex;align-items:center;gap:8px;}
+    .ai-intel-tekst{font-size:13px;color:#bbb;line-height:1.85;}
+    .slabost-stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px;}
+    .slabost-stat{background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);padding:14px;text-align:center;}
+    .slabost-stat-val{font-family:'Syne',sans-serif;font-size:22px;font-weight:800;color:var(--red);}
+    .slabost-stat-label{font-size:11px;color:var(--text-faint);margin-top:3px;}
+
+    /* PREDICT */
+    .predict-card{background:var(--surface2);border:1px solid var(--border);border-radius:var(--r-lg);padding:16px;margin-bottom:12px;display:flex;gap:16px;align-items:center;transition:border-color .15s;}
+    .predict-card:hover{border-color:rgba(230,92,0,0.3);}
+    .predict-img{width:100px;height:72px;object-fit:cover;border-radius:var(--r);flex-shrink:0;background:#222;}
+    .predict-score{width:56px;height:56px;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;flex-shrink:0;border:3px solid;}
+    .predict-score.high{border-color:var(--red);background:var(--red-dim);}
+    .predict-score.med{border-color:var(--gold);background:rgba(245,158,11,0.1);}
+    .predict-score.low{border-color:var(--border);background:var(--surface);}
+    .predict-score-num{font-family:'Syne',sans-serif;font-size:16px;font-weight:800;}
+    .predict-score-label{font-size:9px;color:var(--text-faint);text-transform:uppercase;}
+    .predict-info{flex:1;min-width:0;}
+    .predict-naslov{font-size:13px;font-weight:500;color:var(--text-muted);margin-bottom:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+    .predict-cijena{font-family:'Syne',sans-serif;font-size:16px;font-weight:700;color:var(--orange);margin-bottom:6px;}
+    .predict-razlozi{display:flex;flex-wrap:wrap;gap:4px;}
+    .predict-razlog{font-size:10px;padding:2px 8px;border-radius:100px;background:rgba(239,68,68,0.1);color:var(--red);font-weight:500;}
+    .predict-pad{text-align:right;flex-shrink:0;}
+    .predict-pad-iznos{font-family:'Syne',sans-serif;font-size:15px;font-weight:700;color:var(--red);}
+    .predict-pad-label{font-size:10px;color:var(--text-faint);}
+    .predict-nova-cijena{font-size:12px;color:var(--green);margin-top:2px;}
+
+    /* IMPORT INTEL */
+    .import-card{background:var(--surface2);border:1px solid var(--border);border-radius:var(--r-lg);padding:20px;margin-bottom:14px;transition:border-color .15s;}
+    .import-card:hover{border-color:rgba(34,197,94,0.3);}
+    .import-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
+    .import-naziv{font-family:'Syne',sans-serif;font-size:16px;font-weight:700;}
+    .import-zemlja{font-size:12px;color:var(--text-muted);margin-top:2px;}
+    .import-zarada{font-family:'Syne',sans-serif;font-size:22px;font-weight:800;color:var(--green);text-align:right;}
+    .import-zarada-label{font-size:11px;color:var(--text-faint);text-align:right;}
+    .import-kalk{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;background:var(--surface);border-radius:var(--r);padding:14px;margin-bottom:12px;}
+    .import-kalk-item{text-align:center;}
+    .import-kalk-val{font-family:'Syne',sans-serif;font-size:14px;font-weight:700;color:var(--text);}
+    .import-kalk-label{font-size:10px;color:var(--text-faint);margin-top:2px;}
+    .import-kalk-item.total .import-kalk-val{color:var(--orange);}
+    .import-kalk-item.profit .import-kalk-val{color:var(--green);}
+    .import-links{display:flex;gap:8px;flex-wrap:wrap;}
+    .import-link{font-size:12px;padding:6px 14px;border-radius:var(--r);border:1px solid var(--border);color:var(--text-muted);background:var(--surface);cursor:pointer;text-decoration:none;transition:all .15s;}
+    .import-link:hover{border-color:var(--orange);color:var(--orange);}
+    .import-badge-posto{font-family:'Syne',sans-serif;font-size:12px;font-weight:700;padding:3px 10px;border-radius:100px;background:var(--green-dim);color:var(--green);}
+
     @media(max-width:1024px){.layout{grid-template-columns:1fr;}.sidebar{display:none;}.kpi-grid{grid-template-columns:1fr 1fr;}.charts-row{grid-template-columns:1fr;}.kal-grid{grid-template-columns:1fr 1fr;}.kal-rezultat{grid-template-columns:1fr 1fr;}}
     @media(max-width:768px){.main{padding:16px;}.kpi-grid{grid-template-columns:1fr 1fr;}.topbar{flex-direction:column;align-items:flex-start;gap:12px;}.page-title{font-size:20px;}}
   </style>
@@ -197,6 +258,7 @@
     <div class="nav-section">Alati</div>
     <div class="nav-item" onclick="showSection('alerti',this)"><span class="icon">🔔</span> Alerti <span id="alertBroj" style="margin-left:auto;background:var(--orange);color:white;font-size:10px;padding:2px 7px;border-radius:100px;display:none;"></span></div>
     <div class="nav-item" onclick="showSection('konkurencija',this)"><span class="icon">🕵️</span> Konkurencija</div>
+    <div class="nav-item" onclick="showSection('importintel',this)"><span class="icon">🌍</span> Import Intel™ <span style="margin-left:auto;background:var(--green);color:white;font-size:9px;padding:1px 6px;border-radius:100px;">NEW</span></div>
     <div class="nav-section">Oglix</div>
     <div class="nav-item" onclick="window.location.href='/oglasi.html'"><span class="icon">🔍</span> Svi oglasi</div>
     <div class="nav-item" onclick="window.location.href='/statistike.html'"><span class="icon">📈</span> Statistike</div>
@@ -349,8 +411,65 @@
       <div id="konkLista">
         <div class="konk-empty"><div class="spin"></div></div>
       </div>
+
+      <!-- INTELLIGENCE SEKCIJE -->
+      <div id="konkIntelligence" style="display:none;">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+          <div class="card-title" id="intelKonkNaziv">Intelligence</div>
+          <button class="btn-sm btn-ghost" onclick="document.getElementById('konkIntelligence').style.display='none';document.getElementById('konkLista').style.display='block';">← Nazad</button>
+        </div>
+
+        <div class="intel-tabs">
+          <div class="intel-tab active" onclick="switchIntelTab('slabosti',this)">🎯 Slabosti konkurenta</div>
+          <div class="intel-tab" onclick="switchIntelTab('predict',this)">🔮 Oglix Predict™</div>
+        </div>
+
+        <!-- SLABOSTI -->
+        <div class="intel-section active" id="intelSlabosti">
+          <div class="slabost-stats-row" id="slabostStats"></div>
+          <div class="ai-intel-box" id="aiIntelBox" style="display:none;">
+            <div class="ai-intel-title"><span>🤖</span> AI Analiza slabosti</div>
+            <div class="ai-intel-tekst" id="aiIntelTekst"></div>
+          </div>
+          <div style="font-size:12px;font-weight:700;color:var(--text-faint);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:10px;">Oglasi koji stoje dugo</div>
+          <div id="slabostDugo"></div>
+          <div style="font-size:12px;font-weight:700;color:var(--text-faint);text-transform:uppercase;letter-spacing:0.06em;margin:16px 0 10px;">Oglasi iznad tržišnog prosjeka</div>
+          <div id="slabostPrevisoko"></div>
+        </div>
+
+        <!-- PREDICT -->
+        <div class="intel-section" id="intelPredict">
+          <div style="background:linear-gradient(135deg,rgba(239,68,68,0.08),rgba(239,68,68,0.03));border:1px solid rgba(239,68,68,0.2);border-radius:var(--r-lg);padding:16px;margin-bottom:20px;">
+            <div style="font-size:14px;font-weight:600;color:var(--red);margin-bottom:4px;">🔮 Oglix Predict™</div>
+            <div style="font-size:13px;color:var(--text-muted);">AI predviđa koja vozila konkurenta će uskoro pasti u cijeni — reagiraj prije njih.</div>
+          </div>
+          <div id="predictLista"></div>
+        </div>
+      </div>
     </div>
 
+
+    <!-- IMPORT INTEL -->
+    <div id="secImportintel" style="display:none;">
+      <div class="full-card" style="margin-bottom:20px;">
+        <div class="card-header">
+          <div>
+            <div class="card-title">🌍 Oglix Import Intel™</div>
+            <div class="card-sub">Vozila iz Evrope koja se isplate uvesti u BiH — automatski kalkulator zarade</div>
+          </div>
+          <div style="display:flex;align-items:center;gap:10px;">
+            <div style="font-size:12px;color:var(--text-faint);">Tečaj: 1 EUR = 1.956 KM (fiksni)</div>
+            <button class="btn-sm btn-orange" onclick="ucitajImportIntel()">Osvježi</button>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px;padding:16px;background:var(--surface2);border-radius:var(--r);">
+          <div style="text-align:center;"><div style="font-size:11px;color:var(--text-faint);margin-bottom:4px;">UKLJUČUJE</div><div style="font-size:13px;color:var(--text-muted);">Carina 6.5% + PDV 17%</div></div>
+          <div style="text-align:center;"><div style="font-size:11px;color:var(--text-faint);margin-bottom:4px;">+ TRANSPORT</div><div style="font-size:13px;color:var(--text-muted);">400-800 KM (po zemlji)</div></div>
+          <div style="text-align:center;"><div style="font-size:11px;color:var(--text-faint);margin-bottom:4px;">CIJENA BiH</div><div style="font-size:13px;color:var(--text-muted);">Prosjek iz naše baze (live)</div></div>
+        </div>
+        <div id="importLista"><div style="padding:40px;text-align:center;"><div class="spin"></div></div></div>
+      </div>
+    </div>
   </main>
 </div>
 
@@ -376,7 +495,7 @@ Chart.defaults.borderColor = 'rgba(255,255,255,0.06)';
 function fmt(n) { if (!n || isNaN(n)) return '—'; return parseInt(n).toLocaleString('bs-BA'); }
 
 function showSection(id, el) {
-  ['Overview','Trziste','Novi','Kalkulator','Alerti','Konkurencija'].forEach(function(s) {
+  ['Overview','Trziste','Novi','Kalkulator','Alerti','Konkurencija','Importintel'].forEach(function(s) {
     document.getElementById('sec'+s).style.display='none';
   });
   document.getElementById('sec'+id.charAt(0).toUpperCase()+id.slice(1)).style.display='block';
@@ -387,6 +506,7 @@ function showSection(id, el) {
   if(id==='novi') ucitajNoveOglase();
   if(id==='alerti') ucitajAlerte();
   if(id==='konkurencija') ucitajKonkurente();
+  if(id==='importintel') ucitajImportIntel();
 }
 
 async function ucitajPodatke() {
@@ -650,6 +770,7 @@ async function renderKonkurentKartica(k) {
         '<div class="konk-meta">Dodan ' + new Date(k.datum_dodavanja).toLocaleDateString('bs-BA') + ' · Zadnji refresh: ' + zadnji + '</div>' +
       '</div>' +
       '<div style="display:flex;gap:8px;">' +
+        '<button class="btn-sm btn-orange" onclick="otvoriIntelligence(' + k.id + ', \'' + k.olx_username + '\')">🧠 Intelligence</button>' +
         '<button class="btn-sm btn-ghost" onclick="refreshKonkurent(' + k.id + ', this)">🔄 Osvježi</button>' +
         '<button class="btn-sm" style="background:var(--red-dim);color:var(--red);border:1px solid rgba(239,68,68,0.2);" onclick="ukloniKonkurent(' + k.id + ')">✕</button>' +
       '</div>' +
@@ -688,7 +809,8 @@ async function ucitajKonkurentOglase(id) {
     var html = '';
     data.oglasi.slice(0, 12).forEach(function(o) {
       var link = o.link || '#';
-      var imgHtml = o.slika ? '<img src="' + o.slika + '" onerror=\"this.onerror=null\">' : '<div class="konk-oglas-ph"></div>';
+      var slikaUrl = o.slika ? (o.slika.startsWith('http') ? o.slika : 'https://d4n0y8dshd77z.cloudfront.net/listings/' + (o.olx_id||'') + '/sm/' + o.slika) : '';
+      var imgHtml = slikaUrl ? '<img src="' + slikaUrl + '" style="width:100%;height:90px;object-fit:cover;" onerror="this.onerror=null">' : '<div class="konk-oglas-ph"></div>';
       var datum = o.datum_objave ? new Date(o.datum_objave).toLocaleDateString('bs-BA') : '';
       html += '<a href="' + link + '" target="_blank" class="konk-oglas">' + imgHtml +
         '<div class="konk-oglas-body">' +
@@ -763,6 +885,164 @@ async function ukloniKonkurent(id) {
     var el = document.getElementById('konk-' + id);
     if (el) el.remove();
   } catch(e) {}
+}
+
+
+// ── INTELLIGENCE JS ──────────────────────────────────────
+var aktivniKonkurentId = null;
+
+function switchIntelTab(tab, el) {
+  document.querySelectorAll('.intel-tab').forEach(function(t) { t.classList.remove('active'); });
+  document.querySelectorAll('.intel-section').forEach(function(s) { s.classList.remove('active'); });
+  el.classList.add('active');
+  document.getElementById('intel' + tab.charAt(0).toUpperCase() + tab.slice(1)).classList.add('active');
+}
+
+function otvoriIntelligence(konkurentId, naziv) {
+  aktivniKonkurentId = konkurentId;
+  document.getElementById('intelKonkNaziv').textContent = '🧠 Intelligence — ' + naziv;
+  document.getElementById('konkLista').style.display = 'none';
+  document.getElementById('konkIntelligence').style.display = 'block';
+  ucitajSlabosti(konkurentId);
+  ucitajPredict(konkurentId);
+}
+
+async function ucitajSlabosti(id) {
+  document.getElementById('slabostStats').innerHTML = '<div style="grid-column:1/-1;padding:20px;text-align:center;"><div class="spin"></div></div>';
+  document.getElementById('aiIntelBox').style.display = 'none';
+  document.getElementById('slabostDugo').innerHTML = '';
+  document.getElementById('slabostPrevisoko').innerHTML = '';
+  try {
+    var res = await fetch('/api/konkurent-slabosti', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ konkurent_id: id })
+    });
+    var data = await res.json();
+    if (!data.uspjeh) { document.getElementById('slabostStats').innerHTML = '<div style="color:var(--text-faint);padding:20px;">Greška.</div>'; return; }
+    var s = data.slabosti;
+
+    // Stats
+    document.getElementById('slabostStats').innerHTML =
+      '<div class="slabost-stat"><div class="slabost-stat-val">' + s.ukupnoDugo + '</div><div class="slabost-stat-label">Stoje 30+ dana</div></div>' +
+      '<div class="slabost-stat"><div class="slabost-stat-val">' + s.ukupnoPrevisoko + '</div><div class="slabost-stat-label">Iznad tržišnog prosjeka</div></div>' +
+      '<div class="slabost-stat"><div class="slabost-stat-val" style="color:var(--green);">' + (s.avgDanaDoProdaje || '—') + '</div><div class="slabost-stat-label">Prosjek dana do prodaje</div></div>';
+
+    // AI analiza
+    if (s.aiAnaliza) {
+      document.getElementById('aiIntelBox').style.display = 'block';
+      document.getElementById('aiIntelTekst').innerHTML = s.aiAnaliza
+        .replace(/SLABOSTI:/gi, '<strong style="color:var(--red);display:block;margin:8px 0 4px;">⚠️ SLABOSTI:</strong>')
+        .replace(/PRILIKE:/gi, '<strong style="color:var(--green);display:block;margin:8px 0 4px;">✅ PRILIKE:</strong>')
+        .replace(/PREPORUKA:/gi, '<strong style="color:var(--orange);display:block;margin:8px 0 4px;">💡 PREPORUKA:</strong>')
+        .replace(/
+/g, '<br>');
+    }
+
+    // Dugo na trzistu
+    document.getElementById('slabostDugo').innerHTML = s.dugoCekaju.length
+      ? s.dugoCekaju.map(function(o) {
+          return '<div class="slabost-item">' +
+            '<a href="' + (o.link || '#') + '" target="_blank" style="flex:1;">' +
+            '<div class="slabost-naslov">' + o.naslov + '</div>' +
+            '<div class="slabost-detalj">⏰ ' + o.dana + ' dana na tržištu — vjerovatno spreman sniziti</div>' +
+            '</a><div class="slabost-cijena">' + o.cijena + '</div></div>';
+        }).join('')
+      : '<div style="color:var(--text-faint);font-size:13px;padding:12px;">Nema oglasa koji dugo stoje.</div>';
+
+    // Previsoko
+    document.getElementById('slabostPrevisoko').innerHTML = s.previsoko.length
+      ? s.previsoko.map(function(o) {
+          return '<div class="slabost-item" style="border-left-color:var(--gold);">' +
+            '<a href="' + (o.link || '#') + '" target="_blank" style="flex:1;">' +
+            '<div class="slabost-naslov">' + o.naslov + '</div>' +
+            '<div class="slabost-detalj" style="color:var(--gold);">💰 +' + o.visokoZa + '% iznad tržišnog prosjeka</div>' +
+            '</a><div class="slabost-cijena">' + o.cijena + '</div></div>';
+        }).join('')
+      : '<div style="color:var(--text-faint);font-size:13px;padding:12px;">Svi oglasi su u tržišnom rangu.</div>';
+  } catch(e) {
+    document.getElementById('slabostStats').innerHTML = '<div style="color:var(--text-faint);">Greška: ' + e.message + '</div>';
+  }
+}
+
+async function ucitajPredict(id) {
+  document.getElementById('predictLista').innerHTML = '<div style="padding:20px;text-align:center;"><div class="spin"></div></div>';
+  try {
+    var res = await fetch('/api/predict/' + id);
+    var data = await res.json();
+    if (!data.uspjeh || !data.predictions.length) {
+      document.getElementById('predictLista').innerHTML = '<div style="color:var(--text-faint);padding:20px;">Nema predviđanja — potrebno više podataka o cijenama.</div>';
+      return;
+    }
+    document.getElementById('predictLista').innerHTML = data.predictions.map(function(p) {
+      var scoreClass = p.score >= 70 ? 'high' : p.score >= 40 ? 'med' : 'low';
+      var scoreColor = p.score >= 70 ? 'var(--red)' : p.score >= 40 ? 'var(--gold)' : 'var(--text-faint)';
+      return '<div class="predict-card">' +
+        (p.slika ? '<img class="predict-img" src="' + p.slika + '" onerror="this.onerror=null">' : '<div class="predict-img"></div>') +
+        '<div class="predict-score ' + scoreClass + '">' +
+          '<div class="predict-score-num" style="color:' + scoreColor + ';">' + p.score + '</div>' +
+          '<div class="predict-score-label">Score</div>' +
+        '</div>' +
+        '<div class="predict-info">' +
+          '<div class="predict-naslov"><a href="' + (p.link||'#') + '" target="_blank" style="color:inherit;">' + p.naslov + '</a></div>' +
+          '<div class="predict-cijena">' + p.cijena + '</div>' +
+          '<div class="predict-razlozi">' + p.razlozi.map(function(r) { return '<span class="predict-razlog">' + r + '</span>'; }).join('') + '</div>' +
+        '</div>' +
+        '<div class="predict-pad">' +
+          '<div class="predict-pad-iznos">-' + p.procijenjeniPad.toLocaleString('bs-BA') + ' KM</div>' +
+          '<div class="predict-pad-label">Procijenjeni pad</div>' +
+          '<div class="predict-nova-cijena">→ ~' + p.novaCijena.toLocaleString('bs-BA') + ' KM</div>' +
+          '<div style="font-size:10px;color:' + scoreColor + ';font-weight:700;margin-top:4px;">' + p.vjerojatnost + ' šansa</div>' +
+        '</div>' +
+      '</div>';
+    }).join('');
+  } catch(e) {
+    document.getElementById('predictLista').innerHTML = '<div style="color:var(--text-faint);">Greška: ' + e.message + '</div>';
+  }
+}
+
+async function ucitajImportIntel() {
+  var lista = document.getElementById('importLista');
+  lista.innerHTML = '<div style="padding:40px;text-align:center;"><div class="spin"></div></div>';
+  try {
+    var res = await fetch('/api/import-prilike');
+    var data = await res.json();
+    if (!data.uspjeh || !data.prilike.length) {
+      lista.innerHTML = '<div style="padding:40px;text-align:center;color:var(--text-faint);">Nema dostupnih podataka.</div>';
+      return;
+    }
+    lista.innerHTML = data.prilike.map(function(p) {
+      var zaradaBoja = p.zaradaPotencijal > 5000 ? 'var(--green)' : p.zaradaPotencijal > 2000 ? 'var(--gold)' : 'var(--text-muted)';
+      return '<div class="import-card">' +
+        '<div class="import-header">' +
+          '<div>' +
+            '<div class="import-naziv">' + p.naziv + ' <span class="import-badge-posto">+' + p.zaradaPosto + '%</span></div>' +
+            '<div class="import-zemlja">📍 ' + p.zemlja + ' · ' + p.godiste + '. · ' + p.km.toLocaleString() + ' km · ' + p.gorivo + ' · ' + p.brojOglasaBiH + ' oglasa u BiH</div>' +
+          '</div>' +
+          '<div>' +
+            '<div class="import-zarada" style="color:' + zaradaBoja + ';">+' + p.zaradaPotencijal.toLocaleString('bs-BA') + ' KM</div>' +
+            '<div class="import-zarada-label">potencijalna zarada</div>' +
+          '</div>' +
+        '</div>' +
+        '<div class="import-kalk">' +
+          '<div class="import-kalk-item"><div class="import-kalk-val">' + p.cijenaEur.toLocaleString() + ' €</div><div class="import-kalk-label">Kupovna cijena</div></div>' +
+          '<div class="import-kalk-item"><div class="import-kalk-val">+' + p.carina.toLocaleString('bs-BA') + ' KM</div><div class="import-kalk-label">Carina 6.5%</div></div>' +
+          '<div class="import-kalk-item"><div class="import-kalk-val">+' + p.pdv.toLocaleString('bs-BA') + ' KM</div><div class="import-kalk-label">PDV 17%</div></div>' +
+          '<div class="import-kalk-item"><div class="import-kalk-val">+' + p.transport.toLocaleString('bs-BA') + ' KM</div><div class="import-kalk-label">Transport</div></div>' +
+          '<div class="import-kalk-item total"><div class="import-kalk-val">' + p.ukupnoKostanje.toLocaleString('bs-BA') + ' KM</div><div class="import-kalk-label">Ukupno koštanje</div></div>' +
+        '</div>' +
+        '<div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;">' +
+          '<div style="font-size:13px;color:var(--text-muted);">BiH tržišna cijena: <strong style="color:var(--orange);">' + p.avgBiH.toLocaleString('bs-BA') + ' KM</strong></div>' +
+          '<div class="import-links">' +
+            '<a href="' + p.autoscout24Link + '" target="_blank" class="import-link">🔍 AutoScout24</a>' +
+            '<a href="' + p.mobileDe + '" target="_blank" class="import-link">🚗 Mobile.de</a>' +
+          '</div>' +
+        '</div>' +
+      '</div>';
+    }).join('');
+  } catch(e) {
+    lista.innerHTML = '<div style="padding:40px;text-align:center;color:var(--text-faint);">Greška: ' + e.message + '</div>';
+  }
 }
 
 ucitajPodatke();
