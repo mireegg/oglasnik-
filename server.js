@@ -1606,13 +1606,13 @@ app.post('/api/konkurent-dodaj', async (req, res) => {
         for (const o of oglasi.slice(0, 50)) {
             const cijenaNum = o.price || 0;
             const link = `https://www.olx.ba/artikal/${o.id}`;
-            const slika = o.image ? `https://d4n0y8dshd77z.cloudfront.net/listings/${o.id}/sm/${o.image}` : null;
+            const slika = o.image ? (o.image.startsWith('http') ? o.image : `https://d4n0y8dshd77z.cloudfront.net/listings/${o.id}/sm/${o.image}`) : null;
             const datumObjave = o.date ? new Date(o.date * 1000) : new Date();
 
             await pool.query(
                 `INSERT INTO konkurent_oglasi (konkurent_id, olx_id, naslov, cijena, cijena_num, slika, link, kategorija_id, status, datum_objave)
                  VALUES ($1, $2, $3, $4, $5, $6, $7, $8, 'active', $9)
-                 ON CONFLICT (olx_id) DO UPDATE SET cijena = $4, cijena_num = $5, status = 'active'`,
+                 ON CONFLICT (olx_id) DO UPDATE SET cijena = $4, cijena_num = $5, status = 'active', slika = $6`,
                 [konkurentId, o.id, o.title, o.display_price, cijenaNum, slika, link, o.category_id, datumObjave]
             );
 
@@ -1715,7 +1715,7 @@ app.post('/api/konkurent-refresh/:id', async (req, res) => {
             for (const o of oglasi) {
                 const cijenaNum = o.price || 0;
                 const link = `https://www.olx.ba/artikal/${o.id}`;
-                const slika = o.image ? `https://d4n0y8dshd77z.cloudfront.net/listings/${o.id}/sm/${o.image}` : null;
+                const slika = o.image ? (o.image.startsWith('http') ? o.image : `https://d4n0y8dshd77z.cloudfront.net/listings/${o.id}/sm/${o.image}`) : null;
                 const datumObjave = o.date ? new Date(o.date * 1000) : new Date();
 
                 const existing = await pool.query('SELECT cijena_num FROM konkurent_oglasi WHERE olx_id = $1', [o.id]);
