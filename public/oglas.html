@@ -895,6 +895,8 @@ async function ucitajHistorijuCijene(id) {
 
     var box = document.getElementById('historijaCijeneBox');
     if (!box) return;
+    // Prikazuj box uvijek kad ima bar avgKat ili danaNaTrzistu
+    if (!data.avgKat && !data.danaNaTrzistu) return;
     box.style.display = 'block';
 
     var stats = document.getElementById('historijaStats');
@@ -915,7 +917,12 @@ async function ucitajHistorijuCijene(id) {
 
     // Chart
     var canvas = document.getElementById('historijaChart');
-    if (!canvas || !data.historija || data.historija.length < 2) return;
+    if (!canvas || !data.historija || data.historija.length < 2) {
+      // Sakrij chart wrap ako nema historije
+      var chartWrap = canvas ? canvas.parentElement : null;
+      if (chartWrap) chartWrap.style.display = 'none';
+      return;
+    }
 
     var script = document.createElement('script');
     script.src = 'https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js';
