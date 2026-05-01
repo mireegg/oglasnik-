@@ -30,19 +30,155 @@ const pool = new Pool({
 });
 
 async function getModelProsjekHelper(pool, naslov, fallback) {
-    const rijeci = (naslov || '').split(' ').filter(r => r.length > 2).slice(0, 3);
+    // Izvuci brend i model iz naslova
+    const rijeci = (naslov || '').split(' ').filter(r => r.length > 1);
     if (rijeci.length < 2) return fallback;
-    try {
-        const res = await pool.query(
-            `SELECT AVG(cijena_num) as avg, COUNT(*) as broj FROM live_oglasi
-             WHERE cijena_num > 1000 AND cijena_num < 500000 AND naslov ILIKE $1`,
-            ['%' + rijeci.slice(0,2).join('%') + '%']
-        );
-        const avg = parseFloat(res.rows[0]?.avg);
-        const broj = parseInt(res.rows[0]?.broj) || 0;
-        return (avg && broj >= 3) ? avg : fallback;
-    } catch(e) { return fallback; }
+
+    const brend = rijeci[0];
+    const model = rijeci[1];
+    const MIN_UZORAKA = 4;
+
+    // Pokusaj dohvatiti godiste, gorivo, transmisiju, km iz live_oglasi
+    // Kriteriji od najpreciznijeg do najsirim
+
+    const kriteriji = [
+        // 1. Brend + model + godiste +-2 + gorivo + transmisija
+        { where: `naslov ILIKE $1 AND naslov ILIKE $2 AND godiste BETWEEN $3 AND $4 AND gorivo = $5 AND transmisija = $6`,
+          buildParams: (d) => d.godiste && d.gorivo && d.transmisija ?
+            ['%'+brend+'%', '%'+model+'%', d.godiste-2, d.godiste+2, d.gorivo, d.transmisija] : null },
+        // 2. Brend + model + godiste +-2 + gorivo
+        { where: `naslov ILIKE $1 AND naslov ILIKE $2 AND godiste BETWEEN $3 AND $4 AND gorivo = $5`,
+          buildParams: (d) => d.godiste && d.gorivo ?
+            ['%'+brend+'%', '%'+model+'%', d.godiste-2, d.godiste+2, d.gorivo] : null },
+        // 3. Brend + model + godiste +-2
+        { where: `naslov ILIKE $1 AND naslov ILIKE $2 AND godiste BETWEEN $3 AND $4`,
+          buildParams: (d) => d.godiste ?
+            ['%'+brend+'%', '%'+model+'%', d.godiste-2, d.godiste+2] : null },
+        // 4. Brend + model
+        { where: `naslov ILIKE $1 AND naslov ILIKE $2`,
+          buildParams: () => ['%'+brend+'%', '%'+model+'%'] },
+        // 5. Brend + cjenovni rang +-40%
+        { where: `naslov ILIKE $1 AND cijena_num BETWEEN $2 AND $3`,
+          buildParams: (d) => d.cijenaNum ?
+            ['%'+brend+'%', d.cijenaNum * 0.6, d.cijenaNum * 1.4] : null },
+        // 6. Samo cjenovni rang kao zadnji fallback
+        { where: `cijena_num BETWEEN $1 AND $2`,
+          buildParams: (d) => d.cijenaNum ?
+            [d.cijenaNum * 0.7, d.cijenaNum * 1.3] : null },
+    ];
+
+    for (const kriterij of kriteriji) {
+        const params = kriterij.buildParams(this || {});
+        if (!params) continue;
+        try {
+            const res = await pool.query(
+                `SELECT AVG(cijena_num) as avg, COUNT(*) as broj, 
+                        MIN(cijena_num) as min, MAX(cijena_num) as max
+                 FROM live_oglasi
+                 WHERE cijena_num > 1000 AND cijena_num < 999999
+                 AND ${kriterij.where}`,
+                params
+            );
+            const avg = parseFloat(res.rows[0]?.avg);
+            const broj = parseInt(res.rows[0]?.broj) || 0;
+            if (avg && broj >= MIN_UZORAKA) {
+                return { avg, broj, min: parseFloat(res.rows[0].min), max: parseFloat(res.rows[0].max) };
+            }
+        } catch(e) { continue; }
+    }
+    return { avg: fallback, broj: 0, min: 0, max: 0 };
 }
+
+async function getModelProsjekZaOglas(pool, o, fallback) {
+    // Izvuci dostupne podatke iz konkurent_oglasi reda
+    const naslov = o.naslov || '';
+    const rijeci = naslov.split(' ').filter(r => r.length > 1);
+    if (rijeci.length < 2) return { avg: fallback, broj: 0 };
+
+    const brend = rijeci[0];
+    const model = rijeci[1];
+    const cijenaNum = parseFloat(o.cijena_num) || 0;
+    const MIN_UZORAKA = 4;
+
+    // Pokuasaj sve kombinacije od najpreciznijeg
+    const queries = [];
+
+    // Godiste iz naslova (ako postoji)
+    const godMatch = naslov.match(/\b(19[89]\d|20[0-2]\d)\b/);
+    const godiste = godMatch ? parseInt(godMatch[1]) : null;
+
+    // Gorivo iz naslova
+    let gorivo = null;
+    if (/tdi|cdi|dci|hdi|dizel|diesel/i.test(naslov)) gorivo = 'Dizel';
+    else if (/tsi|fsi|benzin|bensin/i.test(naslov)) gorivo = 'Benzin';
+    else if (/hibrid|hybrid/i.test(naslov)) gorivo = 'Hibrid';
+
+    // Transmisija iz naslova
+    let transmisija = null;
+    if (/dsg|automat|tiptronic|automatic|s\s?tronic/i.test(naslov)) transmisija = 'Automatski';
+    else if (/manuelni|manual|manuell/i.test(naslov)) transmisija = 'Manuelni';
+
+    // Kriteriji od najpreciznijeg
+    const kriteriji = [];
+
+    if (godiste && gorivo && transmisija) {
+        kriteriji.push({
+            sql: `naslov ILIKE $1 AND naslov ILIKE $2 AND godiste BETWEEN $3 AND $4 AND gorivo = $5 AND transmisija = $6`,
+            params: ['%'+brend+'%', '%'+model+'%', godiste-2, godiste+2, gorivo, transmisija]
+        });
+    }
+    if (godiste && gorivo) {
+        kriteriji.push({
+            sql: `naslov ILIKE $1 AND naslov ILIKE $2 AND godiste BETWEEN $3 AND $4 AND gorivo = $5`,
+            params: ['%'+brend+'%', '%'+model+'%', godiste-2, godiste+2, gorivo]
+        });
+    }
+    if (godiste) {
+        kriteriji.push({
+            sql: `naslov ILIKE $1 AND naslov ILIKE $2 AND godiste BETWEEN $3 AND $4`,
+            params: ['%'+brend+'%', '%'+model+'%', godiste-2, godiste+2]
+        });
+    }
+    kriteriji.push({
+        sql: `naslov ILIKE $1 AND naslov ILIKE $2`,
+        params: ['%'+brend+'%', '%'+model+'%']
+    });
+    if (cijenaNum > 0) {
+        kriteriji.push({
+            sql: `naslov ILIKE $1 AND cijena_num BETWEEN $2 AND $3`,
+            params: ['%'+brend+'%', cijenaNum * 0.6, cijenaNum * 1.4]
+        });
+        kriteriji.push({
+            sql: `cijena_num BETWEEN $1 AND $2`,
+            params: [cijenaNum * 0.7, cijenaNum * 1.3]
+        });
+    }
+
+    for (const k of kriteriji) {
+        try {
+            const res = await pool.query(
+                `SELECT AVG(cijena_num) as avg, COUNT(*) as broj,
+                        MIN(cijena_num) as min_c, MAX(cijena_num) as max_c
+                 FROM live_oglasi
+                 WHERE cijena_num > 1000 AND cijena_num < 999999
+                 AND ${k.sql}`,
+                k.params
+            );
+            const avg = parseFloat(res.rows[0]?.avg);
+            const broj = parseInt(res.rows[0]?.broj) || 0;
+            if (avg && broj >= MIN_UZORAKA) {
+                return {
+                    avg, broj,
+                    min: parseFloat(res.rows[0].min_c),
+                    max: parseFloat(res.rows[0].max_c),
+                    gorivo, transmisija, godiste
+                };
+            }
+        } catch(e) { continue; }
+    }
+    return { avg: fallback, broj: 0 };
+}
+
 
 async function initDB() {
     await pool.query(`CREATE TABLE IF NOT EXISTS korisnici (id SERIAL PRIMARY KEY, ime VARCHAR(100), email VARCHAR(100) UNIQUE, lozinka VARCHAR(100), datum TIMESTAMP DEFAULT NOW())`);
@@ -1843,11 +1979,16 @@ app.post('/api/konkurent-slabosti', async (req, res) => {
         // Izracunaj prosjek za svaki oglas posebno
         const oglasiData = oglasi.rows;
         const oglasiSaProsjekom = await Promise.all(oglasiData.map(async (o) => {
-            const modelAvg = await getModelProsjekHelper(pool, o.naslov, avgGlobalni);
+            const modelInfo = await getModelProsjekZaOglas(pool, o, avgGlobalni);
             return {
                 id: o.id, naslov: o.naslov, cijena: o.cijena, cijena_num: o.cijena_num,
                 slika: o.slika, link: o.link, dana_na_trzistu: o.dana_na_trzistu,
-                modelAvg
+                modelAvg: modelInfo.avg,
+                modelBroj: modelInfo.broj,
+                modelMin: modelInfo.min,
+                modelMax: modelInfo.max,
+                gorivo: modelInfo.gorivo,
+                transmisija: modelInfo.transmisija
             };
         }));
 
@@ -1896,9 +2037,14 @@ app.post('/api/konkurent-slabosti', async (req, res) => {
             previsoko: previsoko.slice(0, 5).map(o => ({
                 naslov: o.naslov,
                 cijena: o.cijena,
-                cijenaNum: o.cijena_num,
+                cijenaNum: parseFloat(o.cijena_num),
                 modelAvg: Math.round(o.modelAvg),
-                visokoZa: Math.round((o.cijena_num - o.modelAvg) / o.modelAvg * 100),
+                modelBroj: o.modelBroj || 0,
+                modelMin: Math.round(o.modelMin || 0),
+                modelMax: Math.round(o.modelMax || 0),
+                gorivo: o.gorivo,
+                transmisija: o.transmisija,
+                visokoZa: o.modelAvg > 0 ? Math.round((parseFloat(o.cijena_num) - o.modelAvg) / o.modelAvg * 100) : 0,
                 link: o.link
             })),
             ukupnoAktivnih: oglasiData.length,
@@ -1939,12 +2085,15 @@ app.get('/api/predict/:konkurent_id', async (req, res) => {
         // Model prosjek helper (vanjska funkcija getModelProsjekHelper)
         // Obogati oglase sa model prosjekom
         const oglasiObogaceni = await Promise.all(oglasi.rows.map(async (o) => {
-            const modelAvg = await getModelProsjekHelper(pool, o.naslov, globalAvg);
+            const modelInfo = await getModelProsjekZaOglas(pool, o, globalAvg);
             return {
                 olx_id: o.olx_id, naslov: o.naslov, cijena: o.cijena, cijena_num: o.cijena_num,
                 slika: o.slika, link: o.link, dana_na_trzistu: o.dana_na_trzistu,
                 broj_promjena: o.broj_promjena, max_cijena: o.max_cijena, min_cijena: o.min_cijena,
-                modelAvg
+                modelAvg: modelInfo.avg,
+                modelBroj: modelInfo.broj,
+                modelMin: modelInfo.min,
+                modelMax: modelInfo.max
             };
         }));
 

@@ -996,7 +996,10 @@ async function ucitajSlabosti(id) {
             return '<div class="slabost-item" style="border-left-color:var(--gold);">' +
               '<a href="' + (o.link || '#') + '" target="_blank" style="flex:1;">' +
               '<div class="slabost-naslov">' + o.naslov + '</div>' +
-              '<div class="slabost-detalj" style="color:var(--gold);">💰 +' + o.visokoZa + '% iznad prosjeka modela (' + (o.modelAvg ? o.modelAvg.toLocaleString('bs-BA') + ' KM' : 'N/A') + ')</div>' +
+              '<div class="slabost-detalj" style="color:var(--gold);">💰 +' + o.visokoZa + '% iznad prosjeka' +
+              (o.gorivo || o.transmisija ? ' (' + [o.gorivo, o.transmisija].filter(Boolean).join(', ') + ')' : '') +
+              ' — prosjek: ' + (o.modelAvg ? o.modelAvg.toLocaleString('bs-BA') + ' KM' : 'N/A') +
+              (o.modelBroj ? ' (' + o.modelBroj + ' uzoraka)' : '') + '</div>' +
               '</a><div class="slabost-cijena">' + o.cijena + '</div></div>';
           }).join('')
         : '<div style="color:var(--text-faint);font-size:13px;padding:12px;">Svi oglasi su u normalnom rangu.</div>';
@@ -1030,6 +1033,7 @@ async function ucitajPredict(id) {
           '<div class="predict-naslov"><a href="' + (p.link||'#') + '" target="_blank" style="color:inherit;">' + p.naslov + '</a></div>' +
           '<div class="predict-cijena">' + p.cijena + '</div>' +
           '<div class="predict-razlozi">' + p.razlozi.map(function(r) { return '<span class="predict-razlog">' + r + '</span>'; }).join('') + '</div>' +
+        (p.modelBroj ? '<div style="font-size:10px;color:var(--text-faint);margin-top:4px;">Poređenje na osnovu ' + p.modelBroj + ' sličnih vozila u bazi</div>' : '') +
         '</div>' +
         '<div class="predict-pad">' +
           '<div class="predict-pad-iznos">-' + p.procijenjeniPad.toLocaleString('bs-BA') + ' KM</div>' +
