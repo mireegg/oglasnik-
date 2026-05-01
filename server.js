@@ -1841,6 +1841,7 @@ app.post('/api/konkurent-slabosti', async (req, res) => {
 
         // Dohvat preciznog prosjeka po modelu (vanjska helper funkcija)
         // Izracunaj prosjek za svaki oglas posebno
+        const oglasiData = oglasi.rows;
         const oglasiSaProsjekom = await Promise.all(oglasiData.map(async (o) => {
             const modelAvg = await getModelProsjekHelper(pool, o.naslov, avgGlobalni);
             return {
@@ -1859,7 +1860,6 @@ app.post('/api/konkurent-slabosti', async (req, res) => {
             [konkurent_id]
         );
 
-        const oglasiData = oglasi.rows;
         const dugoCekaju = oglasiSaProsjekom.filter(o => parseFloat(o.dana_na_trzistu) > 30);
         // Previsoko - poredi sa prosjekom TOG MODELA, ne globalnim
         const previsoko = oglasiSaProsjekom.filter(o => o.modelAvg > 0 && o.cijena_num > o.modelAvg * 1.12);
