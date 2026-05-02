@@ -138,23 +138,24 @@
 
 
 
-    .reg-box{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:22px;margin-top:20px;}
-    .reg-title{font-family:'Syne',sans-serif;font-size:15px;font-weight:700;margin-bottom:4px;display:flex;align-items:center;gap:8px;}
-    .reg-subtitle{font-size:12px;color:var(--text-muted);margin-bottom:16px;}
-    .reg-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;}
-    .reg-field label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.07em;color:var(--text-faint);display:block;margin-bottom:5px;}
-    .reg-select{width:100%;border:1px solid var(--border);border-radius:var(--radius-sm);padding:8px 10px;font-size:13px;font-family:'DM Sans',sans-serif;color:var(--text);background:var(--bg);outline:none;cursor:pointer;transition:border-color .15s;}
+    /* KALKULATOR REGISTRACIJE — kompaktni u desnoj koloni */
+    .reg-box{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-md);padding:14px;margin-top:12px;}
+    .reg-title{font-family:'Syne',sans-serif;font-size:13px;font-weight:700;margin-bottom:10px;display:flex;align-items:center;gap:6px;color:var(--text);}
+    .reg-row{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:6px;}
+    .reg-field label{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;color:var(--text-faint);display:block;margin-bottom:3px;}
+    .reg-select{width:100%;border:1px solid var(--border);border-radius:var(--radius-sm);padding:6px 8px;font-size:12px;font-family:'DM Sans',sans-serif;color:var(--text);background:var(--surface);outline:none;cursor:pointer;}
     .reg-select:focus{border-color:var(--orange);}
-    .reg-rezultat{margin-top:16px;border-top:1px solid var(--border);padding-top:16px;}
+    .reg-rezultat{margin-top:10px;border-top:1px solid var(--border);padding-top:10px;}
     .reg-stavke{display:flex;flex-direction:column;gap:0;}
-    .reg-stavka{display:flex;justify-content:space-between;align-items:center;font-size:13px;padding:8px 0;border-bottom:1px solid var(--border);}
+    .reg-stavka{display:flex;justify-content:space-between;align-items:center;font-size:12px;padding:5px 0;border-bottom:1px solid var(--border);}
     .reg-stavka:last-child{border-bottom:none;}
-    .reg-stavka-naziv{color:var(--text-muted);}
-    .reg-stavka-val{font-weight:500;}
-    .reg-ukupno{display:flex;justify-content:space-between;align-items:center;background:var(--orange-dim);border:1px solid rgba(230,92,0,0.2);border-radius:var(--radius-md);padding:12px 16px;margin-top:12px;}
-    .reg-ukupno-naziv{font-weight:600;font-size:14px;color:var(--orange);}
-    .reg-ukupno-val{font-family:'Syne',sans-serif;font-size:22px;font-weight:800;color:var(--orange);}
-    .reg-note{font-size:11px;color:var(--text-faint);margin-top:10px;line-height:1.6;}
+    .reg-stavka-naziv{color:var(--text-muted);font-size:11px;}
+    .reg-stavka-val{font-weight:600;font-size:12px;white-space:nowrap;}
+    .reg-ukupno{display:flex;justify-content:space-between;align-items:center;background:var(--orange-dim);border:1px solid rgba(230,92,0,0.2);border-radius:var(--radius-sm);padding:10px 12px;margin-top:8px;}
+    .reg-ukupno-naziv{font-weight:600;font-size:12px;color:var(--orange);}
+    .reg-ukupno-val{font-family:'Syne',sans-serif;font-size:18px;font-weight:800;color:var(--orange);}
+    .reg-note{font-size:10px;color:var(--text-faint);margin-top:8px;line-height:1.5;}
+    .reg-toggle{background:none;border:none;font-size:11px;color:var(--orange);cursor:pointer;padding:0;font-family:'DM Sans',sans-serif;text-decoration:underline;}
 
     @media(max-width:768px){
       nav{padding:0 16px;flex-wrap:wrap;height:auto;gap:8px;padding-top:10px;padding-bottom:10px;}
@@ -229,62 +230,6 @@
     Nema sličnih oglasa za poređenje.
   </div>
 </div>
-
-<div id="regKalkBox" style="display:none;max-width:900px;margin:20px auto 0;padding:0 32px;">
-  <div class="reg-box">
-    <div class="reg-title">&#x1F4CB; Kalkulator registracije</div>
-    <div class="reg-subtitle">Okvirni trošak registracije za ovo vozilo u BiH — 2025. tarife</div>
-    <div class="reg-row">
-      <div class="reg-field">
-        <label>Entitet</label>
-        <select class="reg-select" id="regEntitet" onchange="izracunajReg()">
-          <option value="fbih">Federacija BiH</option>
-          <option value="rs">Republika Srpska</option>
-          <option value="bd">Br&#x010D;ko Distrikt</option>
-        </select>
-      </div>
-      <div class="reg-field">
-        <label>Bonus osiguranja</label>
-        <select class="reg-select" id="regBonus" onchange="izracunajReg()">
-          <option value="0">P6 — bez bonusa (novi)</option>
-          <option value="10">P5 — 10% bonus</option>
-          <option value="20">P4 — 20% bonus</option>
-          <option value="30" selected>P3 — 30% bonus</option>
-          <option value="40">P2 — 40% bonus</option>
-          <option value="50">P1 — 50% bonus (max)</option>
-        </select>
-      </div>
-      <div class="reg-field">
-        <label>Vrsta registracije</label>
-        <select class="reg-select" id="regVrsta" onchange="izracunajReg()">
-          <option value="produzenje">Produženje</option>
-          <option value="prvoupis">Prvo upisivanje / uvoz</option>
-          <option value="vlasnistvo">Promjena vlasništva</option>
-        </select>
-      </div>
-      <div class="reg-field">
-        <label>Godište</label>
-        <select class="reg-select" id="regGodiste" onchange="izracunajReg()">
-          <option value="0">— odaberi —</option>
-        </select>
-      </div>
-    </div>
-
-    <div class="reg-rezultat" id="regRezultat" style="display:none;">
-      <div class="reg-stavke" id="regStavke"></div>
-      <div class="reg-ukupno">
-        <span class="reg-ukupno-naziv">Ukupno (okvirno)</span>
-        <span class="reg-ukupno-val" id="regUkupno">—</span>
-      </div>
-      <div class="reg-note">
-        Izra&#x10D;un je informativan i baziran na zakonskim tarifama FBiH/RS/BD za 2025. godinu.<br>
-        AO premije su zakonski fiksne. Ostale stavke mogu varirati po stanici i op&#x107;ini.<br>
-        Izvor: <a href="https://kalkulator.ba" target="_blank" style="color:var(--orange);">kalkulator.ba</a> &middot; <a href="https://driver.ba/registracija-vozila" target="_blank" style="color:var(--orange);">driver.ba</a>
-      </div>
-    </div>
-  </div>
-</div>
-
 <footer>
   <div class="footer-logo">oglix<span>.ba</span></div>
   <p>Agregator oglasa za Bosnu i Hercegovinu · Nisu naši oglasi, mi ih samo skupljamo.</p>
@@ -394,6 +339,22 @@ function renderOglasTop(meta, d) {
         '<div class="akcije">'+
           '<a href="'+meta.link+'" target="_blank" class="btn-primarni">Pogledaj na '+platformaNaziv+' →</a>'+
           '<button class="btn-sekundarni" onclick="pratiOglas()">🔔 Prati oglas</button>'+
+        '</div>'+
+        '<div id="regKalkBox" style="display:none;">'+
+          '<div class="reg-box">'+
+            '<div class="reg-title">&#x1F4CB; Kalkulator registracije <button class="reg-toggle" onclick="var d=document.getElementById(\'regDetalji\');d.style.display=d.style.display===\'none\'?\'block\':\'none\'">detalji ▾</button></div>'+
+            '<div class="reg-row">'+
+              '<div class="reg-field"><label>Entitet</label><select class="reg-select" id="regEntitet" onchange="izracunajReg()"><option value="fbih">Federacija BiH</option><option value="rs">Republika Srpska</option><option value="bd">Br&#x010D;ko Distrikt</option></select></div>'+
+              '<div class="reg-field"><label>Bonus AO</label><select class="reg-select" id="regBonus" onchange="izracunajReg()"><option value="0">P6 — bez bonusa</option><option value="10">P5 — 10%</option><option value="20">P4 — 20%</option><option value="30" selected>P3 — 30%</option><option value="40">P2 — 40%</option><option value="50">P1 — 50% max</option></select></div>'+
+            '</div>'+
+            '<div class="reg-row">'+
+              '<div class="reg-field"><label>Vrsta</label><select class="reg-select" id="regVrsta" onchange="izracunajReg()"><option value="produzenje">Produ&#x17E;enje</option><option value="prvoupis">Prvo upisivanje</option><option value="vlasnistvo">Promjena vlasni&#x161;tva</option></select></div>'+
+              '<div class="reg-field"><label>Godi&#x161;te</label><select class="reg-select" id="regGodiste" onchange="izracunajReg()"><option value="0">&#x2014;</option></select></div>'+
+            '</div>'+
+            '<div id="regDetalji" style="display:none;"><div class="reg-stavke" id="regStavke" style="margin-top:8px;"></div></div>'+
+            '<div class="reg-ukupno"><span class="reg-ukupno-naziv">Ukupno okvirno</span><span class="reg-ukupno-val" id="regUkupno">&#x2014;</span></div>'+
+            '<div class="reg-note">Zakonske tarife 2025 · <a href="https://driver.ba/registracija-vozila" target="_blank" style="color:var(--orange);">driver.ba</a></div>'+
+          '</div>'+
         '</div>'+
       '</div>'+
     '</div>';
