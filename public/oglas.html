@@ -329,20 +329,13 @@ function renderOglasTop(meta, d) {
 
   document.getElementById('oglasSadrzaj').innerHTML =
     '<div class="oglas-top">'+
-      '<div><div>'+slikeHtml+slikeMiniHtml+'</div></div>'+
       '<div>'+
-        '<span class="platforma-badge '+badgeClass+'">'+platformaNaziv+'</span>'+
-        '<div class="oglas-naslov">'+meta.naslov+'</div>'+
-        '<div class="oglas-cijena">'+meta.cijena+'</div>'+
-        cijenaM2Html+
-        '<div class="specs-grid">'+specsHtml+'</div>'+
-        '<div class="akcije">'+
-          '<a href="'+meta.link+'" target="_blank" class="btn-primarni">Pogledaj na '+platformaNaziv+' →</a>'+
-          '<button class="btn-sekundarni" onclick="pratiOglas()">🔔 Prati oglas</button>'+
-        '</div>'+
-        '<div id="regKalkBox" style="display:none;">'+
+        '<div>'+slikeHtml+slikeMiniHtml+'</div>'+
+        '<div id="regKalkBox" style="display:none;margin-top:14px;">'+
           '<div class="reg-box">'+
-            '<div class="reg-title">&#x1F4CB; Kalkulator registracije <button class="reg-toggle" onclick="var d=document.getElementById(\'regDetalji\');d.style.display=d.style.display===\'none\'?\'block\':\'none\'">detalji ▾</button></div>'+
+            '<div class="reg-title">&#x1F4CB; Kalkulator registracije'+
+              ' <button class="reg-toggle" onclick="var d=document.getElementById(\'regDetalji\');d.style.display=d.style.display===\'none\'?\'block\':\'none\'">detalji ▾</button>'+
+            '</div>'+
             '<div class="reg-row">'+
               '<div class="reg-field"><label>Entitet</label><select class="reg-select" id="regEntitet" onchange="izracunajReg()"><option value="fbih">Federacija BiH</option><option value="rs">Republika Srpska</option><option value="bd">Br&#x010D;ko Distrikt</option></select></div>'+
               '<div class="reg-field"><label>Bonus AO</label><select class="reg-select" id="regBonus" onchange="izracunajReg()"><option value="0">P6 — bez bonusa</option><option value="10">P5 — 10%</option><option value="20">P4 — 20%</option><option value="30" selected>P3 — 30%</option><option value="40">P2 — 40%</option><option value="50">P1 — 50% max</option></select></div>'+
@@ -352,11 +345,21 @@ function renderOglasTop(meta, d) {
               '<div class="reg-field"><label>Godi&#x161;te</label><select class="reg-select" id="regGodiste" onchange="izracunajReg()"><option value="0">&#x2014;</option></select></div>'+
             '</div>'+
             '<div id="regDetalji" style="display:none;"><div class="reg-stavke" id="regStavke" style="margin-top:8px;"></div></div>'+
-            '<div class="reg-ukupno"><span class="reg-ukupno-naziv">Ukupno okvirno</span><span class="reg-ukupno-val" id="regUkupno">&#x2014;</span></div>'+
+            '<div class="reg-ukupno" style="margin-top:8px;"><span class="reg-ukupno-naziv">Ukupno okvirno</span><span class="reg-ukupno-val" id="regUkupno">&#x2014;</span></div>'+
             '<div class="reg-note">Zakonske tarife 2025 · <a href="https://driver.ba/registracija-vozila" target="_blank" style="color:var(--orange);">driver.ba</a></div>'+
           '</div>'+
         '</div>'+
       '</div>'+
+      '<div>'+
+        '<span class="platforma-badge '+badgeClass+'">'+platformaNaziv+'</span>'+
+        '<div class="oglas-naslov">'+meta.naslov+'</div>'+
+        '<div class="oglas-cijena">'+meta.cijena+'</div>'+
+        cijenaM2Html+
+        '<div class="specs-grid">'+specsHtml+'</div>'+
+        '<div class="akcije">'+
+          '<a href="'+meta.link+'" target="_blank" class="btn-primarni">Pogledaj na '+platformaNaziv+' →</a>'+
+          '<button class="btn-sekundarni" onclick="pratiOglas()">🔔 Prati oglas</button>'+
+        '<      '</div>'+
     '</div>';
   document.title = meta.naslov+' — Oglix.ba';
 }
