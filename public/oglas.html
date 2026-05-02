@@ -138,24 +138,23 @@
 
 
 
-    /* KALKULATOR REGISTRACIJE — kompaktni u desnoj koloni */
-    .reg-box{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-md);padding:14px;margin-top:12px;}
-    .reg-title{font-family:'Syne',sans-serif;font-size:13px;font-weight:700;margin-bottom:10px;display:flex;align-items:center;gap:6px;color:var(--text);}
-    .reg-row{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:6px;}
-    .reg-field label{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;color:var(--text-faint);display:block;margin-bottom:3px;}
-    .reg-select{width:100%;border:1px solid var(--border);border-radius:var(--radius-sm);padding:6px 8px;font-size:12px;font-family:'DM Sans',sans-serif;color:var(--text);background:var(--surface);outline:none;cursor:pointer;}
+    /* KALKULATOR REGISTRACIJE */
+    .reg-box{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-md);padding:16px;margin-top:14px;}
+    .reg-title{font-family:'Syne',sans-serif;font-size:14px;font-weight:700;margin-bottom:12px;display:flex;align-items:center;gap:8px;color:var(--text);}
+    .reg-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;}
+    .reg-field label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.07em;color:var(--text-faint);display:block;margin-bottom:4px;}
+    .reg-select{width:100%;border:1px solid var(--border);border-radius:var(--radius-sm);padding:8px 10px;font-size:13px;font-family:'DM Sans',sans-serif;color:var(--text);background:var(--surface);outline:none;cursor:pointer;transition:border-color .15s;}
     .reg-select:focus{border-color:var(--orange);}
-    .reg-rezultat{margin-top:10px;border-top:1px solid var(--border);padding-top:10px;}
-    .reg-stavke{display:flex;flex-direction:column;gap:0;}
-    .reg-stavka{display:flex;justify-content:space-between;align-items:center;font-size:12px;padding:5px 0;border-bottom:1px solid var(--border);}
+    .reg-stavke{margin-top:12px;display:flex;flex-direction:column;}
+    .reg-stavka{display:flex;justify-content:space-between;align-items:center;font-size:12px;padding:6px 0;border-bottom:1px solid var(--border);}
     .reg-stavka:last-child{border-bottom:none;}
-    .reg-stavka-naziv{color:var(--text-muted);font-size:11px;}
-    .reg-stavka-val{font-weight:600;font-size:12px;white-space:nowrap;}
-    .reg-ukupno{display:flex;justify-content:space-between;align-items:center;background:var(--orange-dim);border:1px solid rgba(230,92,0,0.2);border-radius:var(--radius-sm);padding:10px 12px;margin-top:8px;}
-    .reg-ukupno-naziv{font-weight:600;font-size:12px;color:var(--orange);}
-    .reg-ukupno-val{font-family:'Syne',sans-serif;font-size:18px;font-weight:800;color:var(--orange);}
-    .reg-note{font-size:10px;color:var(--text-faint);margin-top:8px;line-height:1.5;}
-    .reg-toggle{background:none;border:none;font-size:11px;color:var(--orange);cursor:pointer;padding:0;font-family:'DM Sans',sans-serif;text-decoration:underline;}
+    .reg-stavka-naziv{color:var(--text-muted);}
+    .reg-stavka-val{font-weight:600;font-size:12px;white-space:nowrap;margin-left:8px;}
+    .reg-ukupno{display:flex;justify-content:space-between;align-items:center;background:var(--orange-dim);border:1px solid rgba(230,92,0,0.2);border-radius:var(--radius-sm);padding:12px 14px;margin-top:10px;}
+    .reg-ukupno-naziv{font-weight:600;font-size:13px;color:var(--orange);}
+    .reg-ukupno-val{font-family:'Syne',sans-serif;font-size:20px;font-weight:800;color:var(--orange);}
+    .reg-note{font-size:11px;color:var(--text-faint);margin-top:8px;line-height:1.5;}
+    .reg-toggle{background:none;border:none;font-size:11px;color:var(--orange);cursor:pointer;padding:0;font-family:'DM Sans',sans-serif;text-decoration:underline;margin-left:auto;}
 
     @media(max-width:768px){
       nav{padding:0 16px;flex-wrap:wrap;height:auto;gap:8px;padding-top:10px;padding-bottom:10px;}
@@ -879,87 +878,77 @@ function parseNaslovFacebook(naslov) {
 }
 
 // ── KALKULATOR REGISTRACIJE ──────────────────────────────
-// Zakonske AO premije FBiH 2025 (kalkulator.ba)
 var AO_PREMIJE = {
   fbih: [
-    {max:22,  premija:230},
-    {max:33,  premija:328},
-    {max:44,  premija:396},
-    {max:55,  premija:461},
-    {max:66,  premija:525},
-    {max:84,  premija:578},
-    {max:110, premija:692},
-    {max:9999,premija:831},
+    {max:22,p:230},{max:33,p:328},{max:44,p:396},{max:55,p:461},
+    {max:66,p:525},{max:84,p:578},{max:110,p:692},{max:9999,p:831}
   ],
   rs: [
-    {max:22,  premija:190},
-    {max:33,  premija:270},
-    {max:44,  premija:325},
-    {max:55,  premija:378},
-    {max:66,  premija:430},
-    {max:84,  premija:473},
-    {max:110, premija:567},
-    {max:9999,premija:680},
+    {max:22,p:190},{max:33,p:270},{max:44,p:325},{max:55,p:378},
+    {max:66,p:430},{max:84,p:473},{max:110,p:567},{max:9999,p:680}
   ],
   bd: [
-    {max:22,  premija:140},
-    {max:33,  premija:200},
-    {max:44,  premija:240},
-    {max:55,  premija:280},
-    {max:66,  premija:320},
-    {max:84,  premija:350},
-    {max:110, premija:420},
-    {max:9999,premija:505},
+    {max:22,p:140},{max:33,p:200},{max:44,p:240},{max:55,p:280},
+    {max:66,p:320},{max:84,p:350},{max:110,p:420},{max:9999,p:505}
   ]
 };
 
 function initRegKalkulator() {
-  var box = document.getElementById('regKalkBox');
-  if (!box) return;
-  
-  // Popuni godište
-  var selGod = document.getElementById('regGodiste');
-  if (selGod) {
-    var tekuca = new Date().getFullYear();
-    for (var g = tekuca; g >= 1985; g--) {
-      var opt = document.createElement('option');
-      opt.value = g;
-      opt.textContent = g + '.';
-      selGod.appendChild(opt);
+  // Čekaj da se DOM renderuje
+  setTimeout(function() {
+    var box = document.getElementById('regKalkBox');
+    if (!box) return;
+
+    // Popuni godište
+    var selGod = document.getElementById('regGodiste');
+    if (selGod && selGod.options.length <= 1) {
+      var tekuca = new Date().getFullYear();
+      for (var g = tekuca; g >= 1985; g--) {
+        var opt = document.createElement('option');
+        opt.value = g;
+        opt.textContent = g + '.';
+        selGod.appendChild(opt);
+      }
     }
-    // Auto-popuni iz oglasa
-    var god = oglasMeta.godiste;
+
+    // Auto-popuni godište iz oglasa
+    var god = (detaljiGlobal && detaljiGlobal.godiste) ? detaljiGlobal.godiste : null;
     if (!god && oglasMeta.naslov) {
       var m = oglasMeta.naslov.match(/\b(19[89]\d|20[0-2]\d)\b/);
       if (m) god = m[1];
     }
-    if (god) selGod.value = god;
-  }
+    if (god && selGod) selGod.value = god;
 
-  // Auto-popuni gorivo (automatski se koristi u izracunajReg)
-  
-  // Prikaži samo za vozila kategoriju
-  var kat = oglasMeta.kategorija || '';
-  if (kat && !kat.includes('vozila') && !kat.includes('auto')) {
-    return; // Nije vozilo - ne prikazuj kalkulator
-  }
-  
-  box.style.display = 'block';
-  izracunajReg();
+    // Prikaži samo za vozila
+    var kat = oglasMeta.kategorija || '';
+    if (kat && !kat.includes('vozil') && !kat.includes('auto')) return;
+
+    box.style.display = 'block';
+    izracunajReg();
+  }, 300);
 }
 
 function izracunajReg() {
-  var entitet = (document.getElementById('regEntitet')||{}).value || 'fbih';
-  var bonus = parseInt((document.getElementById('regBonus')||{}).value) || 0;
-  var vrsta = (document.getElementById('regVrsta')||{}).value || 'produzenje';
-  var godiste = parseInt((document.getElementById('regGodiste')||{}).value) || 0;
+  var entEl = document.getElementById('regEntitet');
+  var bonEl = document.getElementById('regBonus');
+  var vrsEl = document.getElementById('regVrsta');
+  var godEl = document.getElementById('regGodiste');
+  var ukpEl = document.getElementById('regUkupno');
+  var stavEl = document.getElementById('regStavke');
+
+  if (!entEl || !ukpEl) return;
+
+  var entitet = entEl.value || 'fbih';
+  var bonus = parseInt(bonEl ? bonEl.value : 30) || 0;
+  var vrsta = vrsEl ? vrsEl.value : 'produzenje';
+  var godiste = parseInt(godEl ? godEl.value : 0) || 0;
   var starost = godiste > 0 ? new Date().getFullYear() - godiste : 10;
 
-  // kW iz oglasMeta ili detaljiGlobal
+  // kW - iz detaljiGlobal ili oglasMeta
   var kw = 0;
   if (detaljiGlobal && detaljiGlobal.kw) kw = parseInt(detaljiGlobal.kw);
   if (!kw && oglasMeta.kw) kw = parseInt(oglasMeta.kw);
-  if (!kw) kw = 85; // default za prosjecni auto
+  if (!kw) kw = 85;
 
   // Gorivo
   var gorivo = 'dizel';
@@ -968,108 +957,70 @@ function izracunajReg() {
   else if (oglasMeta.naslov) {
     var n = oglasMeta.naslov.toLowerCase();
     if (/benzin|tsi|fsi|mpi/.test(n)) gorivo = 'benzin';
-    else if (/hibrid/.test(n)) gorivo = 'hibrid';
+    else if (/hibrid|hybrid/.test(n)) gorivo = 'hibrid';
     else if (/elektr/.test(n)) gorivo = 'elektro';
   }
 
-  // ── AO OSIGURANJE (zakonski fiksna tarifa) ───────────────
-  var aoTarife = AO_PREMIJE[entitet] || AO_PREMIJE.fbih;
-  var aoOsnova = aoTarife[aoTarife.length-1].premija;
-  for (var i = 0; i < aoTarife.length; i++) {
-    if (kw <= aoTarife[i].max) { aoOsnova = aoTarife[i].premija; break; }
+  // AO osiguranje
+  var tarife = AO_PREMIJE[entitet] || AO_PREMIJE.fbih;
+  var aoOsnova = tarife[tarife.length-1].p;
+  for (var i = 0; i < tarife.length; i++) {
+    if (kw <= tarife[i].max) { aoOsnova = tarife[i].p; break; }
   }
   var ao = Math.round(aoOsnova * (1 - bonus / 100));
 
-  // ── TEHNICKI PREGLED ─────────────────────────────────────
-  // Obavezan za vozila starija od 4 god, svake 2g do 8g, pa svake godine
-  var tehPregled = 0;
-  if (starost >= 4) {
-    if (entitet === 'fbih') tehPregled = 45;
-    else if (entitet === 'rs') tehPregled = 40;
-    else tehPregled = 30;
-  }
+  // Tehnički pregled
+  var teh = 0;
+  if (starost >= 4) teh = entitet==='fbih' ? 45 : entitet==='rs' ? 40 : 30;
 
-  // ── POREZ NA MOTORNO VOZILO ──────────────────────────────
-  // FBiH: ovisi o snazi i starosti
-  var porezBase = entitet === 'fbih' ? 90 : entitet === 'rs' ? 72 : 55;
-  var porezKw = kw <= 44 ? 0.6 : kw <= 66 ? 0.8 : kw <= 84 ? 1.0 : kw <= 110 ? 1.25 : kw <= 145 ? 1.55 : 1.9;
-  var porezStarost = starost >= 15 ? 0.5 : starost >= 10 ? 0.65 : starost >= 7 ? 0.8 : starost >= 4 ? 0.9 : 1.0;
-  var porez = Math.round(porezBase * porezKw * porezStarost);
+  // Porez
+  var porezBase = entitet==='fbih' ? 90 : entitet==='rs' ? 72 : 55;
+  var kwF = kw<=44?0.6:kw<=66?0.8:kw<=84?1.0:kw<=110?1.25:kw<=145?1.55:1.9;
+  var stF = starost>=15?0.5:starost>=10?0.65:starost>=7?0.8:starost>=4?0.9:1.0;
+  var porez = Math.round(porezBase * kwF * stF);
 
-  // ── EKOLOSKA TAKSA ───────────────────────────────────────
+  // Eko taksa
   var eko = 0;
-  if (gorivo.includes('dizel') || gorivo.includes('diesel') || gorivo.includes('tdi') || gorivo.includes('cdi')) {
-    eko = entitet === 'fbih'
-      ? (starost >= 15 ? 38 : starost >= 10 ? 28 : starost >= 5 ? 18 : 12)
-      : (starost >= 15 ? 30 : starost >= 10 ? 22 : 15);
-  } else if (gorivo.includes('benzin') || gorivo.includes('tsi') || gorivo.includes('fsi')) {
-    eko = entitet === 'fbih'
-      ? (starost >= 15 ? 26 : starost >= 10 ? 18 : 10)
-      : (starost >= 15 ? 20 : 13);
-  } else if (gorivo.includes('hibrid')) {
-    eko = 7;
-  } else if (gorivo.includes('elektr')) {
-    eko = 0;
-  } else {
-    // Default dizel
-    eko = entitet === 'fbih' ? (starost >= 10 ? 28 : 18) : 20;
+  var isDizel = /dizel|diesel|tdi|cdi|dci/.test(gorivo);
+  var isBenzin = /benzin|tsi|fsi|mpi/.test(gorivo);
+  if (isDizel) eko = entitet==='fbih' ? (starost>=15?38:starost>=10?28:starost>=5?18:12) : (starost>=15?30:starost>=10?22:15);
+  else if (isBenzin) eko = entitet==='fbih' ? (starost>=15?26:starost>=10?18:10) : (starost>=15?20:13);
+  else if (/hibrid/.test(gorivo)) eko = 7;
+  else eko = entitet==='fbih' ? (starost>=10?28:18) : 20;
+
+  // Ostalo
+  var cestarina = entitet==='fbih' ? 34 : entitet==='rs' ? 28 : 20;
+  var vode = entitet==='fbih' ? 10 : 8;
+  var ams = entitet==='fbih' ? 8 : 6;
+  var admin = vrsta==='produzenje' ? (entitet==='bd'?15:22) : vrsta==='prvoupis' ? (entitet==='bd'?40:65) : (entitet==='bd'?35:50);
+  var tablice = vrsta==='prvoupis' ? 42 : 0;
+
+  var ukupno = ao + teh + porez + eko + cestarina + vode + ams + admin + tablice;
+
+  // Postavi ukupno
+  ukpEl.textContent = ukupno.toLocaleString('bs-BA') + ' KM';
+
+  // Postavi stavke
+  if (stavEl) {
+    var stavke = [
+      ['AO osiguranje (P'+(6-bonus/10)+', '+bonus+'% bonus)', ao],
+      ['Tehnički pregled', teh, starost<4?' (nije potreban)':''],
+      ['Porez na motorno vozilo', porez],
+      ['Ekološka taksa ('+(isDizel?'dizel':isBenzin?'benzin':'ostalo')+')', eko],
+      ['Cestarina', cestarina],
+      ['Naknada za vode', vode],
+      ['Članarina AMS', ams],
+      ['Administrativne takse', admin],
+    ];
+    if (tablice > 0) stavke.push(['Registarske tablice', tablice]);
+
+    stavEl.innerHTML = stavke.map(function(s) {
+      return '<div class="reg-stavka">' +
+        '<span class="reg-stavka-naziv">'+s[0]+(s[2]||'')+'</span>' +
+        '<span class="reg-stavka-val">'+(s[1]>0 ? s[1].toLocaleString('bs-BA')+' KM' : '<span style="color:var(--green)">Nije potreban</span>')+'</span>' +
+      '</div>';
+    }).join('');
   }
-
-  // ── CESTARINA ────────────────────────────────────────────
-  var cestarina = entitet === 'fbih' ? 34 : entitet === 'rs' ? 28 : 20;
-
-  // ── NAKNADA ZA VODE ──────────────────────────────────────
-  var vode = entitet === 'fbih' ? 10 : entitet === 'rs' ? 8 : 6;
-
-  // ── CLANARINA AMS/BIHAMK ─────────────────────────────────
-  var ams = entitet === 'fbih' ? 8 : 6;
-
-  // ── ADMINISTRATIVNE TAKSE ────────────────────────────────
-  var admin = 0;
-  if (vrsta === 'produzenje') {
-    admin = entitet === 'bd' ? 15 : 22;
-  } else if (vrsta === 'prvoupis') {
-    admin = entitet === 'bd' ? 40 : 65;
-  } else {
-    // promjena vlasnistva
-    admin = entitet === 'bd' ? 35 : 50;
-  }
-
-  // ── TABLICE (samo prvoupis) ───────────────────────────────
-  var tablice = vrsta === 'prvoupis' ? 42 : 0;
-
-  var ukupno = ao + tehPregled + porez + eko + cestarina + vode + ams + admin + tablice;
-
-  // Render
-  var stavke = [
-    {n:'AO osiguranje (' + (bonus > 0 ? bonus + '% bonus — P' + (6 - bonus/10) : 'P6 puni iznos') + ')', v: ao, boja: ''},
-    {n:'Tehnički pregled', v: tehPregled, napomena: starost < 4 ? ' (nije potreban za vozila mlađa od 4g)' : (starost < 8 ? ' (svake 2 godine)' : ' (godišnje)')},
-    {n:'Porez na motorno vozilo', v: porez, boja: ''},
-    {n:'Ekološka taksa', v: eko, boja: eko === 0 ? 'color:var(--green)' : ''},
-    {n:'Cestarina / putarina', v: cestarina},
-    {n:'Naknada za zaštitu voda', v: vode},
-    {n:'Članarina AMS/BIHAMK', v: ams},
-    {n:'Administrativne takse', v: admin},
-  ];
-  if (tablice > 0) stavke.push({n:'Registarske tablice (2 kom)', v: tablice});
-
-  var stavkeEl = document.getElementById('regStavke');
-  var ukupnoEl = document.getElementById('regUkupno');
-  var rezEl = document.getElementById('regRezultat');
-
-  if (!stavkeEl || !ukupnoEl || !rezEl) return;
-
-  stavkeEl.innerHTML = stavke.map(function(s) {
-    return '<div class="reg-stavka">' +
-      '<span class="reg-stavka-naziv">' + s.n + (s.napomena ? '<span style="color:var(--text-faint);font-size:11px;"> ' + s.napomena + '</span>' : '') + '</span>' +
-      '<span class="reg-stavka-val" style="' + (s.boja || '') + '">' +
-        (s.v > 0 ? s.v.toLocaleString('bs-BA') + ' KM' : '<span style="color:var(--green);">Besplatno</span>') +
-      '</span>' +
-    '</div>';
-  }).join('');
-
-  ukupnoEl.textContent = ukupno.toLocaleString('bs-BA') + ' KM';
-  rezEl.style.display = 'block';
 }
 
 
