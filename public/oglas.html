@@ -972,9 +972,13 @@ function initRegKalkulator() {
     if (god) selGod.value = god;
   }
 
-  // Auto-popuni gorivo
-  var gorivo = (oglasMeta.gorivo || '').toLowerCase();
-  // (koristimo iz detaljiGlobal ako postoji)
+  // Auto-popuni gorivo (automatski se koristi u izracunajReg)
+  
+  // Prikaži samo za vozila kategoriju
+  var kat = oglasMeta.kategorija || '';
+  if (kat && !kat.includes('vozila') && !kat.includes('auto')) {
+    return; // Nije vozilo - ne prikazuj kalkulator
+  }
   
   box.style.display = 'block';
   izracunajReg();
@@ -1155,6 +1159,7 @@ async function init(){
   // Paralelno
   ucitajAiAnalizuJednog(d);
   ucitajSlicne(d);
+  initRegKalkulator();
 }
 
 init();
