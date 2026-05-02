@@ -138,20 +138,23 @@
 
 
 
-    .btn-ponuda{width:100%;padding:13px;background:#fff0e6;color:#993C1D;border:1px solid #F0997B;border-radius:var(--radius-md);font-size:15px;font-family:'DM Sans',sans-serif;font-weight:500;cursor:pointer;margin-top:8px;}
-    .btn-ponuda:hover{background:#F5C4B3;}
-    .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:400;align-items:center;justify-content:center;padding:20px;}
-    .modal-overlay.open{display:flex;}
-    .modal-box{background:#fff;border-radius:20px;padding:28px;width:100%;max-width:420px;position:relative;}
-    .modal-close{position:absolute;top:16px;right:16px;background:none;border:none;font-size:20px;cursor:pointer;color:#aaa;}
-    .ponuda-presets{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;}
-    .ponuda-preset{padding:7px 14px;border-radius:100px;border:1px solid rgba(0,0,0,0.1);font-size:13px;cursor:pointer;color:#777;background:#f7f5f2;font-family:'DM Sans',sans-serif;}
-    .ponuda-preset.sel{background:#fff0e6;border-color:#e65c00;color:#993C1D;}
-    .ponuda-input{font-size:22px;font-weight:700;border:1px solid rgba(0,0,0,0.12);border-radius:10px;padding:10px 14px;width:100%;font-family:'DM Sans',sans-serif;color:#1a1a1a;outline:none;margin-bottom:8px;}
-    .ponuda-diff{font-size:12px;padding:6px 12px;border-radius:8px;margin-bottom:14px;}
-    .ponuda-msg{width:100%;border:1px solid rgba(0,0,0,0.1);border-radius:10px;padding:10px 12px;font-size:13px;font-family:'DM Sans',sans-serif;color:#1a1a1a;resize:none;height:90px;outline:none;margin-bottom:14px;}
-    .ai-hint-ponuda{border-radius:10px;padding:10px 12px;margin-bottom:14px;font-size:12px;line-height:1.5;border:1px solid;}
-    .btn-posalji{width:100%;padding:13px;background:#e65c00;color:white;border:none;border-radius:10px;font-size:15px;font-family:'DM Sans',sans-serif;font-weight:600;cursor:pointer;}
+    .reg-box{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:22px;margin-top:20px;}
+    .reg-title{font-family:'Syne',sans-serif;font-size:15px;font-weight:700;margin-bottom:4px;display:flex;align-items:center;gap:8px;}
+    .reg-subtitle{font-size:12px;color:var(--text-muted);margin-bottom:16px;}
+    .reg-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;}
+    .reg-field label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.07em;color:var(--text-faint);display:block;margin-bottom:5px;}
+    .reg-select{width:100%;border:1px solid var(--border);border-radius:var(--radius-sm);padding:8px 10px;font-size:13px;font-family:'DM Sans',sans-serif;color:var(--text);background:var(--bg);outline:none;cursor:pointer;transition:border-color .15s;}
+    .reg-select:focus{border-color:var(--orange);}
+    .reg-rezultat{margin-top:16px;border-top:1px solid var(--border);padding-top:16px;}
+    .reg-stavke{display:flex;flex-direction:column;gap:0;}
+    .reg-stavka{display:flex;justify-content:space-between;align-items:center;font-size:13px;padding:8px 0;border-bottom:1px solid var(--border);}
+    .reg-stavka:last-child{border-bottom:none;}
+    .reg-stavka-naziv{color:var(--text-muted);}
+    .reg-stavka-val{font-weight:500;}
+    .reg-ukupno{display:flex;justify-content:space-between;align-items:center;background:var(--orange-dim);border:1px solid rgba(230,92,0,0.2);border-radius:var(--radius-md);padding:12px 16px;margin-top:12px;}
+    .reg-ukupno-naziv{font-weight:600;font-size:14px;color:var(--orange);}
+    .reg-ukupno-val{font-family:'Syne',sans-serif;font-size:22px;font-weight:800;color:var(--orange);}
+    .reg-note{font-size:11px;color:var(--text-faint);margin-top:10px;line-height:1.6;}
 
     @media(max-width:768px){
       nav{padding:0 16px;flex-wrap:wrap;height:auto;gap:8px;padding-top:10px;padding-bottom:10px;}
@@ -227,23 +230,58 @@
   </div>
 </div>
 
-<div class="modal-overlay" id="ponudaModal" onclick="if(event.target===this)zatvoriPonudu()">
-  <div class="modal-box">
-    <button class="modal-close" onclick="zatvoriPonudu()">&#x2715;</button>
-    <div style="font-family:'Syne',sans-serif;font-size:18px;font-weight:700;margin-bottom:4px;">&#x1F4AC; Pošalji ponudu</div>
-    <div style="font-size:13px;color:#777;margin-bottom:16px;" id="ponudaSub">Za oglas...</div>
-    <div class="ponuda-presets">
-      <div class="ponuda-preset" onclick="setPonuda(0.95,this)">-5%</div>
-      <div class="ponuda-preset sel" onclick="setPonuda(0.90,this)">-10%</div>
-      <div class="ponuda-preset" onclick="setPonuda(0.85,this)">-15%</div>
-      <div class="ponuda-preset" onclick="setPonuda(0.80,this)">-20%</div>
+<div id="regKalkBox" style="display:none;max-width:900px;margin:20px auto 0;padding:0 32px;">
+  <div class="reg-box">
+    <div class="reg-title">&#x1F4CB; Kalkulator registracije</div>
+    <div class="reg-subtitle">Okvirni trošak registracije za ovo vozilo u BiH — 2025. tarife</div>
+    <div class="reg-row">
+      <div class="reg-field">
+        <label>Entitet</label>
+        <select class="reg-select" id="regEntitet" onchange="izracunajReg()">
+          <option value="fbih">Federacija BiH</option>
+          <option value="rs">Republika Srpska</option>
+          <option value="bd">Br&#x010D;ko Distrikt</option>
+        </select>
+      </div>
+      <div class="reg-field">
+        <label>Bonus osiguranja</label>
+        <select class="reg-select" id="regBonus" onchange="izracunajReg()">
+          <option value="0">P6 — bez bonusa (novi)</option>
+          <option value="10">P5 — 10% bonus</option>
+          <option value="20">P4 — 20% bonus</option>
+          <option value="30" selected>P3 — 30% bonus</option>
+          <option value="40">P2 — 40% bonus</option>
+          <option value="50">P1 — 50% bonus (max)</option>
+        </select>
+      </div>
+      <div class="reg-field">
+        <label>Vrsta registracije</label>
+        <select class="reg-select" id="regVrsta" onchange="izracunajReg()">
+          <option value="produzenje">Produženje</option>
+          <option value="prvoupis">Prvo upisivanje / uvoz</option>
+          <option value="vlasnistvo">Promjena vlasništva</option>
+        </select>
+      </div>
+      <div class="reg-field">
+        <label>Godište</label>
+        <select class="reg-select" id="regGodiste" onchange="izracunajReg()">
+          <option value="0">— odaberi —</option>
+        </select>
+      </div>
     </div>
-    <input class="ponuda-input" type="number" id="ponudaInput" oninput="updatePonudaDiff()">
-    <div class="ponuda-diff" id="ponudaDiff" style="background:#fff0e6;color:#993C1D;"></div>
-    <div class="ai-hint-ponuda" id="ponudaAiHint" style="background:#fff0e6;color:#712B13;border-color:#F0997B;"></div>
-    <textarea class="ponuda-msg" id="ponudaMsg" placeholder="Poruka se generira automatski..."></textarea>
-    <button class="btn-posalji" onclick="posaljiPonudu()">Kopiraj poruku i otvori oglas &#x2192;</button>
-    <div style="text-align:center;font-size:12px;color:#aaa;margin-top:8px;">Poruka se kopira u clipboard — paste-aj je u chat sa prodavačem</div>
+
+    <div class="reg-rezultat" id="regRezultat" style="display:none;">
+      <div class="reg-stavke" id="regStavke"></div>
+      <div class="reg-ukupno">
+        <span class="reg-ukupno-naziv">Ukupno (okvirno)</span>
+        <span class="reg-ukupno-val" id="regUkupno">—</span>
+      </div>
+      <div class="reg-note">
+        Izra&#x10D;un je informativan i baziran na zakonskim tarifama FBiH/RS/BD za 2025. godinu.<br>
+        AO premije su zakonski fiksne. Ostale stavke mogu varirati po stanici i op&#x107;ini.<br>
+        Izvor: <a href="https://kalkulator.ba" target="_blank" style="color:var(--orange);">kalkulator.ba</a> &middot; <a href="https://driver.ba/registracija-vozila" target="_blank" style="color:var(--orange);">driver.ba</a>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -263,7 +301,6 @@ var oglasPlatforma = oglasMeta.platforma || 'olx';
 var oglasLink = oglasMeta.link || '';
 var oglasCijenaNum = parseCijenaJS(oglasMeta.cijena || '');
 var detaljiGlobal = null;
-var telefon = '';
 
 function parseCijenaJS(str) {
   if (!str) return 0;
@@ -357,8 +394,6 @@ function renderOglasTop(meta, d) {
         '<div class="akcije">'+
           '<a href="'+meta.link+'" target="_blank" class="btn-primarni">Pogledaj na '+platformaNaziv+' →</a>'+
           '<button class="btn-sekundarni" onclick="pratiOglas()">🔔 Prati oglas</button>'+
-          '<button class="btn-ponuda" onclick="otvoriPonudu()">💬 Pošalji ponudu</button>'+
-          (telefon ? '<a href="https://wa.me/'+telefon+'" target="_blank" class="btn-whatsapp">📱 WhatsApp</a>' : '')+
         '</div>'+
       '</div>'+
     '</div>';
@@ -879,190 +914,194 @@ function parseNaslovFacebook(naslov) {
   return d;
 }
 
-// ── WHATSAPP & TELEFON ───────────────────────────────────
-function izvuciTelefon(meta) {
-  // WhatsApp dugme se dodaje samo ako ima telefona u opisu
-  // Za sada ostavljamo bez - OLX ne daje telefone javno
-}
+// ── KALKULATOR REGISTRACIJE ──────────────────────────────
+// Zakonske AO premije FBiH 2025 (kalkulator.ba)
+var AO_PREMIJE = {
+  fbih: [
+    {max:22,  premija:230},
+    {max:33,  premija:328},
+    {max:44,  premija:396},
+    {max:55,  premija:461},
+    {max:66,  premija:525},
+    {max:84,  premija:578},
+    {max:110, premija:692},
+    {max:9999,premija:831},
+  ],
+  rs: [
+    {max:22,  premija:190},
+    {max:33,  premija:270},
+    {max:44,  premija:325},
+    {max:55,  premija:378},
+    {max:66,  premija:430},
+    {max:84,  premija:473},
+    {max:110, premija:567},
+    {max:9999,premija:680},
+  ],
+  bd: [
+    {max:22,  premija:140},
+    {max:33,  premija:200},
+    {max:44,  premija:240},
+    {max:55,  premija:280},
+    {max:66,  premija:320},
+    {max:84,  premija:350},
+    {max:110, premija:420},
+    {max:9999,premija:505},
+  ]
+};
 
-// ── HISTORIJA CIJENE ─────────────────────────────────────
-async function ucitajHistorijuCijene(id) {
-  if (!id) return;
-  try {
-    var res = await fetch('/api/historija-cijene/' + id);
-    var data = await res.json();
-    if (!data.uspjeh) return;
-
-    var box = document.getElementById('historijaCijeneBox');
-    if (!box) return;
-    // Prikazuj box uvijek kad ima bar avgKat ili danaNaTrzistu
-    if (!data.avgKat && !data.danaNaTrzistu) return;
-    box.style.display = 'block';
-
-    var stats = document.getElementById('historijaStats');
-    var danas = data.cijena || (data.cijenaTrenutna ? Math.round(data.cijenaTrenutna).toLocaleString('bs-BA') + ' KM' : 'N/A');
-    var avg = data.avgKat ? Math.round(data.avgKat).toLocaleString('bs-BA') + ' KM' : 'N/A';
-    var danaNaT = data.danaNaTrzistu || 0;
-    var razlikaProsjek = data.cijenaTrenutna && data.avgKat
-      ? Math.round(((data.cijenaTrenutna - data.avgKat) / data.avgKat) * 100)
-      : null;
-    var razlikaHtml = razlikaProsjek !== null
-      ? (razlikaProsjek > 0 ? '+' : '') + razlikaProsjek + '% od prosjeka'
-      : '';
-
-    stats.innerHTML =
-      '<div class="hstat"><div class="hstat-val">' + danas + '</div><div class="hstat-label">Trenutna cijena</div></div>' +
-      '<div class="hstat"><div class="hstat-val" style="color:' + (razlikaProsjek !== null && razlikaProsjek < 0 ? '#15803d' : '#dc2626') + ';">' + avg + '</div><div class="hstat-label">Prosjek kategorije' + (razlikaHtml ? ' (' + razlikaHtml + ')' : '') + '</div></div>' +
-      '<div class="hstat"><div class="hstat-val" style="color:' + (danaNaT > 30 ? '#e65c00' : '#1a1a1a') + ';">' + danaNaT + '</div><div class="hstat-label">Dana na trzistu' + (danaNaT > 30 ? ' — pregovaraj' : '') + '</div></div>';
-
-    // Chart
-    var canvas = document.getElementById('historijaChart');
-    if (!canvas || !data.historija || data.historija.length < 2) {
-      // Sakrij chart wrap ako nema historije
-      var chartWrap = canvas ? canvas.parentElement : null;
-      if (chartWrap) chartWrap.style.display = 'none';
-      return;
+function initRegKalkulator() {
+  var box = document.getElementById('regKalkBox');
+  if (!box) return;
+  
+  // Popuni godište
+  var selGod = document.getElementById('regGodiste');
+  if (selGod) {
+    var tekuca = new Date().getFullYear();
+    for (var g = tekuca; g >= 1985; g--) {
+      var opt = document.createElement('option');
+      opt.value = g;
+      opt.textContent = g + '.';
+      selGod.appendChild(opt);
     }
-
-    var script = document.createElement('script');
-    script.src = 'https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js';
-    script.onload = function() {
-      var labels = data.historija.map(function(h) { return new Date(h.datum).toLocaleDateString('bs-BA'); });
-      var values = data.historija.map(function(h) { return Math.round(parseFloat(h.cijena_num)); });
-      new Chart(canvas, {
-        type: 'line',
-        data: {
-          labels: labels,
-          datasets: [{
-            data: values,
-            borderColor: '#e65c00',
-            backgroundColor: 'rgba(230,92,0,0.08)',
-            borderWidth: 2,
-            pointBackgroundColor: '#e65c00',
-            pointRadius: 4,
-            fill: true,
-            tension: 0.3
-          }]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: { legend: { display: false } },
-          scales: {
-            x: { grid: { display: false }, ticks: { font: { size: 11 } } },
-            y: {
-              grid: { color: 'rgba(0,0,0,0.05)' },
-              ticks: { font: { size: 11 }, callback: function(v) { return v.toLocaleString('bs-BA') + ' KM'; } }
-            }
-          }
-        }
-      });
-    };
-    document.head.appendChild(script);
-  } catch(e) { console.log('Historija greska:', e.message); }
-}
-
-// ── MAKE AN OFFER ────────────────────────────────────────
-var ponudaCijena = 0;
-
-function otvoriPonudu() {
-  var modal = document.getElementById('ponudaModal');
-  if (!modal) return;
-  var sub = document.getElementById('ponudaSub');
-  var cijenaStr = oglasMeta.cijena || '';
-  ponudaCijena = parseFloat(cijenaStr.replace(/\./g, '').replace(/[^0-9]/g, '')) || 0;
-  if (sub) sub.textContent = (oglasMeta.naslov || 'Oglas').substring(0, 50) + '...';
-  setPonuda(0.90, document.querySelector('.ponuda-preset.sel'));
-  modal.classList.add('open');
-  document.body.style.overflow = 'hidden';
-}
-
-function zatvoriPonudu() {
-  var modal = document.getElementById('ponudaModal');
-  if (modal) modal.classList.remove('open');
-  document.body.style.overflow = '';
-}
-
-function setPonuda(faktor, el) {
-  var val = Math.round(ponudaCijena * faktor);
-  var inp = document.getElementById('ponudaInput');
-  if (inp) inp.value = val || '';
-  document.querySelectorAll('.ponuda-preset').forEach(function(p) { p.classList.remove('sel'); });
-  if (el) el.classList.add('sel');
-  updatePonudaDiff();
-  azurirajSavjet(faktor);
-  azurirajPoruku(faktor);
-}
-
-function updatePonudaDiff() {
-  var val = parseInt((document.getElementById('ponudaInput') || {}).value) || 0;
-  var diff = document.getElementById('ponudaDiff');
-  if (!diff || !ponudaCijena || !val) return;
-  var razlika = ponudaCijena - val;
-  var pct = Math.round(razlika / ponudaCijena * 100);
-  if (razlika > 0) {
-    diff.style.background = pct > 25 ? '#fee2e2' : '#fff0e6';
-    diff.style.color = pct > 25 ? '#991b1b' : '#993C1D';
-    diff.textContent = 'Nudis ' + razlika.toLocaleString('bs-BA') + ' KM ispod trazene cijene (' + pct + '% popust)';
-  } else {
-    diff.style.background = '#f7f5f2';
-    diff.style.color = '#777';
-    diff.textContent = 'Nudis trazenu cijenu ili vise';
+    // Auto-popuni iz oglasa
+    var god = oglasMeta.godiste;
+    if (!god && oglasMeta.naslov) {
+      var m = oglasMeta.naslov.match(/\b(19[89]\d|20[0-2]\d)\b/);
+      if (m) god = m[1];
+    }
+    if (god) selGod.value = god;
   }
-  if (ponudaCijena > 0 && val > 0) azurirajSavjet(val / ponudaCijena);
+
+  // Auto-popuni gorivo
+  var gorivo = (oglasMeta.gorivo || '').toLowerCase();
+  // (koristimo iz detaljiGlobal ako postoji)
+  
+  box.style.display = 'block';
+  izracunajReg();
 }
 
-function azurirajSavjet(faktor) {
-  var hint = document.getElementById('ponudaAiHint');
-  if (!hint || !ponudaCijena) return;
-  var pct = Math.round((1 - faktor) * 100);
-  var ponuda = Math.round(ponudaCijena * faktor);
-  var usteda = ponudaCijena - ponuda;
-  var tekst, boja, bojaTxt, bojaBorder;
-  if (pct <= 5) {
-    tekst = 'Blaga ponuda koja se gotovo uvijek prihvata. Prodavaci u BiH ocekuju pregovor pa ce biti prijatno iznenadjeni.';
-    boja = '#f0fdf4'; bojaTxt = '#166534'; bojaBorder = '#86efac';
-  } else if (pct <= 10) {
-    tekst = 'Klasicna pregovaracka ponuda u BiH — 10% nize je norma. Ustedjeces ' + usteda.toLocaleString('bs-BA') + ' KM.';
-    boja = '#fff0e6'; bojaTxt = '#712B13'; bojaBorder = '#F0997B';
-  } else if (pct <= 15) {
-    tekst = 'Agresivnija ponuda — prodavac ce vjerovatno kontrirati. Pripremi se na kompromis oko ' + Math.round(ponudaCijena * 0.92).toLocaleString('bs-BA') + ' KM.';
-    boja = '#fefce8'; bojaTxt = '#713f12'; bojaBorder = '#fde68a';
-  } else {
-    tekst = 'Visok rizik odbijanja. Preporucujemo poceti sa -10% i ostaviti prostor za pregovor.';
-    boja = '#fef2f2'; bojaTxt = '#991b1b'; bojaBorder = '#fca5a5';
+function izracunajReg() {
+  var entitet = (document.getElementById('regEntitet')||{}).value || 'fbih';
+  var bonus = parseInt((document.getElementById('regBonus')||{}).value) || 0;
+  var vrsta = (document.getElementById('regVrsta')||{}).value || 'produzenje';
+  var godiste = parseInt((document.getElementById('regGodiste')||{}).value) || 0;
+  var starost = godiste > 0 ? new Date().getFullYear() - godiste : 10;
+
+  // kW iz oglasMeta ili detaljiGlobal
+  var kw = 0;
+  if (detaljiGlobal && detaljiGlobal.kw) kw = parseInt(detaljiGlobal.kw);
+  if (!kw && oglasMeta.kw) kw = parseInt(oglasMeta.kw);
+  if (!kw) kw = 85; // default za prosjecni auto
+
+  // Gorivo
+  var gorivo = 'dizel';
+  if (detaljiGlobal && detaljiGlobal.gorivo) gorivo = detaljiGlobal.gorivo.toLowerCase();
+  else if (oglasMeta.gorivo) gorivo = oglasMeta.gorivo.toLowerCase();
+  else if (oglasMeta.naslov) {
+    var n = oglasMeta.naslov.toLowerCase();
+    if (/benzin|tsi|fsi|mpi/.test(n)) gorivo = 'benzin';
+    else if (/hibrid/.test(n)) gorivo = 'hibrid';
+    else if (/elektr/.test(n)) gorivo = 'elektro';
   }
-  hint.style.background = boja;
-  hint.style.borderColor = bojaBorder;
-  hint.style.color = bojaTxt;
-  hint.innerHTML = '<strong style="display:block;font-size:10px;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:5px;">&#x2728; Oglix AI savjet &#x2014; ' + pct + '% popust</strong>' + tekst;
-}
 
-function azurirajPoruku(faktor) {
-  var pct = Math.round((1 - faktor) * 100);
-  var ponuda = Math.round(ponudaCijena * faktor);
-  var naslov = (oglasMeta.naslov || 'oglas').substring(0, 50);
-  var linija3;
-  if (pct >= 15) linija3 = 'Na osnovu stanja vozila i trhista, nudim ' + ponuda.toLocaleString('bs-BA') + ' KM.';
-  else if (pct >= 10) linija3 = 'Detaljno sam pratio trziste i nudim ' + ponuda.toLocaleString('bs-BA') + ' KM sto smatram fer cijenom.';
-  else linija3 = 'Jako mi se svidja vas oglas. Nudim ' + ponuda.toLocaleString('bs-BA') + ' KM.';
-  var msg = document.getElementById('ponudaMsg');
-  if (msg) msg.value = 'Zdravo,\n\nZainteresovan/a sam za vas oglas: ' + naslov + '.\n\n' + linija3 + ' Spreman/na sam odmah na pregled i placanje gotovinom.\n\nMozemo li se dogovoriti? Hvala!';
-}
+  // ── AO OSIGURANJE (zakonski fiksna tarifa) ───────────────
+  var aoTarife = AO_PREMIJE[entitet] || AO_PREMIJE.fbih;
+  var aoOsnova = aoTarife[aoTarife.length-1].premija;
+  for (var i = 0; i < aoTarife.length; i++) {
+    if (kw <= aoTarife[i].max) { aoOsnova = aoTarife[i].premija; break; }
+  }
+  var ao = Math.round(aoOsnova * (1 - bonus / 100));
 
-function posaljiPonudu() {
-  var val = parseInt((document.getElementById('ponudaInput') || {}).value) || 0;
-  var poruka = ((document.getElementById('ponudaMsg') || {}).value || '').trim();
-  if (!poruka) poruka = 'Zdravo, zainteresovan/a sam za vas oglas. Nudim ' + val.toLocaleString('bs-BA') + ' KM. Mozemo li se dogovoriti? Hvala!';
-  if (navigator.clipboard) navigator.clipboard.writeText(poruka).catch(function() {});
-  else { var ta = document.createElement('textarea'); ta.value = poruka; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); ta.remove(); }
-  if (oglasMeta.link) window.open(oglasMeta.link, '_blank');
-  zatvoriPonudu();
-  var t = document.createElement('div');
-  t.style.cssText = 'position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#1a1a1a;color:white;padding:12px 24px;border-radius:100px;font-size:14px;z-index:9999;font-family:DM Sans,sans-serif;white-space:nowrap;';
-  t.textContent = '\u2713 Poruka kopirana! Paste-aj je u chat sa prodavacem';
-  document.body.appendChild(t);
-  setTimeout(function() { t.remove(); }, 3500);
+  // ── TEHNICKI PREGLED ─────────────────────────────────────
+  // Obavezan za vozila starija od 4 god, svake 2g do 8g, pa svake godine
+  var tehPregled = 0;
+  if (starost >= 4) {
+    if (entitet === 'fbih') tehPregled = 45;
+    else if (entitet === 'rs') tehPregled = 40;
+    else tehPregled = 30;
+  }
+
+  // ── POREZ NA MOTORNO VOZILO ──────────────────────────────
+  // FBiH: ovisi o snazi i starosti
+  var porezBase = entitet === 'fbih' ? 90 : entitet === 'rs' ? 72 : 55;
+  var porezKw = kw <= 44 ? 0.6 : kw <= 66 ? 0.8 : kw <= 84 ? 1.0 : kw <= 110 ? 1.25 : kw <= 145 ? 1.55 : 1.9;
+  var porezStarost = starost >= 15 ? 0.5 : starost >= 10 ? 0.65 : starost >= 7 ? 0.8 : starost >= 4 ? 0.9 : 1.0;
+  var porez = Math.round(porezBase * porezKw * porezStarost);
+
+  // ── EKOLOSKA TAKSA ───────────────────────────────────────
+  var eko = 0;
+  if (gorivo.includes('dizel') || gorivo.includes('diesel') || gorivo.includes('tdi') || gorivo.includes('cdi')) {
+    eko = entitet === 'fbih'
+      ? (starost >= 15 ? 38 : starost >= 10 ? 28 : starost >= 5 ? 18 : 12)
+      : (starost >= 15 ? 30 : starost >= 10 ? 22 : 15);
+  } else if (gorivo.includes('benzin') || gorivo.includes('tsi') || gorivo.includes('fsi')) {
+    eko = entitet === 'fbih'
+      ? (starost >= 15 ? 26 : starost >= 10 ? 18 : 10)
+      : (starost >= 15 ? 20 : 13);
+  } else if (gorivo.includes('hibrid')) {
+    eko = 7;
+  } else if (gorivo.includes('elektr')) {
+    eko = 0;
+  } else {
+    // Default dizel
+    eko = entitet === 'fbih' ? (starost >= 10 ? 28 : 18) : 20;
+  }
+
+  // ── CESTARINA ────────────────────────────────────────────
+  var cestarina = entitet === 'fbih' ? 34 : entitet === 'rs' ? 28 : 20;
+
+  // ── NAKNADA ZA VODE ──────────────────────────────────────
+  var vode = entitet === 'fbih' ? 10 : entitet === 'rs' ? 8 : 6;
+
+  // ── CLANARINA AMS/BIHAMK ─────────────────────────────────
+  var ams = entitet === 'fbih' ? 8 : 6;
+
+  // ── ADMINISTRATIVNE TAKSE ────────────────────────────────
+  var admin = 0;
+  if (vrsta === 'produzenje') {
+    admin = entitet === 'bd' ? 15 : 22;
+  } else if (vrsta === 'prvoupis') {
+    admin = entitet === 'bd' ? 40 : 65;
+  } else {
+    // promjena vlasnistva
+    admin = entitet === 'bd' ? 35 : 50;
+  }
+
+  // ── TABLICE (samo prvoupis) ───────────────────────────────
+  var tablice = vrsta === 'prvoupis' ? 42 : 0;
+
+  var ukupno = ao + tehPregled + porez + eko + cestarina + vode + ams + admin + tablice;
+
+  // Render
+  var stavke = [
+    {n:'AO osiguranje (' + (bonus > 0 ? bonus + '% bonus — P' + (6 - bonus/10) : 'P6 puni iznos') + ')', v: ao, boja: ''},
+    {n:'Tehnički pregled', v: tehPregled, napomena: starost < 4 ? ' (nije potreban za vozila mlađa od 4g)' : (starost < 8 ? ' (svake 2 godine)' : ' (godišnje)')},
+    {n:'Porez na motorno vozilo', v: porez, boja: ''},
+    {n:'Ekološka taksa', v: eko, boja: eko === 0 ? 'color:var(--green)' : ''},
+    {n:'Cestarina / putarina', v: cestarina},
+    {n:'Naknada za zaštitu voda', v: vode},
+    {n:'Članarina AMS/BIHAMK', v: ams},
+    {n:'Administrativne takse', v: admin},
+  ];
+  if (tablice > 0) stavke.push({n:'Registarske tablice (2 kom)', v: tablice});
+
+  var stavkeEl = document.getElementById('regStavke');
+  var ukupnoEl = document.getElementById('regUkupno');
+  var rezEl = document.getElementById('regRezultat');
+
+  if (!stavkeEl || !ukupnoEl || !rezEl) return;
+
+  stavkeEl.innerHTML = stavke.map(function(s) {
+    return '<div class="reg-stavka">' +
+      '<span class="reg-stavka-naziv">' + s.n + (s.napomena ? '<span style="color:var(--text-faint);font-size:11px;"> ' + s.napomena + '</span>' : '') + '</span>' +
+      '<span class="reg-stavka-val" style="' + (s.boja || '') + '">' +
+        (s.v > 0 ? s.v.toLocaleString('bs-BA') + ' KM' : '<span style="color:var(--green);">Besplatno</span>') +
+      '</span>' +
+    '</div>';
+  }).join('');
+
+  ukupnoEl.textContent = ukupno.toLocaleString('bs-BA') + ' KM';
+  rezEl.style.display = 'block';
 }
 
 
