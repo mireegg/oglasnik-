@@ -332,20 +332,65 @@ function renderOglasTop(meta, d) {
         '<div>'+slikeHtml+slikeMiniHtml+'</div>'+
         '<div id="regKalkBox" style="display:none;margin-top:14px;">'+
           '<div class="reg-box">'+
-            '<div class="reg-title">&#x1F4CB; Kalkulator registracije'+
-              ' <button class="reg-toggle" onclick="var d=document.getElementById(\'regDetalji\');d.style.display=d.style.display===\'none\'?\'block\':\'none\'">detalji ▾</button>'+
+            '<div class="reg-title">&#x1F4CB; Kalkulator registracije</div>'+
+            '<div class="reg-row">'+
+              '<div class="reg-field"><label>Entitet</label>'+
+                '<select class="reg-select" id="regEntitet" onchange="izracunajReg()">'+
+                  '<option value="fbih">Federacija BiH</option>'+
+                  '<option value="rs">Republika Srpska</option>'+
+                  '<option value="bd">Br&#x010D;ko Distrikt</option>'+
+                '</select>'+
+              '</div>'+
+              '<div class="reg-field"><label>Bonus AO</label>'+
+                '<select class="reg-select" id="regBonus" onchange="izracunajReg()">'+
+                  '<option value="0">P6 &#x2014; bez bonusa</option>'+
+                  '<option value="10">P5 &#x2014; 10%</option>'+
+                  '<option value="20">P4 &#x2014; 20%</option>'+
+                  '<option value="30" selected>P3 &#x2014; 30%</option>'+
+                  '<option value="40">P2 &#x2014; 40%</option>'+
+                  '<option value="50">P1 &#x2014; 50% max</option>'+
+                '</select>'+
+              '</div>'+
             '</div>'+
             '<div class="reg-row">'+
-              '<div class="reg-field"><label>Entitet</label><select class="reg-select" id="regEntitet" onchange="izracunajReg()"><option value="fbih">Federacija BiH</option><option value="rs">Republika Srpska</option><option value="bd">Br&#x010D;ko Distrikt</option></select></div>'+
-              '<div class="reg-field"><label>Bonus AO</label><select class="reg-select" id="regBonus" onchange="izracunajReg()"><option value="0">P6 — bez bonusa</option><option value="10">P5 — 10%</option><option value="20">P4 — 20%</option><option value="30" selected>P3 — 30%</option><option value="40">P2 — 40%</option><option value="50">P1 — 50% max</option></select></div>'+
+              '<div class="reg-field"><label>Snaga motora</label>'+
+                '<select class="reg-select" id="regKw" onchange="izracunajReg()">'+
+                  '<option value="22">Do 22 kW</option>'+
+                  '<option value="33">23&#x2013;33 kW</option>'+
+                  '<option value="44">34&#x2013;44 kW</option>'+
+                  '<option value="55">45&#x2013;55 kW</option>'+
+                  '<option value="66">56&#x2013;66 kW</option>'+
+                  '<option value="84">67&#x2013;84 kW</option>'+
+                  '<option value="110">85&#x2013;110 kW</option>'+
+                  '<option value="145">111&#x2013;145 kW</option>'+
+                  '<option value="200">146&#x2013;200 kW</option>'+
+                  '<option value="999">Preko 200 kW</option>'+
+                '</select>'+
+              '</div>'+
+              '<div class="reg-field"><label>Gorivo</label>'+
+                '<select class="reg-select" id="regGorivoSel" onchange="izracunajReg()">'+
+                  '<option value="dizel">Dizel</option>'+
+                  '<option value="benzin">Benzin</option>'+
+                  '<option value="hibrid">Hibrid</option>'+
+                  '<option value="elektro">Elektri&#x10D;ni</option>'+
+                '</select>'+
+              '</div>'+
             '</div>'+
             '<div class="reg-row">'+
-              '<div class="reg-field"><label>Vrsta</label><select class="reg-select" id="regVrsta" onchange="izracunajReg()"><option value="produzenje">Produ&#x17E;enje</option><option value="prvoupis">Prvo upisivanje</option><option value="vlasnistvo">Promjena vlasni&#x161;tva</option></select></div>'+
-              '<div class="reg-field"><label>Godi&#x161;te</label><select class="reg-select" id="regGodiste" onchange="izracunajReg()"><option value="0">&#x2014;</option></select></div>'+
+              '<div class="reg-field"><label>Godi&#x161;te</label>'+
+                '<select class="reg-select" id="regGodiste" onchange="izracunajReg()"><option value="0">&#x2014;</option></select>'+
+              '</div>'+
+              '<div class="reg-field"><label>Vrsta registracije</label>'+
+                '<select class="reg-select" id="regVrsta" onchange="izracunajReg()">'+
+                  '<option value="produzenje">Produ&#x17E;enje</option>'+
+                  '<option value="prvoupis">Prvo upisivanje</option>'+
+                  '<option value="vlasnistvo">Promjena vlasni&#x161;tva</option>'+
+                '</select>'+
+              '</div>'+
             '</div>'+
-            '<div id="regDetalji" style="display:none;"><div class="reg-stavke" id="regStavke" style="margin-top:8px;"></div></div>'+
-            '<div class="reg-ukupno" style="margin-top:8px;"><span class="reg-ukupno-naziv">Ukupno okvirno</span><span class="reg-ukupno-val" id="regUkupno">&#x2014;</span></div>'+
-            '<div class="reg-note">Zakonske tarife 2025 · <a href="https://driver.ba/registracija-vozila" target="_blank" style="color:var(--orange);">driver.ba</a></div>'+
+            '<div class="reg-stavke" id="regStavke"></div>'+
+            '<div class="reg-ukupno"><span class="reg-ukupno-naziv">Ukupno okvirno</span><span class="reg-ukupno-val" id="regUkupno">&#x2014;</span></div>'+
+            '<div class="reg-note">Zakonske tarife 2025 · <a href="https://kalkulator.ba" target="_blank" style="color:var(--orange);">kalkulator.ba</a> · <a href="https://driver.ba/registracija-vozila" target="_blank" style="color:var(--orange);">driver.ba</a></div>'+
           '</div>'+
         '</div>'+
       '</div>'+
