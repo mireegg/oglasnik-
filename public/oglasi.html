@@ -9,213 +9,265 @@
   <meta name="author" content="Oglix.ba">
   <meta name="robots" content="index, follow">
   <link rel="canonical" href="https://oglix.ba/oglasi.html">
-  <!-- Open Graph -->
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://oglix.ba/oglasi.html">
   <meta property="og:title" content="Oglix.ba — Svi oglasi u BiH na jednom mjestu">
-  <meta property="og:description" content="Pretražuj oglase sa OLX.ba, Autobum.ba i Facebook Marketplace. Vozila, nekretnine, elektronika i više — sve na jednom mjestu uz AI analizu cijena.">
+  <meta property="og:description" content="Pretražuj oglase sa OLX.ba, Autobum.ba i Facebook Marketplace.">
   <meta property="og:image" content="https://oglix.ba/og-image.png">
-  <meta property="og:locale" content="bs_BA">
-  <meta property="og:site_name" content="Oglix.ba">
-  <!-- Twitter Card -->
-  <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Oglix.ba — Svi oglasi u BiH na jednom mjestu">
-  <meta name="twitter:description" content="Pretražuj oglase sa OLX.ba, Autobum.ba i Facebook Marketplace. Vozila, nekretnine, elektronika i više — sve na jednom mjestu uz AI analizu cijena.">
-  <meta name="twitter:image" content="https://oglix.ba/og-image.png">
-  <!-- Favicon -->
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔍</text></svg>">
-  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,400&display=swap" rel="stylesheet">
   <style>
-    :root{--orange:#e65c00;--orange-light:#ff7a1f;--orange-dim:#fff0e6;--bg:#f7f5f2;--surface:#ffffff;--border:rgba(0,0,0,0.08);--border-hover:rgba(0,0,0,0.18);--text:#1a1a1a;--text-muted:#777;--text-faint:#aaa;--radius-sm:8px;--radius-md:12px;--radius-lg:18px;--radius-pill:100px;}
-    .badge-autobum{background:#fce4ec;color:#c62828;}.badge-facebook{background:#e3f2fd;color:#1565c0;}
+    :root{
+      --or:#e65c00;--or-l:#ff7a1f;--or-dim:#fff3ed;
+      --bg:#f4f4f2;--s:#fff;
+      --b:rgba(0,0,0,0.09);--bh:rgba(0,0,0,0.2);
+      --t:#111;--tm:#666;--tf:#aaa;
+      --r4:4px;--r8:8px;--r12:12px;--r20:20px;--rpill:100px;
+    }
     @keyframes spin{to{transform:rotate(360deg);}}
+    @keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
     *{box-sizing:border-box;margin:0;padding:0;}
-    body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;font-size:15px;line-height:1.5;}
+    body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--t);min-height:100vh;font-size:14px;line-height:1.5;}
     a{text-decoration:none;color:inherit;}
-    nav{background:var(--surface);border-bottom:1px solid var(--border);padding:0 32px;height:60px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;}
-    .logo{font-family:'Syne',sans-serif;font-size:22px;font-weight:700;letter-spacing:-0.5px;color:var(--text);}
-    .logo span{color:var(--orange);}
-    .nav-links{display:flex;align-items:center;gap:28px;}
-    .nav-links a{font-size:14px;color:var(--text-muted);font-weight:400;}
-    .nav-right{display:flex;gap:10px;align-items:center;}
-    .nav-btn{background:var(--orange);color:white;border:none;border-radius:var(--radius-pill);padding:9px 20px;font-size:14px;font-family:'DM Sans',sans-serif;font-weight:500;cursor:pointer;}
-    .nav-btn:hover{background:var(--orange-light);}
-    .nav-btn-ghost{background:transparent;color:var(--text-muted);border:1px solid var(--border);border-radius:var(--radius-pill);padding:9px 20px;font-size:14px;font-family:'DM Sans',sans-serif;cursor:pointer;}
-    .hero{padding:52px 32px 36px;max-width:760px;margin:0 auto;text-align:center;}
-    .hero-kicker{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:500;color:var(--orange);background:var(--orange-dim);padding:5px 14px;border-radius:var(--radius-pill);margin-bottom:20px;letter-spacing:0.03em;}
-    .hero h1{font-family:'Syne',sans-serif;font-size:44px;font-weight:700;line-height:1.1;letter-spacing:-1.5px;color:var(--text);margin-bottom:12px;}
-    .hero h1 em{font-style:normal;color:var(--orange);}
-    .hero p{font-size:15px;color:var(--text-muted);margin-bottom:28px;font-weight:300;}
-    .search-wrap{display:flex;gap:10px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:8px;margin-bottom:14px;box-shadow:0 2px 20px rgba(0,0,0,0.06);}
-    .search-icon{display:flex;align-items:center;padding:0 4px 0 10px;color:var(--text-faint);}
-    .search-input{flex:1;border:none;outline:none;font-size:15px;font-family:'DM Sans',sans-serif;color:var(--text);background:transparent;}
-    .search-input::placeholder{color:var(--text-faint);}
-    .search-divider{width:1px;background:var(--border);margin:4px 0;}
-    .search-btn{background:var(--orange);color:white;border:none;border-radius:var(--radius-md);padding:12px 24px;font-size:15px;font-family:'DM Sans',sans-serif;font-weight:500;cursor:pointer;white-space:nowrap;}
-    .search-btn:hover{background:var(--orange-light);}
-    .ai-btn{background:#111;color:white;border:none;border-radius:var(--radius-md);padding:12px 20px;font-size:14px;font-family:'DM Sans',sans-serif;font-weight:500;cursor:pointer;white-space:nowrap;}
+
+    /* ── NAV ── */
+    nav{background:var(--s);border-bottom:1px solid var(--b);padding:0 20px;height:58px;display:flex;align-items:center;gap:16px;position:sticky;top:0;z-index:200;}
+    .logo{font-family:'Syne',sans-serif;font-size:21px;font-weight:800;letter-spacing:-0.5px;white-space:nowrap;}
+    .logo em{color:var(--or);font-style:normal;}
+    .nav-search{flex:1;max-width:540px;display:flex;align-items:center;background:var(--bg);border:1.5px solid var(--b);border-radius:var(--r8);overflow:hidden;transition:border-color .15s;}
+    .nav-search:focus-within{border-color:var(--or);}
+    .nav-search svg{margin:0 8px 0 12px;color:var(--tf);flex-shrink:0;}
+    .nav-search input{flex:1;border:none;outline:none;font-size:14px;font-family:'DM Sans',sans-serif;color:var(--t);background:transparent;padding:9px 0;}
+    .nav-search input::placeholder{color:var(--tf);}
+    .nav-search-btn{background:var(--or);color:#fff;border:none;padding:0 18px;height:100%;font-size:13px;font-weight:500;font-family:'DM Sans',sans-serif;cursor:pointer;white-space:nowrap;}
+    .nav-search-btn:hover{background:var(--or-l);}
+    .nav-actions{display:flex;gap:8px;align-items:center;margin-left:auto;}
+    .ai-btn{background:#111;color:#fff;border:none;border-radius:var(--r8);padding:8px 14px;font-size:13px;font-weight:500;font-family:'DM Sans',sans-serif;cursor:pointer;display:flex;align-items:center;gap:6px;white-space:nowrap;}
     .ai-btn:hover{background:#333;}
-    .popular{display:flex;justify-content:center;align-items:center;flex-wrap:wrap;gap:8px;font-size:13px;color:var(--text-faint);margin-top:10px;}
-    .popular-tag{color:var(--text-muted);background:var(--surface);border:1px solid var(--border);padding:4px 12px;border-radius:var(--radius-pill);cursor:pointer;font-size:13px;}
-    .popular-tag:hover{color:var(--orange);border-color:var(--orange);}
-    .stats-bar{background:var(--surface);border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:16px 32px;display:flex;align-items:center;justify-content:center;gap:40px;font-size:13px;color:var(--text-muted);}
-    .stat{display:flex;align-items:center;gap:8px;}
-    .stat-num{font-family:'Syne',sans-serif;font-size:18px;font-weight:700;color:var(--text);}
-    .main{max-width:1200px;margin:0 auto;padding:32px;display:grid;grid-template-columns:260px 1fr;gap:28px;align-items:start;}
-    .sidebar{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:22px;position:sticky;top:80px;max-height:calc(100vh - 100px);overflow-y:auto;}
-    .sidebar-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;}
-    .sidebar-title{font-family:'Syne',sans-serif;font-size:15px;font-weight:600;}
-    .reset-btn{font-size:12px;color:var(--orange);background:none;border:none;cursor:pointer;font-family:'DM Sans',sans-serif;padding:0;}
-    .filter-section{margin-bottom:18px;padding-bottom:18px;border-bottom:1px solid var(--border);}
-    .filter-section:last-of-type{border-bottom:none;margin-bottom:0;padding-bottom:0;}
-    .filter-label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.07em;color:var(--text-faint);margin-bottom:10px;}
-    .check-item{display:flex;align-items:center;gap:8px;padding:4px 0;cursor:pointer;font-size:13px;color:var(--text);}
-    .check-item input[type=checkbox]{accent-color:var(--orange);width:14px;height:14px;cursor:pointer;flex-shrink:0;}
-    .check-count{margin-left:auto;font-size:11px;color:var(--text-faint);}
-    .source-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
-    .price-inputs{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
-    .price-input{border:1px solid var(--border);border-radius:var(--radius-sm);padding:8px 10px;font-size:13px;font-family:'DM Sans',sans-serif;color:var(--text);background:var(--bg);outline:none;width:100%;}
-    .price-input:focus{border-color:var(--orange);}
-    .filter-chips{display:flex;flex-wrap:wrap;gap:5px;}
-    .fchip{font-size:12px;padding:5px 10px;border-radius:var(--radius-pill);border:1px solid var(--border);color:var(--text-muted);background:var(--bg);cursor:pointer;font-family:'DM Sans',sans-serif;}
-    .fchip.active{background:var(--orange);color:white;border-color:var(--orange);}
-    .filter-select{width:100%;border:1px solid var(--border);border-radius:var(--radius-sm);padding:8px 10px;font-size:13px;font-family:'DM Sans',sans-serif;color:var(--text);background:var(--bg);outline:none;cursor:pointer;}
-    .apply-btn{width:100%;background:var(--orange);color:white;border:none;border-radius:var(--radius-md);padding:12px;font-size:14px;font-weight:500;font-family:'DM Sans',sans-serif;cursor:pointer;margin-top:14px;}
-    .apply-btn:hover{background:var(--orange-light);}
-    .results-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;}
-    .results-count{font-size:14px;color:var(--text-muted);}
-    .results-count strong{color:var(--text);}
-    .sort-select{border:1px solid var(--border);border-radius:var(--radius-sm);padding:7px 10px;font-size:13px;font-family:'DM Sans',sans-serif;color:var(--text);background:var(--surface);outline:none;cursor:pointer;}
-    .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:14px;}
-    .card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;cursor:pointer;transition:border-color 0.15s,transform 0.15s;display:block;text-decoration:none;color:inherit;position:relative;}
-    .card:hover{border-color:var(--border-hover);transform:translateY(-2px);}
-    .card-img{aspect-ratio:4/3;background:var(--bg);display:flex;align-items:center;justify-content:center;overflow:hidden;}
-    .card-img img{width:100%;height:100%;object-fit:cover;}
-    .card-body{padding:12px 14px 14px;}
-    .source-badge{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:500;padding:3px 8px;border-radius:var(--radius-pill);margin-bottom:7px;}
-    .badge-olx{background:#e8f5e9;color:#1b5e20;}
-    .card-title{font-size:13px;font-weight:500;color:var(--text);margin-bottom:6px;line-height:1.35;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
-    .card-price{font-family:'Syne',sans-serif;font-size:17px;font-weight:700;color:var(--orange);margin-bottom:4px;}
-    .card-meta{font-size:11px;color:var(--text-faint);display:flex;align-items:center;gap:4px;margin-bottom:8px;}
-    .card-score{display:flex;align-items:center;gap:6px;}
-    .score-bar-wrap{flex:1;height:3px;background:#f0f0f0;border-radius:2px;}
-    .score-bar-fill{height:3px;border-radius:2px;}
-    .score-tag{font-size:10px;padding:2px 7px;border-radius:10px;font-weight:600;}
-    .tag-good{background:#EAF3DE;color:#27500A;}.tag-warn{background:#FAEEDA;color:#633806;}.tag-bad{background:#FCEBEB;color:#791F1F;}
-    .ai-box{margin-bottom:20px;background:#111;border-radius:var(--radius-lg);padding:18px 20px;}
-    .ai-box-title{font-size:13px;font-weight:700;color:var(--orange);margin-bottom:8px;display:flex;align-items:center;gap:8px;}
-    .ai-dot{width:8px;height:8px;border-radius:50%;background:var(--orange);}
+    .ai-pulse{width:6px;height:6px;border-radius:50%;background:var(--or);}
+    .nav-btn{background:var(--or);color:#fff;border:none;border-radius:var(--rpill);padding:8px 18px;font-size:13px;font-weight:500;font-family:'DM Sans',sans-serif;cursor:pointer;}
+    .nav-btn:hover{background:var(--or-l);}
+    .nav-ghost{background:transparent;color:var(--tm);border:1px solid var(--b);border-radius:var(--rpill);padding:8px 18px;font-size:13px;font-family:'DM Sans',sans-serif;cursor:pointer;}
+    .hamburger{display:none;flex-direction:column;gap:4px;cursor:pointer;padding:8px;background:none;border:none;}
+    .hamburger span{width:20px;height:2px;background:var(--t);border-radius:2px;}
+
+    /* ── CATEGORY BAR ── */
+    .cat-bar{background:var(--s);border-bottom:1px solid var(--b);overflow-x:auto;scrollbar-width:none;}
+    .cat-bar::-webkit-scrollbar{display:none;}
+    .cat-bar-inner{display:flex;align-items:stretch;padding:0 20px;gap:0;min-width:max-content;}
+    .cat-item{display:flex;flex-direction:column;align-items:center;gap:4px;padding:10px 16px;cursor:pointer;border-bottom:2px solid transparent;color:var(--tm);font-size:12px;font-weight:500;white-space:nowrap;transition:color .15s,border-color .15s;user-select:none;}
+    .cat-item:hover{color:var(--t);}
+    .cat-item.active{color:var(--or);border-bottom-color:var(--or);}
+    .cat-icon{font-size:20px;line-height:1;}
+
+    /* ── LAYOUT ── */
+    .page{max-width:1200px;margin:0 auto;padding:20px 20px;display:grid;grid-template-columns:248px 1fr;gap:20px;align-items:start;}
+
+    /* ── SIDEBAR ── */
+    .sidebar{background:var(--s);border:1px solid var(--b);border-radius:var(--r12);overflow:hidden;position:sticky;top:78px;max-height:calc(100vh - 100px);overflow-y:auto;}
+    .sidebar::-webkit-scrollbar{width:4px;}
+    .sidebar::-webkit-scrollbar-thumb{background:var(--b);border-radius:2px;}
+    .side-head{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1px solid var(--b);}
+    .side-head-title{font-family:'Syne',sans-serif;font-size:14px;font-weight:700;}
+    .side-reset{font-size:12px;color:var(--or);background:none;border:none;cursor:pointer;font-family:'DM Sans',sans-serif;}
+    .side-sec{padding:14px 16px;border-bottom:1px solid var(--b);}
+    .side-sec:last-child{border-bottom:none;}
+    .side-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--tf);margin-bottom:10px;}
+    .check-row{display:flex;align-items:center;gap:8px;padding:3px 0;cursor:pointer;font-size:13px;}
+    .check-row input[type=checkbox]{accent-color:var(--or);width:14px;height:14px;flex-shrink:0;}
+    .src-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
+    .src-soon{font-size:10px;color:var(--tf);margin-left:auto;}
+    .price-row{display:grid;grid-template-columns:1fr 1fr;gap:6px;}
+    .side-input{width:100%;border:1px solid var(--b);border-radius:var(--r8);padding:7px 10px;font-size:13px;font-family:'DM Sans',sans-serif;color:var(--t);background:var(--bg);outline:none;}
+    .side-input:focus{border-color:var(--or);}
+    .side-select{width:100%;border:1px solid var(--b);border-radius:var(--r8);padding:7px 10px;font-size:13px;font-family:'DM Sans',sans-serif;color:var(--t);background:var(--bg);outline:none;cursor:pointer;}
+    .chips{display:flex;flex-wrap:wrap;gap:5px;margin-top:2px;}
+    .chip{font-size:11px;padding:4px 10px;border-radius:var(--rpill);border:1px solid var(--b);color:var(--tm);background:var(--bg);cursor:pointer;transition:all .12s;}
+    .chip:hover{border-color:var(--or);color:var(--or);}
+    .chip.on{background:var(--or);color:#fff;border-color:var(--or);}
+    .sub-label{font-size:11px;color:var(--tf);margin-bottom:5px;margin-top:8px;}
+    .apply-btn{width:100%;background:var(--or);color:#fff;border:none;border-radius:var(--r8);padding:11px;font-size:13px;font-weight:500;font-family:'DM Sans',sans-serif;cursor:pointer;margin-top:4px;}
+    .apply-btn:hover{background:var(--or-l);}
+    .sub-list{display:flex;flex-direction:column;gap:2px;max-height:200px;overflow-y:auto;}
+    .sub-list::-webkit-scrollbar{width:3px;}
+    .sub-list::-webkit-scrollbar-thumb{background:var(--b);}
+
+    /* ── RESULTS ── */
+    .results{min-width:0;}
+    .results-bar{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;gap:10px;}
+    .results-count{font-size:13px;color:var(--tm);}
+    .results-count strong{color:var(--t);font-weight:500;}
+    .results-right{display:flex;align-items:center;gap:8px;}
+    .view-toggle{display:flex;border:1px solid var(--b);border-radius:var(--r8);overflow:hidden;}
+    .view-btn{background:transparent;border:none;padding:6px 10px;cursor:pointer;color:var(--tf);display:flex;align-items:center;}
+    .view-btn.on{background:var(--bg);color:var(--t);}
+    .sort-sel{border:1px solid var(--b);border-radius:var(--r8);padding:6px 10px;font-size:13px;font-family:'DM Sans',sans-serif;color:var(--t);background:var(--s);outline:none;cursor:pointer;}
+
+    /* ── AI BOX ── */
+    .ai-box{background:#111;border-radius:var(--r12);padding:16px 18px;margin-bottom:14px;}
+    .ai-box-hdr{display:flex;align-items:center;gap:8px;margin-bottom:8px;}
+    .ai-box-dot{width:7px;height:7px;border-radius:50%;background:var(--or);}
+    .ai-box-title{font-size:13px;font-weight:700;color:var(--or);}
     .ai-box-text{font-size:13px;color:#aaa;line-height:1.7;white-space:pre-wrap;}
-    .load-more{text-align:center;margin-top:28px;}
-    .load-btn{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-pill);padding:12px 36px;font-size:14px;font-family:'DM Sans',sans-serif;color:var(--text-muted);cursor:pointer;}
-    .load-btn:hover{border-color:var(--border-hover);color:var(--text);}
-    footer{margin-top:60px;border-top:1px solid var(--border);background:var(--surface);padding:32px;text-align:center;font-size:13px;color:var(--text-faint);}
-    footer .footer-logo{font-family:'Syne',sans-serif;font-size:18px;font-weight:700;color:var(--text);margin-bottom:8px;}
-    footer .footer-logo span{color:var(--orange);}
-    @media(max-width:768px){nav{padding:0 16px;}.nav-links{display:none;}.hero{padding:40px 16px 32px;}.hero h1{font-size:32px;}.main{grid-template-columns:1fr;padding:16px;}.sidebar{display:none;}.stats-bar{gap:20px;flex-wrap:wrap;}}
-    .hamburger{display:none;flex-direction:column;gap:5px;cursor:pointer;padding:8px;background:none;border:none;}
-    .hamburger span{width:22px;height:2px;background:var(--text);border-radius:2px;}
-    .mob-meni{display:none;position:fixed;inset:0;background:var(--surface);z-index:200;padding:24px;flex-direction:column;}
-    .mob-meni.open{display:flex;}
-    .mob-meni-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:32px;}
-    .mob-meni-close{font-size:24px;cursor:pointer;background:none;border:none;color:var(--text);}
-    .mob-meni a{font-size:20px;font-weight:600;color:var(--text);padding:14px 0;border-bottom:1px solid var(--border);font-family:'Syne',sans-serif;display:block;}
-    .mob-filter-btn{display:none;position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--orange);color:white;border:none;border-radius:var(--radius-pill);padding:14px 28px;font-size:14px;font-weight:600;font-family:'DM Sans',sans-serif;cursor:pointer;box-shadow:0 4px 20px rgba(230,92,0,0.4);z-index:99;}
-    .mob-sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:149;}
-    .mob-sidebar-overlay.open{display:block;}
-    @media(max-width:768px){.hamburger{display:flex;}.mob-filter-btn{display:block;}.sidebar{position:fixed;top:0;left:0;bottom:0;width:280px;z-index:150;border-radius:0;max-height:100vh;transform:translateX(-100%);transition:transform .3s;display:none;}.sidebar.mob-open{display:block;transform:translateX(0);}}
-    /* COMPARE */
-    .compare-bar{position:fixed;bottom:0;left:0;right:0;background:#111;border-top:1px solid rgba(255,255,255,0.1);padding:14px 24px;display:none;align-items:center;gap:16px;z-index:200;box-shadow:0 -4px 30px rgba(0,0,0,0.5);}
+
+    /* ── LIST VIEW (default, OLX style) ── */
+    .list-view{display:flex;flex-direction:column;gap:10px;}
+    .list-card{background:var(--s);border:1px solid var(--b);border-radius:var(--r12);overflow:hidden;display:flex;cursor:pointer;transition:border-color .12s,box-shadow .12s;position:relative;animation:fadeIn .2s ease;}
+    .list-card:hover{border-color:var(--bh);box-shadow:0 2px 12px rgba(0,0,0,0.06);}
+    .list-card-img{width:200px;min-width:200px;height:148px;background:var(--bg);overflow:hidden;position:relative;flex-shrink:0;}
+    .list-card-img img{width:100%;height:100%;object-fit:cover;}
+    .list-card-img-ph{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:36px;background:#edecea;}
+    .list-card-body{flex:1;padding:14px 16px;display:flex;flex-direction:column;min-width:0;}
+    .list-card-top{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:6px;}
+    .list-card-title{font-size:15px;font-weight:500;color:var(--t);line-height:1.35;flex:1;}
+    .list-card-price{font-family:'Syne',sans-serif;font-size:19px;font-weight:800;color:var(--or);white-space:nowrap;}
+    .list-card-meta{font-size:12px;color:var(--tf);display:flex;align-items:center;gap:10px;margin-bottom:auto;}
+    .list-card-footer{display:flex;align-items:center;justify-content:space-between;margin-top:10px;}
+    .list-card-badges{display:flex;align-items:center;gap:6px;}
+    .plat-badge{font-size:10px;font-weight:700;padding:2px 8px;border-radius:var(--rpill);}
+    .pb-olx{background:#e8f5e9;color:#1b5e20;}
+    .pb-autobum{background:#fce4ec;color:#b71c1c;}
+    .pb-facebook{background:#e3f2fd;color:#0d47a1;}
+    .score-tag{font-size:10px;font-weight:700;padding:2px 8px;border-radius:var(--rpill);}
+    .st-g{background:#EAF3DE;color:#27500A;}
+    .st-w{background:#FAEEDA;color:#633806;}
+    .st-b{background:#FCEBEB;color:#791F1F;}
+    .list-card-compare{background:transparent;border:1px solid var(--b);border-radius:var(--r8);padding:4px 10px;font-size:11px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;color:var(--tm);transition:all .12s;}
+    .list-card-compare:hover{border-color:var(--or);color:var(--or);}
+    .list-card-compare.added{background:var(--or);color:#fff;border-color:var(--or);}
+    .badge-novo{position:absolute;top:8px;left:8px;background:#22c55e;color:#fff;font-size:9px;font-weight:700;padding:3px 8px;border-radius:var(--rpill);z-index:2;}
+    .badge-pad{position:absolute;top:8px;left:8px;background:#ef4444;color:#fff;font-size:9px;font-weight:700;padding:3px 8px;border-radius:var(--rpill);z-index:2;}
+
+    /* ── GRID VIEW ── */
+    .grid-view{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:12px;}
+    .grid-card{background:var(--s);border:1px solid var(--b);border-radius:var(--r12);overflow:hidden;cursor:pointer;transition:border-color .12s,transform .12s;position:relative;animation:fadeIn .2s ease;}
+    .grid-card:hover{border-color:var(--bh);transform:translateY(-2px);}
+    .grid-card-img{aspect-ratio:4/3;background:#edecea;overflow:hidden;position:relative;}
+    .grid-card-img img{width:100%;height:100%;object-fit:cover;}
+    .grid-card-img-ph{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:28px;}
+    .grid-card-body{padding:10px 12px 12px;}
+    .grid-card-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:5px;}
+    .grid-card-title{font-size:12px;font-weight:500;color:var(--t);line-height:1.35;margin-bottom:5px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+    .grid-card-price{font-family:'Syne',sans-serif;font-size:16px;font-weight:800;color:var(--or);}
+    .grid-card-meta{font-size:10px;color:var(--tf);margin-top:2px;}
+    .grid-compare-btn{position:absolute;top:7px;right:7px;background:rgba(0,0,0,0.65);color:#fff;border:none;border-radius:6px;padding:3px 8px;font-size:10px;font-weight:700;cursor:pointer;opacity:0;transition:opacity .12s;font-family:'DM Sans',sans-serif;}
+    .grid-card:hover .grid-compare-btn{opacity:1;}
+    .grid-compare-btn.added{background:var(--or);opacity:1;}
+
+    /* ── LOAD MORE ── */
+    .load-more{text-align:center;margin-top:20px;padding-bottom:20px;}
+    .load-btn{background:var(--s);border:1px solid var(--b);border-radius:var(--rpill);padding:11px 32px;font-size:13px;font-family:'DM Sans',sans-serif;color:var(--tm);cursor:pointer;}
+    .load-btn:hover{border-color:var(--bh);color:var(--t);}
+
+    /* ── COMPARE BAR ── */
+    .compare-bar{position:fixed;bottom:0;left:0;right:0;background:#111;border-top:1px solid rgba(255,255,255,0.1);padding:12px 24px;display:none;align-items:center;gap:14px;z-index:300;box-shadow:0 -4px 30px rgba(0,0,0,0.5);}
     .compare-bar.active{display:flex;}
-    .compare-slots{display:flex;gap:8px;flex:1;}
-    .compare-slot{width:52px;height:40px;border-radius:8px;border:2px dashed rgba(255,255,255,0.15);display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;flex-shrink:0;}
+    .compare-slots{display:flex;gap:6px;flex:1;}
+    .compare-slot{width:48px;height:38px;border-radius:7px;border:2px dashed rgba(255,255,255,0.15);display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;flex-shrink:0;}
     .compare-slot img{width:100%;height:100%;object-fit:cover;}
-    .compare-slot .slot-empty{color:rgba(255,255,255,0.2);font-size:18px;}
-    .compare-slot .slot-remove{position:absolute;top:-2px;right:-2px;width:16px;height:16px;background:#ef4444;border-radius:50%;border:none;color:white;font-size:10px;cursor:pointer;line-height:1;}
-    .compare-count{font-family:'Syne',sans-serif;font-size:14px;font-weight:700;color:white;white-space:nowrap;}
-    .compare-btn{background:var(--orange);color:white;border:none;border-radius:var(--radius-md);padding:12px 24px;font-size:14px;font-weight:700;font-family:'DM Sans',sans-serif;cursor:pointer;white-space:nowrap;}
-    .compare-btn:hover{background:var(--orange-light);}
-    .compare-btn:disabled{opacity:0.4;cursor:not-allowed;}
-    .compare-clear{background:transparent;color:rgba(255,255,255,0.4);border:1px solid rgba(255,255,255,0.1);border-radius:var(--radius-md);padding:12px 16px;font-size:13px;font-family:'DM Sans',sans-serif;cursor:pointer;}
-    .compare-clear:hover{color:white;}
-    .card-compare-btn{position:absolute;top:8px;right:8px;background:rgba(0,0,0,0.7);color:white;border:none;border-radius:6px;padding:4px 8px;font-size:11px;font-weight:600;cursor:pointer;opacity:0;transition:opacity .15s;font-family:'DM Sans',sans-serif;backdrop-filter:blur(4px);}
-    .card:hover .card-compare-btn{opacity:1;}
-    .card-compare-btn.added{background:var(--orange);opacity:1;}
+    .slot-empty{color:rgba(255,255,255,0.2);font-size:16px;}
+    .slot-remove{position:absolute;top:-2px;right:-2px;width:15px;height:15px;background:#ef4444;border-radius:50%;border:none;color:#fff;font-size:9px;cursor:pointer;line-height:1;}
+    .compare-count{font-family:'Syne',sans-serif;font-size:13px;font-weight:700;color:#fff;white-space:nowrap;}
+    .compare-go{background:var(--or);color:#fff;border:none;border-radius:var(--r8);padding:10px 20px;font-size:13px;font-weight:700;font-family:'DM Sans',sans-serif;cursor:pointer;}
+    .compare-go:hover{background:var(--or-l);}
+    .compare-go:disabled{opacity:.4;cursor:not-allowed;}
+    .compare-clr{background:transparent;color:rgba(255,255,255,0.4);border:1px solid rgba(255,255,255,0.1);border-radius:var(--r8);padding:10px 14px;font-size:12px;font-family:'DM Sans',sans-serif;cursor:pointer;}
+    .compare-clr:hover{color:#fff;}
+
+    /* ── COMPARE MODAL ── */
     .compare-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:500;overflow-y:auto;padding:20px;}
     .compare-modal.open{display:block;}
-    .compare-modal-inner{max-width:1100px;margin:0 auto;background:#0f0f0f;border-radius:24px;overflow:hidden;border:1px solid rgba(255,255,255,0.08);}
-    .compare-modal-header{background:#111;padding:24px 28px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid rgba(255,255,255,0.06);}
-    .compare-modal-title{font-family:'Syne',sans-serif;font-size:20px;font-weight:800;color:white;}
-    .compare-modal-close{background:rgba(255,255,255,0.08);border:none;color:white;width:36px;height:36px;border-radius:50%;cursor:pointer;font-size:18px;}
-    .compare-modal-body{padding:28px;}
-    .compare-oglasi-grid{display:grid;gap:16px;margin-bottom:28px;}
-    .compare-oglas-card{background:#181818;border:1px solid rgba(255,255,255,0.06);border-radius:16px;overflow:hidden;flex-direction:column;}
-    .compare-oglas-slika{width:100%;height:160px;object-fit:cover;}
-    .compare-oglas-slika-ph{width:100%;height:160px;background:#222;display:flex;align-items:center;justify-content:center;color:#444;font-size:32px;}
-    .compare-oglas-body{padding:14px;}
-    .compare-oglas-platforma{font-size:10px;font-weight:700;padding:2px 8px;border-radius:100px;display:inline-block;margin-bottom:6px;}
-    .compare-oglas-naziv{font-size:13px;font-weight:500;color:#aaa;margin-bottom:6px;line-height:1.4;}
-    .compare-oglas-cijena{font-family:'Syne',sans-serif;font-size:20px;font-weight:800;color:var(--orange);}
-    .compare-oglas-rank{margin-top:8px;padding:8px;background:rgba(230,92,0,0.08);border-radius:8px;font-size:12px;color:#aaa;border:1px solid rgba(230,92,0,0.15);}
+    .compare-modal-inner{max-width:1100px;margin:0 auto;background:#0f0f0f;border-radius:20px;overflow:hidden;border:1px solid rgba(255,255,255,0.08);}
+    .compare-modal-header{background:#111;padding:22px 26px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid rgba(255,255,255,0.06);}
+    .compare-modal-title{font-family:'Syne',sans-serif;font-size:18px;font-weight:800;color:#fff;}
+    .compare-modal-close{background:rgba(255,255,255,0.08);border:none;color:#fff;width:34px;height:34px;border-radius:50%;cursor:pointer;font-size:17px;}
+    .compare-modal-body{padding:24px;}
+    .compare-oglasi-grid{display:grid;gap:14px;margin-bottom:24px;}
+    .compare-oglas-card{background:#181818;border:1px solid rgba(255,255,255,0.06);border-radius:14px;overflow:hidden;}
+    .compare-oglas-slika{width:100%;height:150px;object-fit:cover;}
+    .compare-oglas-slika-ph{width:100%;height:150px;background:#222;display:flex;align-items:center;justify-content:center;color:#444;font-size:28px;}
+    .compare-oglas-body{padding:12px;}
+    .compare-oglas-platforma{font-size:10px;font-weight:700;padding:2px 8px;border-radius:var(--rpill);display:inline-block;margin-bottom:5px;}
+    .compare-oglas-naziv{font-size:12px;font-weight:500;color:#aaa;margin-bottom:5px;line-height:1.4;}
+    .compare-oglas-cijena{font-family:'Syne',sans-serif;font-size:18px;font-weight:800;color:var(--or);}
+    .compare-oglas-rank{margin-top:7px;padding:7px;background:rgba(230,92,0,0.08);border-radius:7px;font-size:11px;color:#aaa;border:1px solid rgba(230,92,0,0.15);}
     .rank-1{background:rgba(34,197,94,0.08);border-color:rgba(34,197,94,0.2);}
     .rank-1 .rank-label{color:#22c55e;}
-    .rank-label{font-family:'Syne',sans-serif;font-size:13px;font-weight:700;color:var(--orange);}
-    .compare-ai-box{background:#0a0a0a;border:1px solid rgba(230,92,0,0.2);border-radius:16px;padding:24px;margin-bottom:20px;}
-    .compare-ai-header{display:flex;align-items:center;gap:10px;margin-bottom:16px;}
-    .compare-ai-dot{width:8px;height:8px;border-radius:50%;background:var(--orange);animation:pulse2 2s infinite;}
+    .rank-label{font-family:'Syne',sans-serif;font-size:12px;font-weight:700;color:var(--or);}
+    .compare-ai-box{background:#0a0a0a;border:1px solid rgba(230,92,0,0.2);border-radius:14px;padding:20px;margin-bottom:18px;}
+    .compare-ai-header{display:flex;align-items:center;gap:8px;margin-bottom:14px;}
+    .compare-ai-dot{width:7px;height:7px;border-radius:50%;background:var(--or);animation:pulse2 2s infinite;}
     @keyframes pulse2{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(.8)}}
-    .compare-ai-title{font-family:'Syne',sans-serif;font-size:16px;font-weight:700;color:white;}
-    .compare-ai-subtitle{font-size:12px;color:#555;margin-left:auto;}
-    .compare-ai-tekst{font-size:14px;color:#bbb;line-height:1.85;}
-    .compare-ai-loading{display:flex;align-items:center;gap:10px;color:#555;font-size:14px;}
-    .compare-ai-spinner{width:20px;height:20px;border:2px solid #333;border-top-color:var(--orange);border-radius:50%;animation:spin 0.8s linear infinite;flex-shrink:0;}
-    .score-section{margin-top:20px;}
-    .score-title{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:#555;margin-bottom:12px;}
-    .score-item{display:flex;align-items:center;gap:12px;margin-bottom:8px;}
-    .score-item-naziv{font-size:12px;color:#888;width:200px;flex-shrink:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-    .score-bar-bg{flex:1;height:8px;background:rgba(255,255,255,0.06);border-radius:4px;overflow:hidden;}
-    .score-bar-fill{height:8px;border-radius:4px;transition:width 1s ease;}
-    .score-val{font-family:'Syne',sans-serif;font-size:13px;font-weight:700;width:40px;text-align:right;flex-shrink:0;}
-    .verdict-box{background:linear-gradient(135deg,rgba(34,197,94,0.08),rgba(34,197,94,0.03));border:1px solid rgba(34,197,94,0.2);border-radius:12px;padding:16px;margin-top:16px;}
-    .verdict-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:#22c55e;margin-bottom:6px;}
-    .verdict-text{font-size:14px;color:#ddd;line-height:1.6;}
+    .compare-ai-title{font-family:'Syne',sans-serif;font-size:15px;font-weight:700;color:#fff;}
+    .compare-ai-subtitle{font-size:11px;color:#555;margin-left:auto;}
+    .compare-ai-tekst{font-size:13px;color:#bbb;line-height:1.85;}
+    .compare-ai-loading{display:flex;align-items:center;gap:10px;color:#555;font-size:13px;}
+    .compare-ai-spinner{width:18px;height:18px;border:2px solid #333;border-top-color:var(--or);border-radius:50%;animation:spin 0.8s linear infinite;flex-shrink:0;}
+    .score-section{margin-top:18px;}
+    .score-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#555;margin-bottom:10px;}
+    .score-item{display:flex;align-items:center;gap:10px;margin-bottom:7px;}
+    .score-item-naziv{font-size:11px;color:#888;width:190px;flex-shrink:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+    .score-bar-bg{flex:1;height:7px;background:rgba(255,255,255,0.06);border-radius:4px;overflow:hidden;}
+    .score-bar-fill{height:7px;border-radius:4px;transition:width 1s ease;}
+    .score-val{font-family:'Syne',sans-serif;font-size:12px;font-weight:700;width:36px;text-align:right;flex-shrink:0;}
+    .verdict-box{background:linear-gradient(135deg,rgba(34,197,94,0.08),rgba(34,197,94,0.03));border:1px solid rgba(34,197,94,0.2);border-radius:10px;padding:14px;margin-top:14px;}
+    .verdict-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#22c55e;margin-bottom:5px;}
+    .verdict-text{font-size:13px;color:#ddd;line-height:1.6;}
 
-    /* BADGES */
-    .badge-novo{position:absolute;top:8px;left:8px;background:#22c55e;color:white;font-size:10px;font-weight:700;padding:3px 8px;border-radius:100px;letter-spacing:0.05em;z-index:2;}
-    .badge-pad{position:absolute;top:8px;left:8px;background:#ef4444;color:white;font-size:10px;font-weight:700;padding:3px 8px;border-radius:100px;letter-spacing:0.05em;z-index:2;}
-    .badge-pad-cijena{position:absolute;bottom:8px;left:8px;background:rgba(239,68,68,0.9);color:white;font-size:10px;font-weight:700;padding:3px 8px;border-radius:100px;z-index:2;backdrop-filter:blur(4px);}
-  </style>
-  <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "WebSite",
-    "name": "Oglix.ba",
-    "url": "https://oglix.ba",
-    "description": "Agregator oglasa za Bosnu i Hercegovinu — OLX, Autobum, Facebook",
-    "potentialAction": {
-      "@type": "SearchAction",
-      "target": "https://oglix.ba/oglasi.html?q={search_term_string}",
-      "query-input": "required name=search_term_string"
+    /* ── MOB MENI ── */
+    .mob-meni{display:none;position:fixed;inset:0;background:var(--s);z-index:400;padding:22px;flex-direction:column;}
+    .mob-meni.open{display:flex;}
+    .mob-meni-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:28px;}
+    .mob-meni-close{font-size:22px;cursor:pointer;background:none;border:none;color:var(--t);}
+    .mob-meni a{font-size:18px;font-weight:600;color:var(--t);padding:13px 0;border-bottom:1px solid var(--b);font-family:'Syne',sans-serif;display:block;}
+    .mob-filter-btn{display:none;position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--or);color:#fff;border:none;border-radius:var(--rpill);padding:13px 26px;font-size:14px;font-weight:600;font-family:'DM Sans',sans-serif;cursor:pointer;box-shadow:0 4px 20px rgba(230,92,0,0.4);z-index:99;}
+    .mob-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:149;}
+    .mob-overlay.open{display:block;}
+
+    /* ── FOOTER ── */
+    footer{margin-top:48px;border-top:1px solid var(--b);background:var(--s);padding:28px;text-align:center;font-size:12px;color:var(--tf);}
+    .footer-logo{font-family:'Syne',sans-serif;font-size:17px;font-weight:700;color:var(--t);margin-bottom:7px;}
+    .footer-logo em{color:var(--or);font-style:normal;}
+
+    /* ── RESPONSIVE ── */
+    @media(max-width:900px){
+      .page{grid-template-columns:1fr;}
+      .sidebar{display:none;position:fixed;top:0;left:0;bottom:0;width:280px;z-index:200;border-radius:0;max-height:100vh;transform:translateX(-100%);transition:transform .25s;}
+      .sidebar.mob-open{display:block;transform:translateX(0);}
+      .mob-filter-btn{display:block;}
     }
-  }
-  </script>
+    @media(max-width:700px){
+      nav{padding:0 12px;gap:10px;}
+      .nav-actions .nav-ghost{display:none;}
+      .list-card-img{width:120px;min-width:120px;height:110px;}
+      .list-card-price{font-size:15px;}
+      .list-card-title{font-size:13px;}
+    }
+    @media(max-width:500px){
+      .hamburger{display:flex;}
+      .nav-search{display:none;}
+    }
+  </style>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebSite","name":"Oglix.ba","url":"https://oglix.ba","potentialAction":{"@type":"SearchAction","target":"https://oglix.ba/oglasi.html?q={search_term_string}","query-input":"required name=search_term_string"}}</script>
 </head>
 <body>
 
+<!-- MOB MENI -->
 <div class="mob-meni" id="mobMeni">
   <div class="mob-meni-header">
-    <div class="logo">oglix<span style="color:var(--orange);">.ba</span></div>
+    <div class="logo">oglix<em>.ba</em></div>
     <button class="mob-meni-close" onclick="toggleMeni()">&#x2715;</button>
   </div>
   <a href="/oglasi.html" onclick="toggleMeni()">Oglasi</a>
   <a href="/statistike.html" onclick="toggleMeni()">Statistike</a>
   <a href="/profil.html" onclick="toggleMeni()">&#x1F514; Alerti</a>
-  <a href="/biznis.html" style="color:var(--orange);" onclick="toggleMeni()">Biznis</a>
-  <div style="margin-top:24px;" id="mobNavRight"></div>
+  <a href="/biznis.html" style="color:var(--or);" onclick="toggleMeni()">Biznis</a>
+  <div style="margin-top:20px;" id="mobNavRight"></div>
 </div>
-<div class="mob-sidebar-overlay" id="mobOverlay" onclick="toggleSidebar()"></div>
+<div class="mob-overlay" id="mobOverlay" onclick="toggleSidebar()"></div>
 <button class="mob-filter-btn" onclick="toggleSidebar()">&#x2699;&#xFE0F; Filteri</button>
 
+<!-- COMPARE BAR -->
 <div class="compare-bar" id="compareBar">
   <div class="compare-slots" id="compareSlots">
     <div class="compare-slot" id="slot0"><span class="slot-empty">+</span></div>
@@ -225,16 +277,17 @@
     <div class="compare-slot" id="slot4"><span class="slot-empty">+</span></div>
   </div>
   <div class="compare-count">Odabrano: <span id="compareCount">0</span>/5</div>
-  <button class="compare-clear" onclick="clearCompare()">&#x2715; O&#x10D;isti</button>
-  <button class="compare-btn" id="compareBtnMain" onclick="otvoriUsporedbu()" disabled>&#x1F916; Usporedi s AI &#x2192;</button>
+  <button class="compare-clr" onclick="clearCompare()">&#x2715; Očisti</button>
+  <button class="compare-go" id="compareBtnMain" onclick="otvoriUsporedbu()" disabled>&#x1F916; Usporedi AI &#x2192;</button>
 </div>
 
+<!-- COMPARE MODAL -->
 <div class="compare-modal" id="compareModal">
   <div class="compare-modal-inner">
     <div class="compare-modal-header">
       <div>
         <div class="compare-modal-title">&#x1F916; AI Usporedba oglasa</div>
-        <div style="font-size:13px;color:#555;margin-top:3px;">Oglix AI analizira i rangira odabrane oglase</div>
+        <div style="font-size:12px;color:#555;margin-top:3px;">Oglix AI analizira i rangira odabrane oglase</div>
       </div>
       <button class="compare-modal-close" onclick="zatvoriUsporedbu()">&#x2715;</button>
     </div>
@@ -246,7 +299,7 @@
           <div class="compare-ai-subtitle">Uspoređuje cijene, specifikacije i tržišnu vrijednost</div>
         </div>
         <div class="compare-ai-tekst" id="compareAiTekst">
-          <div class="compare-ai-loading"><div class="compare-ai-spinner"></div> AI analizira odabrane oglase...</div>
+          <div class="compare-ai-loading"><div class="compare-ai-spinner"></div> Analiziram odabrane oglase...</div>
         </div>
       </div>
       <div class="score-section" id="scoreSection" style="display:none;">
@@ -257,100 +310,97 @@
         <div class="verdict-label">&#x2705; AI Preporuka</div>
         <div class="verdict-text" id="verdictText"></div>
       </div>
-      <div style="margin-top:24px;">
-        <div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:#555;margin-bottom:14px;">Odabrani oglasi</div>
+      <div style="margin-top:22px;">
+        <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#555;margin-bottom:12px;">Odabrani oglasi</div>
         <div class="compare-oglasi-grid" id="compareOglasiGrid"></div>
       </div>
     </div>
   </div>
 </div>
 
+<!-- NAV -->
 <nav>
-  <div class="logo">oglix<span>.ba</span></div>
-  <div class="nav-links">
-    <a href="/oglasi.html">Oglasi</a>
-    <a href="/statistike.html">Statistike</a>
-    <a href="/profil.html">&#x1F514; Alerti</a>
-    <a href="/biznis.html" style="color:var(--orange);font-weight:600;">Biznis</a>
+  <button class="hamburger" onclick="toggleMeni()"><span></span><span></span><span></span></button>
+  <a href="/oglasi.html" class="logo">oglix<em>.ba</em></a>
+  <div class="nav-search">
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="7" cy="7" r="4.5" stroke="currentColor" stroke-width="1.4"/><line x1="10.5" y1="10.5" x2="14" y2="14" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+    <input id="searchInput" type="text" placeholder="Pretraži oglase — Golf 7, iPhone, stan Sarajevo...">
+    <button class="nav-search-btn" onclick="pretrazi()">Traži</button>
   </div>
-  <button class="hamburger" onclick="toggleMeni()" aria-label="Meni"><span></span><span></span><span></span></button>
-  <div class="nav-right" id="navRight">
-    <button class="nav-btn-ghost" onclick="window.location.href='/login.html'">Prijava</button>
-    <button class="nav-btn" onclick="window.location.href='/login.html'">Registracija</button>
+  <div class="nav-actions">
+    <button class="ai-btn" onclick="aiAnaliza()"><div class="ai-pulse"></div>AI Analiza</button>
+    <div id="navRight" style="display:flex;gap:8px;">
+      <button class="nav-ghost" onclick="window.location.href='/login.html'">Prijava</button>
+      <button class="nav-btn" onclick="window.location.href='/login.html'">Registracija</button>
+    </div>
   </div>
 </nav>
 
-<section class="hero">
-  <div class="hero-kicker"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><circle cx="5" cy="5" r="4" fill="#e65c00"/></svg>Svi oglasi u BiH &#x2014; na jednom mjestu</div>
-  <h1>Pronađi šta tražiš.<br><em>Brže nego ikad.</em></h1>
-  <p>Pretražujemo OLX, Autobum, Facebook i još više izvora u realnom vremenu.</p>
-  <div class="search-wrap">
-    <div class="search-icon"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><circle cx="8" cy="8" r="5.5" stroke="currentColor" stroke-width="1.5"/><line x1="12.5" y1="12.5" x2="16" y2="16" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></div>
-    <input class="search-input" id="searchInput" type="text" placeholder="Šta tražiš? npr. Golf 7 DSG, iPhone 15, sofa...">
-    <div class="search-divider"></div>
-    <button class="ai-btn" onclick="aiAnaliza()">&#x1F916; AI Analiza</button>
-    <button class="search-btn" onclick="pretrazi()">Traži</button>
+<!-- CATEGORY BAR -->
+<div class="cat-bar">
+  <div class="cat-bar-inner" id="catBar">
+    <div class="cat-item active" onclick="filterGlavna('sve',this)" data-kat="sve">
+      <span class="cat-icon">🏠</span><span>Sve</span>
+    </div>
+    <div class="cat-item" onclick="filterGlavna('vozila',this)" data-kat="vozila">
+      <span class="cat-icon">🚗</span><span>Vozila</span>
+    </div>
+    <div class="cat-item" onclick="filterGlavna('elektronika',this)" data-kat="elektronika">
+      <span class="cat-icon">📱</span><span>Elektronika</span>
+    </div>
+    <div class="cat-item" onclick="filterGlavna('nekretnine',this)" data-kat="nekretnine">
+      <span class="cat-icon">🏢</span><span>Nekretnine</span>
+    </div>
+    <div class="cat-item" onclick="filterGlavna('motocikli',this)" data-kat="motocikli">
+      <span class="cat-icon">🏍️</span><span>Moto</span>
+    </div>
+    <div class="cat-item" onclick="filterGlavna('masine',this)" data-kat="masine">
+      <span class="cat-icon">🔧</span><span>Mašine</span>
+    </div>
+    <div class="cat-item" onclick="filterGlavna('bicikli',this)" data-kat="bicikli">
+      <span class="cat-icon">🚲</span><span>Bicikli</span>
+    </div>
+    <div class="cat-item" onclick="filterGlavna('nautika',this)" data-kat="nautika">
+      <span class="cat-icon">⛵</span><span>Nautika</span>
+    </div>
   </div>
-  <div class="popular">
-    <span>Popularno:</span>
-    <span class="popular-tag" onclick="quickSearch('Golf 7')">Golf 7</span>
-    <span class="popular-tag" onclick="quickSearch('iPhone 15')">iPhone 15</span>
-    <span class="popular-tag" onclick="quickSearch('PS5')">PS5</span>
-    <span class="popular-tag" onclick="quickSearch('stan Sarajevo')">stan Sarajevo</span>
-    <span class="popular-tag" onclick="quickSearch('traktor')">Traktor</span>
-    <span class="popular-tag" onclick="quickSearch('laptop')">Laptop</span>
-  </div>
-</section>
-
-<div class="stats-bar">
-  <div class="stat"><span class="stat-num" id="statBroj">114k+</span><span>oglasa u bazi</span></div>
-  <div class="stat" style="color:var(--border);font-size:20px;">|</div>
-  <div class="stat"><span class="stat-num">3</span><span>izvora</span></div>
-  <div class="stat" style="color:var(--border);font-size:20px;">|</div>
-  <div class="stat"><span class="stat-num">AI</span><span>analiza cijena</span></div>
-  <div class="stat" style="color:var(--border);font-size:20px;">|</div>
-  <div class="stat"><span class="stat-num">besplatno</span><span>za kupce</span></div>
 </div>
 
-<div class="main">
-  <aside class="sidebar">
-    <div class="sidebar-header">
-      <span class="sidebar-title">Filteri</span>
-      <button class="reset-btn" onclick="resetujFiltre()">Resetuj sve</button>
+<!-- PAGE -->
+<div class="page">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar" id="sidebar">
+    <div class="side-head">
+      <span class="side-head-title">Filteri</span>
+      <button class="side-reset" onclick="resetujFiltre()">Resetuj sve</button>
     </div>
-    <div class="filter-section">
-      <div class="filter-label">Izvor</div>
-      <label class="check-item"><input type="checkbox" id="filterOlx" checked onchange="primijeniFiltre()"><span class="source-dot" style="background:#43a047;"></span>OLX.ba</label>
-      <label class="check-item"><input type="checkbox" id="filterAutobum" checked onchange="primijeniFiltre()"><span class="source-dot" style="background:#e65c00;"></span>Autobum.ba</label>
-      <label class="check-item"><input type="checkbox" id="filterFacebook" onchange="primijeniFiltre()"><span class="source-dot" style="background:#1565c0;"></span>Facebook</label>
-      <label class="check-item" style="opacity:0.4;"><input type="checkbox" disabled><span class="source-dot" style="background:#f57c00;"></span>Njuškalo<span class="check-count">Uskoro</span></label>
-      <label class="check-item" style="opacity:0.4;"><input type="checkbox" disabled><span class="source-dot" style="background:#8e24aa;"></span>Halooglasi<span class="check-count">Uskoro</span></label>
+
+    <div class="side-sec">
+      <div class="side-label">Izvor</div>
+      <label class="check-row"><input type="checkbox" id="filterOlx" checked onchange="primijeniFiltre()"><span class="src-dot" style="background:#43a047;"></span>OLX.ba</label>
+      <label class="check-row"><input type="checkbox" id="filterAutobum" checked onchange="primijeniFiltre()"><span class="src-dot" style="background:#e65c00;"></span>Autobum.ba</label>
+      <label class="check-row"><input type="checkbox" id="filterFacebook" onchange="primijeniFiltre()"><span class="src-dot" style="background:#1565c0;"></span>Facebook</label>
+      <label class="check-row" style="opacity:.4;"><input type="checkbox" disabled><span class="src-dot" style="background:#f57c00;"></span>Njuškalo<span class="src-soon">Uskoro</span></label>
+      <label class="check-row" style="opacity:.4;"><input type="checkbox" disabled><span class="src-dot" style="background:#8e24aa;"></span>Halooglasi<span class="src-soon">Uskoro</span></label>
     </div>
-    <div class="filter-section">
-      <div class="filter-label">Kategorija</div>
-      <div class="filter-chips" id="glavneKategorije">
-        <span class="fchip active" onclick="filterGlavna('sve',this)">Sve</span>
-        <span class="fchip" onclick="filterGlavna('vozila',this)">&#x1F697; Vozila</span>
-        <span class="fchip" onclick="filterGlavna('elektronika',this)">&#x1F4F1; Elektronika</span>
-        <span class="fchip" onclick="filterGlavna('nekretnine',this)">&#x1F3E0; Nekretnine</span>
-        <span class="fchip" onclick="filterGlavna('motocikli',this)">&#x1F3CD;&#xFE0F; Moto</span>
-        <span class="fchip" onclick="filterGlavna('masine',this)">&#x1F527; Mašine</span>
+
+    <div class="side-sec" id="podkategorijeBox" style="display:none;">
+      <div class="side-label" id="podkategorijeLabel">Podkategorija</div>
+      <div class="sub-list" id="podkategorijeList"></div>
+    </div>
+
+    <div class="side-sec">
+      <div class="side-label">Cijena (KM)</div>
+      <div class="price-row">
+        <input class="side-input" type="number" placeholder="Od" id="cijenaOd">
+        <input class="side-input" type="number" placeholder="Do" id="cijenaDo">
       </div>
     </div>
-    <div class="filter-section" id="podkategorijeBox" style="display:none;">
-      <div class="filter-label" id="podkategorijeLabel">Brend</div>
-      <div id="podkategorijeList"></div>
-    </div>
-    <div class="filter-section">
-      <div class="filter-label">Cijena (KM)</div>
-      <div class="price-inputs">
-        <input class="price-input" type="number" placeholder="Od" id="cijenaOd">
-        <input class="price-input" type="number" placeholder="Do" id="cijenaDo">
-      </div>
-    </div>
-    <div class="filter-section">
-      <div class="filter-label">Lokacija</div>
-      <select class="filter-select" id="filterLokacija">
+
+    <div class="side-sec">
+      <div class="side-label">Lokacija</div>
+      <select class="side-select" id="filterLokacija">
         <option value="">Cijela BiH</option>
         <option value="Sarajevo">Sarajevo</option>
         <option value="Banja Luka">Banja Luka</option>
@@ -358,85 +408,92 @@
         <option value="Tuzla">Tuzla</option>
         <option value="Zenica">Zenica</option>
         <option value="Živinice">Živinice</option>
+        <option value="Bijeljina">Bijeljina</option>
+        <option value="Brčko">Brčko</option>
       </select>
     </div>
-    <div class="filter-section" id="autoFilteri" style="display:none;">
-      <div class="filter-label">&#x1F697; Auto filteri</div>
-      <div style="margin-bottom:10px;">
-        <div style="font-size:11px;color:var(--text-faint);margin-bottom:5px;">Gorivo</div>
-        <div class="filter-chips" id="filterGorivo">
-          <span class="fchip" onclick="toggleChip(this,'gorivo')">Dizel</span>
-          <span class="fchip" onclick="toggleChip(this,'gorivo')">Benzin</span>
-          <span class="fchip" onclick="toggleChip(this,'gorivo')">Hibrid</span>
-          <span class="fchip" onclick="toggleChip(this,'gorivo')">Električni</span>
-          <span class="fchip" onclick="toggleChip(this,'gorivo')">Plin</span>
-        </div>
+
+    <div class="side-sec" id="autoFilteri" style="display:none;">
+      <div class="side-label">Auto filteri</div>
+      <div class="sub-label">Gorivo</div>
+      <div class="chips" id="filterGorivo">
+        <span class="chip" onclick="toggleChip(this,'gorivo')">Dizel</span>
+        <span class="chip" onclick="toggleChip(this,'gorivo')">Benzin</span>
+        <span class="chip" onclick="toggleChip(this,'gorivo')">Hibrid</span>
+        <span class="chip" onclick="toggleChip(this,'gorivo')">Električni</span>
+        <span class="chip" onclick="toggleChip(this,'gorivo')">Plin</span>
       </div>
-      <div style="margin-bottom:10px;">
-        <div style="font-size:11px;color:var(--text-faint);margin-bottom:5px;">Transmisija</div>
-        <div class="filter-chips" id="filterTransmisija">
-          <span class="fchip" onclick="toggleChip(this,'transmisija')">Manuelni</span>
-          <span class="fchip" onclick="toggleChip(this,'transmisija')">Automatski</span>
-        </div>
+      <div class="sub-label">Transmisija</div>
+      <div class="chips" id="filterTransmisija">
+        <span class="chip" onclick="toggleChip(this,'transmisija')">Manuelni</span>
+        <span class="chip" onclick="toggleChip(this,'transmisija')">Automatski</span>
       </div>
-      <div style="margin-bottom:10px;">
-        <div style="font-size:11px;color:var(--text-faint);margin-bottom:5px;">Godište</div>
-        <div class="price-inputs">
-          <input class="price-input" type="number" placeholder="Od" id="godOd" min="1980" max="2026">
-          <input class="price-input" type="number" placeholder="Do" id="godDo" min="1980" max="2026">
-        </div>
+      <div class="sub-label">Godište</div>
+      <div class="price-row">
+        <input class="side-input" type="number" placeholder="Od" id="godOd" min="1980" max="2026">
+        <input class="side-input" type="number" placeholder="Do" id="godDo" min="1980" max="2026">
       </div>
-      <div style="margin-bottom:10px;">
-        <div style="font-size:11px;color:var(--text-faint);margin-bottom:5px;">Kilometraža (km)</div>
-        <div class="price-inputs">
-          <input class="price-input" type="number" placeholder="Od" id="kmOd">
-          <input class="price-input" type="number" placeholder="Do" id="kmDo">
-        </div>
+      <div class="sub-label">Kilometraža (km)</div>
+      <div class="price-row">
+        <input class="side-input" type="number" placeholder="Od" id="kmOd">
+        <input class="side-input" type="number" placeholder="Do" id="kmDo">
       </div>
-      <div style="margin-bottom:10px;">
-        <div style="font-size:11px;color:var(--text-faint);margin-bottom:5px;">Karoserija</div>
-        <div class="filter-chips" id="filterKaroserija">
-          <span class="fchip" onclick="toggleChip(this,'karoserija')">Limuzina</span>
-          <span class="fchip" onclick="toggleChip(this,'karoserija')">Karavan</span>
-          <span class="fchip" onclick="toggleChip(this,'karoserija')">SUV</span>
-          <span class="fchip" onclick="toggleChip(this,'karoserija')">Kupe</span>
-          <span class="fchip" onclick="toggleChip(this,'karoserija')">Kabrio</span>
-          <span class="fchip" onclick="toggleChip(this,'karoserija')">Van</span>
-        </div>
+      <div class="sub-label">Karoserija</div>
+      <div class="chips" id="filterKaroserija">
+        <span class="chip" onclick="toggleChip(this,'karoserija')">Limuzina</span>
+        <span class="chip" onclick="toggleChip(this,'karoserija')">Karavan</span>
+        <span class="chip" onclick="toggleChip(this,'karoserija')">SUV</span>
+        <span class="chip" onclick="toggleChip(this,'karoserija')">Kupe</span>
+        <span class="chip" onclick="toggleChip(this,'karoserija')">Kabrio</span>
+        <span class="chip" onclick="toggleChip(this,'karoserija')">Van</span>
       </div>
-      <div>
-        <div style="font-size:11px;color:var(--text-faint);margin-bottom:5px;">Snaga (kW)</div>
-        <div class="price-inputs">
-          <input class="price-input" type="number" placeholder="Od" id="kwOd">
-          <input class="price-input" type="number" placeholder="Do" id="kwDo">
-        </div>
+      <div class="sub-label">Snaga (kW)</div>
+      <div class="price-row">
+        <input class="side-input" type="number" placeholder="Od" id="kwOd">
+        <input class="side-input" type="number" placeholder="Do" id="kwDo">
       </div>
     </div>
-    <button class="apply-btn" onclick="primijeniFiltre()">Primijeni filtere</button>
+
+    <div class="side-sec">
+      <button class="apply-btn" onclick="primijeniFiltre()">Primijeni filtere</button>
+    </div>
   </aside>
 
-  <div>
+  <!-- RESULTS -->
+  <div class="results">
     <div id="ai-analiza-box" style="display:none;" class="ai-box">
-      <div class="ai-box-title"><div class="ai-dot"></div> Oglix AI Analiza</div>
+      <div class="ai-box-hdr"><div class="ai-box-dot"></div><div class="ai-box-title">Oglix AI Analiza</div></div>
       <div class="ai-box-text" id="ai-analiza-tekst">Analiziram oglase...</div>
     </div>
-    <div class="results-header">
+
+    <div class="results-bar">
       <div class="results-count">Pronađeno <strong id="rezultatiBroj">0</strong> oglasa</div>
-      <select class="sort-select" onchange="sortirajSelect(this.value)">
-        <option value="novo">Najnoviji</option>
-        <option value="cijena_asc">Najjeftiniji</option>
-        <option value="cijena_desc">Najskuplji</option>
-      </select>
+      <div class="results-right">
+        <div class="view-toggle">
+          <button class="view-btn on" id="viewList" onclick="setView('list')" title="Lista">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="1" y="2" width="14" height="3" rx="1" fill="currentColor"/><rect x="1" y="7" width="14" height="3" rx="1" fill="currentColor"/><rect x="1" y="12" width="14" height="2" rx="1" fill="currentColor"/></svg>
+          </button>
+          <button class="view-btn" id="viewGrid" onclick="setView('grid')" title="Mreža">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="1" y="1" width="6" height="6" rx="1" fill="currentColor"/><rect x="9" y="1" width="6" height="6" rx="1" fill="currentColor"/><rect x="1" y="9" width="6" height="6" rx="1" fill="currentColor"/><rect x="9" y="9" width="6" height="6" rx="1" fill="currentColor"/></svg>
+          </button>
+        </div>
+        <select class="sort-sel" onchange="sortirajSelect(this.value)">
+          <option value="novo">Najnoviji</option>
+          <option value="cijena_asc">Najjeftiniji</option>
+          <option value="cijena_desc">Najskuplji</option>
+        </select>
+      </div>
     </div>
-    <div class="grid" id="oglasiGrid"></div>
+
+    <div id="oglasiContainer"></div>
     <div class="load-more"><button class="load-btn" onclick="ucitajJos()">Učitaj još oglasa</button></div>
   </div>
 </div>
 
 <footer>
-  <div class="footer-logo">oglix<span>.ba</span></div>
+  <div class="footer-logo">oglix<em>.ba</em></div>
   <p>Agregator oglasa za Bosnu i Hercegovinu &middot; Nisu naši oglasi, mi ih samo skupljamo.</p>
-  <p style="margin-top:8px;">&copy; 2026 oglix.ba</p>
+  <p style="margin-top:6px;">&copy; 2026 oglix.ba</p>
 </footer>
 
 <script>
@@ -449,14 +506,24 @@ var OGLASI_PO_STRANI = 48;
 var ukupnoOglasa = 0;
 var aktivniSort = 'novo';
 var compareOglasi = [];
+var aktivniView = 'list';
 
 var podkategorije = {
   vozila:[{kat:'vozila-volkswagen',naziv:'Volkswagen'},{kat:'vozila-mercedes',naziv:'Mercedes'},{kat:'vozila-bmw',naziv:'BMW'},{kat:'vozila-audi',naziv:'Audi'},{kat:'vozila-opel',naziv:'Opel'},{kat:'vozila-peugeot',naziv:'Peugeot'},{kat:'vozila-renault',naziv:'Renault'},{kat:'vozila-skoda',naziv:'Škoda'},{kat:'vozila-ford',naziv:'Ford'},{kat:'vozila-citroen',naziv:'Citroën'},{kat:'vozila-toyota',naziv:'Toyota'},{kat:'vozila-hyundai',naziv:'Hyundai'},{kat:'vozila-kia',naziv:'Kia'},{kat:'vozila-seat',naziv:'Seat'},{kat:'vozila-fiat',naziv:'Fiat'},{kat:'vozila-honda',naziv:'Honda'},{kat:'vozila-mazda',naziv:'Mazda'},{kat:'vozila-nissan',naziv:'Nissan'},{kat:'vozila-suzuki',naziv:'Suzuki'},{kat:'vozila-volvo',naziv:'Volvo'},{kat:'vozila-landrover',naziv:'Land Rover'},{kat:'vozila-porsche',naziv:'Porsche'},{kat:'vozila-jeep',naziv:'Jeep'},{kat:'vozila-mitsubishi',naziv:'Mitsubishi'},{kat:'vozila-dacia',naziv:'Dacia'},{kat:'vozila-alfaromeo',naziv:'Alfa Romeo'},{kat:'vozila-mini',naziv:'Mini'},{kat:'vozila-chevrolet',naziv:'Chevrolet'}],
   elektronika:[{kat:'elektronika-mobiteli',naziv:'Mobiteli'},{kat:'elektronika-laptopi',naziv:'Laptopi'},{kat:'elektronika-tableti',naziv:'Tableti'},{kat:'elektronika-tv',naziv:'TV'},{kat:'elektronika-bijela-tehnika',naziv:'Bijela tehnika'},{kat:'elektronika-desktop',naziv:'Desktop računari'},{kat:'elektronika-satovi',naziv:'Pametni satovi'},{kat:'elektronika-bluetooth',naziv:'Bluetooth'},{kat:'elektronika-zvucnici',naziv:'Zvučnici'},{kat:'elektronika-vr',naziv:'VR uređaji'},{kat:'elektronika-oprema',naziv:'Kompjuterska oprema'},{kat:'elektronika-serveri',naziv:'Serveri'},{kat:'elektronika-dijelovi-mobiteli',naziv:'Dijelovi mobitela'}],
   nekretnine:[{kat:'nekretnine-stanovi',naziv:'Stanovi'},{kat:'nekretnine-kuce',naziv:'Kuće'},{kat:'nekretnine-zemljista',naziv:'Zemljišta'},{kat:'nekretnine-poslovni',naziv:'Poslovni prostori'}],
   motocikli:[{kat:'motocikli',naziv:'Motocikli'},{kat:'bicikli',naziv:'Bicikli'},{kat:'atv-quad',naziv:'ATV / Quad'},{kat:'nautika',naziv:'Nautika'}],
-  masine:[{kat:'masine-alati',naziv:'Mašine i alati'}]
+  masine:[{kat:'masine-alati',naziv:'Mašine i alati'}],
+  bicikli:[{kat:'bicikli',naziv:'Bicikli'}],
+  nautika:[{kat:'nautika',naziv:'Nautika'}]
 };
+
+function setView(v) {
+  aktivniView = v;
+  document.getElementById('viewList').classList.toggle('on', v === 'list');
+  document.getElementById('viewGrid').classList.toggle('on', v === 'grid');
+  prikaziOglase(trenutnoFiltrirani);
+}
 
 function getAktivnePlatforme() {
   var p = [];
@@ -468,8 +535,9 @@ function getAktivnePlatforme() {
 
 function filterGlavna(tip, el) {
   aktivnaGlavnaKat = tip;
-  document.querySelectorAll('#glavneKategorije .fchip').forEach(function(c) { c.classList.remove('active'); });
+  document.querySelectorAll('.cat-item').forEach(function(c) { c.classList.remove('active'); });
   el.classList.add('active');
+  // Sync sidebar highlight
   var podBox = document.getElementById('podkategorijeBox');
   var podList = document.getElementById('podkategorijeList');
   var podLabel = document.getElementById('podkategorijeLabel');
@@ -477,17 +545,15 @@ function filterGlavna(tip, el) {
   if (tip === 'sve') {
     podBox.style.display = 'none';
     if (autoF) autoF.style.display = 'none';
-    trenutnaStrana = 0;
-    primijeniFiltre();
-    return;
+  } else {
+    podBox.style.display = 'block';
+    if (autoF) autoF.style.display = tip === 'vozila' ? 'block' : 'none';
+    podLabel.textContent = tip === 'vozila' ? 'Brend' : 'Podkategorija';
+    var lista = podkategorije[tip] || [];
+    podList.innerHTML = lista.map(function(p) {
+      return '<label class="check-row"><input type="checkbox" class="kat-checkbox" value="' + p.kat + '" onchange="primijeniFiltre()"> ' + p.naziv + '</label>';
+    }).join('');
   }
-  podBox.style.display = 'block';
-  if (autoF) autoF.style.display = tip === 'vozila' ? 'block' : 'none';
-  podLabel.textContent = tip === 'vozila' ? 'Brend' : 'Podkategorija';
-  var lista = podkategorije[tip] || [];
-  podList.innerHTML = lista.map(function(p) {
-    return '<label class="check-item"><input type="checkbox" class="kat-checkbox" value="' + p.kat + '" onchange="primijeniFiltre()"> ' + p.naziv + '</label>';
-  }).join('');
   trenutnaStrana = 0;
   primijeniFiltre();
 }
@@ -496,7 +562,7 @@ function mapOglas(o) {
   var cijena = parseFloat((o.cijena || '').replace(/\./g, '').replace(',', '.').replace(/[^0-9]/g, '')) || 0;
   var datumObjekta = new Date(o.datum);
   var sada = new Date();
-  var jeNov = (sada - datumObjekta) < 24 * 60 * 60 * 1000; // zadnjih 24h
+  var jeNov = (sada - datumObjekta) < 24 * 60 * 60 * 1000;
   return { id: o.id, naslov: o.naslov, cijena: cijena, cijenaStr: o.cijena, lokacija: 'BiH', platforma: o.platforma || 'olx', slika: o.slika, link: o.link, datum: datumObjekta.toLocaleDateString('bs-BA'), score: 75, aiTag: 'good', aiLabel: 'Live oglas', kategorija: o.kategorija || 'ostalo', jeNov: jeNov, cijenaPala: !!o.cijena_pala, cijenaStara: o.cijena_stara };
 }
 
@@ -504,62 +570,84 @@ function updateNavbar() {
   var k = JSON.parse(localStorage.getItem('korisnik') || 'null');
   var navRight = document.getElementById('navRight');
   if (k) {
-    navRight.innerHTML = '<span style="font-size:14px;color:var(--text-muted);margin-right:8px;">Zdravo, <strong>' + k.ime.split(' ')[0] + '</strong></span><a href="/profil.html" class="nav-btn-ghost" style="padding:9px 16px;font-size:14px;">&#x1F464; Profil</a><button class="nav-btn" onclick="odjava()">Odjava</button>';
+    navRight.innerHTML = '<span style="font-size:13px;color:var(--tm);margin-right:6px;">Zdravo, <strong>' + k.ime.split(' ')[0] + '</strong></span><a href="/profil.html" class="nav-ghost" style="padding:8px 14px;font-size:13px;">&#x1F464; Profil</a><button class="nav-btn" onclick="odjava()">Odjava</button>';
   }
 }
 function odjava() { localStorage.removeItem('korisnik'); window.location.href = '/login.html'; }
 
+function renderCard(o) {
+  var metaData = encodeURIComponent(JSON.stringify({ id: o.id, naslov: o.naslov, cijena: o.cijenaStr, slika: o.slika || '', link: o.link || '', platforma: o.platforma || 'olx', kategorija: o.kategorija || '' }));
+  var oglasStranica = '/oglas.html?data=' + metaData;
+  var platNaziv = o.platforma === 'facebook' ? 'FACEBOOK' : o.platforma === 'autobum' ? 'AUTOBUM' : 'OLX';
+  var pbClass = o.platforma === 'facebook' ? 'pb-facebook' : o.platforma === 'autobum' ? 'pb-autobum' : 'pb-olx';
+  var scoreTag = o.score >= 75 ? '<span class="score-tag st-g">Dobra cijena</span>' : o.score >= 50 ? '<span class="score-tag st-w">Provjeri cijenu</span>' : '<span class="score-tag st-b">Visoka cijena</span>';
+  var isAdded = compareOglasi.some(function(c) { return c.id === o.id; });
+  var compareDataStr = JSON.stringify(o).replace(/&/g, '&amp;').replace(/"/g, '&quot;');
+  var imgHtml = o.slika ? '<img src="' + o.slika + '" alt="" loading="lazy" onerror="this.style.display=\'none\'">' : '';
+  var imgPh = o.slika ? '' : (aktivniView === 'list' ? '<div class="list-card-img-ph">&#x1F4F7;</div>' : '<div class="grid-card-img-ph">&#x1F4F7;</div>');
+  var badgeHtml = '';
+  if (o.jeNov) badgeHtml = '<span class="badge-novo">NOVO</span>';
+  else if (o.cijenaPala && o.cijenaStara) {
+    var razlika = Math.round(parseFloat(o.cijenaStara) - o.cijena);
+    if (razlika > 0) badgeHtml = '<span class="badge-pad">&#x2193; -' + razlika.toLocaleString() + ' KM</span>';
+  }
+
+  if (aktivniView === 'list') {
+    return '<a href="' + oglasStranica + '" target="_blank" class="list-card">' +
+      '<div class="list-card-img">' + badgeHtml + imgHtml + imgPh + '</div>' +
+      '<div class="list-card-body">' +
+        '<div class="list-card-top">' +
+          '<div class="list-card-title">' + o.naslov + '</div>' +
+          '<div class="list-card-price">' + o.cijenaStr + '</div>' +
+        '</div>' +
+        '<div class="list-card-meta">&#x1F4CD; ' + o.lokacija + ' &bull; ' + o.datum + '</div>' +
+        '<div class="list-card-footer">' +
+          '<div class="list-card-badges"><span class="plat-badge ' + pbClass + '">' + platNaziv + '</span>' + scoreTag + '</div>' +
+          '<button class="list-card-compare' + (isAdded ? ' added' : '') + '" onclick="toggleCompare(event,' + compareDataStr + ')">' + (isAdded ? '&#x2713; Dodano' : '+ Usporedi') + '</button>' +
+        '</div>' +
+      '</div>' +
+    '</a>';
+  } else {
+    return '<a href="' + oglasStranica + '" target="_blank" class="grid-card">' +
+      '<div class="grid-card-img">' + badgeHtml + imgHtml + imgPh +
+        '<button class="grid-compare-btn' + (isAdded ? ' added' : '') + '" onclick="toggleCompare(event,' + compareDataStr + ')">' + (isAdded ? '&#x2713;' : '+ Usporedi') + '</button>' +
+      '</div>' +
+      '<div class="grid-card-body">' +
+        '<div class="grid-card-top"><span class="plat-badge ' + pbClass + '">' + platNaziv + '</span>' + scoreTag + '</div>' +
+        '<div class="grid-card-title">' + o.naslov + '</div>' +
+        '<div class="grid-card-price">' + o.cijenaStr + '</div>' +
+        '<div class="grid-card-meta">&#x1F4CD; ' + o.lokacija + ' &bull; ' + o.datum + '</div>' +
+      '</div>' +
+    '</a>';
+  }
+}
+
 function prikaziOglase(oglasi) {
   trenutnoFiltrirani = oglasi;
-  var grid = document.getElementById('oglasiGrid');
+  var container = document.getElementById('oglasiContainer');
   var broj = document.getElementById('rezultatiBroj');
-  var badgeClass = { olx: 'badge-olx', autobum: 'badge-autobum', facebook: 'badge-facebook' };
   broj.textContent = ukupnoOglasa || oglasi.length;
   if (oglasi.length === 0) {
-    grid.innerHTML = '<div style="padding:40px;text-align:center;color:#aaa;grid-column:1/-1;">Nema rezultata.</div>';
+    container.innerHTML = '<div style="padding:48px;text-align:center;color:var(--tf);">Nema rezultata.<br><br><a href="https://www.olx.ba/pretraga?keywords=' + encodeURIComponent(document.getElementById('searchInput').value) + '" target="_blank" style="color:var(--or);">Pretraži na OLX.ba &#x2192;</a></div>';
     return;
   }
-  var scoreColor = function(s) { return s >= 75 ? '#639922' : s >= 50 ? '#BA7517' : '#A32D2D'; };
-  grid.innerHTML = oglasi.map(function(o) {
-    var metaData = encodeURIComponent(JSON.stringify({ id: o.id, naslov: o.naslov, cijena: o.cijenaStr, slika: o.slika || '', link: o.link || '', platforma: o.platforma || 'olx', kategorija: o.kategorija || '' }));
-    var oglasStranica = '/oglas.html?data=' + metaData;
-    var platformaNaziv = o.platforma === 'facebook' ? 'FACEBOOK' : o.platforma === 'autobum' ? 'AUTOBUM' : 'OLX';
-    var isAdded = compareOglasi.some(function(c) { return c.id === o.id; });
-    var compareDataStr = JSON.stringify(o).replace(/&/g, '&amp;').replace(/"/g, '&quot;');
-    var badgeHtml = '';
-    if (o.jeNov) badgeHtml = '<span class="badge-novo">&#x2728; NOVO</span>';
-    else if (o.cijenaPala && o.cijenaStara) {
-      var razlika = Math.round(parseFloat(o.cijenaStara) - o.cijena);
-      badgeHtml = '<span class="badge-pad">&#x2193; -' + razlika.toLocaleString() + ' KM</span>';
-    }
-    return '<a href="' + oglasStranica + '" target="_blank" class="card">' +
-      badgeHtml +
-      '<button class="card-compare-btn' + (isAdded ? ' added' : '') + '" onclick="toggleCompare(event,' + compareDataStr + ')" title="Dodaj u usporedbu">' + (isAdded ? '&#x2713;' : '+') + ' Usporedi</button>' +
-      '<div class="card-img">' + (o.slika ? '<img src="' + o.slika + '" alt="" loading="lazy" onerror="this.style.display=\'none\'">' : '<svg width="56" height="56" viewBox="0 0 56 56" fill="none"><ellipse cx="28" cy="36" rx="18" ry="10" stroke="#aaa" stroke-width="2"/><path d="M10 36 Q10 20 28 17 Q46 20 46 36" stroke="#aaa" stroke-width="2" fill="none"/></svg>') + '</div>' +
-      '<div class="card-body">' +
-      '<span class="source-badge ' + (badgeClass[o.platforma] || 'badge-olx') + '">' + platformaNaziv + '</span>' +
-      '<div class="card-title">' + o.naslov + '</div>' +
-      '<div class="card-price">' + o.cijenaStr + '</div>' +
-      '<div class="card-meta">&#x1F4CD; ' + o.lokacija + ' &middot; ' + o.datum + '</div>' +
-      '<div class="card-score"><span class="score-tag tag-' + o.aiTag + '">' + o.aiLabel + '</span><div class="score-bar-wrap"><div class="score-bar-fill" style="width:' + o.score + '%;background:' + scoreColor(o.score) + ';"></div></div></div>' +
-      '</div></a>';
-  }).join('');
+  var wrapClass = aktivniView === 'list' ? 'list-view' : 'grid-view';
+  container.innerHTML = '<div class="' + wrapClass + '">' + oglasi.map(renderCard).join('') + '</div>';
 }
 
 function toggleChip(el, grupa) {
   if (grupa === 'gorivo' || grupa === 'transmisija') {
-    var kontejner = el.parentElement;
-    kontejner.querySelectorAll('.fchip').forEach(function(c) { if (c !== el) c.classList.remove('active'); });
+    el.parentElement.querySelectorAll('.chip').forEach(function(c) { if (c !== el) c.classList.remove('on'); });
   }
-  el.classList.toggle('active');
+  el.classList.toggle('on');
   primijeniFiltre();
 }
 
 function getAutoFilteri() {
   var f = {};
-  var gorivo = document.querySelector('#filterGorivo .fchip.active');
+  var gorivo = document.querySelector('#filterGorivo .chip.on');
   if (gorivo) f.gorivo = gorivo.textContent.trim();
-  var trans = document.querySelector('#filterTransmisija .fchip.active');
+  var trans = document.querySelector('#filterTransmisija .chip.on');
   if (trans) f.transmisija = trans.textContent.trim();
   var godOd = document.getElementById('godOd').value;
   var godDo = document.getElementById('godDo').value;
@@ -569,7 +657,7 @@ function getAutoFilteri() {
   var kmDo = document.getElementById('kmDo').value;
   if (kmOd) f.km_od = kmOd;
   if (kmDo) f.km_do = kmDo;
-  var kar = document.querySelector('#filterKaroserija .fchip.active');
+  var kar = document.querySelector('#filterKaroserija .chip.on');
   if (kar) f.karoserija = kar.textContent.trim();
   var kwOd = document.getElementById('kwOd').value;
   var kwDo = document.getElementById('kwDo').value;
@@ -610,7 +698,6 @@ function buildUrl(offset) {
 }
 
 async function pretrazi() {
-  var query = document.getElementById('searchInput').value.trim();
   trenutnaStrana = 0;
   try {
     var res = await fetch(buildUrl(0));
@@ -620,25 +707,21 @@ async function pretrazi() {
       prikaziOglase(data.oglasi.map(mapOglas));
     } else {
       ukupnoOglasa = 0;
-      document.getElementById('oglasiGrid').innerHTML = '<div style="padding:40px;text-align:center;color:#aaa;grid-column:1/-1;">Nema rezultata za &quot;' + query + '&quot;.<br><br><a href="https://www.olx.ba/pretraga?keywords=' + encodeURIComponent(query) + '" target="_blank" style="color:#e65c00;">Pretraži na OLX.ba &#x2192;</a></div>';
+      var q = document.getElementById('searchInput').value;
+      document.getElementById('oglasiContainer').innerHTML = '<div style="padding:48px;text-align:center;color:var(--tf);">Nema rezultata za &quot;' + q + '&quot;.<br><br><a href="https://www.olx.ba/pretraga?keywords=' + encodeURIComponent(q) + '" target="_blank" style="color:var(--or);">Pretraži na OLX.ba &#x2192;</a></div>';
       document.getElementById('rezultatiBroj').textContent = '0';
     }
   } catch(e) { console.log('Greška pretrage:', e.message); }
 }
 
 function quickSearch(q) { document.getElementById('searchInput').value = q; pretrazi(); }
-
 function sortirajSelect(tip) { aktivniSort = tip; trenutnaStrana = 0; primijeniFiltre(); }
 
 async function primijeniFiltre() {
   try {
     var res = await fetch(buildUrl(0));
     var data = await res.json();
-    if (data.uspjeh) {
-      ukupnoOglasa = data.ukupno;
-      trenutnaStrana = 0;
-      prikaziOglase(data.oglasi.map(mapOglas));
-    }
+    if (data.uspjeh) { ukupnoOglasa = data.ukupno; trenutnaStrana = 0; prikaziOglase(data.oglasi.map(mapOglas)); }
   } catch(e) { console.log('Greška filtera:', e.message); }
 }
 
@@ -652,11 +735,11 @@ function resetujFiltre() {
   document.getElementById('filterFacebook').checked = false;
   document.querySelectorAll('.kat-checkbox').forEach(function(cb) { cb.checked = false; });
   aktivnaGlavnaKat = 'sve';
-  document.querySelectorAll('#glavneKategorije .fchip').forEach(function(c) { c.classList.remove('active'); });
-  document.querySelector('#glavneKategorije .fchip').classList.add('active');
+  document.querySelectorAll('.cat-item').forEach(function(c) { c.classList.remove('active'); });
+  document.querySelector('.cat-item[data-kat="sve"]').classList.add('active');
   document.getElementById('podkategorijeBox').style.display = 'none';
   document.getElementById('autoFilteri').style.display = 'none';
-  document.querySelectorAll('#autoFilteri .fchip').forEach(function(c) { c.classList.remove('active'); });
+  document.querySelectorAll('.chip').forEach(function(c) { c.classList.remove('on'); });
   document.getElementById('godOd').value = '';
   document.getElementById('godDo').value = '';
   document.getElementById('kmOd').value = '';
@@ -676,10 +759,7 @@ async function ucitajJos() {
     if (data.uspjeh && data.oglasi.length > 0) {
       trenutnoFiltrirani = trenutnoFiltrirani.concat(data.oglasi.map(mapOglas));
       prikaziOglase(trenutnoFiltrirani);
-    } else {
-      alert('Nema više oglasa!');
-      trenutnaStrana--;
-    }
+    } else { alert('Nema više oglasa!'); trenutnaStrana--; }
   } catch(e) { console.log('Greška:', e.message); }
 }
 
@@ -697,17 +777,15 @@ async function aiAnaliza() {
 
 document.getElementById('searchInput').addEventListener('keydown', function(e) { if (e.key === 'Enter') pretrazi(); });
 
-// ── COMPARE ──────────────────────────────────────────────
+// ── COMPARE ──
 function toggleCompare(e, oglas) {
-  e.preventDefault();
-  e.stopPropagation();
+  e.preventDefault(); e.stopPropagation();
   var idx = compareOglasi.findIndex(function(o) { return o.id === oglas.id; });
-  if (idx > -1) {
-    compareOglasi.splice(idx, 1);
-  } else {
-    if (compareOglasi.length >= 5) { showToast('Maksimalno 5 oglasa za usporedbu!', '#ef4444'); return; }
+  if (idx > -1) { compareOglasi.splice(idx, 1); }
+  else {
+    if (compareOglasi.length >= 5) { showToast('Maksimalno 5 oglasa!', '#ef4444'); return; }
     compareOglasi.push(oglas);
-    showToast('Oglas dodan u usporedbu \u2713', '#22c55e');
+    showToast('Dodano u usporedbu \u2713', '#22c55e');
   }
   updateCompareBar();
   prikaziOglase(trenutnoFiltrirani);
@@ -715,22 +793,17 @@ function toggleCompare(e, oglas) {
 
 function updateCompareBar() {
   var bar = document.getElementById('compareBar');
-  var count = document.getElementById('compareCount');
-  var btn = document.getElementById('compareBtnMain');
-  count.textContent = compareOglasi.length;
-  btn.disabled = compareOglasi.length < 2;
-  if (compareOglasi.length > 0) { bar.classList.add('active'); } else { bar.classList.remove('active'); }
+  document.getElementById('compareCount').textContent = compareOglasi.length;
+  document.getElementById('compareBtnMain').disabled = compareOglasi.length < 2;
+  if (compareOglasi.length > 0) bar.classList.add('active'); else bar.classList.remove('active');
   for (var i = 0; i < 5; i++) {
     var slot = document.getElementById('slot' + i);
     var oglas = compareOglasi[i];
     if (oglas) {
-      var imgHtml = oglas.slika ? '<img src="' + oglas.slika + '" style="width:100%;height:100%;object-fit:cover;" onerror="this.style.display=\'none\'">' : '<span style="font-size:16px;">\uD83D\uDE97</span>';
-      slot.innerHTML = imgHtml + '<button class="slot-remove" onclick="ukloniIzCompare(' + i + ')">\u00D7</button>';
-      slot.style.borderColor = 'var(--orange)';
-    } else {
-      slot.innerHTML = '<span class="slot-empty">+</span>';
-      slot.style.borderColor = '';
-    }
+      var imgHtml = oglas.slika ? '<img src="' + oglas.slika + '" style="width:100%;height:100%;object-fit:cover;" onerror="this.style.display=\'none\'">' : '<span style="font-size:14px;">&#x1F4F7;</span>';
+      slot.innerHTML = imgHtml + '<button class="slot-remove" onclick="ukloniIzCompare(' + i + ')">&#x00D7;</button>';
+      slot.style.borderColor = 'var(--or)';
+    } else { slot.innerHTML = '<span class="slot-empty">+</span>'; slot.style.borderColor = ''; }
   }
 }
 
@@ -739,10 +812,10 @@ function clearCompare() { compareOglasi = []; updateCompareBar(); prikaziOglase(
 
 function showToast(msg, boja) {
   var t = document.createElement('div');
-  t.style.cssText = 'position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:' + boja + ';color:white;padding:10px 20px;border-radius:100px;font-size:13px;font-weight:600;z-index:9999;box-shadow:0 4px 20px rgba(0,0,0,0.3);white-space:nowrap;';
+  t.style.cssText = 'position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:' + boja + ';color:white;padding:10px 20px;border-radius:100px;font-size:13px;font-weight:600;z-index:9999;box-shadow:0 4px 20px rgba(0,0,0,0.3);white-space:nowrap;pointer-events:none;';
   t.textContent = msg;
   document.body.appendChild(t);
-  setTimeout(function() { t.remove(); }, 2500);
+  setTimeout(function() { t.remove(); }, 2200);
 }
 
 async function otvoriUsporedbu() {
@@ -763,9 +836,9 @@ function renderCompareOglasi() {
   var grid = document.getElementById('compareOglasiGrid');
   grid.style.gridTemplateColumns = 'repeat(' + cols + ',1fr)';
   grid.innerHTML = compareOglasi.map(function(o, i) {
-    var badgeStyle = o.platforma === 'facebook' ? 'color:#1565c0;background:#e3f2fd;' : o.platforma === 'autobum' ? 'color:#c62828;background:#fce4ec;' : 'color:#1b5e20;background:#e8f5e9;';
+    var badgeStyle = o.platforma === 'facebook' ? 'color:#0d47a1;background:#e3f2fd;' : o.platforma === 'autobum' ? 'color:#b71c1c;background:#fce4ec;' : 'color:#1b5e20;background:#e8f5e9;';
     var platNaziv = o.platforma === 'facebook' ? 'FACEBOOK' : o.platforma === 'autobum' ? 'AUTOBUM' : 'OLX';
-    var imgHtml = o.slika ? '<img class="compare-oglas-slika" src="' + o.slika + '" onerror="this.style.display=\'none\'">' : '<div class="compare-oglas-slika-ph">\uD83D\uDE97</div>';
+    var imgHtml = o.slika ? '<img class="compare-oglas-slika" src="' + o.slika + '" onerror="this.style.display=\'none\'">' : '<div class="compare-oglas-slika-ph">&#x1F4F7;</div>';
     return '<div class="compare-oglas-card" id="compareCard' + i + '">' + imgHtml +
       '<div class="compare-oglas-body">' +
       '<span class="compare-oglas-platforma" style="' + badgeStyle + '">' + platNaziv + '</span>' +
@@ -778,27 +851,21 @@ function renderCompareOglasi() {
 
 async function ucitajCompareAI() {
   try {
-    var res = await fetch('/api/compare-ai', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ oglasi: compareOglasi })
-    });
+    var res = await fetch('/api/compare-ai', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ oglasi: compareOglasi }) });
     var data = await res.json();
     if (data.uspjeh) {
       var tekst = (data.analiza || '')
         .replace(/\*\*([^*]+)\*\*/g, '<strong style="color:white">$1</strong>')
-        .replace(/OGLAS #(\d+):/gi, '<br><strong style="color:var(--orange);font-size:15px;">\uD83C\uDFF7\uFE0F OGLAS #$1:</strong>')
-        .replace(/UKUPNA ANALIZA:/gi, '<br><strong style="color:var(--orange);font-size:14px;">\uD83D\uDCCA UKUPNA ANALIZA:</strong>')
-        .replace(/PREPORUKA:/gi, '<br><strong style="color:#22c55e;font-size:14px;">\u2705 PREPORUKA:</strong>')
-        .replace(/UPOZORENJE:/gi, '<br><strong style="color:#ef4444;font-size:14px;">\u26A0\uFE0F UPOZORENJE:</strong>')
-        .replace(/RANG:/gi, '<br><strong style="color:#f59e0b;font-size:14px;">\uD83C\uDFC6 RANG:</strong>')
+        .replace(/OGLAS #(\d+):/gi, '<br><strong style="color:var(--or);font-size:14px;">OGLAS #$1:</strong>')
+        .replace(/UKUPNA ANALIZA:/gi, '<br><strong style="color:var(--or);font-size:13px;">UKUPNA ANALIZA:</strong>')
+        .replace(/PREPORUKA:/gi, '<br><strong style="color:#22c55e;font-size:13px;">&#x2705; PREPORUKA:</strong>')
+        .replace(/UPOZORENJE:/gi, '<br><strong style="color:#ef4444;font-size:13px;">&#x26A0;&#xFE0F; UPOZORENJE:</strong>')
+        .replace(/RANG:/gi, '<br><strong style="color:#f59e0b;font-size:13px;">RANG:</strong>')
         .replace(/\n/g, '<br>');
       document.getElementById('compareAiTekst').innerHTML = tekst;
-
       if (data.scores && data.scores.length > 0) {
         document.getElementById('scoreSection').style.display = 'block';
         var maxScore = Math.max.apply(null, data.scores.map(function(s) { return s.score; }));
-        var boje = ['#22c55e', '#3b82f6', '#f59e0b', '#8b5cf6', '#ef4444'];
         document.getElementById('scoreBars').innerHTML = data.scores.map(function(s, i) {
           var boja = i === 0 ? '#22c55e' : i === 1 ? '#3b82f6' : i === 2 ? '#f59e0b' : '#6b7280';
           var width = maxScore > 0 ? Math.round(s.score / maxScore * 100) : 0;
@@ -808,26 +875,14 @@ async function ucitajCompareAI() {
           var card = document.getElementById('compareCard' + s.oglas_idx);
           var rank = document.getElementById('rank' + s.oglas_idx);
           if (card && rank) {
-            if (rankIdx === 0) {
-              card.style.borderColor = 'rgba(34,197,94,0.4)';
-              rank.className = 'compare-oglas-rank rank-1';
-              rank.innerHTML = '<span class="rank-label">\uD83C\uDFC6 #1 Best deal</span>';
-            } else {
-              rank.innerHTML = '<span class="rank-label">#' + (rankIdx + 1) + ' \u2014 Score: ' + s.score + '/100</span>';
-            }
+            if (rankIdx === 0) { card.style.borderColor = 'rgba(34,197,94,0.4)'; rank.className = 'compare-oglas-rank rank-1'; rank.innerHTML = '<span class="rank-label">&#x1F3C6; #1 Best deal</span>'; }
+            else { rank.innerHTML = '<span class="rank-label">#' + (rankIdx + 1) + ' &mdash; Score: ' + s.score + '/100</span>'; }
           }
         });
       }
-      if (data.verdict) {
-        document.getElementById('verdictBox').style.display = 'block';
-        document.getElementById('verdictText').innerHTML = data.verdict;
-      }
-    } else {
-      document.getElementById('compareAiTekst').textContent = 'Greška pri analizi. Pokušaj ponovo.';
-    }
-  } catch(e) {
-    document.getElementById('compareAiTekst').textContent = 'Greška: ' + e.message;
-  }
+      if (data.verdict) { document.getElementById('verdictBox').style.display = 'block'; document.getElementById('verdictText').innerHTML = data.verdict; }
+    } else { document.getElementById('compareAiTekst').textContent = 'Greška pri analizi. Pokušaj ponovo.'; }
+  } catch(e) { document.getElementById('compareAiTekst').textContent = 'Greška: ' + e.message; }
 }
 
 document.getElementById('compareModal').addEventListener('click', function(e) { if (e.target === this) zatvoriUsporedbu(); });
@@ -838,7 +893,6 @@ async function init() {
   try {
     var res = await fetch('/api/live-oglasi?limit=1');
     var data = await res.json();
-    if (data.uspjeh) { document.getElementById('statBroj').textContent = (Math.round(data.ukupno / 1000)) + 'k+'; }
     if (urlQ) { document.getElementById('searchInput').value = urlQ; await pretrazi(); }
     else { await primijeniFiltre(); }
   } catch(e) { console.log('Greška:', e.message); }
@@ -847,19 +901,15 @@ async function init() {
 window.onload = init;
 
 function toggleMeni() {
-  var meni = document.getElementById('mobMeni');
-  meni.classList.toggle('open');
+  document.getElementById('mobMeni').classList.toggle('open');
   var k = JSON.parse(localStorage.getItem('korisnik') || 'null');
-  var mobNavRight = document.getElementById('mobNavRight');
-  if (!mobNavRight) return;
-  mobNavRight.innerHTML = k ? '<button class="nav-btn" onclick="odjava()" style="width:100%;">Odjava</button>' : '<a href="/login.html" class="nav-btn" style="width:100%;display:block;text-align:center;padding:10px;">Prijava</a>';
+  var el = document.getElementById('mobNavRight');
+  if (el) el.innerHTML = k ? '<button class="nav-btn" onclick="odjava()" style="width:100%;">Odjava</button>' : '<a href="/login.html" class="nav-btn" style="width:100%;display:block;text-align:center;padding:10px;">Prijava</a>';
 }
 
 function toggleSidebar() {
-  var sidebar = document.querySelector('.sidebar');
-  var overlay = document.getElementById('mobOverlay');
-  sidebar.classList.toggle('mob-open');
-  overlay.classList.toggle('open');
+  document.getElementById('sidebar').classList.toggle('mob-open');
+  document.getElementById('mobOverlay').classList.toggle('open');
 }
 </script>
 </body>
