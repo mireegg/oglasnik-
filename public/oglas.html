@@ -414,41 +414,157 @@ function promijeniSliku(el,src){
 }
 
 // ── AI ANALIZA JEDNOG ────────────────────────────────────
-async function ucitajAiAnalizuJednog(d) {
-  document.getElementById('aiAnalizaBox').style.display='block';
-  var katTip = d ? d.kategorija_tip : 'ostalo';
+app.post('/api/analiza-jednog-oglasa', async (req, res) => {
+    const { oglas } = req.body;
+    const d = oglas.detalji || {};
+    const katTip = d.kategorija_tip || 'ostalo';
+    const cijenaNum = parseCijena(oglas.cijenaStr);
 
-  // Naslovi po kategoriji
-  var naslovi = {
-    vozila: '🚗 Oglix AI — Analiza vozila',
-    mobiteli: '📱 Oglix AI — Analiza mobitela',
-    racunari: '🖥️ Oglix AI — Analiza računara',
-    nekretnine: '🏠 Oglix AI — Analiza nekretnine',
-  };
-  document.getElementById('aiAnalizaTitle').textContent = naslovi[katTip] || 'Oglix AI — Analiza';
+    // Dohvati tržišni prosjek iz baze
+    let trzisniKontekst = '';
+    if (katTip === 'vozila' && cijenaNum > 0) {
+        const modelInfo = await getModelProsjekZaOglas(pool, {
+            naslov: oglas.naslov,
+            cijena_num: cijenaNum,
+            godiste: d.godiste ? parseInt(d.godiste) : null,
+            gorivo: d.gorivo || null,
+            transmisija: d.transmisija || null
+        }, 0);
 
-  try {
-    var res=await fetch('/api/analiza-jednog-oglasa',{
-      method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({oglas:Object.assign({},oglasMeta,{cijenaStr:oglasMeta.cijena,detalji:d||{}}),slicni:[]})
-    });
-    var data=await res.json();
-    if(data.uspjeh){
-      var txt=data.analiza
-        .replace(/OCJENA:\s*([^\n]+)/g,function(m,val){
-          var cls={'ODLIČNO':'ocjena-odlicno','ODLICNO':'ocjena-odlicno','FER':'ocjena-fer','PREVISOKO':'ocjena-previsoko','IZBJEGAVAJ':'ocjena-izbjegavaj'}[val.trim().toUpperCase()]||'ocjena-fer';
-          return '<span class="ai-ocjena '+cls+'">'+val.trim()+'</span><br>';
-        })
-        .replace(/CIJENA:\s*([^\n]+)/g,'<div style="margin:8px 0"><strong style="color:#e65c00">💰 Cijena:</strong> $1</div>')
-        .replace(/SAVJET:\s*([^\n]+)/g,'<div style="margin:8px 0"><strong style="color:#60a5fa">💡 Savjet:</strong> $1</div>')
-        .replace(/SCORE:\s*\d+/g,'').replace(/\n/g,'<br>');
-      document.getElementById('aiAnalizaTekst').innerHTML=txt;
-    } else {
-      document.getElementById('aiAnalizaTekst').textContent='Analiza nije dostupna.';
+        if (modelInfo.avg > 0 && modelInfo.broj >= 3) {
+            const razlika = Math.round(cijenaNum - modelInfo.avg);
+            const posto = Math.round((razlika / modelInfo.avg) * 100);
+            const smjer = razlika > 0 ? `+${posto}% IZNAD` : `${posto}% ISPOD`;
+            trzisniKontekst = `
+TRŽIŠNI KONTEKST (iz baze ${modelInfo.broj} sličnih oglasa u BiH):
+- Prosječna cijena sličnih vozila: ${Math.round(modelInfo.avg).toLocaleString()} KM
+- Raspon: ${Math.round(modelInfo.min).toLocaleString()} — ${Math.round(modelInfo.max).toLocaleString()} KM
+- Ovaj oglas je ${smjer} tržišnog prosjeka (${Math.abs(razlika).toLocaleString()} KM razlike)
+${d.gorivo ? '- Gorivo filtrirano: ' + d.gorivo : ''}
+${d.godiste ? '- Godište filtrirano: ' + d.godiste + ' ±2' : ''}
+${d.transmisija ? '- Transmisija: ' + d.transmisija : ''}`;
+        }
+    } else if (katTip === 'nekretnine' && d.kvadrata && cijenaNum > 0) {
+        const m2 = Math.round(cijenaNum / parseFloat(d.kvadrata));
+        const avg = await pool.query(
+            `SELECT AVG(cijena_num/kvadrata::numeric) as avg_m2, COUNT(*) as broj
+             FROM live_oglasi WHERE kategorija LIKE 'nekretnine%'
+             AND cijena_num > 10000 AND kvadrata IS NOT NULL AND kvadrata::numeric > 0`,
+        );
+        if (avg.rows[0]?.avg_m2) {
+            const avgM2 = Math.round(parseFloat(avg.rows[0].avg_m2));
+            const posto = Math.round(((m2 - avgM2) / avgM2) * 100);
+            trzisniKontekst = `
+TRŽIŠNI KONTEKST:
+- Cijena ovog oglasa: ${m2.toLocaleString()} KM/m²
+- Prosjek tržišta: ${avgM2.toLocaleString()} KM/m² (uzorak: ${avg.rows[0].broj} oglasa)
+- Ovaj oglas je ${posto > 0 ? '+'+posto+'% IZNAD' : posto+'% ISPOD'} prosjeka`;
+        }
+    } else if ((katTip === 'mobiteli' || katTip === 'racunari') && cijenaNum > 0) {
+        const kat = katTip === 'mobiteli' ? 'elektronika-mobiteli' : 'elektronika-laptopi';
+        const avg = await pool.query(
+            `SELECT AVG(cijena_num) as avg, COUNT(*) as broj FROM live_oglasi
+             WHERE kategorija = $1 AND cijena_num > 0 AND naslov ILIKE $2`,
+            [kat, '%' + (oglas.naslov || '').split(' ').slice(0,2).join('%') + '%']
+        );
+        if (avg.rows[0]?.avg && avg.rows[0].broj >= 3) {
+            const avgVal = Math.round(parseFloat(avg.rows[0].avg));
+            const posto = Math.round(((cijenaNum - avgVal) / avgVal) * 100);
+            trzisniKontekst = `
+TRŽIŠNI KONTEKST (${avg.rows[0].broj} sličnih oglasa u BiH):
+- Prosječna cijena sličnih: ${avgVal.toLocaleString()} KM
+- Ovaj oglas je ${posto > 0 ? '+'+posto+'% IZNAD' : posto+'% ISPOD'} prosjeka`;
+        }
     }
-  } catch(e){ document.getElementById('aiAnalizaTekst').textContent='Greška pri analizi.'; }
-}
 
+    let prompt = '';
+    if (katTip === 'vozila') {
+        prompt = `Ti si vrhunski savjetnik za kupovinu vozila u Bosni i Hercegovini sa 20 godina iskustva. Poznaješ tržišne vrijednosti, tipične probleme modela i sve zamke pri kupovini.
+
+OGLAS:
+Vozilo: ${oglas.naslov}
+Cijena: ${oglas.cijenaStr}
+Godište: ${d.godiste||'—'} | Gorivo: ${d.gorivo||'—'} | Kilometraža: ${d.km ? Number(d.km).toLocaleString()+' km' : '—'}
+Kubikaža: ${d.kubikaza||'—'} | Snaga: ${d.kw ? d.kw+' kW ('+Math.round(d.kw*1.36)+' KS)' : '—'}
+Transmisija: ${d.transmisija||'—'} | Boja: ${d.boja||'—'} | Grad: ${d.grad||'—'}
+${trzisniKontekst}
+
+Daj preciznu analizu u OVOM FORMATU:
+
+OCJENA: [ODLIČNO/FER/PREVISOKO/IZBJEGAVAJ]
+CIJENA: [Je li cijena fer u odnosu na tržišni prosjek? Konkretan komentar sa brojevima.]
+PREGOVARANJE: [Za koliko KM možeš pregovarati? Budi konkretan — npr. "Ponudi 12.500 KM"]
+SAVJET: [Šta obavezno provjeriti fizički na ovom vozilu? Koji su tipični problemi ovog modela i godišta?]
+SCORE: [0-100]
+
+Budi direktan i konkretan. Koristi tržišne podatke iz konteksta. Bosanski jezik.`;
+
+    } else if (katTip === 'mobiteli') {
+        prompt = `Ti si expert za tržište mobitela u BiH.
+
+OGLAS: ${oglas.naslov} — ${oglas.cijenaStr}
+OS: ${d.os||'—'} | Memorija: ${d.interna_memorija||'—'} | RAM: ${d.ram_mob||'—'}
+${trzisniKontekst}
+
+OCJENA: [ODLIČNO/FER/PREVISOKO/IZBJEGAVAJ]
+CIJENA: [Komentar sa poređenjem sa novom cijenom i tržišnim prosjekom]
+PREGOVARANJE: [Konkretna cifra za pregovaranje]
+SAVJET: [Šta fizički provjeriti — baterija, ekran, Face ID/fingerprint, oštećenja, originalna kutija]
+SCORE: [0-100]
+
+Bosanski. Direktno.`;
+
+    } else if (katTip === 'racunari') {
+        prompt = `Ti si expert za tržište računara u BiH.
+
+OGLAS: ${oglas.naslov} — ${oglas.cijenaStr}
+CPU: ${d.procesor||'—'} | RAM: ${d.ram_pc||'—'} | SSD: ${d.ssd ? d.ssd+'GB' : '—'} | GPU: ${d.graficka||'—'}
+${trzisniKontekst}
+
+OCJENA: [ODLIČNO/FER/PREVISOKO/IZBJEGAVAJ]
+CIJENA: [Vrijednost komponenti vs cijena]
+PREGOVARANJE: [Konkretna cifra]
+SAVJET: [Šta testirati — stres test GPU/CPU, disk health, baterija ako laptop, napajanje]
+SCORE: [0-100]
+
+Bosanski. Direktno.`;
+
+    } else if (katTip === 'nekretnine') {
+        prompt = `Ti si iskusan agent za nekretnine u BiH.
+
+OGLAS: ${oglas.naslov} — ${oglas.cijenaStr}
+Površina: ${d.kvadrata||'—'}m² | Sobe: ${d.broj_soba||'—'} | Sprat: ${d.sprat||'—'}
+Namješteno: ${d.namjesten||'—'} | Grijanje: ${d.grijanje||'—'}
+${trzisniKontekst}
+
+OCJENA: [ODLIČNO/FER/PREVISOKO/IZBJEGAVAJ]
+CIJENA: [Cijena/m² analiza, usporedba sa tržištem]
+PREGOVARANJE: [Konkretna cifra za pregovaranje]
+SAVJET: [Obavezno provjeriti: uknjižba/ZK, instalacije struja/voda/grijanje, vlaga, etažiranje, komunalije]
+SCORE: [0-100]
+
+Bosanski. Direktno.`;
+
+    } else {
+        prompt = `Ti si savjetnik za kupovinu u BiH.
+Oglas: ${oglas.naslov} — ${oglas.cijenaStr}
+${trzisniKontekst}
+OCJENA: [ODLIČNO/FER/PREVISOKO/IZBJEGAVAJ]
+CIJENA: [komentar]
+PREGOVARANJE: [konkretna cifra]
+SAVJET: [preporuka]
+SCORE: [0-100]
+Bosanski.`;
+    }
+
+    try {
+        const tekst = await claudeAI(prompt, 600);
+        const scoreMatch = (tekst||'').match(/SCORE:\s*(\d+)/);
+        res.json({ uspjeh: true, analiza: tekst || 'Analiza nije dostupna.', score: scoreMatch ? parseInt(scoreMatch[1]) : 70 });
+    } catch(e) {
+        res.json({ uspjeh: false, analiza: 'Analiza nije dostupna.', score: 70 });
+    }
+});
 // ── TABELA PO KATEGORIJI ─────────────────────────────────
 function getRedoviZaKategoriju(katTip) {
   if (katTip === 'vozila') return [
@@ -658,6 +774,7 @@ function formatAiTekst(tekst) {
     .replace(/PREPORUKA:/gi,'<br><strong style="color:var(--orange);font-size:14px">💡 PREPORUKA:</strong>')
     .replace(/UPOZORENJE:/gi,'<br><strong style="color:#f87171;font-size:14px">⚠️ UPOZORENJE:</strong>')
     .replace(/SAVJET ZA PREGLED:/gi,'<br><strong style="color:#a78bfa;font-size:14px">🔍 SAVJET ZA PREGLED:</strong>')
+    .replace(/PREGOVARANJE:\s*([^\n]+)/g,'<div style="margin:8px 0"><strong style="color:#22c55e">🤝 Pregovaranje:</strong> $1</div>')
     .replace(/PERFORMANSE:/gi,'<br><strong style="color:#34d399;font-size:14px">🎮 PERFORMANSE:</strong>')
     .replace(/\n\n/g,'<br><br>').replace(/\n/g,'<br>');
 }
