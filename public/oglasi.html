@@ -492,10 +492,10 @@
       <div class="results-count">Pronađeno <strong id="rezultatiBroj">0</strong> oglasa</div>
       <div class="results-right">
         <div class="view-toggle">
-          <button class="view-btn on" id="viewList" onclick="setView('list')" title="Lista">
+          <button class="view-btn" id="viewList" onclick="setView('list')" title="Lista">
             <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="1" y="2" width="14" height="3" rx="1" fill="currentColor"/><rect x="1" y="7" width="14" height="3" rx="1" fill="currentColor"/><rect x="1" y="12" width="14" height="2" rx="1" fill="currentColor"/></svg>
           </button>
-          <button class="view-btn" id="viewGrid" onclick="setView('grid')" title="Mreža">
+          <button class="view-btn on" id="viewGrid" onclick="setView('grid')" title="Mreža">
             <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="1" y="1" width="6" height="6" rx="1" fill="currentColor"/><rect x="9" y="1" width="6" height="6" rx="1" fill="currentColor"/><rect x="1" y="9" width="6" height="6" rx="1" fill="currentColor"/><rect x="9" y="9" width="6" height="6" rx="1" fill="currentColor"/></svg>
           </button>
         </div>
@@ -528,7 +528,7 @@ var OGLASI_PO_STRANI = 48;
 var ukupnoOglasa = 0;
 var aktivniSort = 'novo';
 var compareOglasi = [];
-var aktivniView = 'list';
+var aktivniView = 'grid';
 
 var podkategorije = {
   vozila:[{kat:'vozila-volkswagen',naziv:'Volkswagen'},{kat:'vozila-mercedes',naziv:'Mercedes'},{kat:'vozila-bmw',naziv:'BMW'},{kat:'vozila-audi',naziv:'Audi'},{kat:'vozila-opel',naziv:'Opel'},{kat:'vozila-peugeot',naziv:'Peugeot'},{kat:'vozila-renault',naziv:'Renault'},{kat:'vozila-skoda',naziv:'Škoda'},{kat:'vozila-ford',naziv:'Ford'},{kat:'vozila-citroen',naziv:'Citroën'},{kat:'vozila-toyota',naziv:'Toyota'},{kat:'vozila-hyundai',naziv:'Hyundai'},{kat:'vozila-kia',naziv:'Kia'},{kat:'vozila-seat',naziv:'Seat'},{kat:'vozila-fiat',naziv:'Fiat'},{kat:'vozila-honda',naziv:'Honda'},{kat:'vozila-mazda',naziv:'Mazda'},{kat:'vozila-nissan',naziv:'Nissan'},{kat:'vozila-suzuki',naziv:'Suzuki'},{kat:'vozila-volvo',naziv:'Volvo'},{kat:'vozila-landrover',naziv:'Land Rover'},{kat:'vozila-porsche',naziv:'Porsche'},{kat:'vozila-jeep',naziv:'Jeep'},{kat:'vozila-mitsubishi',naziv:'Mitsubishi'},{kat:'vozila-dacia',naziv:'Dacia'},{kat:'vozila-alfaromeo',naziv:'Alfa Romeo'},{kat:'vozila-mini',naziv:'Mini'},{kat:'vozila-chevrolet',naziv:'Chevrolet'}],
