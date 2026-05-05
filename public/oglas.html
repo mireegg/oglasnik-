@@ -20,44 +20,34 @@
     *{box-sizing:border-box;margin:0;padding:0;}
     body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;font-size:15px;line-height:1.5;}
     a{text-decoration:none;color:inherit;}
-
     nav{background:var(--surface);border-bottom:1px solid var(--border);padding:0 32px;height:60px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;}
     .logo{font-family:'Syne',sans-serif;font-size:22px;font-weight:700;letter-spacing:-0.5px;}
     .logo span{color:var(--orange);}
     .back-btn{display:inline-flex;align-items:center;gap:8px;font-size:14px;color:var(--text-muted);background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-pill);padding:8px 16px;cursor:pointer;transition:all .15s;}
     .back-btn:hover{border-color:var(--border-hover);color:var(--text);}
-
     .page{max-width:1100px;margin:0 auto;padding:32px;}
-
-    /* GORNJI DIO */
     .oglas-top{display:grid;grid-template-columns:1fr 1fr;gap:32px;margin-bottom:32px;}
     .glavna-slika{width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:var(--radius-lg);border:1px solid var(--border);}
     .slike-mini{display:flex;gap:8px;margin-top:10px;overflow-x:auto;padding-bottom:4px;}
     .slike-mini img{width:72px;height:72px;object-fit:cover;border-radius:var(--radius-sm);cursor:pointer;border:2px solid transparent;flex-shrink:0;transition:border-color .15s;}
     .slike-mini img:hover,.slike-mini img.active{border-color:var(--orange);}
     .slika-placeholder{width:100%;aspect-ratio:4/3;background:var(--bg);border-radius:var(--radius-lg);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;}
-
     .platforma-badge{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:600;padding:4px 10px;border-radius:var(--radius-pill);margin-bottom:12px;text-transform:uppercase;letter-spacing:.05em;}
     .badge-olx{background:#e8f5e9;color:#1b5e20;}
     .badge-autobum{background:#fce4ec;color:#c62828;}
     .badge-facebook{background:var(--blue-bg);color:var(--blue);}
-
     .oglas-naslov{font-family:'Syne',sans-serif;font-size:26px;font-weight:700;line-height:1.2;margin-bottom:10px;}
     .oglas-cijena{font-family:'Syne',sans-serif;font-size:36px;font-weight:800;color:var(--orange);margin-bottom:6px;}
     .cijena-m2{font-size:13px;color:var(--text-muted);margin-bottom:16px;}
-
     .specs-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:20px;}
     .spec-item{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px 12px;}
     .spec-label{font-size:10px;color:var(--text-faint);text-transform:uppercase;letter-spacing:.06em;margin-bottom:3px;}
     .spec-value{font-size:14px;font-weight:600;}
-
     .akcije{display:flex;flex-direction:column;gap:10px;}
     .btn-primarni{background:var(--orange);color:white;border:none;border-radius:var(--radius-md);padding:16px 24px;font-size:15px;font-weight:600;font-family:'DM Sans',sans-serif;cursor:pointer;text-align:center;transition:background .15s;display:block;}
     .btn-primarni:hover{background:var(--orange-light);}
     .btn-sekundarni{background:white;color:var(--orange);border:2px solid var(--orange);border-radius:var(--radius-md);padding:14px 24px;font-size:15px;font-weight:600;font-family:'DM Sans',sans-serif;cursor:pointer;text-align:center;}
     .btn-sekundarni:hover{background:var(--orange-dim);}
-
-    /* AI ANALIZA JEDNOG */
     .ai-box{background:#111;border-radius:var(--radius-lg);padding:20px 24px;margin-bottom:32px;}
     .ai-box-header{display:flex;align-items:center;gap:10px;margin-bottom:12px;}
     .ai-dot{width:8px;height:8px;border-radius:50%;background:var(--orange);animation:pulse 2s infinite;}
@@ -68,15 +58,11 @@
     .ocjena-odlicno{background:#15803d;color:white;}
     .ocjena-fer{background:#d97706;color:white;}
     .ocjena-previsoko,.ocjena-izbjegavaj{background:#dc2626;color:white;}
-
-    /* SEKCIJE */
     .sekcija{margin-bottom:48px;}
     .sekcija-header{margin-bottom:6px;}
     .sekcija-naslov{font-family:'Syne',sans-serif;font-size:20px;font-weight:700;}
     .sekcija-opis{font-size:13px;color:var(--text-muted);margin-bottom:6px;}
     .preciznost-badge{font-size:11px;color:var(--text-faint);background:var(--bg);border:1px solid var(--border);padding:3px 10px;border-radius:var(--radius-pill);display:inline-block;margin-bottom:16px;}
-
-    /* TABELA */
     .poredi-wrap{overflow-x:auto;border-radius:var(--radius-lg);border:1px solid var(--border);margin-bottom:20px;}
     .poredi-table{width:100%;border-collapse:collapse;background:white;min-width:560px;}
     .poredi-table th{padding:11px 14px;text-align:left;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--text-faint);border-bottom:2px solid var(--border);background:var(--bg);white-space:nowrap;}
@@ -88,28 +74,20 @@
     .col-td-trenutni{background:#fffbf7 !important;}
     .val-bolje{color:var(--green);font-weight:600;}
     .val-gore{color:var(--red);font-weight:600;}
-
-    /* BADGES */
     .rec-badge{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:700;padding:3px 10px;border-radius:var(--radius-pill);}
     .rec-ovaj{background:#f3f4f6;color:#374151;}
     .rec-bolji{background:var(--green-bg);color:var(--green);}
     .rec-skuplje{background:var(--red-bg);color:var(--red);}
     .rec-slicno{background:var(--yellow-bg);color:var(--yellow);}
-
-    /* SLIKA U TABELI */
     .tab-slika{display:flex;align-items:center;gap:8px;}
     .tab-slika img{width:52px;height:40px;object-fit:cover;border-radius:6px;flex-shrink:0;}
     .tab-slika-ph{width:52px;height:40px;background:var(--bg);border-radius:6px;flex-shrink:0;display:flex;align-items:center;justify-content:center;}
     .tab-slika-txt{font-size:11px;color:var(--orange);font-weight:600;line-height:1.3;}
-
-    /* AI POREĐENJE */
     .ai-poredi-box{background:#0f0f0f;border-radius:var(--radius-lg);padding:22px 24px;border:1px solid rgba(230,92,0,.2);margin-bottom:20px;}
     .ai-poredi-header{display:flex;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap;}
     .ai-poredi-title{font-family:'Syne',sans-serif;font-size:15px;font-weight:700;color:white;}
     .ai-poredi-sub{font-size:11px;color:#555;margin-left:auto;}
     .ai-poredi-tekst{font-size:14px;color:#ccc;line-height:1.85;}
-
-    /* KARTICE */
     .slicni-kartice{display:grid;grid-template-columns:repeat(auto-fill,minmax(175px,1fr));gap:14px;margin-top:4px;}
     .slicni-kartica{background:white;border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;transition:border-color .15s,transform .15s;position:relative;display:block;color:inherit;}
     .slicni-kartica:hover{border-color:var(--orange);transform:translateY(-2px);}
@@ -124,21 +102,14 @@
     .tag-skuplje{background:var(--red);color:white;}
     .tag-slicno{background:#d97706;color:white;}
     .tag-alt{background:var(--purple);color:white;}
-
-    /* LOADING */
     .spinner{width:16px;height:16px;border:2px solid #333;border-top-color:var(--orange);border-radius:50%;animation:spin .8s linear infinite;flex-shrink:0;}
     .spinner-lg{width:32px;height:32px;border:3px solid #e0e0e0;border-top-color:var(--orange);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 12px;}
     @keyframes spin{to{transform:rotate(360deg);}}
     .loading-wrap{padding:60px;text-align:center;color:var(--text-muted);}
     .loading-inline{display:flex;align-items:center;gap:10px;color:#666;font-size:13px;padding:16px 0;}
-
     footer{margin-top:60px;border-top:1px solid var(--border);background:var(--surface);padding:32px;text-align:center;font-size:13px;color:var(--text-faint);}
     .footer-logo{font-family:'Syne',sans-serif;font-size:18px;font-weight:700;color:var(--text);margin-bottom:8px;}
     .footer-logo span{color:var(--orange);}
-
-
-
-    /* KALKULATOR REGISTRACIJE */
     .reg-box{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-md);padding:16px;margin-top:14px;}
     .reg-title{font-family:'Syne',sans-serif;font-size:14px;font-weight:700;margin-bottom:12px;display:flex;align-items:center;gap:8px;color:var(--text);}
     .reg-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;}
@@ -154,8 +125,6 @@
     .reg-ukupno-naziv{font-weight:600;font-size:13px;color:var(--orange);}
     .reg-ukupno-val{font-family:'Syne',sans-serif;font-size:20px;font-weight:800;color:var(--orange);}
     .reg-note{font-size:11px;color:var(--text-faint);margin-top:8px;line-height:1.5;}
-    .reg-toggle{background:none;border:none;font-size:11px;color:var(--orange);cursor:pointer;padding:0;font-family:'DM Sans',sans-serif;text-decoration:underline;margin-left:auto;}
-
     @media(max-width:768px){
       nav{padding:0 16px;flex-wrap:wrap;height:auto;gap:8px;padding-top:10px;padding-bottom:10px;}
       .nav-links{order:3;width:100%;display:flex;gap:12px;overflow-x:auto;padding-bottom:4px;}
@@ -187,20 +156,17 @@
 <div class="page">
   <div id="oglasSadrzaj"><div class="loading-wrap"><div class="spinner-lg"></div>Učitavam oglas...</div></div>
 
-  <!-- AI ANALIZA JEDNOG -->
   <div id="aiAnalizaBox" style="display:none;" class="ai-box">
     <div class="ai-box-header"><div class="ai-dot"></div><div class="ai-box-title" id="aiAnalizaTitle">Oglix AI — Analiza</div></div>
     <div id="aiAnalizaTekst" class="ai-box-text"><div class="loading-inline"><div class="spinner"></div> Analiziram oglas...</div></div>
   </div>
 
-  <!-- GRUPA 1: IDENTIČNI -->
   <div class="sekcija" id="grupa1Sekcija" style="display:none;">
     <div class="sekcija-header">
       <div class="sekcija-naslov" id="grupa1Naslov">🎯 Identični oglasi</div>
       <div class="sekcija-opis" id="grupa1Opis"></div>
     </div>
     <div class="preciznost-badge" id="preciznostBadge"></div>
-
     <div class="ai-poredi-box" id="aiPorediBox" style="display:none;">
       <div class="ai-poredi-header">
         <div class="ai-dot"></div>
@@ -211,14 +177,12 @@
         <div class="loading-inline"><div class="spinner"></div> AI analizira i poredi...</div>
       </div>
     </div>
-
     <div class="poredi-wrap" id="tabelaWrap" style="display:none;">
       <table class="poredi-table" id="tabelaPoredenja"></table>
     </div>
     <div class="slicni-kartice" id="grupa1Kartice"></div>
   </div>
 
-  <!-- GRUPA 2: ALTERNATIVE -->
   <div class="sekcija" id="grupa2Sekcija" style="display:none;">
     <div class="sekcija-naslov" id="grupa2Naslov">💡 Alternative</div>
     <div class="sekcija-opis" id="grupa2Opis" style="font-size:13px;color:var(--text-muted);margin-bottom:16px;"></div>
@@ -229,6 +193,7 @@
     Nema sličnih oglasa za poređenje.
   </div>
 </div>
+
 <footer>
   <div class="footer-logo">oglix<span>.ba</span></div>
   <p>Agregator oglasa za Bosnu i Hercegovinu · Nisu naši oglasi, mi ih samo skupljamo.</p>
@@ -236,7 +201,6 @@
 </footer>
 
 <script>
-// ── INIT PARAMS ─────────────────────────────────────────
 var params = new URLSearchParams(window.location.search);
 var oglasMeta = {};
 try { oglasMeta = JSON.parse(decodeURIComponent(params.get('data') || '{}')); } catch(e) {}
@@ -251,14 +215,12 @@ function parseCijenaJS(str) {
   return parseFloat(str.toString().replace(/\./g,'').replace(',','.').replace(/[^0-9.]/g,'')) || 0;
 }
 
-// ── RENDER OGLAS TOP ─────────────────────────────────────
 function renderOglasTop(meta, d) {
   d = d || {};
   var badgeClass = {olx:'badge-olx',autobum:'badge-autobum',facebook:'badge-facebook'}[meta.platforma]||'badge-olx';
   var platformaNaziv = {olx:'OLX.ba',autobum:'Autobum.ba',facebook:'Facebook'}[meta.platforma]||'OLX.ba';
   var katTip = d.kategorija_tip || 'ostalo';
 
-  // Specs po kategoriji
   var specs = [];
   if (katTip === 'vozila') {
     specs = [
@@ -318,7 +280,7 @@ function renderOglasTop(meta, d) {
     ? '<img id="glavnaSlika" class="glavna-slika" src="'+glavnaSlika+'" alt="">'
     : '<div class="slika-placeholder"><svg width="64" height="64" viewBox="0 0 64 64" fill="none"><rect x="8" y="16" width="48" height="36" rx="4" stroke="#ccc" stroke-width="2"/><circle cx="24" cy="28" r="4" stroke="#ccc" stroke-width="2"/><path d="M8 40L20 28L32 38L42 30L56 40" stroke="#ccc" stroke-width="2"/></svg></div>';
   var slikeMiniHtml = sveSlika.length>1
-    ? '<div class="slike-mini">'+sveSlika.slice(0,8).map(function(s,i){return '<img src="'+s+'" class="'+(i===0?'active':'')+'" onclick="promijeniSliku(this,\''+s+'\')">'; }).join('')+'</div>'
+    ? '<div class="slike-mini">'+sveSlika.slice(0,8).map(function(s,i){return '<img src="'+s+'" class="'+(i===0?'active':'')+'" onclick="promijeniSliku(this,\''+s+'\')">';}).join('')+'</div>'
     : '';
 
   var cijenaM2Html = '';
@@ -338,59 +300,46 @@ function renderOglasTop(meta, d) {
                 '<select class="reg-select" id="regEntitet" onchange="izracunajReg()">'+
                   '<option value="fbih">Federacija BiH</option>'+
                   '<option value="rs">Republika Srpska</option>'+
-                  '<option value="bd">Br&#x010D;ko Distrikt</option>'+
-                '</select>'+
-              '</div>'+
+                  '<option value="bd">Brčko Distrikt</option>'+
+                '</select></div>'+
               '<div class="reg-field"><label>Bonus AO</label>'+
                 '<select class="reg-select" id="regBonus" onchange="izracunajReg()">'+
-                  '<option value="0">P6 &#x2014; bez bonusa</option>'+
-                  '<option value="10">P5 &#x2014; 10%</option>'+
-                  '<option value="20">P4 &#x2014; 20%</option>'+
-                  '<option value="30" selected>P3 &#x2014; 30%</option>'+
-                  '<option value="40">P2 &#x2014; 40%</option>'+
-                  '<option value="50">P1 &#x2014; 50% max</option>'+
-                '</select>'+
-              '</div>'+
+                  '<option value="0">P6 — bez bonusa</option>'+
+                  '<option value="10">P5 — 10%</option>'+
+                  '<option value="20">P4 — 20%</option>'+
+                  '<option value="30" selected>P3 — 30%</option>'+
+                  '<option value="40">P2 — 40%</option>'+
+                  '<option value="50">P1 — 50% max</option>'+
+                '</select></div>'+
             '</div>'+
             '<div class="reg-row">'+
               '<div class="reg-field"><label>Snaga motora</label>'+
                 '<select class="reg-select" id="regKw" onchange="izracunajReg()">'+
-                  '<option value="22">Do 22 kW</option>'+
-                  '<option value="33">23&#x2013;33 kW</option>'+
-                  '<option value="44">34&#x2013;44 kW</option>'+
-                  '<option value="55">45&#x2013;55 kW</option>'+
-                  '<option value="66">56&#x2013;66 kW</option>'+
-                  '<option value="84">67&#x2013;84 kW</option>'+
-                  '<option value="110">85&#x2013;110 kW</option>'+
-                  '<option value="145">111&#x2013;145 kW</option>'+
-                  '<option value="200">146&#x2013;200 kW</option>'+
-                  '<option value="999">Preko 200 kW</option>'+
-                '</select>'+
-              '</div>'+
+                  '<option value="22">Do 22 kW</option><option value="33">23–33 kW</option>'+
+                  '<option value="44">34–44 kW</option><option value="55">45–55 kW</option>'+
+                  '<option value="66">56–66 kW</option><option value="84">67–84 kW</option>'+
+                  '<option value="110">85–110 kW</option><option value="145">111–145 kW</option>'+
+                  '<option value="200">146–200 kW</option><option value="999">Preko 200 kW</option>'+
+                '</select></div>'+
               '<div class="reg-field"><label>Gorivo</label>'+
                 '<select class="reg-select" id="regGorivoSel" onchange="izracunajReg()">'+
-                  '<option value="dizel">Dizel</option>'+
-                  '<option value="benzin">Benzin</option>'+
-                  '<option value="hibrid">Hibrid</option>'+
-                  '<option value="elektro">Elektri&#x10D;ni</option>'+
-                '</select>'+
-              '</div>'+
+                  '<option value="dizel">Dizel</option><option value="benzin">Benzin</option>'+
+                  '<option value="hibrid">Hibrid</option><option value="elektro">Električni</option>'+
+                '</select></div>'+
             '</div>'+
             '<div class="reg-row">'+
-              '<div class="reg-field"><label>Godi&#x161;te</label>'+
-                '<select class="reg-select" id="regGodiste" onchange="izracunajReg()"><option value="0">&#x2014;</option></select>'+
-              '</div>'+
+              '<div class="reg-field"><label>Godište</label>'+
+                '<select class="reg-select" id="regGodiste" onchange="izracunajReg()"><option value="0">—</option></select></div>'+
               '<div class="reg-field"><label>Vrsta registracije</label>'+
                 '<select class="reg-select" id="regVrsta" onchange="izracunajReg()">'+
-                  '<option value="produzenje">Produ&#x17E;enje</option>'+
+                  '<option value="produzenje">Produženje</option>'+
                   '<option value="prvoupis">Prvo upisivanje</option>'+
-                  '<option value="vlasnistvo">Promjena vlasni&#x161;tva</option>'+
-                '</select>'+
-              '</div>'+
+                  '<option value="vlasnistvo">Promjena vlasništva</option>'+
+                '</select></div>'+
             '</div>'+
             '<div class="reg-stavke" id="regStavke"></div>'+
-            '<div class="reg-ukupno"><span class="reg-ukupno-naziv">Ukupno okvirno</span><span class="reg-ukupno-val" id="regUkupno">&#x2014;</span></div>'+
-            '<div class="reg-note">Zakonske tarife 2025 · <a href="https://kalkulator.ba" target="_blank" style="color:var(--orange);">kalkulator.ba</a> · <a href="https://driver.ba/registracija-vozila" target="_blank" style="color:var(--orange);">driver.ba</a></div>'+
+            '<div class="reg-ukupno"><span class="reg-ukupno-naziv">Ukupno okvirno</span><span class="reg-ukupno-val" id="regUkupno">—</span></div>'+
+            '<div class="reg-note">Zakonske tarife 2025 · <a href="https://kalkulator.ba" target="_blank" style="color:var(--orange);">kalkulator.ba</a></div>'+
           '</div>'+
         '</div>'+
       '</div>'+
@@ -404,6 +353,7 @@ function renderOglasTop(meta, d) {
           '<a href="'+meta.link+'" target="_blank" class="btn-primarni">Pogledaj na '+platformaNaziv+' →</a>'+
           '<button class="btn-sekundarni" onclick="pratiOglas()">🔔 Prati oglas</button>'+
         '</div>'+
+      '</div>'+
     '</div>';
   document.title = meta.naslov+' — Oglix.ba';
 }
@@ -413,43 +363,47 @@ function promijeniSliku(el,src){
   document.querySelectorAll('.slike-mini img').forEach(function(i){i.classList.remove('active');}); el.classList.add('active');
 }
 
-// ── TABELA PO KATEGORIJI ─────────────────────────────────
+// ── AI ANALIZA JEDNOG ─────────────────────────────────────
+async function ucitajAiAnalizuJednog(d) {
+  document.getElementById('aiAnalizaBox').style.display='block';
+  var katTip = d ? d.kategorija_tip : 'ostalo';
+  var naslovi = {
+    vozila: '🚗 Oglix AI — Analiza vozila',
+    mobiteli: '📱 Oglix AI — Analiza mobitela',
+    racunari: '🖥️ Oglix AI — Analiza računara',
+    nekretnine: '🏠 Oglix AI — Analiza nekretnine',
+  };
+  document.getElementById('aiAnalizaTitle').textContent = naslovi[katTip] || 'Oglix AI — Analiza';
+  try {
+    var res = await fetch('/api/analiza-jednog-oglasa', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({oglas: Object.assign({}, oglasMeta, {cijenaStr: oglasMeta.cijena, detalji: d||{}})})
+    });
+    var data = await res.json();
+    if (data.uspjeh) {
+      var txt = data.analiza
+        .replace(/OCJENA:\s*([^\n]+)/g, function(m,val){
+          var cls = {'ODLIČNO':'ocjena-odlicno','ODLICNO':'ocjena-odlicno','FER':'ocjena-fer','PREVISOKO':'ocjena-previsoko','IZBJEGAVAJ':'ocjena-izbjegavaj'}[val.trim().toUpperCase()] || 'ocjena-fer';
+          return '<span class="ai-ocjena '+cls+'">'+val.trim()+'</span><br>';
+        })
+        .replace(/CIJENA:\s*([^\n]+)/g,'<div style="margin:8px 0"><strong style="color:#e65c00">💰 Cijena:</strong> $1</div>')
+        .replace(/PREGOVARANJE:\s*([^\n]+)/g,'<div style="margin:8px 0"><strong style="color:#22c55e">🤝 Pregovaranje:</strong> $1</div>')
+        .replace(/SAVJET:\s*([^\n]+)/g,'<div style="margin:8px 0"><strong style="color:#60a5fa">💡 Savjet:</strong> $1</div>')
+        .replace(/SCORE:\s*\d+/g,'')
+        .replace(/\n/g,'<br>');
+      document.getElementById('aiAnalizaTekst').innerHTML = txt;
+    } else {
+      document.getElementById('aiAnalizaTekst').textContent = 'Analiza nije dostupna.';
+    }
+  } catch(e) { document.getElementById('aiAnalizaTekst').textContent = 'Greška pri analizi.'; }
+}
+
+// ── TABELA ────────────────────────────────────────────────
 function getRedoviZaKategoriju(katTip) {
-  if (katTip === 'vozila') return [
-    {key:'oglas',label:'Oglas',tip:'oglas'},
-    {key:'cijena',label:'Cijena',tip:'cijena'},
-    {key:'km',label:'Kilometraža',tip:'km'},
-    {key:'godiste',label:'Godište',tip:'godiste'},
-    {key:'transmisija',label:'Transmisija',tip:'text'},
-    {key:'boja',label:'Boja',tip:'text'},
-    {key:'rec',label:'AI preporuka',tip:'rec'},
-  ];
-  if (katTip === 'mobiteli') return [
-    {key:'oglas',label:'Oglas',tip:'oglas'},
-    {key:'cijena',label:'Cijena',tip:'cijena'},
-    {key:'interna_memorija',label:'Memorija',tip:'text'},
-    {key:'ram',label:'RAM',tip:'text'},
-    {key:'os',label:'OS',tip:'text'},
-    {key:'rec',label:'AI preporuka',tip:'rec'},
-  ];
-  if (katTip === 'racunari') return [
-    {key:'oglas',label:'Oglas',tip:'oglas'},
-    {key:'cijena',label:'Cijena',tip:'cijena'},
-    {key:'procesor',label:'Procesor',tip:'text'},
-    {key:'ram',label:'RAM',tip:'text'},
-    {key:'ssd',label:'SSD (GB)',tip:'ssd'},
-    {key:'graficka',label:'Grafička',tip:'text'},
-    {key:'rec',label:'AI preporuka',tip:'rec'},
-  ];
-  if (katTip === 'nekretnine') return [
-    {key:'oglas',label:'Oglas',tip:'oglas'},
-    {key:'cijena',label:'Cijena',tip:'cijena'},
-    {key:'cijena_m2',label:'KM/m²',tip:'cijena_m2'},
-    {key:'kvadrata',label:'Površina',tip:'kvadrata'},
-    {key:'sprat',label:'Sprat',tip:'text'},
-    {key:'namjesten',label:'Opremljenost',tip:'text'},
-    {key:'rec',label:'AI preporuka',tip:'rec'},
-  ];
+  if (katTip==='vozila') return [{key:'oglas',label:'Oglas',tip:'oglas'},{key:'cijena',label:'Cijena',tip:'cijena'},{key:'km',label:'Kilometraža',tip:'km'},{key:'godiste',label:'Godište',tip:'godiste'},{key:'transmisija',label:'Transmisija',tip:'text'},{key:'boja',label:'Boja',tip:'text'},{key:'rec',label:'AI preporuka',tip:'rec'}];
+  if (katTip==='mobiteli') return [{key:'oglas',label:'Oglas',tip:'oglas'},{key:'cijena',label:'Cijena',tip:'cijena'},{key:'interna_memorija',label:'Memorija',tip:'text'},{key:'ram',label:'RAM',tip:'text'},{key:'os',label:'OS',tip:'text'},{key:'rec',label:'AI preporuka',tip:'rec'}];
+  if (katTip==='racunari') return [{key:'oglas',label:'Oglas',tip:'oglas'},{key:'cijena',label:'Cijena',tip:'cijena'},{key:'procesor',label:'Procesor',tip:'text'},{key:'ram',label:'RAM',tip:'text'},{key:'ssd',label:'SSD (GB)',tip:'ssd'},{key:'graficka',label:'Grafička',tip:'text'},{key:'rec',label:'AI preporuka',tip:'rec'}];
+  if (katTip==='nekretnine') return [{key:'oglas',label:'Oglas',tip:'oglas'},{key:'cijena',label:'Cijena',tip:'cijena'},{key:'cijena_m2',label:'KM/m²',tip:'cijena_m2'},{key:'kvadrata',label:'Površina',tip:'kvadrata'},{key:'sprat',label:'Sprat',tip:'text'},{key:'namjesten',label:'Opremljenost',tip:'text'},{key:'rec',label:'AI preporuka',tip:'rec'}];
   return [{key:'oglas',label:'Oglas',tip:'oglas'},{key:'cijena',label:'Cijena',tip:'cijena'},{key:'rec',label:'AI preporuka',tip:'rec'}];
 }
 
@@ -458,72 +412,16 @@ function renderTabela(d, grupa1, katTip) {
   var tKvadrati = d.kvadrata ? parseFloat(d.kvadrata) : null;
   var tCijenaM2 = tKvadrati && oglasCijenaNum ? Math.round(oglasCijenaNum/tKvadrati) : null;
   var redovi = getRedoviZaKategoriju(katTip);
+  var thead='<thead><tr><th>Karakteristika</th><th class="col-th-trenutni">⭐ Ovaj oglas</th>'+grupa1.map(function(s,i){return '<th>Oglas #'+(i+1)+'</th>';}).join('')+'</tr></thead>';
 
-  var thead='<thead><tr><th>Karakteristika</th><th class="col-th-trenutni">⭐ Ovaj oglas</th>'+
-    grupa1.map(function(s,i){return '<th>Oglas #'+(i+1)+'</th>';}).join('')+'</tr></thead>';
-
-  function fCijena(val,isTr){
-    var n=parseCijenaJS(val); if(!n) return '<span style="color:var(--text-faint)">Na upit</span>';
-    var fmt=n.toLocaleString('bs-BA')+' KM';
-    if(isTr) return '<strong>'+fmt+'</strong>';
-    var diff=n-oglasCijenaNum; var pct=oglasCijenaNum?Math.abs(Math.round(diff/oglasCijenaNum*100)):0;
-    if(diff<-300) return '<span class="val-bolje">'+fmt+' <small>(−'+pct+'%)</small></span>';
-    if(diff>300) return '<span class="val-gore">'+fmt+' <small>(+'+pct+'%)</small></span>';
-    return fmt;
-  }
-  function fKm(val,isTr){
-    var km=parseInt(val); if(!km) return '<span style="color:var(--text-faint)">—</span>';
-    var fmt=km.toLocaleString()+' km';
-    if(isTr) return '<strong>'+fmt+'</strong>';
-    if(tKm&&km<tKm-15000) return '<span class="val-bolje">'+fmt+' <small>(manje)</small></span>';
-    if(tKm&&km>tKm+15000) return '<span class="val-gore">'+fmt+' <small>(više)</small></span>';
-    return fmt;
-  }
-  function fGodiste(val,isTr){
-    var g=parseInt(val); if(!g) return '<span style="color:var(--text-faint)">—</span>';
-    var baza=d.godiste?parseInt(d.godiste):0;
-    if(isTr) return '<strong>'+g+'</strong>';
-    if(baza&&g>baza) return '<span class="val-bolje">'+g+' <small>(novije)</small></span>';
-    if(baza&&g<baza) return '<span class="val-gore">'+g+' <small>(starije)</small></span>';
-    return String(g);
-  }
-  function fKvadrata(val,isTr){
-    var kv=parseFloat(val); if(!kv) return '<span style="color:var(--text-faint)">—</span>';
-    if(isTr) return '<strong>'+kv+'m²</strong>';
-    return kv+'m²';
-  }
-  function fCijenaM2(val,isTr){
-    var m2=parseFloat(val); if(!m2) return '<span style="color:var(--text-faint)">—</span>';
-    var fmt=Math.round(m2).toLocaleString()+' KM/m²';
-    if(isTr) return '<strong>'+fmt+'</strong>';
-    if(tCijenaM2&&m2<tCijenaM2-50) return '<span class="val-bolje">'+fmt+' <small>(jeftinije/m²)</small></span>';
-    if(tCijenaM2&&m2>tCijenaM2+50) return '<span class="val-gore">'+fmt+' <small>(skuplje/m²)</small></span>';
-    return fmt;
-  }
-  function fSsd(val,isTr){
-    if(!val) return '<span style="color:var(--text-faint)">—</span>';
-    var fmt=val+'GB';
-    if(isTr) return '<strong>'+fmt+'</strong>';
-    return fmt;
-  }
-  function fRec(o,isTr){
-    if(isTr) return '<span class="rec-badge rec-ovaj">Ovaj oglas</span>';
-    var c=parseCijenaJS(o.cijena);
-    var cs=oglasCijenaNum&&c?(oglasCijenaNum-c)/oglasCijenaNum:0;
-    var extra=0;
-    if(katTip==='vozila'&&o.km&&tKm) extra=(tKm-parseInt(o.km))/Math.max(tKm,1)*0.3;
-    if(katTip==='nekretnine'&&o.cijena_m2&&tCijenaM2) extra=(tCijenaM2-o.cijena_m2)/Math.max(tCijenaM2,1)*0.3;
-    var score=cs*0.5+extra;
-    if(score>0.08) return '<span class="rec-badge rec-bolji">✅ Bolji deal</span>';
-    if(score<-0.08) return '<span class="rec-badge rec-skuplje">❌ Skuplje</span>';
-    return '<span class="rec-badge rec-slicno">≈ Slično</span>';
-  }
-  function fOglas(naslov,link,slika){
-    var n=(naslov||'').substring(0,38)+(naslov&&naslov.length>38?'...':'');
-    var img=slika?'<img src="'+slika+'" onerror="this.style.display=\'none\'" style="width:52px;height:40px;object-fit:cover;border-radius:6px;flex-shrink:0;">'
-      :'<div class="tab-slika-ph"><svg width="18" height="14" viewBox="0 0 18 14" fill="none"><rect x="1" y="1" width="16" height="12" rx="2" stroke="#ccc" stroke-width="1.2"/></svg></div>';
-    return '<a href="'+link+'" target="_blank" class="tab-slika">'+img+'<span class="tab-slika-txt">'+n+'</span></a>';
-  }
+  function fCijena(val,isTr){ var n=parseCijenaJS(val); if(!n) return '<span style="color:var(--text-faint)">Na upit</span>'; var fmt=n.toLocaleString('bs-BA')+' KM'; if(isTr) return '<strong>'+fmt+'</strong>'; var diff=n-oglasCijenaNum; var pct=oglasCijenaNum?Math.abs(Math.round(diff/oglasCijenaNum*100)):0; if(diff<-300) return '<span class="val-bolje">'+fmt+' <small>(−'+pct+'%)</small></span>'; if(diff>300) return '<span class="val-gore">'+fmt+' <small>(+'+pct+'%)</small></span>'; return fmt; }
+  function fKm(val,isTr){ var km=parseInt(val); if(!km) return '<span style="color:var(--text-faint)">—</span>'; var fmt=km.toLocaleString()+' km'; if(isTr) return '<strong>'+fmt+'</strong>'; if(tKm&&km<tKm-15000) return '<span class="val-bolje">'+fmt+' <small>(manje)</small></span>'; if(tKm&&km>tKm+15000) return '<span class="val-gore">'+fmt+' <small>(više)</small></span>'; return fmt; }
+  function fGodiste(val,isTr){ var g=parseInt(val); if(!g) return '<span style="color:var(--text-faint)">—</span>'; var baza=d.godiste?parseInt(d.godiste):0; if(isTr) return '<strong>'+g+'</strong>'; if(baza&&g>baza) return '<span class="val-bolje">'+g+' <small>(novije)</small></span>'; if(baza&&g<baza) return '<span class="val-gore">'+g+' <small>(starije)</small></span>'; return String(g); }
+  function fKvadrata(val,isTr){ var kv=parseFloat(val); if(!kv) return '<span style="color:var(--text-faint)">—</span>'; if(isTr) return '<strong>'+kv+'m²</strong>'; return kv+'m²'; }
+  function fCijenaM2(val,isTr){ var m2=parseFloat(val); if(!m2) return '<span style="color:var(--text-faint)">—</span>'; var fmt=Math.round(m2).toLocaleString()+' KM/m²'; if(isTr) return '<strong>'+fmt+'</strong>'; if(tCijenaM2&&m2<tCijenaM2-50) return '<span class="val-bolje">'+fmt+' <small>(jeftinije/m²)</small></span>'; if(tCijenaM2&&m2>tCijenaM2+50) return '<span class="val-gore">'+fmt+' <small>(skuplje/m²)</small></span>'; return fmt; }
+  function fSsd(val,isTr){ if(!val) return '<span style="color:var(--text-faint)">—</span>'; var fmt=val+'GB'; if(isTr) return '<strong>'+fmt+'</strong>'; return fmt; }
+  function fRec(o,isTr){ if(isTr) return '<span class="rec-badge rec-ovaj">Ovaj oglas</span>'; var c=parseCijenaJS(o.cijena); var cs=oglasCijenaNum&&c?(oglasCijenaNum-c)/oglasCijenaNum:0; var extra=0; if(katTip==='vozila'&&o.km&&tKm) extra=(tKm-parseInt(o.km))/Math.max(tKm,1)*0.3; if(katTip==='nekretnine'&&o.cijena_m2&&tCijenaM2) extra=(tCijenaM2-o.cijena_m2)/Math.max(tCijenaM2,1)*0.3; var score=cs*0.5+extra; if(score>0.08) return '<span class="rec-badge rec-bolji">✅ Bolji deal</span>'; if(score<-0.08) return '<span class="rec-badge rec-skuplje">❌ Skuplje</span>'; return '<span class="rec-badge rec-slicno">≈ Slično</span>'; }
+  function fOglas(naslov,link,slika){ var n=(naslov||'').substring(0,38)+(naslov&&naslov.length>38?'...':''); var img=slika?'<img src="'+slika+'" onerror="this.style.display=\'none\'" style="width:52px;height:40px;object-fit:cover;border-radius:6px;flex-shrink:0;">'+'<div class="tab-slika-ph" style="display:none;"><svg width="18" height="14" viewBox="0 0 18 14" fill="none"><rect x="1" y="1" width="16" height="12" rx="2" stroke="#ccc" stroke-width="1.2"/></svg></div>':'<div class="tab-slika-ph"><svg width="18" height="14" viewBox="0 0 18 14" fill="none"><rect x="1" y="1" width="16" height="12" rx="2" stroke="#ccc" stroke-width="1.2"/></svg></div>'; return '<a href="'+link+'" target="_blank" class="tab-slika">'+img+'<span class="tab-slika-txt">'+n+'</span></a>'; }
   function fText(val){ return val ? val : '<span style="color:var(--text-faint)">—</span>'; }
 
   var tbody='<tbody>';
@@ -538,19 +436,7 @@ function renderTabela(d, grupa1, katTip) {
     else if(red.tip==='ssd') tHtml=fSsd(d.ssd,true);
     else if(red.tip==='text') { var v=d[red.key]||''; tHtml=v?'<strong>'+v+'</strong>':fText(''); }
     else if(red.tip==='rec') tHtml='<span class="rec-badge rec-ovaj">Ovaj oglas</span>';
-
-    var slicniHtml=grupa1.map(function(o){
-      if(red.tip==='oglas') return '<td>'+fOglas(o.naslov,o.link,o.slika)+'</td>';
-      if(red.tip==='cijena') return '<td>'+fCijena(o.cijena,false)+'</td>';
-      if(red.tip==='km') return '<td>'+fKm(o.km,false)+'</td>';
-      if(red.tip==='godiste') return '<td>'+fGodiste(o.godiste,false)+'</td>';
-      if(red.tip==='kvadrata') return '<td>'+fKvadrata(o.kvadrata,false)+'</td>';
-      if(red.tip==='cijena_m2') return '<td>'+fCijenaM2(o.cijena_m2,false)+'</td>';
-      if(red.tip==='ssd') return '<td>'+fSsd(o.ssd,false)+'</td>';
-      if(red.tip==='text') return '<td>'+fText(o[red.key])+'</td>';
-      if(red.tip==='rec') return '<td>'+fRec(o,false)+'</td>';
-      return '<td>—</td>';
-    }).join('');
+    var slicniHtml=grupa1.map(function(o){ if(red.tip==='oglas') return '<td>'+fOglas(o.naslov,o.link,o.slika)+'</td>'; if(red.tip==='cijena') return '<td>'+fCijena(o.cijena,false)+'</td>'; if(red.tip==='km') return '<td>'+fKm(o.km,false)+'</td>'; if(red.tip==='godiste') return '<td>'+fGodiste(o.godiste,false)+'</td>'; if(red.tip==='kvadrata') return '<td>'+fKvadrata(o.kvadrata,false)+'</td>'; if(red.tip==='cijena_m2') return '<td>'+fCijenaM2(o.cijena_m2,false)+'</td>'; if(red.tip==='ssd') return '<td>'+fSsd(o.ssd,false)+'</td>'; if(red.tip==='text') return '<td>'+fText(o[red.key])+'</td>'; if(red.tip==='rec') return '<td>'+fRec(o,false)+'</td>'; return '<td>—</td>'; }).join('');
     tbody+='<tr><td>'+red.label+'</td><td class="col-td-trenutni">'+tHtml+'</td>'+slicniHtml+'</tr>';
   });
   tbody+='</tbody>';
@@ -558,25 +444,13 @@ function renderTabela(d, grupa1, katTip) {
   document.getElementById('tabelaWrap').style.display='block';
 }
 
-// ── KARTICE ──────────────────────────────────────────────
+// ── KARTICE ───────────────────────────────────────────────
 function getKarticaMeta(o, katTip) {
   var parts = [];
-  if (katTip==='vozila') {
-    if(o.km) parts.push(parseInt(o.km).toLocaleString()+' km');
-    if(o.godiste) parts.push(o.godiste+'.');
-    if(o.boja) parts.push(o.boja);
-  } else if (katTip==='mobiteli') {
-    if(o.interna_memorija) parts.push(o.interna_memorija);
-    if(o.ram) parts.push('RAM: '+o.ram);
-  } else if (katTip==='racunari') {
-    if(o.procesor) parts.push(o.procesor);
-    if(o.ram) parts.push(o.ram+' RAM');
-    if(o.graficka) parts.push(o.graficka);
-  } else if (katTip==='nekretnine') {
-    if(o.kvadrata) parts.push(o.kvadrata+'m²');
-    if(o.broj_soba) parts.push(o.broj_soba);
-    if(o.cijena_m2) parts.push(Math.round(o.cijena_m2)+' KM/m²');
-  }
+  if (katTip==='vozila') { if(o.km) parts.push(parseInt(o.km).toLocaleString()+' km'); if(o.godiste) parts.push(o.godiste+'.'); if(o.boja) parts.push(o.boja); }
+  else if (katTip==='mobiteli') { if(o.interna_memorija) parts.push(o.interna_memorija); if(o.ram) parts.push('RAM: '+o.ram); }
+  else if (katTip==='racunari') { if(o.procesor) parts.push(o.procesor); if(o.ram) parts.push(o.ram+' RAM'); if(o.graficka) parts.push(o.graficka); }
+  else if (katTip==='nekretnine') { if(o.kvadrata) parts.push(o.kvadrata+'m²'); if(o.broj_soba) parts.push(o.broj_soba); if(o.cijena_m2) parts.push(Math.round(o.cijena_m2)+' KM/m²'); }
   return parts.join(' · ');
 }
 
@@ -587,47 +461,21 @@ function renderKartice(oglasi, containerId, isAlt, katTip) {
     var c=parseCijenaJS(o.cijena);
     var tagClass,tagText;
     if(isAlt){tagClass='tag-alt';tagText='💡 Alternativa';}
-    else {
-      var cs=oglasCijenaNum&&c?(oglasCijenaNum-c)/oglasCijenaNum:0;
-      var extra=0;
-      if(katTip==='vozila'&&o.km&&parseInt(o.km)>0) extra=(200000-parseInt(o.km))/200000*0.3;
-      if(katTip==='nekretnine'&&o.cijena_m2) {
-        var tM2=detaljiGlobal&&detaljiGlobal.kvadrata&&oglasCijenaNum?Math.round(oglasCijenaNum/parseFloat(detaljiGlobal.kvadrata)):0;
-        if(tM2) extra=(tM2-o.cijena_m2)/Math.max(tM2,1)*0.3;
-      }
-      var score=cs*0.5+extra;
-      tagClass=score>0.08?'tag-bolji':score<-0.08?'tag-skuplje':'tag-slicno';
-      tagText=score>0.08?'✅ Bolji deal':score<-0.08?'❌ Skuplje':'≈ Slično';
-    }
+    else { var cs=oglasCijenaNum&&c?(oglasCijenaNum-c)/oglasCijenaNum:0; var extra=0; if(katTip==='vozila'&&o.km&&parseInt(o.km)>0) extra=(200000-parseInt(o.km))/200000*0.3; if(katTip==='nekretnine'&&o.cijena_m2) { var tM2=detaljiGlobal&&detaljiGlobal.kvadrata&&oglasCijenaNum?Math.round(oglasCijenaNum/parseFloat(detaljiGlobal.kvadrata)):0; if(tM2) extra=(tM2-o.cijena_m2)/Math.max(tM2,1)*0.3; } var score=cs*0.5+extra; tagClass=score>0.08?'tag-bolji':score<-0.08?'tag-skuplje':'tag-slicno'; tagText=score>0.08?'✅ Bolji deal':score<-0.08?'❌ Skuplje':'≈ Slično'; }
     var meta=getKarticaMeta(o,katTip);
-    return '<a href="'+o.link+'" target="_blank" class="slicni-kartica">'+
-      '<span class="preporuka-tag '+tagClass+'">'+tagText+'</span>'+
-      (o.slika
-        ?'<img src="'+o.slika+'" alt="" loading="lazy" onerror="this.style.display=\'none\'">'
-        :'<div class="slicni-kartica-img-ph"><svg width="40" height="32" viewBox="0 0 40 32" fill="none"><rect x="2" y="2" width="36" height="28" rx="3" stroke="#ccc" stroke-width="1.5"/></svg></div>')+
-      '<div class="slicni-kartica-body">'+
-        '<div class="slicni-kartica-naslov">'+o.naslov+'</div>'+
-        '<div class="slicni-kartica-cijena">'+o.cijena+'</div>'+
-        '<div class="slicni-kartica-meta">'+meta+'</div>'+
-      '</div>'+
-    '</a>';
+    return '<a href="'+o.link+'" target="_blank" class="slicni-kartica">'+'<span class="preporuka-tag '+tagClass+'">'+tagText+'</span>'+(o.slika?'<img src="'+o.slika+'" alt="" loading="lazy" onerror="this.style.display=\'none\'">':'<div class="slicni-kartica-img-ph"><svg width="40" height="32" viewBox="0 0 40 32" fill="none"><rect x="2" y="2" width="36" height="28" rx="3" stroke="#ccc" stroke-width="1.5"/></svg></div>')+'<div class="slicni-kartica-body"><div class="slicni-kartica-naslov">'+o.naslov+'</div><div class="slicni-kartica-cijena">'+o.cijena+'</div><div class="slicni-kartica-meta">'+meta+'</div></div></a>';
   }).join('');
 }
 
-// ── FORMAT AI TEKST ──────────────────────────────────────
 function formatAiTekst(tekst) {
   return tekst
     .replace(/\*\*([^*]+)\*\*/g,'<strong style="color:white">$1</strong>')
     .replace(/ZAKLJUČAK:/gi,'<br><strong style="color:var(--orange);font-size:14px">📊 ZAKLJUČAK:</strong>')
     .replace(/PREPORUKA:/gi,'<br><strong style="color:var(--orange);font-size:14px">💡 PREPORUKA:</strong>')
     .replace(/UPOZORENJE:/gi,'<br><strong style="color:#f87171;font-size:14px">⚠️ UPOZORENJE:</strong>')
-    .replace(/SAVJET ZA PREGLED:/gi,'<br><strong style="color:#a78bfa;font-size:14px">🔍 SAVJET ZA PREGLED:</strong>')
-    .replace(/PREGOVARANJE:\s*([^\n]+)/g,'<div style="margin:8px 0"><strong style="color:#22c55e">🤝 Pregovaranje:</strong> $1</div>')
-    .replace(/PERFORMANSE:/gi,'<br><strong style="color:#34d399;font-size:14px">🎮 PERFORMANSE:</strong>')
     .replace(/\n\n/g,'<br><br>').replace(/\n/g,'<br>');
 }
 
-// ── POSTAVI TEKSTOVE PO KATEGORIJI ───────────────────────
 function postaviTekstovePoKategoriji(katTip) {
   var naslovi = {
     vozila: {g1:'🎯 Identični oglasi',g1opis:'Isti model, motor i godište',g2:'💡 Alternative',g2opis:'Isti model, drugačiji motor ili godište',ai:'🤖 Zašto kupiti — ili ne kupiti — ovo vozilo?'},
@@ -643,445 +491,153 @@ function postaviTekstovePoKategoriji(katTip) {
   document.getElementById('aiPorediTitle').textContent = t.ai;
 }
 
-// ── UČITAJ SLIČNE ────────────────────────────────────────
+// ── SLIČNI OGLASI ─────────────────────────────────────────
 async function ucitajSlicne(d) {
   d = d || {};
   var katTip = d.kategorija_tip || 'ostalo';
   postaviTekstovePoKategoriji(katTip);
 
-  // Za Autobum i Facebook — koristi novi endpoint po nazivu
   if ((oglasPlatforma === 'autobum' || oglasPlatforma === 'facebook') && katTip === 'vozila') {
     var brandId = getBrandId(oglasMeta.naslov, d.brand);
     document.getElementById('grupa1Sekcija').style.display = 'block';
     document.getElementById('grupa1Kartice').innerHTML = '<div class="loading-inline"><div class="spinner"></div> Tražim slične oglase na OLX.ba...</div>';
     try {
-      var res = await fetch('/api/slicni-po-nazivu', {
-        method: 'POST', headers: {'Content-Type':'application/json'},
-        body: JSON.stringify({
-          naslov: oglasMeta.naslov,
-          cijena: oglasMeta.cijena,
-          brand_id: brandId,
-          gorivo: d.gorivo || null,
-          godiste: d.godiste || null,
-          km: d.km || null
-        })
-      });
+      var res = await fetch('/api/slicni-po-nazivu', {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({naslov:oglasMeta.naslov,cijena:oglasMeta.cijena,brand_id:brandId,gorivo:d.gorivo||null,godiste:d.godiste||null,km:d.km||null})});
       var data = await res.json();
       if (data.uspjeh && (data.grupa1.length || data.grupa2.length)) {
         document.getElementById('preciznostBadge').textContent = '🎯 ' + (data.preciznost||'Slični oglasi sa OLX.ba');
-        if (data.aiAnaliza) {
-          document.getElementById('aiPorediBox').style.display = 'block';
-          document.getElementById('aiPorediTekst').innerHTML = formatAiTekst(data.aiAnaliza);
-        }
+        if (data.aiAnaliza) { document.getElementById('aiPorediBox').style.display='block'; document.getElementById('aiPorediTekst').innerHTML=formatAiTekst(data.aiAnaliza); }
         renderKartice(data.grupa1, 'grupa1Kartice', false, katTip);
-        if (data.grupa2 && data.grupa2.length) {
-          document.getElementById('grupa2Sekcija').style.display = 'block';
-          renderKartice(data.grupa2, 'grupa2Kartice', true, katTip);
-        }
-      } else {
-        document.getElementById('nemaSlichnih').style.display = 'block';
-        document.getElementById('grupa1Sekcija').style.display = 'none';
-      }
-    } catch(e) {
-      document.getElementById('nemaSlichnih').style.display = 'block';
-      document.getElementById('grupa1Sekcija').style.display = 'none';
-    }
+        if (data.grupa2 && data.grupa2.length) { document.getElementById('grupa2Sekcija').style.display='block'; renderKartice(data.grupa2,'grupa2Kartice',true,katTip); }
+      } else { document.getElementById('nemaSlichnih').style.display='block'; document.getElementById('grupa1Sekcija').style.display='none'; }
+    } catch(e) { document.getElementById('nemaSlichnih').style.display='block'; document.getElementById('grupa1Sekcija').style.display='none'; }
     return;
   }
 
-  // Provjeri ima li dovoljno podataka za OLX
-  var mozePorediti = (
-    (katTip==='vozila' && d.brand_id && d.model_id) ||
-    (katTip==='mobiteli' && (d.brand_id || d.model_id)) ||
-    (katTip==='racunari' && d.category_id) ||
-    (katTip==='nekretnine' && d.category_id)
-  );
-
-  if (!mozePorediti) {
-    document.getElementById('nemaSlichnih').style.display='block';
-    return;
-  }
+  var mozePorediti = ((katTip==='vozila'&&d.brand_id&&d.model_id)||(katTip==='mobiteli'&&(d.brand_id||d.model_id))||(katTip==='racunari'&&d.category_id)||(katTip==='nekretnine'&&d.category_id));
+  if (!mozePorediti) { document.getElementById('nemaSlichnih').style.display='block'; return; }
 
   document.getElementById('grupa1Sekcija').style.display='block';
   document.getElementById('grupa1Kartice').innerHTML='<div class="loading-inline"><div class="spinner"></div> Tražim slične oglase...</div>';
 
   try {
     var olxId = oglasLink ? oglasLink.split('/artikal/')[1] : null;
-    var payload = Object.assign({}, d, {
-      olx_id: olxId,
-      cijena: oglasMeta.cijena || '',
-      naslov: oglasMeta.naslov || '',
-    });
-
-    var res = await fetch('/api/slicni-dvije-grupe', {
-      method: 'POST', headers: {'Content-Type':'application/json'},
-      body: JSON.stringify(payload)
-    });
+    var payload = Object.assign({}, d, {olx_id:olxId,cijena:oglasMeta.cijena||'',naslov:oglasMeta.naslov||''});
+    var res = await fetch('/api/slicni-dvije-grupe',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
     var data = await res.json();
-
-    if (!data.uspjeh || (!data.grupa1.length && !data.grupa2.length)) {
-      document.getElementById('nemaSlichnih').style.display='block';
-      document.getElementById('grupa1Sekcija').style.display='none';
-      return;
-    }
-
+    if (!data.uspjeh || (!data.grupa1.length && !data.grupa2.length)) { document.getElementById('nemaSlichnih').style.display='block'; document.getElementById('grupa1Sekcija').style.display='none'; return; }
     if (data.grupa1 && data.grupa1.length > 0) {
       document.getElementById('preciznostBadge').textContent = '🎯 ' + (data.preciznost||'Slični oglasi');
       document.getElementById('grupa1Sekcija').style.display='block';
       renderTabela(d, data.grupa1, katTip);
-
-      if (data.aiAnaliza) {
-        document.getElementById('aiPorediBox').style.display='block';
-        document.getElementById('aiPorediTekst').innerHTML = formatAiTekst(data.aiAnaliza);
-      } else {
-        document.getElementById('aiPorediBox').style.display='none';
-      }
-      renderKartice(data.grupa1, 'grupa1Kartice', false, katTip);
-    } else {
-      document.getElementById('grupa1Sekcija').style.display='none';
-    }
-
-    if (data.grupa2 && data.grupa2.length > 0) {
-      document.getElementById('grupa2Sekcija').style.display='block';
-      renderKartice(data.grupa2, 'grupa2Kartice', true, katTip);
-    }
-
-    if (!data.grupa1.length && !data.grupa2.length) {
-      document.getElementById('nemaSlichnih').style.display='block';
-    }
-
-  } catch(e) {
-    document.getElementById('grupa1Kartice').innerHTML='<div style="color:var(--text-muted);font-size:14px;padding:16px 0;">Greška pri učitavanju sličnih oglasa.</div>';
-  }
+      if (data.aiAnaliza) { document.getElementById('aiPorediBox').style.display='block'; document.getElementById('aiPorediTekst').innerHTML=formatAiTekst(data.aiAnaliza); }
+      else document.getElementById('aiPorediBox').style.display='none';
+      renderKartice(data.grupa1,'grupa1Kartice',false,katTip);
+    } else { document.getElementById('grupa1Sekcija').style.display='none'; }
+    if (data.grupa2 && data.grupa2.length > 0) { document.getElementById('grupa2Sekcija').style.display='block'; renderKartice(data.grupa2,'grupa2Kartice',true,katTip); }
+    if (!data.grupa1.length && !data.grupa2.length) document.getElementById('nemaSlichnih').style.display='block';
+  } catch(e) { document.getElementById('grupa1Kartice').innerHTML='<div style="color:var(--text-muted);font-size:14px;padding:16px 0;">Greška pri učitavanju sličnih oglasa.</div>'; }
 }
 
-// ── PRAĆENJE ─────────────────────────────────────────────
+// ── PRAĆENJE ──────────────────────────────────────────────
 async function pratiOglas(){
   var k=JSON.parse(localStorage.getItem('korisnik')||'null');
-  if(!k){
-    if(confirm('Moraš biti prijavljen da pratiš oglas. Idi na prijavu?')) window.location.href='/login.html';
-    return;
-  }
-
-  // Prati oglas (staro pracenje)
-  fetch('/pracenje',{method:'POST',headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({email:k.email,pretraga:oglasMeta.naslov,link:oglasMeta.link,slika:oglasMeta.slika})})
-    .then(function(r){return r.json();}).catch(()=>{});
-
-  // Prati cijenu (novo — dobij email ako cijena padne)
+  if(!k){ if(confirm('Moraš biti prijavljen da pratiš oglas. Idi na prijavu?')) window.location.href='/login.html'; return; }
+  fetch('/pracenje',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:k.email,pretraga:oglasMeta.naslov,link:oglasMeta.link,slika:oglasMeta.slika})}).catch(()=>{});
   try {
-    var res = await fetch('/api/prati-oglas-cijenu', {
-      method: 'POST',
-      headers: {'Content-Type':'application/json'},
-      body: JSON.stringify({
-        email: k.email,
-        oglas_link: oglasMeta.link,
-        oglas_naslov: oglasMeta.naslov,
-        oglas_slika: oglasMeta.slika,
-        cijena: oglasMeta.cijena,
-        platforma: oglasMeta.platforma || 'olx'
-      })
-    });
+    var res = await fetch('/api/prati-oglas-cijenu',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:k.email,oglas_link:oglasMeta.link,oglas_naslov:oglasMeta.naslov,oglas_slika:oglasMeta.slika,cijena:oglasMeta.cijena,platforma:oglasMeta.platforma||'olx'})});
     var data = await res.json();
     if(data.uspjeh) {
-      // Promijeni dugme
-      var btn = document.querySelector('.btn-sekundarni');
-      if(btn) {
-        btn.textContent = '✅ Pratiš ovaj oglas';
-        btn.style.background = '#dcfce7';
-        btn.style.color = '#16a34a';
-        btn.style.borderColor = '#16a34a';
-        btn.disabled = true;
-      }
-      // Toast notifikacija
-      var toast = document.createElement('div');
-      toast.style.cssText = 'position:fixed;bottom:24px;right:24px;background:#1a1a1a;color:white;padding:14px 20px;border-radius:12px;font-size:14px;z-index:9999;box-shadow:0 4px 20px rgba(0,0,0,0.3);';
-      toast.innerHTML = '🔔 Pratiš ovaj oglas! Dobit ćeš email ako cijena padne.';
-      document.body.appendChild(toast);
-      setTimeout(function(){ toast.remove(); }, 4000);
+      var btn=document.querySelector('.btn-sekundarni'); if(btn){btn.textContent='✅ Pratiš ovaj oglas';btn.style.background='#dcfce7';btn.style.color='#16a34a';btn.style.borderColor='#16a34a';btn.disabled=true;}
+      var toast=document.createElement('div'); toast.style.cssText='position:fixed;bottom:24px;right:24px;background:#1a1a1a;color:white;padding:14px 20px;border-radius:12px;font-size:14px;z-index:9999;box-shadow:0 4px 20px rgba(0,0,0,0.3);'; toast.innerHTML='🔔 Pratiš ovaj oglas! Dobit ćeš email ako cijena padne.'; document.body.appendChild(toast); setTimeout(function(){ toast.remove(); }, 4000);
     }
-  } catch(e) {
-    alert('Oglas dodan u praćenja! 🔔');
-  }
+  } catch(e) { alert('Oglas dodan u praćenja! 🔔'); }
 }
 
-
-
-// ── BRAND MAPA (naziv → OLX brand_id) ────────────────────
-var BRAND_MAPA = {
-  'volkswagen':89,'vw':89,'golf':89,'passat':89,'tiguan':89,
-  'audi':7,'bmw':11,'mercedes':56,'mercedes-benz':56,
-  'opel':47,'peugeot':65,'renault':71,'toyota':72,
-  'honda':30,'ford':20,'skoda':77,'škoda':77,
-  'seat':57,'fiat':29,'citroen':9,'citroën':9,
-  'hyundai':35,'kia':39,'mazda':46,'nissan':41,
-  'suzuki':66,'volvo':90,'porsche':69,'jeep':22,
-  'land rover':33,'landrover':33,'range rover':33,
-  'mitsubishi':64,'subaru':62,'dacia':15,
-  'alfa romeo':2,'alfa-romeo':2,'mini':36,
-  'chevrolet':4,'lexus':48,'infiniti':38
-};
-
+// ── BRAND MAPA ────────────────────────────────────────────
+var BRAND_MAPA = {'volkswagen':89,'vw':89,'golf':89,'passat':89,'tiguan':89,'audi':7,'bmw':11,'mercedes':56,'mercedes-benz':56,'opel':47,'peugeot':65,'renault':71,'toyota':72,'honda':30,'ford':20,'skoda':77,'škoda':77,'seat':57,'fiat':29,'citroen':9,'citroën':9,'hyundai':35,'kia':39,'mazda':46,'nissan':41,'suzuki':66,'volvo':90,'porsche':69,'jeep':22,'land rover':33,'landrover':33,'range rover':33,'mitsubishi':64,'subaru':62,'dacia':15,'alfa romeo':2,'alfa-romeo':2,'mini':36,'chevrolet':4,'lexus':48,'infiniti':38};
 function getBrandId(naslov, brand) {
   var tekst = ((brand||'') + ' ' + (naslov||'')).toLowerCase();
-  for (var naziv in BRAND_MAPA) {
-    if (tekst.includes(naziv)) return BRAND_MAPA[naziv];
-  }
+  for (var naziv in BRAND_MAPA) { if (tekst.includes(naziv)) return BRAND_MAPA[naziv]; }
   return null;
 }
 
-// ── FACEBOOK NASLOV PARSER ────────────────────────────────
+// ── FACEBOOK PARSER ───────────────────────────────────────
 function parseNaslovFacebook(naslov) {
   if (!naslov) return {};
   var d = { kategorija_tip: 'vozila', grad: 'BiH' };
   var n = naslov.toLowerCase();
-
-  // Godište — traži 4-cifreni broj između 1980-2026
-  var godMatch = naslov.match(/\b(19[89]\d|20[012]\d)\b/);
-  if (godMatch) d.godiste = godMatch[1];
-
-  // Kilometraža — traži broj + km/kil
-  var kmMatch = naslov.match(/(\d{1,3}[\.\s]?\d{3})\s*km/i) ||
-                naslov.match(/(\d+)\s*000\s*km/i) ||
-                naslov.match(/km[:\s]*(\d+)/i);
-  if (kmMatch) d.km = kmMatch[1].replace(/[\s\.]/g, '');
-
-  // Gorivo
-  if (/dizel|diesel|tdi|cdi|dci|hdi|jtd/i.test(n)) d.gorivo = 'Dizel';
-  else if (/benzin|bensin|tsi|fsi|gdi|mpi/i.test(n)) d.gorivo = 'Benzin';
-  else if (/hibrid|hybrid/i.test(n)) d.gorivo = 'Hibrid';
-  else if (/elektr/i.test(n)) d.gorivo = 'Električni';
-  else if (/plin|lpg|cng/i.test(n)) d.gorivo = 'Plin';
-
-  // Kubikaža — traži pattern kao 2.0, 1.9, 1600ccm
-  var kubMatch = naslov.match(/(\d[.,]\d)\s*[lL]?(?:\s|$)/);
-  if (kubMatch) d.kubikaza = kubMatch[1].replace(',', '.');
-
-  // Snaga — kw ili ks/hp
-  var kwMatch = naslov.match(/(\d{2,3})\s*kw/i);
-  if (kwMatch) d.kw = kwMatch[1];
-  var ksMatch = naslov.match(/(\d{2,3})\s*(?:ks|hp|ps|konja)/i);
-  if (ksMatch && !d.kw) d.kw = Math.round(parseInt(ksMatch[1]) * 0.7355);
-
-  // Transmisija
-  if (/automat|dsg|automatic|tiptronic|steptronic/i.test(n)) d.transmisija = 'Automatski';
-  else if (/manuelni|manual|rucni/i.test(n)) d.transmisija = 'Manuelni';
-
-  // Boja
-  var boje = {
-    'bijel': 'Bijela', 'crn': 'Crna', 'siv': 'Siva', 'srebrn': 'Srebrna',
-    'crven': 'Crvena', 'plavl': 'Plava', 'zeleni': 'Zelena', 'žut': 'Žuta',
-    'smed': 'Smeđa', 'bež': 'Bež', 'narandžast': 'Narandžasta'
-  };
-  for (var kljuc in boje) {
-    if (n.includes(kljuc)) { d.boja = boje[kljuc]; break; }
-  }
-
-  // Grad — BiH gradovi
-  var gradovi = ['Sarajevo', 'Banja Luka', 'Tuzla', 'Zenica', 'Mostar', 'Bijeljina',
-    'Brčko', 'Prijedor', 'Trebinje', 'Živinice', 'Cazin', 'Bihać', 'Doboj', 'Zvornik'];
-  for (var g of gradovi) {
-    if (naslov.toLowerCase().includes(g.toLowerCase())) { d.grad = g; break; }
-  }
-
+  var godMatch = naslov.match(/\b(19[89]\d|20[012]\d)\b/); if (godMatch) d.godiste = godMatch[1];
+  var kmMatch = naslov.match(/(\d{1,3}[\.\s]?\d{3})\s*km/i)||naslov.match(/(\d+)\s*000\s*km/i)||naslov.match(/km[:\s]*(\d+)/i); if (kmMatch) d.km = kmMatch[1].replace(/[\s\.]/g, '');
+  if (/dizel|diesel|tdi|cdi|dci|hdi|jtd/i.test(n)) d.gorivo='Dizel'; else if (/benzin|bensin|tsi|fsi|gdi|mpi/i.test(n)) d.gorivo='Benzin'; else if (/hibrid|hybrid/i.test(n)) d.gorivo='Hibrid'; else if (/elektr/i.test(n)) d.gorivo='Električni'; else if (/plin|lpg|cng/i.test(n)) d.gorivo='Plin';
+  var kubMatch = naslov.match(/(\d[.,]\d)\s*[lL]?(?:\s|$)/); if (kubMatch) d.kubikaza = kubMatch[1].replace(',', '.');
+  var kwMatch = naslov.match(/(\d{2,3})\s*kw/i); if (kwMatch) d.kw = kwMatch[1];
+  if (/automat|dsg|automatic|tiptronic|steptronic/i.test(n)) d.transmisija='Automatski'; else if (/manuelni|manual|rucni/i.test(n)) d.transmisija='Manuelni';
+  var gradovi=['Sarajevo','Banja Luka','Tuzla','Zenica','Mostar','Bijeljina','Brčko','Prijedor','Trebinje','Živinice','Cazin','Bihać','Doboj','Zvornik'];
+  for (var g of gradovi) { if (naslov.toLowerCase().includes(g.toLowerCase())) { d.grad=g; break; } }
   return d;
 }
 
-// ── KALKULATOR REGISTRACIJE ──────────────────────────────
+// ── KALKULATOR REGISTRACIJE ───────────────────────────────
 var AO_PREMIJE = {
-  fbih: [
-    {max:22,p:230},{max:33,p:328},{max:44,p:396},{max:55,p:461},
-    {max:66,p:525},{max:84,p:578},{max:110,p:692},{max:9999,p:831}
-  ],
-  rs: [
-    {max:22,p:190},{max:33,p:270},{max:44,p:325},{max:55,p:378},
-    {max:66,p:430},{max:84,p:473},{max:110,p:567},{max:9999,p:680}
-  ],
-  bd: [
-    {max:22,p:140},{max:33,p:200},{max:44,p:240},{max:55,p:280},
-    {max:66,p:320},{max:84,p:350},{max:110,p:420},{max:9999,p:505}
-  ]
+  fbih:[{max:22,p:230},{max:33,p:328},{max:44,p:396},{max:55,p:461},{max:66,p:525},{max:84,p:578},{max:110,p:692},{max:9999,p:831}],
+  rs:[{max:22,p:190},{max:33,p:270},{max:44,p:325},{max:55,p:378},{max:66,p:430},{max:84,p:473},{max:110,p:567},{max:9999,p:680}],
+  bd:[{max:22,p:140},{max:33,p:200},{max:44,p:240},{max:55,p:280},{max:66,p:320},{max:84,p:350},{max:110,p:420},{max:9999,p:505}]
 };
 
 function initRegKalkulator() {
-  // Čekaj da se DOM renderuje
   setTimeout(function() {
-    var box = document.getElementById('regKalkBox');
-    if (!box) return;
-
-    // Popuni godište
+    var box = document.getElementById('regKalkBox'); if (!box) return;
     var selGod = document.getElementById('regGodiste');
-    if (selGod && selGod.options.length <= 1) {
-      var tekuca = new Date().getFullYear();
-      for (var g = tekuca; g >= 1985; g--) {
-        var opt = document.createElement('option');
-        opt.value = g;
-        opt.textContent = g + '.';
-        selGod.appendChild(opt);
-      }
-    }
-
-    // Auto-popuni godište iz oglasa
+    if (selGod && selGod.options.length <= 1) { var tekuca = new Date().getFullYear(); for (var g = tekuca; g >= 1985; g--) { var opt = document.createElement('option'); opt.value = g; opt.textContent = g+'.'; selGod.appendChild(opt); } }
     var god = (detaljiGlobal && detaljiGlobal.godiste) ? detaljiGlobal.godiste : null;
-    if (!god && oglasMeta.naslov) {
-      var m = oglasMeta.naslov.match(/\b(19[89]\d|20[0-2]\d)\b/);
-      if (m) god = m[1];
-    }
+    if (!god && oglasMeta.naslov) { var m = oglasMeta.naslov.match(/\b(19[89]\d|20[0-2]\d)\b/); if (m) god = m[1]; }
     if (god && selGod) selGod.value = god;
-
-    // Prikaži samo za vozila
     var kat = oglasMeta.kategorija || '';
     if (kat && !kat.includes('vozil') && !kat.includes('auto')) return;
-
     box.style.display = 'block';
     izracunajReg();
   }, 300);
 }
 
 function izracunajReg() {
-  var entEl = document.getElementById('regEntitet');
-  var bonEl = document.getElementById('regBonus');
-  var vrsEl = document.getElementById('regVrsta');
-  var godEl = document.getElementById('regGodiste');
-  var ukpEl = document.getElementById('regUkupno');
-  var stavEl = document.getElementById('regStavke');
-
-  if (!entEl || !ukpEl) return;
-
-  var entitet = entEl.value || 'fbih';
-  var bonus = parseInt(bonEl ? bonEl.value : 30) || 0;
-  var vrsta = vrsEl ? vrsEl.value : 'produzenje';
-  var godiste = parseInt(godEl ? godEl.value : 0) || 0;
-  var starost = godiste > 0 ? new Date().getFullYear() - godiste : 10;
-
-  // kW - iz detaljiGlobal ili oglasMeta
-  var kw = 0;
-  if (detaljiGlobal && detaljiGlobal.kw) kw = parseInt(detaljiGlobal.kw);
-  if (!kw && oglasMeta.kw) kw = parseInt(oglasMeta.kw);
-  if (!kw) kw = 85;
-
-  // Gorivo
-  var gorivo = 'dizel';
-  if (detaljiGlobal && detaljiGlobal.gorivo) gorivo = detaljiGlobal.gorivo.toLowerCase();
-  else if (oglasMeta.gorivo) gorivo = oglasMeta.gorivo.toLowerCase();
-  else if (oglasMeta.naslov) {
-    var n = oglasMeta.naslov.toLowerCase();
-    if (/benzin|tsi|fsi|mpi/.test(n)) gorivo = 'benzin';
-    else if (/hibrid|hybrid/.test(n)) gorivo = 'hibrid';
-    else if (/elektr/.test(n)) gorivo = 'elektro';
-  }
-
-  // AO osiguranje
-  var tarife = AO_PREMIJE[entitet] || AO_PREMIJE.fbih;
-  var aoOsnova = tarife[tarife.length-1].p;
-  for (var i = 0; i < tarife.length; i++) {
-    if (kw <= tarife[i].max) { aoOsnova = tarife[i].p; break; }
-  }
-  var ao = Math.round(aoOsnova * (1 - bonus / 100));
-
-  // Tehnički pregled
-  var teh = 0;
-  if (starost >= 4) teh = entitet==='fbih' ? 45 : entitet==='rs' ? 40 : 30;
-
-  // Porez
-  var porezBase = entitet==='fbih' ? 90 : entitet==='rs' ? 72 : 55;
-  var kwF = kw<=44?0.6:kw<=66?0.8:kw<=84?1.0:kw<=110?1.25:kw<=145?1.55:1.9;
-  var stF = starost>=15?0.5:starost>=10?0.65:starost>=7?0.8:starost>=4?0.9:1.0;
-  var porez = Math.round(porezBase * kwF * stF);
-
-  // Eko taksa
-  var eko = 0;
-  var isDizel = /dizel|diesel|tdi|cdi|dci/.test(gorivo);
-  var isBenzin = /benzin|tsi|fsi|mpi/.test(gorivo);
-  if (isDizel) eko = entitet==='fbih' ? (starost>=15?38:starost>=10?28:starost>=5?18:12) : (starost>=15?30:starost>=10?22:15);
-  else if (isBenzin) eko = entitet==='fbih' ? (starost>=15?26:starost>=10?18:10) : (starost>=15?20:13);
-  else if (/hibrid/.test(gorivo)) eko = 7;
-  else eko = entitet==='fbih' ? (starost>=10?28:18) : 20;
-
-  // Ostalo
-  var cestarina = entitet==='fbih' ? 34 : entitet==='rs' ? 28 : 20;
-  var vode = entitet==='fbih' ? 10 : 8;
-  var ams = entitet==='fbih' ? 8 : 6;
-  var admin = vrsta==='produzenje' ? (entitet==='bd'?15:22) : vrsta==='prvoupis' ? (entitet==='bd'?40:65) : (entitet==='bd'?35:50);
-  var tablice = vrsta==='prvoupis' ? 42 : 0;
-
-  var ukupno = ao + teh + porez + eko + cestarina + vode + ams + admin + tablice;
-
-  // Postavi ukupno
-  ukpEl.textContent = ukupno.toLocaleString('bs-BA') + ' KM';
-
-  // Postavi stavke
-  if (stavEl) {
-    var stavke = [
-      ['AO osiguranje (P'+(6-bonus/10)+', '+bonus+'% bonus)', ao],
-      ['Tehnički pregled', teh, starost<4?' (nije potreban)':''],
-      ['Porez na motorno vozilo', porez],
-      ['Ekološka taksa ('+(isDizel?'dizel':isBenzin?'benzin':'ostalo')+')', eko],
-      ['Cestarina', cestarina],
-      ['Naknada za vode', vode],
-      ['Članarina AMS', ams],
-      ['Administrativne takse', admin],
-    ];
-    if (tablice > 0) stavke.push(['Registarske tablice', tablice]);
-
-    stavEl.innerHTML = stavke.map(function(s) {
-      return '<div class="reg-stavka">' +
-        '<span class="reg-stavka-naziv">'+s[0]+(s[2]||'')+'</span>' +
-        '<span class="reg-stavka-val">'+(s[1]>0 ? s[1].toLocaleString('bs-BA')+' KM' : '<span style="color:var(--green)">Nije potreban</span>')+'</span>' +
-      '</div>';
-    }).join('');
-  }
+  var entEl=document.getElementById('regEntitet'),bonEl=document.getElementById('regBonus'),vrsEl=document.getElementById('regVrsta'),godEl=document.getElementById('regGodiste'),ukpEl=document.getElementById('regUkupno'),stavEl=document.getElementById('regStavke');
+  if (!entEl||!ukpEl) return;
+  var entitet=entEl.value||'fbih',bonus=parseInt(bonEl?bonEl.value:30)||0,vrsta=vrsEl?vrsEl.value:'produzenje',godiste=parseInt(godEl?godEl.value:0)||0,starost=godiste>0?new Date().getFullYear()-godiste:10;
+  var kw=0; if(detaljiGlobal&&detaljiGlobal.kw) kw=parseInt(detaljiGlobal.kw); if(!kw&&oglasMeta.kw) kw=parseInt(oglasMeta.kw); if(!kw) kw=85;
+  var gorivo='dizel'; if(detaljiGlobal&&detaljiGlobal.gorivo) gorivo=detaljiGlobal.gorivo.toLowerCase(); else if(oglasMeta.gorivo) gorivo=oglasMeta.gorivo.toLowerCase(); else if(oglasMeta.naslov){var nn=oglasMeta.naslov.toLowerCase(); if(/benzin|tsi|fsi|mpi/.test(nn)) gorivo='benzin'; else if(/hibrid|hybrid/.test(nn)) gorivo='hibrid'; else if(/elektr/.test(nn)) gorivo='elektro';}
+  var tarife=AO_PREMIJE[entitet]||AO_PREMIJE.fbih,aoOsnova=tarife[tarife.length-1].p;
+  for(var i=0;i<tarife.length;i++){if(kw<=tarife[i].max){aoOsnova=tarife[i].p;break;}}
+  var ao=Math.round(aoOsnova*(1-bonus/100));
+  var teh=0; if(starost>=4) teh=entitet==='fbih'?45:entitet==='rs'?40:30;
+  var porezBase=entitet==='fbih'?90:entitet==='rs'?72:55,kwF=kw<=44?0.6:kw<=66?0.8:kw<=84?1.0:kw<=110?1.25:kw<=145?1.55:1.9,stF=starost>=15?0.5:starost>=10?0.65:starost>=7?0.8:starost>=4?0.9:1.0,porez=Math.round(porezBase*kwF*stF);
+  var eko=0,isDizel=/dizel|diesel|tdi|cdi|dci/.test(gorivo),isBenzin=/benzin|tsi|fsi|mpi/.test(gorivo);
+  if(isDizel) eko=entitet==='fbih'?(starost>=15?38:starost>=10?28:starost>=5?18:12):(starost>=15?30:starost>=10?22:15);
+  else if(isBenzin) eko=entitet==='fbih'?(starost>=15?26:starost>=10?18:10):(starost>=15?20:13);
+  else if(/hibrid/.test(gorivo)) eko=7;
+  else eko=entitet==='fbih'?(starost>=10?28:18):20;
+  var cestarina=entitet==='fbih'?34:entitet==='rs'?28:20,vode=entitet==='fbih'?10:8,ams=entitet==='fbih'?8:6,admin=vrsta==='produzenje'?(entitet==='bd'?15:22):vrsta==='prvoupis'?(entitet==='bd'?40:65):(entitet==='bd'?35:50),tablice=vrsta==='prvoupis'?42:0;
+  var ukupno=ao+teh+porez+eko+cestarina+vode+ams+admin+tablice;
+  ukpEl.textContent=ukupno.toLocaleString('bs-BA')+' KM';
+  if(stavEl){var stavke=[['AO osiguranje (P'+(6-bonus/10)+', '+bonus+'% bonus)',ao],['Tehnički pregled',teh,starost<4?' (nije potreban)':''],['Porez na motorno vozilo',porez],['Ekološka taksa ('+(isDizel?'dizel':isBenzin?'benzin':'ostalo')+')',eko],['Cestarina',cestarina],['Naknada za vode',vode],['Članarina AMS',ams],['Administrativne takse',admin]]; if(tablice>0) stavke.push(['Registarske tablice',tablice]); stavEl.innerHTML=stavke.map(function(s){return '<div class="reg-stavka"><span class="reg-stavka-naziv">'+s[0]+(s[2]||'')+'</span><span class="reg-stavka-val">'+(s[1]>0?s[1].toLocaleString('bs-BA')+' KM':'<span style="color:var(--green)">Nije potreban</span>')+'</span></div>';}).join('');}
 }
 
-
-// ── INIT ─────────────────────────────────────────────────
+// ── INIT ──────────────────────────────────────────────────
 async function init(){
-  if(!oglasMeta.naslov){
-    document.getElementById('oglasSadrzaj').innerHTML='<div style="padding:60px;text-align:center;color:var(--text-muted);">Oglas nije pronađen. <a href="/" style="color:var(--orange)">Nazad na početnu</a></div>';
-    return;
-  }
-
+  if(!oglasMeta.naslov){ document.getElementById('oglasSadrzaj').innerHTML='<div style="padding:60px;text-align:center;color:var(--text-muted);">Oglas nije pronađen. <a href="/" style="color:var(--orange)">Nazad na početnu</a></div>'; return; }
   renderOglasTop(oglasMeta, null);
-
   var d = null;
-
   if (oglasPlatforma === 'olx') {
     var olxId = oglasLink ? oglasLink.split('/artikal/')[1] : null;
-    if (olxId) {
-      try {
-        var res = await fetch('/api/oglas-detalji/' + olxId);
-        var data = await res.json();
-        if (data.uspjeh) {
-          d = data.detalji;
-          detaljiGlobal = d;
-          renderOglasTop(oglasMeta, d);
-        }
-      } catch(e) {}
-    }
+    if (olxId) { try { var res=await fetch('/api/oglas-detalji/'+olxId); var data=await res.json(); if(data.uspjeh){d=data.detalji;detaljiGlobal=d;renderOglasTop(oglasMeta,d);} } catch(e) {} }
   } else if (oglasPlatforma === 'autobum') {
     var autobumId = oglasLink ? oglasLink.split('/oglas/')[1] : null;
-    if (autobumId) {
-      try {
-        var res = await fetch('/api/autobum-detalji/' + autobumId);
-        var data = await res.json();
-        if (data.uspjeh) {
-          d = data.detalji;
-          detaljiGlobal = d;
-          renderOglasTop(oglasMeta, d);
-        }
-      } catch(e) {}
-    }
+    if (autobumId) { try { var res=await fetch('/api/autobum-detalji/'+autobumId); var data=await res.json(); if(data.uspjeh){d=data.detalji;detaljiGlobal=d;renderOglasTop(oglasMeta,d);} } catch(e) {} }
   } else if (oglasPlatforma === 'facebook') {
-    // Facebook nema API — parsiramo naslov
     d = parseNaslovFacebook(oglasMeta.naslov);
-    // Provjeri kategoriju
-    if (oglasMeta.kategorija && !oglasMeta.kategorija.includes('vozila')) {
-      d.kategorija_tip = 'ostalo';
-    }
+    if (oglasMeta.kategorija && !oglasMeta.kategorija.includes('vozila')) d.kategorija_tip = 'ostalo';
     renderOglasTop(oglasMeta, d);
   }
-
-  // Paralelno
   ucitajAiAnalizuJednog(d);
   ucitajSlicne(d);
   initRegKalkulator();
