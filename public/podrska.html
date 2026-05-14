@@ -114,6 +114,27 @@ footer{background:#111827!important;color:#cbd5e1!important;}
 footer .footer-logo,footer .footer-logo span{color:#fff!important;}
 ::selection{background:#d9f99d;color:#111827;}
 </style>
+<style id="oglix-info-refresh">
+body{background:#f5f6f3!important;color:#111827!important;}
+nav{background:rgba(255,255,255,.92)!important;border-bottom:1px solid #e3e7dc!important;backdrop-filter:blur(16px)!important;}
+.logo{font-weight:900!important;letter-spacing:-.04em!important;}
+nav a{color:#5f6875!important;font-weight:700!important;text-decoration:none!important;}
+.hero{background:linear-gradient(180deg,#fff 0%,#f5f6f3 100%)!important;padding:58px 32px 44px!important;border-bottom:1px solid #e3e7dc!important;}
+.hero h1{color:#111827!important;font-weight:900!important;letter-spacing:-.05em!important;}
+.hero p{color:#5f6875!important;font-weight:500!important;}
+.search-bar{border:1px solid #e3e7dc!important;border-radius:16px!important;box-shadow:0 16px 42px rgba(17,24,39,.06)!important;}
+.search-bar button,.btn-orange{background:#111827!important;color:#fff!important;box-shadow:0 12px 26px rgba(17,24,39,.14)!important;}
+.search-bar button:hover,.btn-orange:hover{background:#263244!important;}
+.main{padding-top:42px!important;}
+.status-bar,.ql-card,.faq-item,.contact-card{background:#fff!important;border-color:#e3e7dc!important;border-radius:16px!important;box-shadow:0 16px 42px rgba(17,24,39,.06)!important;}
+.status-dot,.dot-green{background:#84cc16!important;}
+.section-title,.ql-title,.contact-card h3,.status-text{font-weight:900!important;letter-spacing:-.025em!important;color:#111827!important;}
+.ql-desc,.faq-a p,.contact-card p,.status-sub,.service-item{color:#5f6875!important;}
+.ql-icon,.contact-card .icon{background:#ecfccb!important;color:#4d7c0f!important;border:1px solid #d9f99d!important;border-radius:12px!important;width:44px;height:44px;display:flex;align-items:center;justify-content:center;margin:0 auto 12px;font-size:21px!important;}
+.badge{background:#ecfccb!important;color:#4d7c0f!important;border:1px solid #d9f99d!important;font-weight:900!important;}
+footer{background:#111827!important;}
+@media(max-width:768px){.hero{padding:42px 16px 32px!important}.main{padding:32px 16px!important}.search-bar{border-radius:12px!important;display:grid!important}.search-bar button{width:100%!important}}
+</style>
 </head>
 <body>
 
@@ -234,7 +255,7 @@ footer .footer-logo,footer .footer-logo span{color:#fff!important;}
     
     <div class="faq-item">
       <div class="faq-q" onclick="toggleFAQ(this)">Kako funkcioniše AI analiza cijena? <span class="faq-arrow">›</span></div>
-      <div class="faq-a"><p>Kada otvoriš detalje oglasa, Oglix AI automatski analizira oglas — uspoređuje cijenu sa sličnim oglasima u bazi, uzima u obzir godište, kilometražu, gorivo i opremu, te daje ocjenu (ODLIČNO / FER / PREVISOKO / IZBJEGAVAJ) i konkretan savjet. AI koristi Llama 3.3 model putem Groq infrastrukture.</p></div>
+      <div class="faq-a"><p>Kada otvoriš detalje oglasa, Oglix AI automatski analizira oglas — uspoređuje cijenu sa sličnim oglasima u bazi, uzima u obzir godište, kilometražu, gorivo i opremu, te daje ocjenu (ODLIČNO / FER / PREVISOKO / IZBJEGAVAJ) i konkretan savjet. AI koristi Claude model putem Anthropic infrastrukture.</p></div>
     </div>
     <div class="faq-item">
       <div class="faq-q" onclick="toggleFAQ(this)">Koliko je precizna AI analiza? <span class="faq-arrow">›</span></div>
@@ -278,7 +299,7 @@ footer .footer-logo,footer .footer-logo span{color:#fff!important;}
     </div>
     <div class="faq-item">
       <div class="faq-q" onclick="toggleFAQ(this)">Kada će biti dostupni plaćeni planovi? <span class="faq-arrow">›</span></div>
-      <div class="faq-a"><p>Pro i Business planovi planiramo lansirati u Q3 2026. Korisnici koji se registruju sada dobit će povlaštenu Early Bird cijenu i 3 mjeseca Pro plana besplatno. Prati nas za vijesti.</p></div>
+      <div class="faq-a"><p>Premium i Business stranice su dostupne, a plaćena aktivacija ide kroz direktan kontakt dok ne završimo automatsku naplatu. Korisnici koji se registruju sada dobit će povlaštenu Early Bird cijenu i prioritetni pristup novim funkcijama.</p></div>
     </div>
   </div>
 
@@ -296,7 +317,7 @@ footer .footer-logo,footer .footer-logo span{color:#fff!important;}
     </div>
     <div class="faq-item">
       <div class="faq-q" onclick="toggleFAQ(this)">Stranica se ne prikazuje ispravno na mobilnom <span class="faq-arrow">›</span></div>
-      <div class="faq-a"><p>Mobilni dizajn je trenutno u razvoju. Oglix je optimiziran za desktop. Za mobilne korisnike preporučujemo korištenje Chrome browsera u landscape (horizontalnom) modu. Mobilna aplikacija planirana je za Q3 2026.</p></div>
+      <div class="faq-a"><p>Oglix radi na mobilnim uređajima kroz browser. Ako primijetiš preklapanje teksta, problem s filterima ili sporo učitavanje, pošalji nam screenshot i link stranice na podrska@oglix.ba da možemo brzo popraviti.</p></div>
     </div>
     <div class="faq-item">
       <div class="faq-q" onclick="toggleFAQ(this)">Kako prijaviti lažni ili sumnjivi oglas? <span class="faq-arrow">›</span></div>
