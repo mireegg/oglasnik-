@@ -88,6 +88,43 @@ footer{background:#111827!important;color:#cbd5e1!important;}
 footer .footer-logo,footer .footer-logo span{color:#fff!important;}
 ::selection{background:#d9f99d;color:#111827;}
 </style>
+<style id="oglix-auth-refresh">
+:root{--orange:#84cc16!important;--orange-light:#a3e635!important;--orange-dim:#ecfccb!important;--bg:#f5f6f3!important;--surface:#fff!important;--border:#e3e7dc!important;--text:#111827!important;--text-muted:#5f6875!important;--text-faint:#9aa3ad!important;--green:#4d7c0f!important;--green-bg:#ecfccb!important;--red:#dc2626!important;--red-bg:#fee2e2!important;}
+body{background:linear-gradient(180deg,#fff 0%,#f5f6f3 58%,#eef2e8 100%)!important;color:#111827!important;}
+nav{height:58px!important;background:rgba(255,255,255,.92)!important;backdrop-filter:blur(16px)!important;border-color:#e3e7dc!important;padding:0 28px!important;}
+.logo{font-size:22px!important;font-weight:900!important;letter-spacing:-.04em!important;}
+.page{padding:34px 18px!important;align-items:center!important;}
+.auth-shell{width:100%;max-width:980px;display:grid;grid-template-columns:minmax(0,1fr) 430px;gap:18px;align-items:stretch;}
+.auth-copy{background:#111827;color:#fff;border-radius:20px;padding:34px;min-height:560px;display:flex;flex-direction:column;justify-content:space-between;position:relative;overflow:hidden;box-shadow:0 22px 54px rgba(17,24,39,.16);}
+.auth-copy:after{content:"";position:absolute;right:-52px;bottom:-56px;width:250px;height:210px;background:linear-gradient(135deg,rgba(132,204,22,.34),rgba(6,182,212,.18));border-radius:58px;transform:rotate(-10deg);}
+.auth-kicker{display:inline-flex;align-items:center;gap:8px;width:max-content;background:rgba(132,204,22,.13);border:1px solid rgba(163,230,53,.25);color:#a3e635;border-radius:999px;padding:7px 12px;font-size:11px;text-transform:uppercase;letter-spacing:.08em;font-weight:900;margin-bottom:22px;}
+.auth-kicker span{width:7px;height:7px;border-radius:50%;background:#84cc16;}
+.auth-copy h1{font-size:43px;line-height:1.04;letter-spacing:-.055em;font-weight:900;max-width:430px;margin-bottom:14px;}
+.auth-copy p{color:#cbd5e1;font-size:15px;max-width:410px;}
+.auth-stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;position:relative;z-index:1;}
+.auth-stat{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.09);border-radius:14px;padding:15px;}
+.auth-stat strong{display:block;font-size:25px;font-weight:900;letter-spacing:-.04em;color:#fff;}
+.auth-stat span{font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:#94a3b8;font-weight:900;}
+.card{max-width:none!important;border-radius:20px!important;border-color:#e3e7dc!important;padding:34px!important;box-shadow:0 22px 54px rgba(17,24,39,.09)!important;}
+.tabs{background:#f5f6f3!important;border:1px solid #e3e7dc!important;border-radius:12px!important;padding:4px!important;}
+.tab{border-radius:8px!important;font-weight:850!important;color:#5f6875!important;}
+.tab.active{background:#111827!important;color:#fff!important;box-shadow:0 10px 22px rgba(17,24,39,.13)!important;}
+.form-title{font-size:26px!important;font-weight:900!important;letter-spacing:-.04em!important;}
+.form-sub{color:#5f6875!important;}
+.field label{font-size:10px!important;font-weight:900!important;color:#9aa3ad!important;}
+.field input{background:#fbfcf8!important;border-color:#e3e7dc!important;border-radius:10px!important;color:#111827!important;}
+.field input:focus{border-color:#84cc16!important;box-shadow:0 0 0 3px rgba(132,204,22,.12)!important;background:#fff!important;}
+.submit{background:#111827!important;color:#fff!important;border-radius:12px!important;box-shadow:0 12px 26px rgba(17,24,39,.14)!important;}
+.submit:hover{background:#263244!important;}
+.benefits{background:#ecfccb!important;border-color:#d9f99d!important;}
+.benefit{color:#4b5563!important;}
+.benefit::before{content:"✓"!important;color:#4d7c0f!important;}
+.social-hint a{color:#4d7c0f!important;}
+.poruka.ok{background:#ecfccb!important;color:#4d7c0f!important;}
+footer{background:transparent!important;color:#9aa3ad!important;}
+@media(max-width:860px){.auth-shell{grid-template-columns:1fr;max-width:470px}.auth-copy{min-height:auto;padding:24px}.auth-copy h1{font-size:31px}.auth-stats{grid-template-columns:1fr 1fr}.card{padding:24px!important}}
+@media(max-width:520px){nav{padding:0 14px!important}.page{padding:18px 10px!important}.auth-copy{display:none}.card{padding:20px!important}.form-title{font-size:23px!important}}
+</style>
 </head>
 <body>
 
@@ -97,7 +134,21 @@ footer .footer-logo,footer .footer-logo span{color:#fff!important;}
 </nav>
 
 <div class="page">
-  <div class="card">
+  <div class="auth-shell">
+    <section class="auth-copy">
+      <div>
+        <div class="auth-kicker"><span></span>Oglix account</div>
+        <h1>Spasi pretrage, prati cijene i reaguj prije drugih.</h1>
+        <p>Alerti, pracenje cijena i AI analiza rade najbolje kad Oglix zna sta trazis. Login je ulaz u tvoj licni Market Radar.</p>
+      </div>
+      <div class="auth-stats">
+        <div class="auth-stat"><strong>3</strong><span>izvora</span></div>
+        <div class="auth-stat"><strong>24/7</strong><span>alerti</span></div>
+        <div class="auth-stat"><strong>AI</strong><span>analiza</span></div>
+        <div class="auth-stat"><strong>BiH</strong><span>trziste</span></div>
+      </div>
+    </section>
+    <div class="card">
     <div class="tabs">
       <div class="tab active" id="tabPrijava" onclick="switchTab('prijava')">Prijava</div>
       <div class="tab" id="tabRegister" onclick="switchTab('register')">Registracija</div>
@@ -129,6 +180,7 @@ footer .footer-logo,footer .footer-logo span{color:#fff!important;}
       <button class="submit" onclick="registracija()" id="btnRegister">Kreiraj account</button>
       <div class="poruka" id="porukaRegister"></div>
       <div class="social-hint" style="margin-top:16px;">Već imaš account? <a href="#" onclick="switchTab('prijava')">Prijavi se</a></div>
+    </div>
     </div>
   </div>
 </div>
