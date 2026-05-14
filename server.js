@@ -276,7 +276,7 @@ Odgovaraj na bosanskom. Budi konkretan.`;
         if (!analiza) return res.json({ uspjeh: true, analiza: fallbackAnalizaListe(oglasi, pretraga), fallback: true });
         res.json({ uspjeh: true, analiza });
     } catch(e) {
-        res.json({ uspjeh: true, analiza: fallbackAnalizaListe(req.body?.oglasi || [], req.body?.pretraga), fallback: true, poruka: e.message || 'Greška pri analizi' });
+        res.json({ uspjeh: true, analiza: fallbackAnalizaListe(req.body?.oglasi || [], req.body?.pretraga), fallback: true, poruka: 'Koristimo brzu Oglix procjenu.' });
     }
 });
 
@@ -345,7 +345,7 @@ function fallbackAnalizaListe(oglasi, pretraga) {
 
     if (!rang.length) return 'Nema dovoljno oglasa za analizu.';
     const linije = [
-        `AI fallback analiza za: ${pretraga || 'oglasi'}`,
+        `Brza Oglix analiza za: ${pretraga || 'oglasi'}`,
         '',
         ...rang.map(o => `OGLAS #${o.idx}: ${o.naslov}\nCijena: ${o.cijena}\nScore: ${o.score}/100`)
     ];
@@ -363,7 +363,7 @@ function fallbackCompareAI(oglasi) {
 
     const analiza = [
         'UKUPNA ANALIZA:',
-        'Claude trenutno nije dostupan, pa je prikazana brza Oglix procjena po cijeni, izvoru i osnovnim signalima.',
+        'Prikazana je brza Oglix procjena po cijeni, izvoru i osnovnim signalima.',
         '',
         ...rang.map((o, i) => `OGLAS #${o.oglas_idx + 1}: ${o.naziv}\nCijena: ${o.cijena}\nScore: ${o.score}/100\nRang: ${i + 1}`)
     ];
@@ -1518,7 +1518,7 @@ Budi konkretan. Koristi cijene i procente. Bosanski jezik.`;
 
     } catch(e) {
         console.log('Compare AI greÅ¡ka:', e.message);
-        res.json({ uspjeh: true, ...fallbackCompareAI(oglasi), fallback: true, poruka: e.message });
+        res.json({ uspjeh: true, ...fallbackCompareAI(oglasi), fallback: true, poruka: 'Koristimo brzu Oglix procjenu.' });
     }
 });
 
@@ -1729,7 +1729,7 @@ Izvuci parametre pretrage i vrati SAMO JSON bez objasnjenja:
         }
         res.json({ uspjeh: true, params });
     } catch(e) {
-        res.json({ uspjeh: true, params: fallbackAiPretraga(req.body?.upit), fallback: true, poruka: e.message });
+        res.json({ uspjeh: true, params: fallbackAiPretraga(req.body?.upit), fallback: true, poruka: 'Koristimo brzu Oglix pretragu.' });
     }
 });
 
