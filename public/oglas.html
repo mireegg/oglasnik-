@@ -25,9 +25,12 @@
     .logo span{color:var(--orange);}
     .back-btn{display:inline-flex;align-items:center;gap:8px;font-size:14px;color:var(--text-muted);background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-pill);padding:8px 16px;cursor:pointer;transition:all .15s;}
     .back-btn:hover{border-color:var(--border-hover);color:var(--text);}
-    .page{max-width:1100px;margin:0 auto;padding:32px;}
-    .oglas-top{display:grid;grid-template-columns:1fr 1fr;gap:32px;margin-bottom:32px;}
-    .glavna-slika{width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:var(--radius-lg);border:1px solid var(--border);}
+    .page{max-width:1240px;margin:0 auto;padding:28px 24px;}
+    .oglas-top{display:grid;grid-template-columns:minmax(0,1.08fr) minmax(360px,.92fr);gap:22px;margin-bottom:26px;align-items:start;}
+    .media-panel,.report-panel{background:var(--surface);border:1px solid var(--border);border-radius:22px;box-shadow:0 18px 50px rgba(17,24,39,.07);overflow:hidden;}
+    .media-panel{padding:12px;}
+    .report-panel{padding:22px;position:sticky;top:78px;}
+    .glavna-slika{width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:16px;border:1px solid var(--border);background:#eef2e8;}
     .slike-mini{display:flex;gap:8px;margin-top:10px;overflow-x:auto;padding-bottom:4px;}
     .slike-mini img{width:72px;height:72px;object-fit:cover;border-radius:var(--radius-sm);cursor:pointer;border:2px solid transparent;flex-shrink:0;transition:border-color .15s;}
     .slike-mini img:hover,.slike-mini img.active{border-color:var(--orange);}
@@ -36,17 +39,30 @@
     .badge-olx{background:#e8f5e9;color:#1b5e20;}
     .badge-autobum{background:#fce4ec;color:#c62828;}
     .badge-facebook{background:var(--blue-bg);color:var(--blue);}
-    .oglas-naslov{font-family:'Inter',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:26px;font-weight:700;line-height:1.2;margin-bottom:10px;}
-    .oglas-cijena{font-family:'Inter',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:36px;font-weight:800;color:var(--orange);margin-bottom:6px;}
+    .report-kicker{font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:.1em;color:var(--green);margin-bottom:10px;}
+    .oglas-naslov{font-family:'Inter',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:28px;font-weight:900;line-height:1.15;margin-bottom:14px;letter-spacing:-.03em;}
+    .price-score-row{display:grid;grid-template-columns:1fr 116px;gap:14px;align-items:stretch;margin-bottom:14px;}
+    .price-box,.deal-score-box{background:#f8faf5;border:1px solid var(--border);border-radius:16px;padding:14px;}
+    .oglas-cijena{font-family:'Inter',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:36px;font-weight:900;color:var(--text);margin-bottom:2px;letter-spacing:-.04em;}
     .cijena-m2{font-size:13px;color:var(--text-muted);margin-bottom:16px;}
+    .score-ring{width:72px;height:72px;border-radius:50%;border:5px solid var(--orange);display:flex;flex-direction:column;align-items:center;justify-content:center;margin:0 auto 8px;background:#fff;}
+    .score-ring strong{font-size:22px;line-height:1;color:var(--green);font-weight:900;}
+    .score-ring span{font-size:8px;text-transform:uppercase;color:var(--text-faint);font-weight:900;}
+    .deal-score-label{text-align:center;font-size:11px;font-weight:900;color:var(--text);}
+    .report-metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:12px 0 16px;}
+    .report-metric{border:1px solid var(--border);border-radius:14px;padding:10px;background:#fff;}
+    .report-metric span{display:block;font-size:9px;text-transform:uppercase;letter-spacing:.08em;font-weight:900;color:var(--text-faint);margin-bottom:3px;}
+    .report-metric strong{font-size:13px;color:var(--text);}
+    .deal-note{background:linear-gradient(135deg,#ecfccb,#ecfeff);border:1px solid #d9f99d;border-radius:16px;padding:13px 14px;margin-bottom:16px;color:var(--text-muted);font-size:13px;line-height:1.55;}
+    .deal-note strong{color:var(--text);}
     .specs-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:20px;}
     .spec-item{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px 12px;}
     .spec-label{font-size:10px;color:var(--text-faint);text-transform:uppercase;letter-spacing:.06em;margin-bottom:3px;}
     .spec-value{font-size:14px;font-weight:600;}
-    .akcije{display:flex;flex-direction:column;gap:10px;}
+    .akcije{display:grid;grid-template-columns:1fr;gap:10px;}
     .btn-primarni{background:var(--orange);color:white;border:none;border-radius:var(--radius-md);padding:16px 24px;font-size:15px;font-weight:600;font-family:'Inter',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;cursor:pointer;text-align:center;transition:background .15s;display:block;}
     .btn-primarni:hover{background:var(--orange-light);}
-    .btn-sekundarni{background:white;color:var(--orange);border:2px solid var(--orange);border-radius:var(--radius-md);padding:14px 24px;font-size:15px;font-weight:600;font-family:'Inter',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;cursor:pointer;text-align:center;}
+    .btn-sekundarni{background:white;color:var(--text);border:1px solid var(--border);border-radius:var(--radius-md);padding:14px 24px;font-size:15px;font-weight:800;font-family:'Inter',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;cursor:pointer;text-align:center;}
     .btn-sekundarni:hover{background:var(--orange-dim);}
     .ai-box{background:#111;border-radius:var(--radius-lg);padding:20px 24px;margin-bottom:32px;}
     .ai-box-header{display:flex;align-items:center;gap:10px;margin-bottom:12px;}
@@ -125,12 +141,18 @@
     .reg-ukupno-naziv{font-weight:600;font-size:13px;color:var(--orange);}
     .reg-ukupno-val{font-family:'Inter',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:20px;font-weight:800;color:var(--orange);}
     .reg-note{font-size:11px;color:var(--text-faint);margin-top:8px;line-height:1.5;}
+    @media(max-width:980px){
+      .oglas-top{grid-template-columns:1fr;}
+      .report-panel{position:static;}
+    }
     @media(max-width:768px){
       nav{padding:0 16px;flex-wrap:wrap;height:auto;gap:8px;padding-top:10px;padding-bottom:10px;}
       .nav-links{order:3;width:100%;display:flex;gap:12px;overflow-x:auto;padding-bottom:4px;}
       .nav-links a{font-size:12px;white-space:nowrap;}
       .page{padding:12px;}
       .oglas-top{grid-template-columns:1fr;gap:16px;}
+      .price-score-row{grid-template-columns:1fr;}
+      .report-metrics{grid-template-columns:1fr 1fr;}
       .oglas-naslov{font-size:18px;}
       .oglas-cijena{font-size:26px;}
       .specs-grid{grid-template-columns:1fr 1fr;}
@@ -253,6 +275,28 @@ function parseCijenaJS(str) {
   return parseFloat(str.toString().replace(/\./g,'').replace(',','.').replace(/[^0-9.]/g,'')) || 0;
 }
 
+function dealReport(meta, d) {
+  d = d || {};
+  var cijena = parseCijenaJS(meta.cijena || '');
+  var score = 66;
+  if ((meta.platforma || 'olx') === 'olx') score += 7;
+  if (d.godiste || d.km || d.grad) score += 8;
+  if (cijena > 0 && cijena < 20000) score += 5;
+  if (d.km) {
+    var km = parseInt(String(d.km).replace(/[^0-9]/g,'')) || 0;
+    if (km && km < 130000) score += 6;
+    else if (km && km > 240000) score -= 7;
+  }
+  score = Math.max(42, Math.min(94, Math.round(score)));
+  var preg = cijena > 0 ? Math.max(50, Math.round(cijena * (score >= 82 ? 0.06 : 0.035) / 50) * 50) : 0;
+  var trziste = score >= 84 ? 'Ispod tržišta' : score >= 70 ? 'Fer cijena' : 'Provjeriti';
+  var rizik = score >= 70 ? 'Nizak' : score >= 55 ? 'Srednji' : 'Viši';
+  var note = score >= 84 ? 'Jak signal: oglas vrijedi brzo otvoriti i provjeriti stanje kod prodavača.' :
+    score >= 70 ? 'Dobar kandidat: cijena i dostupni podaci izgledaju dovoljno dobro za kontakt.' :
+    'Oprez: prije kontakta obavezno uporedi slične oglase i traži dodatne detalje.';
+  return { score: score, preg: preg, trziste: trziste, rizik: rizik, note: note };
+}
+
 function renderOglasTop(meta, d) {
   d = d || {};
   var badgeClass = {olx:'badge-olx',autobum:'badge-autobum',facebook:'badge-facebook'}[meta.platforma]||'badge-olx';
@@ -325,10 +369,14 @@ function renderOglasTop(meta, d) {
   if (katTip === 'nekretnine' && d.kvadrata && oglasCijenaNum) {
     cijenaM2Html = '<div class="cijena-m2">'+Math.round(oglasCijenaNum/parseFloat(d.kvadrata))+' KM/m²</div>';
   }
+  var report = dealReport(meta, d);
+  var pregHtml = report.preg ? '-' + report.preg.toLocaleString('bs-BA') + ' KM' : 'Procjena';
+  var lokacijaText = d.grad || 'BiH';
+  var confidenceText = (d.godiste || d.km || d.kvadrata || d.brand) ? 'Dobar uzorak' : 'Osnovni podaci';
 
   document.getElementById('oglasSadrzaj').innerHTML =
     '<div class="oglas-top">'+
-      '<div>'+
+      '<div class="media-panel">'+
         '<div>'+slikeHtml+slikeMiniHtml+'</div>'+
         '<div id="regKalkBox" style="display:none;margin-top:14px;">'+
           '<div class="reg-box">'+
@@ -381,11 +429,27 @@ function renderOglasTop(meta, d) {
           '</div>'+
         '</div>'+
       '</div>'+
-      '<div>'+
+      '<div class="report-panel">'+
+        '<div class="report-kicker">Oglix Deal Report</div>'+
         '<span class="platforma-badge '+badgeClass+'">'+platformaNaziv+'</span>'+
         '<div class="oglas-naslov">'+meta.naslov+'</div>'+
-        '<div class="oglas-cijena">'+meta.cijena+'</div>'+
-        cijenaM2Html+
+        '<div class="price-score-row">'+
+          '<div class="price-box">'+
+            '<div class="spec-label">Tražena cijena</div>'+
+            '<div class="oglas-cijena">'+meta.cijena+'</div>'+
+            cijenaM2Html+
+          '</div>'+
+          '<div class="deal-score-box">'+
+            '<div class="score-ring"><strong>'+report.score+'</strong><span>Score</span></div>'+
+            '<div class="deal-score-label">'+report.trziste+'</div>'+
+          '</div>'+
+        '</div>'+
+        '<div class="report-metrics">'+
+          '<div class="report-metric"><span>Pregovaranje</span><strong>'+pregHtml+'</strong></div>'+
+          '<div class="report-metric"><span>Rizik</span><strong>'+report.rizik+'</strong></div>'+
+          '<div class="report-metric"><span>Podaci</span><strong>'+confidenceText+'</strong></div>'+
+        '</div>'+
+        '<div class="deal-note"><strong>Signal:</strong> '+report.note+' Lokacija: '+lokacijaText+'.</div>'+
         '<div class="specs-grid">'+specsHtml+'</div>'+
         '<div class="akcije">'+
           '<a href="'+meta.link+'" target="_blank" class="btn-primarni">Pogledaj na '+platformaNaziv+' →</a>'+

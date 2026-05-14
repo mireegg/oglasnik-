@@ -674,11 +674,34 @@ Daj analizu: OCJENA: [ODLIÄŒNO/FER/PREVISOKO/IZBJEGAVAJ] CIJENA: [cijena/mÂ²
 Oglas: ${oglas.naslov} â€” ${oglas.cijenaStr}
 Daj analizu: OCJENA: [ODLIÄŒNO/FER/PREVISOKO/IZBJEGAVAJ] CIJENA: [komentar] SAVJET: [preporuka] SCORE: [0-100]`;
     }
+    function fallbackJedan() {
+        const cijena = parseCijena(oglas.cijenaStr || oglas.cijena);
+        let score = 68;
+        if ((oglas.platforma || '').toLowerCase() === 'olx') score += 6;
+        if (d.godiste || d.km || d.kvadrata || d.grad) score += 8;
+        if (cijena > 0 && cijena < 20000) score += 5;
+        if (d.km && parseInt(d.km) > 240000) score -= 7;
+        score = Math.max(45, Math.min(92, Math.round(score)));
+        const ocjena = score >= 84 ? 'ODLICNO' : score >= 68 ? 'FER' : 'PREVISOKO';
+        const preg = cijena > 0 ? Math.max(50, Math.round(cijena * (score >= 84 ? 0.06 : 0.035) / 50) * 50) : 0;
+        return [
+            `OCJENA: ${ocjena}`,
+            `CIJENA: Brza Oglix procjena pokazuje ${score >= 68 ? 'fer signal' : 'potrebu za dodatnom provjerom'} za ovaj oglas.`,
+            `PREGOVARANJE: ${preg ? 'Probaj krenuti oko ' + preg.toLocaleString('bs-BA') + ' KM niže od tražene cijene.' : 'Traži dodatne informacije prije ponude.'}`,
+            `SAVJET: Provjeri stanje, dokumentaciju i uporedi slične oglase prije dogovora.`,
+            `SCORE: ${score}`
+        ].join('\n');
+    }
     try {
         const tekst = await groqAI(prompt, 350);
         const scoreMatch = (tekst||'').match(/SCORE:\s*(\d+)/);
-        res.json({ uspjeh: true, analiza: tekst || 'Analiza nije dostupna.', score: scoreMatch ? parseInt(scoreMatch[1]) : 70 });
-    } catch(e) { res.json({ uspjeh: false, analiza: 'Analiza nije dostupna.', score: 70 }); }
+        const analiza = tekst || fallbackJedan();
+        res.json({ uspjeh: true, analiza, score: scoreMatch ? parseInt(scoreMatch[1]) : 70, fallback: !tekst });
+    } catch(e) {
+        const analiza = fallbackJedan();
+        const scoreMatch = analiza.match(/SCORE:\s*(\d+)/);
+        res.json({ uspjeh: true, analiza, score: scoreMatch ? parseInt(scoreMatch[1]) : 70, fallback: true });
+    }
 });
 
 app.get('/api/slicni-oglasi', async (req, res) => res.json({ uspjeh: true, oglasi: [] }));
