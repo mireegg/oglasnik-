@@ -396,6 +396,47 @@ async function dohvatiOlxDetalje(id) {
     return { data: det.data, attrs, images: det.data.images || [] };
 }
 
+async function sacuvajOlxDetaljeULiveOglase(data, attrs) {
+    if (!data?.id) return;
+    const link = `https://www.olx.ba/artikal/${data.id}`;
+    const cijena_num = parseCijena(data.display_price || data.price);
+    await pool.query(
+        `UPDATE live_oglasi SET
+            naslov = COALESCE($1, naslov),
+            cijena = COALESCE($2, cijena),
+            slika = COALESCE($3, slika),
+            brand_id = $4,
+            model_id = $5,
+            godiste = $6,
+            km = $7,
+            gorivo = $8,
+            transmisija = $9,
+            kubikaza = $10,
+            kw = $11,
+            boja = $12,
+            grad = $13,
+            cijena_num = COALESCE($14, cijena_num)
+         WHERE link = $15`,
+        [
+            data.title || null,
+            data.display_price || null,
+            data.image || data.images?.[0] || null,
+            data.brand?.id || null,
+            data.model?.id || null,
+            attrs['godiste'] ? parseInt(attrs['godiste']) : null,
+            attrs['kilometra-a'] ? parseInt(String(attrs['kilometra-a']).replace(/[^0-9]/g, '')) : null,
+            attrs['gorivo'] || null,
+            attrs['transmisija'] || null,
+            normKubikaza(attrs['kubikaza']),
+            attrs['kilovata-kw'] ? parseInt(attrs['kilovata-kw']) : null,
+            attrs['boja'] || null,
+            data.cities?.[0]?.name || null,
+            cijena_num || null,
+            link
+        ]
+    );
+}
+
 async function claudeAI(prompt, maxTokens = 600) {
     if (!process.env.ANTHROPIC_API_KEY) {
         throw new Error('ANTHROPIC_API_KEY nije postavljen.');
@@ -480,6 +521,7 @@ function fallbackCompareAI(oglasi) {
 app.get('/api/oglas-detalji/:id', async (req, res) => {
     try {
         const { data, attrs } = await dohvatiOlxDetalje(req.params.id);
+        sacuvajOlxDetaljeULiveOglase(data, attrs).catch(() => {});
         const categoryId = data.category_id;
         let kategorija_tip = 'ostalo';
         if ([31, 1495, 2076, 252].includes(categoryId)) kategorija_tip = 'mobiteli';
@@ -713,8 +755,9 @@ app.get('/api/live-oglasi', async (req, res) => {
             i += 2;
         }
         if (req.query.transmisija) {
-            uvjeti.push(`naslov ILIKE $${i++}`);
-            params.push(`%${req.query.transmisija}%`);
+            uvjeti.push(`(transmisija ILIKE $${i} OR naslov ILIKE $${i+1})`);
+            params.push(`%${req.query.transmisija}%`, `%${req.query.transmisija}%`);
+            i += 2;
         }
         if (req.query.godiste_od && req.query.godiste_do) {
             uvjeti.push(`(godiste BETWEEN $${i} AND $${i+1} OR (godiste IS NULL AND naslov ~ '[0-9]{4}' AND CAST(SUBSTRING(naslov FROM '[0-9]{4}') AS INTEGER) BETWEEN $${i} AND $${i+1}))`);
@@ -1137,8 +1180,22 @@ async function fetchAutobum() {
                     try {
                         const link = `https://autobum.ba/oglas/${o.id}`;
                         const dbRes = await pool.query(
-                            `INSERT INTO live_oglasi (naslov, cijena, slika, link, platforma, kategorija, godiste, km, gorivo) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9) ON CONFLICT (link) DO UPDATE SET cijena = EXCLUDED.cijena, godiste = EXCLUDED.godiste, km = EXCLUDED.km, gorivo = EXCLUDED.gorivo`,
-                            [o.title, o.price || 'Na upit', o.image || '', link, 'autobum', 'vozila', o.year ? parseInt(o.year) : null, o.mileage ? parseInt(o.mileage) : null, o.fuel || null]
+                            `INSERT INTO live_oglasi (naslov, cijena, slika, link, platforma, kategorija, godiste, km, gorivo, transmisija, kubikaza, boja) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)
+                             ON CONFLICT (link) DO UPDATE SET cijena = EXCLUDED.cijena, godiste = EXCLUDED.godiste, km = EXCLUDED.km, gorivo = EXCLUDED.gorivo, transmisija = EXCLUDED.transmisija, kubikaza = EXCLUDED.kubikaza, boja = EXCLUDED.boja`,
+                            [
+                                o.title,
+                                o.price || 'Na upit',
+                                o.image || '',
+                                link,
+                                'autobum',
+                                'vozila',
+                                o.year ? parseInt(o.year) : null,
+                                o.mileage ? parseInt(o.mileage) : null,
+                                o.fuel || null,
+                                o.transmission || null,
+                                normKubikaza(o.engine_displacement),
+                                o.color || null
+                            ]
                         );
                         if (dbRes.rowCount > 0) sacuvano++;
                     } catch(e) {}
@@ -1166,7 +1223,15 @@ async function fetchSvaVozila() {
         console.log('OLX vozila: ' + (prvaStrana.data.meta?.total||0) + ' oglasa, ' + lastPage + ' stranica');
         let sacuvano = 0;
         for (const o of (prvaStrana.data.data || [])) {
-            try { const dbRes = await pool.query('INSERT INTO live_oglasi (naslov, cijena, slika, link, platforma, kategorija, brand_id) VALUES ($1,$2,$3,$4,$5,$6,$7) ON CONFLICT (link) DO NOTHING', [o.title, o.display_price || 'Na upit', o.image || '', 'https://www.olx.ba/artikal/' + o.id, 'olx', 'vozila', o.brand_id || null]); if (dbRes.rowCount > 0) sacuvano++; } catch(e) {}
+            try {
+                const dbRes = await pool.query(
+                    `INSERT INTO live_oglasi (naslov, cijena, slika, link, platforma, kategorija, brand_id, model_id, cijena_num)
+                     VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9)
+                     ON CONFLICT (link) DO UPDATE SET cijena = EXCLUDED.cijena, brand_id = COALESCE(EXCLUDED.brand_id, live_oglasi.brand_id), model_id = COALESCE(EXCLUDED.model_id, live_oglasi.model_id), cijena_num = COALESCE(EXCLUDED.cijena_num, live_oglasi.cijena_num)`,
+                    [o.title, o.display_price || 'Na upit', o.image || '', 'https://www.olx.ba/artikal/' + o.id, 'olx', 'vozila', o.brand_id || null, o.model_id || null, parseCijena(o.display_price) || null]
+                );
+                if (dbRes.rowCount > 0) sacuvano++;
+            } catch(e) {}
         }
         for (let stranica = 2; stranica <= lastPage; stranica++) {
             try {
@@ -1174,7 +1239,15 @@ async function fetchSvaVozila() {
                 const oglasi = response.data.data || [];
                 if (!oglasi.length) break;
                 for (const o of oglasi) {
-                    try { const dbRes = await pool.query('INSERT INTO live_oglasi (naslov, cijena, slika, link, platforma, kategorija, brand_id) VALUES ($1,$2,$3,$4,$5,$6,$7) ON CONFLICT (link) DO NOTHING', [o.title, o.display_price || 'Na upit', o.image || '', 'https://www.olx.ba/artikal/' + o.id, 'olx', 'vozila', o.brand_id || null]); if (dbRes.rowCount > 0) sacuvano++; } catch(e) {}
+                    try {
+                        const dbRes = await pool.query(
+                            `INSERT INTO live_oglasi (naslov, cijena, slika, link, platforma, kategorija, brand_id, model_id, cijena_num)
+                             VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9)
+                             ON CONFLICT (link) DO UPDATE SET cijena = EXCLUDED.cijena, brand_id = COALESCE(EXCLUDED.brand_id, live_oglasi.brand_id), model_id = COALESCE(EXCLUDED.model_id, live_oglasi.model_id), cijena_num = COALESCE(EXCLUDED.cijena_num, live_oglasi.cijena_num)`,
+                            [o.title, o.display_price || 'Na upit', o.image || '', 'https://www.olx.ba/artikal/' + o.id, 'olx', 'vozila', o.brand_id || null, o.model_id || null, parseCijena(o.display_price) || null]
+                        );
+                        if (dbRes.rowCount > 0) sacuvano++;
+                    } catch(e) {}
                 }
                 if (stranica % 50 === 0) console.log('OLX vozila: stranica ' + stranica + '/' + lastPage);
                 await new Promise(r => setTimeout(r, 1500));
@@ -1480,7 +1553,7 @@ app.post('/api/admin/promijeni-plan', async (req, res) => {
 // â”€â”€ OLX DETALJI POSTEPENO â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 async function popuniOlxDetalje() {
     try {
-        const oglasi = await pool.query(`SELECT id, link FROM live_oglasi WHERE platforma = 'olx' AND kategorija LIKE 'vozila%' AND godiste IS NULL AND km IS NULL ORDER BY datum DESC LIMIT 200`);
+        const oglasi = await pool.query(`SELECT id, link FROM live_oglasi WHERE platforma = 'olx' AND kategorija LIKE 'vozila%' AND (godiste IS NULL OR km IS NULL OR model_id IS NULL OR transmisija IS NULL OR kubikaza IS NULL OR boja IS NULL) ORDER BY datum DESC LIMIT 200`);
         if (!oglasi.rows.length) { console.log('OLX detalji: svi su popunjeni!'); return; }
         console.log(`OLX detalji: popunjavam ${oglasi.rows.length} oglasa...`);
         let popunjeno = 0;
@@ -1492,11 +1565,16 @@ async function popuniOlxDetalje() {
                 const godiste = attrs['godiste'] ? parseInt(attrs['godiste']) : null;
                 const km = attrs['kilometra-a'] ? parseInt(attrs['kilometra-a']) : null;
                 const gorivo = attrs['gorivo'] || null;
+                const transmisija = attrs['transmisija'] || null;
+                const kubikaza = normKubikaza(attrs['kubikaza']);
                 const kw = attrs['kilovata-kw'] ? parseInt(attrs['kilovata-kw']) : null;
                 const boja = attrs['boja'] || null;
                 const grad = data.cities?.[0]?.name || null;
                 const cijena_num = parseCijena(data.display_price);
-                await pool.query(`UPDATE live_oglasi SET godiste = $1, km = $2, gorivo = $3, kw = $4, boja = $5, grad = $6, cijena_num = $7 WHERE id = $8`, [godiste, km, gorivo, kw, boja, grad, cijena_num || null, oglas.id]);
+                await pool.query(
+                    `UPDATE live_oglasi SET brand_id = $1, model_id = $2, godiste = $3, km = $4, gorivo = $5, transmisija = $6, kubikaza = $7, kw = $8, boja = $9, grad = $10, cijena_num = $11 WHERE id = $12`,
+                    [data.brand?.id || null, data.model?.id || null, godiste, km, gorivo, transmisija, kubikaza, kw, boja, grad, cijena_num || null, oglas.id]
+                );
                 popunjeno++;
                 await new Promise(r => setTimeout(r, 600));
             } catch(e) {
