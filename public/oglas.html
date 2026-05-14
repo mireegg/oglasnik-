@@ -580,7 +580,7 @@ function formatAiTekst(tekst) {
 
 function postaviTekstovePoKategoriji(katTip) {
   var naslovi = {
-    vozila: {g1:'🎯 Identični oglasi',g1opis:'Isti model, motor i godište',g2:'💡 Alternative',g2opis:'Isti model, drugačiji motor ili godište',ai:'🤖 Zašto kupiti — ili ne kupiti — ovo vozilo?'},
+    vozila: {g1:'?? Identicni oglasi',g1opis:'Isti brand, model, gorivo, transmisija, boja i kubikaza',g2:'?? Alternative',g2opis:'Sire poredjenje nije prikazano dok trazimo identicne oglase',ai:'?? AI procjena ovog vozila'},
     mobiteli: {g1:'🎯 Isti model',g1opis:'Identični model telefona',g2:'💡 Alternative',g2opis:'Isti brand, drugačiji model',ai:'🤖 Je li ovo dobar deal za ovaj mobitel?'},
     racunari: {g1:'🎯 Slične konfiguracije',g1opis:'Isti ili sličan procesor i RAM',g2:'💡 Alternative',g2opis:'Drugačija konfiguracija u sličnom cjenovnom rangu',ai:'🤖 Isplati li se ova konfiguracija?'},
     nekretnine: {g1:'🎯 Slične nekretnine',g1opis:'Isti tip, slična kvadratura i lokacija',g2:'💡 Alternative',g2opis:'Drugačija kvadratura ili lokacija',ai:'🤖 Je li ovo fer cijena za ovu nekretninu?'},
@@ -598,26 +598,33 @@ async function ucitajSlicne(d) {
   d = d || {};
   var katTip = d.kategorija_tip || 'ostalo';
   postaviTekstovePoKategoriji(katTip);
+  function prikaziNemaSlicnih(poruka) {
+    var box = document.getElementById('nemaSlichnih');
+    box.textContent = poruka || 'Nema oglasa sa istim brendom, modelom, gorivom, transmisijom, bojom i kubikazom.';
+    box.style.display = 'block';
+    document.getElementById('grupa1Sekcija').style.display = 'none';
+    document.getElementById('grupa2Sekcija').style.display = 'none';
+  }
 
   if ((oglasPlatforma === 'autobum' || oglasPlatforma === 'facebook') && katTip === 'vozila') {
     var brandId = getBrandId(oglasMeta.naslov, d.brand);
     document.getElementById('grupa1Sekcija').style.display = 'block';
     document.getElementById('grupa1Kartice').innerHTML = '<div class="loading-inline"><div class="spinner"></div> Tražim slične oglase na OLX.ba...</div>';
     try {
-      var res = await fetch('/api/slicni-po-nazivu', {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({naslov:oglasMeta.naslov,cijena:oglasMeta.cijena,brand_id:brandId,gorivo:d.gorivo||null,godiste:d.godiste||null,km:d.km||null})});
+      var res = await fetch('/api/slicni-po-nazivu', {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({naslov:oglasMeta.naslov,cijena:oglasMeta.cijena,brand_id:brandId,brand:d.brand||null,model:d.model||null,gorivo:d.gorivo||null,transmisija:d.transmisija||null,boja:d.boja||null,kubikaza:d.kubikaza||null,godiste:d.godiste||null,km:d.km||null})});
       var data = await res.json();
       if (data.uspjeh && (data.grupa1.length || data.grupa2.length)) {
         document.getElementById('preciznostBadge').textContent = '🎯 ' + (data.preciznost||'Slični oglasi sa OLX.ba');
         if (data.aiAnaliza) { document.getElementById('aiPorediBox').style.display='block'; document.getElementById('aiPorediTekst').innerHTML=formatAiTekst(data.aiAnaliza); }
         renderKartice(data.grupa1, 'grupa1Kartice', false, katTip);
         if (data.grupa2 && data.grupa2.length) { document.getElementById('grupa2Sekcija').style.display='block'; renderKartice(data.grupa2,'grupa2Kartice',true,katTip); }
-      } else { document.getElementById('nemaSlichnih').style.display='block'; document.getElementById('grupa1Sekcija').style.display='none'; }
-    } catch(e) { document.getElementById('nemaSlichnih').style.display='block'; document.getElementById('grupa1Sekcija').style.display='none'; }
+      } else { prikaziNemaSlicnih(data.poruka); }
+    } catch(e) { prikaziNemaSlicnih('Greska pri ucitavanju identicnih oglasa.'); }
     return;
   }
 
   var mozePorediti = ((katTip==='vozila'&&d.brand_id&&d.model_id)||(katTip==='mobiteli'&&(d.brand_id||d.model_id))||(katTip==='racunari'&&d.category_id)||(katTip==='nekretnine'&&d.category_id));
-  if (!mozePorediti) { document.getElementById('nemaSlichnih').style.display='block'; return; }
+  if (!mozePorediti) { prikaziNemaSlicnih('Nedostaje brand ili model za precizno poredjenje.'); return; }
 
   document.getElementById('grupa1Sekcija').style.display='block';
   document.getElementById('grupa1Kartice').innerHTML='<div class="loading-inline"><div class="spinner"></div> Tražim slične oglase...</div>';
@@ -627,7 +634,7 @@ async function ucitajSlicne(d) {
     var payload = Object.assign({}, d, {olx_id:olxId,cijena:oglasMeta.cijena||'',naslov:oglasMeta.naslov||''});
     var res = await fetch('/api/slicni-dvije-grupe',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
     var data = await res.json();
-    if (!data.uspjeh || (!data.grupa1.length && !data.grupa2.length)) { document.getElementById('nemaSlichnih').style.display='block'; document.getElementById('grupa1Sekcija').style.display='none'; return; }
+    if (!data.uspjeh || (!data.grupa1.length && !data.grupa2.length)) { prikaziNemaSlicnih(data.poruka); return; }
     if (data.grupa1 && data.grupa1.length > 0) {
       document.getElementById('preciznostBadge').textContent = '🎯 ' + (data.preciznost||'Slični oglasi');
       document.getElementById('grupa1Sekcija').style.display='block';
