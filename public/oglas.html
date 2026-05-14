@@ -4,10 +4,10 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Oglas — Oglix.ba</title>
-  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   <style>
     :root {
-      --orange:#e65c00;--orange-light:#ff7a1f;--orange-dim:#fff0e6;
+      --orange:#84cc16;--orange-light:#a3e635;--orange-dim:#fff0e6;
       --bg:#f7f5f2;--surface:#fff;--border:rgba(0,0,0,0.08);
       --border-hover:rgba(0,0,0,0.18);--text:#1a1a1a;--text-muted:#777;
       --text-faint:#aaa;--radius-sm:8px;--radius-md:12px;
@@ -18,10 +18,10 @@
       --purple:#6366f1;--yellow-bg:#fef9c3;--yellow:#854d0e;
     }
     *{box-sizing:border-box;margin:0;padding:0;}
-    body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;font-size:15px;line-height:1.5;}
+    body{font-family:'Inter',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;font-size:15px;line-height:1.5;}
     a{text-decoration:none;color:inherit;}
     nav{background:var(--surface);border-bottom:1px solid var(--border);padding:0 32px;height:60px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;}
-    .logo{font-family:'Syne',sans-serif;font-size:22px;font-weight:700;letter-spacing:-0.5px;}
+    .logo{font-family:'Inter',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:22px;font-weight:700;letter-spacing:-0.5px;}
     .logo span{color:var(--orange);}
     .back-btn{display:inline-flex;align-items:center;gap:8px;font-size:14px;color:var(--text-muted);background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-pill);padding:8px 16px;cursor:pointer;transition:all .15s;}
     .back-btn:hover{border-color:var(--border-hover);color:var(--text);}
@@ -36,23 +36,23 @@
     .badge-olx{background:#e8f5e9;color:#1b5e20;}
     .badge-autobum{background:#fce4ec;color:#c62828;}
     .badge-facebook{background:var(--blue-bg);color:var(--blue);}
-    .oglas-naslov{font-family:'Syne',sans-serif;font-size:26px;font-weight:700;line-height:1.2;margin-bottom:10px;}
-    .oglas-cijena{font-family:'Syne',sans-serif;font-size:36px;font-weight:800;color:var(--orange);margin-bottom:6px;}
+    .oglas-naslov{font-family:'Inter',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:26px;font-weight:700;line-height:1.2;margin-bottom:10px;}
+    .oglas-cijena{font-family:'Inter',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:36px;font-weight:800;color:var(--orange);margin-bottom:6px;}
     .cijena-m2{font-size:13px;color:var(--text-muted);margin-bottom:16px;}
     .specs-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:20px;}
     .spec-item{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px 12px;}
     .spec-label{font-size:10px;color:var(--text-faint);text-transform:uppercase;letter-spacing:.06em;margin-bottom:3px;}
     .spec-value{font-size:14px;font-weight:600;}
     .akcije{display:flex;flex-direction:column;gap:10px;}
-    .btn-primarni{background:var(--orange);color:white;border:none;border-radius:var(--radius-md);padding:16px 24px;font-size:15px;font-weight:600;font-family:'DM Sans',sans-serif;cursor:pointer;text-align:center;transition:background .15s;display:block;}
+    .btn-primarni{background:var(--orange);color:white;border:none;border-radius:var(--radius-md);padding:16px 24px;font-size:15px;font-weight:600;font-family:'Inter',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;cursor:pointer;text-align:center;transition:background .15s;display:block;}
     .btn-primarni:hover{background:var(--orange-light);}
-    .btn-sekundarni{background:white;color:var(--orange);border:2px solid var(--orange);border-radius:var(--radius-md);padding:14px 24px;font-size:15px;font-weight:600;font-family:'DM Sans',sans-serif;cursor:pointer;text-align:center;}
+    .btn-sekundarni{background:white;color:var(--orange);border:2px solid var(--orange);border-radius:var(--radius-md);padding:14px 24px;font-size:15px;font-weight:600;font-family:'Inter',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;cursor:pointer;text-align:center;}
     .btn-sekundarni:hover{background:var(--orange-dim);}
     .ai-box{background:#111;border-radius:var(--radius-lg);padding:20px 24px;margin-bottom:32px;}
     .ai-box-header{display:flex;align-items:center;gap:10px;margin-bottom:12px;}
     .ai-dot{width:8px;height:8px;border-radius:50%;background:var(--orange);animation:pulse 2s infinite;}
     @keyframes pulse{0%,100%{opacity:1;}50%{opacity:.4;}}
-    .ai-box-title{font-family:'Syne',sans-serif;font-size:14px;font-weight:700;color:var(--orange);}
+    .ai-box-title{font-family:'Inter',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:14px;font-weight:700;color:var(--orange);}
     .ai-box-text{font-size:13px;color:#ccc;line-height:1.8;}
     .ai-ocjena{display:inline-block;padding:4px 12px;border-radius:var(--radius-pill);font-size:12px;font-weight:700;margin-bottom:10px;}
     .ocjena-odlicno{background:#15803d;color:white;}
@@ -60,7 +60,7 @@
     .ocjena-previsoko,.ocjena-izbjegavaj{background:#dc2626;color:white;}
     .sekcija{margin-bottom:48px;}
     .sekcija-header{margin-bottom:6px;}
-    .sekcija-naslov{font-family:'Syne',sans-serif;font-size:20px;font-weight:700;}
+    .sekcija-naslov{font-family:'Inter',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:20px;font-weight:700;}
     .sekcija-opis{font-size:13px;color:var(--text-muted);margin-bottom:6px;}
     .preciznost-badge{font-size:11px;color:var(--text-faint);background:var(--bg);border:1px solid var(--border);padding:3px 10px;border-radius:var(--radius-pill);display:inline-block;margin-bottom:16px;}
     .poredi-wrap{overflow-x:auto;border-radius:var(--radius-lg);border:1px solid var(--border);margin-bottom:20px;}
@@ -83,9 +83,9 @@
     .tab-slika img{width:52px;height:40px;object-fit:cover;border-radius:6px;flex-shrink:0;}
     .tab-slika-ph{width:52px;height:40px;background:var(--bg);border-radius:6px;flex-shrink:0;display:flex;align-items:center;justify-content:center;}
     .tab-slika-txt{font-size:11px;color:var(--orange);font-weight:600;line-height:1.3;}
-    .ai-poredi-box{background:#0f0f0f;border-radius:var(--radius-lg);padding:22px 24px;border:1px solid rgba(230,92,0,.2);margin-bottom:20px;}
+    .ai-poredi-box{background:#0f0f0f;border-radius:var(--radius-lg);padding:22px 24px;border:1px solid rgba(132,204,22,.2);margin-bottom:20px;}
     .ai-poredi-header{display:flex;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap;}
-    .ai-poredi-title{font-family:'Syne',sans-serif;font-size:15px;font-weight:700;color:white;}
+    .ai-poredi-title{font-family:'Inter',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:15px;font-weight:700;color:white;}
     .ai-poredi-sub{font-size:11px;color:#555;margin-left:auto;}
     .ai-poredi-tekst{font-size:14px;color:#ccc;line-height:1.85;}
     .slicni-kartice{display:grid;grid-template-columns:repeat(auto-fill,minmax(175px,1fr));gap:14px;margin-top:4px;}
@@ -95,7 +95,7 @@
     .slicni-kartica-img-ph{width:100%;aspect-ratio:4/3;background:var(--bg);display:flex;align-items:center;justify-content:center;}
     .slicni-kartica-body{padding:12px;}
     .slicni-kartica-naslov{font-size:12px;font-weight:500;line-height:1.3;margin-bottom:6px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
-    .slicni-kartica-cijena{font-family:'Syne',sans-serif;font-size:16px;font-weight:700;color:var(--orange);margin-bottom:3px;}
+    .slicni-kartica-cijena{font-family:'Inter',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:16px;font-weight:700;color:var(--orange);margin-bottom:3px;}
     .slicni-kartica-meta{font-size:11px;color:var(--text-faint);}
     .preporuka-tag{position:absolute;top:8px;left:8px;font-size:10px;font-weight:700;padding:3px 8px;border-radius:var(--radius-pill);}
     .tag-bolji{background:var(--green);color:white;}
@@ -108,22 +108,22 @@
     .loading-wrap{padding:60px;text-align:center;color:var(--text-muted);}
     .loading-inline{display:flex;align-items:center;gap:10px;color:#666;font-size:13px;padding:16px 0;}
     footer{margin-top:60px;border-top:1px solid var(--border);background:var(--surface);padding:32px;text-align:center;font-size:13px;color:var(--text-faint);}
-    .footer-logo{font-family:'Syne',sans-serif;font-size:18px;font-weight:700;color:var(--text);margin-bottom:8px;}
+    .footer-logo{font-family:'Inter',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:18px;font-weight:700;color:var(--text);margin-bottom:8px;}
     .footer-logo span{color:var(--orange);}
     .reg-box{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-md);padding:16px;margin-top:14px;}
-    .reg-title{font-family:'Syne',sans-serif;font-size:14px;font-weight:700;margin-bottom:12px;display:flex;align-items:center;gap:8px;color:var(--text);}
+    .reg-title{font-family:'Inter',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:14px;font-weight:700;margin-bottom:12px;display:flex;align-items:center;gap:8px;color:var(--text);}
     .reg-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;}
     .reg-field label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.07em;color:var(--text-faint);display:block;margin-bottom:4px;}
-    .reg-select{width:100%;border:1px solid var(--border);border-radius:var(--radius-sm);padding:8px 10px;font-size:13px;font-family:'DM Sans',sans-serif;color:var(--text);background:var(--surface);outline:none;cursor:pointer;transition:border-color .15s;}
+    .reg-select{width:100%;border:1px solid var(--border);border-radius:var(--radius-sm);padding:8px 10px;font-size:13px;font-family:'Inter',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:var(--text);background:var(--surface);outline:none;cursor:pointer;transition:border-color .15s;}
     .reg-select:focus{border-color:var(--orange);}
     .reg-stavke{margin-top:12px;display:flex;flex-direction:column;}
     .reg-stavka{display:flex;justify-content:space-between;align-items:center;font-size:12px;padding:6px 0;border-bottom:1px solid var(--border);}
     .reg-stavka:last-child{border-bottom:none;}
     .reg-stavka-naziv{color:var(--text-muted);}
     .reg-stavka-val{font-weight:600;font-size:12px;white-space:nowrap;margin-left:8px;}
-    .reg-ukupno{display:flex;justify-content:space-between;align-items:center;background:var(--orange-dim);border:1px solid rgba(230,92,0,0.2);border-radius:var(--radius-sm);padding:12px 14px;margin-top:10px;}
+    .reg-ukupno{display:flex;justify-content:space-between;align-items:center;background:var(--orange-dim);border:1px solid rgba(132,204,22,0.2);border-radius:var(--radius-sm);padding:12px 14px;margin-top:10px;}
     .reg-ukupno-naziv{font-weight:600;font-size:13px;color:var(--orange);}
-    .reg-ukupno-val{font-family:'Syne',sans-serif;font-size:20px;font-weight:800;color:var(--orange);}
+    .reg-ukupno-val{font-family:'Inter',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:20px;font-weight:800;color:var(--orange);}
     .reg-note{font-size:11px;color:var(--text-faint);margin-top:8px;line-height:1.5;}
     @media(max-width:768px){
       nav{padding:0 16px;flex-wrap:wrap;height:auto;gap:8px;padding-top:10px;padding-bottom:10px;}
@@ -141,12 +141,50 @@
       .sekcija-naslov{font-size:17px;}
     }
   </style>
+<style id="oglix-graphite-lime-theme">
+:root{
+  --orange:#84cc16!important;--orange-light:#a3e635!important;--orange-dim:#ecfccb!important;
+  --or:#84cc16!important;--or-l:#a3e635!important;--or-dim:#ecfccb!important;
+  --bg:#f5f6f3!important;--surface:#fff!important;--s:#fff!important;--border:#e3e7dc!important;
+  --text:#111827!important;--text-muted:#5f6875!important;--text-faint:#9aa3ad!important;
+  --t:#111827!important;--tm:#5f6875!important;--tf:#9aa3ad!important;
+  --green:#4d7c0f!important;--green-bg:#ecfccb!important;--green-dim:rgba(132,204,22,.14)!important;
+  --blue:#06b6d4!important;--blue-bg:#ecfeff!important;--blue-dim:rgba(6,182,212,.12)!important;
+  --gold:#ca8a04!important;--gold-dim:#fef9c3!important;--dark:#111827!important;
+  --graphite:#111827;--lime:#84cc16;--lime-soft:#ecfccb;--cyan:#06b6d4;
+}
+*,*::before,*::after{font-family:'Inter',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif!important;}
+body{background:#f5f6f3!important;color:#111827!important;letter-spacing:0!important;}
+.logo span,.logo em,.footer-logo span,.footer-logo em,.sidebar-logo span{color:#84cc16!important;}
+nav{background:rgba(255,255,255,.92)!important;border-color:#e3e7dc!important;backdrop-filter:blur(16px);}
+a{color:inherit;}
+.nav-btn,.btn-primary,.btn-orange,.btn-hero.btn-orange,.submit,.forma-submit,.save-btn,.lock-btn,.plan-btn-orange,.apply-btn,.nav-search-btn,.btn-primarni{background:#111827!important;color:#fff!important;border-color:#111827!important;box-shadow:0 12px 26px rgba(17,24,39,.14)!important;}
+.nav-btn:hover,.btn-primary:hover,.btn-orange:hover,.submit:hover,.forma-submit:hover,.save-btn:hover,.lock-btn:hover,.plan-btn-orange:hover,.apply-btn:hover,.nav-search-btn:hover,.btn-primarni:hover{background:#263244!important;color:#fff!important;}
+.btn-ghost,.btn-outline,.nav-ghost,.btn-sekundarni,.plan-btn-outline,.back-btn{background:#fff!important;color:#111827!important;border-color:#dfe5d7!important;}
+.btn-ghost:hover,.btn-outline:hover,.nav-ghost:hover,.btn-sekundarni:hover,.plan-btn-outline:hover,.back-btn:hover{border-color:#84cc16!important;color:#4d7c0f!important;}
+.hero,.problemi,.cijene,.features-section{background:linear-gradient(180deg,#ffffff 0%,#f5f6f3 100%)!important;color:#111827!important;}
+.hero-grid,.hero-glow,.hero-bg{opacity:.35!important;}
+.hero h1,.hero h1 em,.hero p,.section-title,.problem-naslov,.plan-cijena,.footer-logo,.forma-title{color:#111827!important;}
+.hero h1 em{color:#4d7c0f!important;}
+.hero-badge,.section-kicker,.feature-tag,.logo-biznis,.logo-tag,.card-badge.badge-orange,.badge-upgrade{color:#4d7c0f!important;background:#ecfccb!important;border-color:#d9f99d!important;}
+.hero-badge-dot,.pulse,.ai-dot,.ai-box-dot{background:#84cc16!important;}
+.feature-card,.test-card,.plan,.card,.profil-hero,.postavke-card,.nova-forma,.stat-card,.chart-card,.full-card,.kal-card,.tip-card,.alert-box,.content,.forma-kartica{background:#fff!important;border-color:#e3e7dc!important;box-shadow:0 16px 42px rgba(17,24,39,.06)!important;}
+.feature-card:hover,.plan.popular,.card:hover,.oglas-mini:hover,.slicni-kartica:hover{border-color:rgba(132,204,22,.55)!important;}
+.feature-ikona,.test-avatar,.alert-ikona,.avatar,.user-avatar,.konk-avatar{background:#ecfccb!important;color:#4d7c0f!important;border-color:#d9f99d!important;}
+.tab.active,.nav-link.active,.cat-item.active{color:#111827!important;border-color:#84cc16!important;background:#eef2e8!important;}
+input:focus,select:focus,textarea:focus{border-color:#84cc16!important;box-shadow:0 0 0 3px rgba(132,204,22,.12)!important;}
+.ai-box,.ai-poredi-box,.compare-ai-box,.ai-intel-box{background:#111827!important;border-color:#263244!important;}
+.ai-box-title,.ai-poredi-title,.ai-intel-title{color:#a3e635!important;}
+footer{background:#111827!important;color:#cbd5e1!important;}
+footer .footer-logo,footer .footer-logo span{color:#fff!important;}
+::selection{background:#d9f99d;color:#111827;}
+</style>
 </head>
 <body>
 
 <nav>
   <a href="/" class="logo">oglix<span>.ba</span></a>
-  <div class="nav-links"><a href="/oglasi.html">Oglasi</a><a href="/statistike.html">Statistike</a><a href="/alerti.html">🔔 Alerti</a><a href="/biznis.html" style="color:var(--orange);font-weight:600;">Biznis</a></div>
+  <div class="nav-links"><a href="/oglasi.html">Oglasi</a><a href="/statistike.html">Statistike</a><a href="/profil.html">Alerti</a><a href="/biznis.html" style="color:var(--orange);font-weight:600;">Biznis</a></div>
   <button class="back-btn" onclick="history.back()">
     <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M10 12L6 8L10 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
     Nazad
@@ -386,7 +424,7 @@ async function ucitajAiAnalizuJednog(d) {
           var cls = {'ODLIČNO':'ocjena-odlicno','ODLICNO':'ocjena-odlicno','FER':'ocjena-fer','PREVISOKO':'ocjena-previsoko','IZBJEGAVAJ':'ocjena-izbjegavaj'}[val.trim().toUpperCase()] || 'ocjena-fer';
           return '<span class="ai-ocjena '+cls+'">'+val.trim()+'</span><br>';
         })
-        .replace(/CIJENA:\s*([^\n]+)/g,'<div style="margin:8px 0"><strong style="color:#e65c00">💰 Cijena:</strong> $1</div>')
+        .replace(/CIJENA:\s*([^\n]+)/g,'<div style="margin:8px 0"><strong style="color:#84cc16">💰 Cijena:</strong> $1</div>')
         .replace(/PREGOVARANJE:\s*([^\n]+)/g,'<div style="margin:8px 0"><strong style="color:#22c55e">🤝 Pregovaranje:</strong> $1</div>')
         .replace(/SAVJET:\s*([^\n]+)/g,'<div style="margin:8px 0"><strong style="color:#60a5fa">💡 Savjet:</strong> $1</div>')
         .replace(/SCORE:\s*\d+/g,'')

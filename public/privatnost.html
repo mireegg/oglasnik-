@@ -4,17 +4,17 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Oglix — Privatnost podataka</title>
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <style>
-:root{--orange:#e65c00;--bg:#f7f5f2;--surface:#fff;--border:rgba(0,0,0,0.08);--text:#1a1a1a;--muted:#777;--faint:#aaa;--r-sm:8px;--r-md:12px;--r-lg:18px;--r-pill:100px;}
+:root{--orange:#84cc16;--bg:#f7f5f2;--surface:#fff;--border:rgba(0,0,0,0.08);--text:#1a1a1a;--muted:#777;--faint:#aaa;--r-sm:8px;--r-md:12px;--r-lg:18px;--r-pill:100px;}
 *{box-sizing:border-box;margin:0;padding:0;}
-body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);line-height:1.7;}
+body{font-family:'Inter',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);line-height:1.7;}
 a{color:var(--orange);}
 nav{background:var(--surface);border-bottom:1px solid var(--border);padding:0 32px;height:60px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;}
-.logo{font-family:'Syne',sans-serif;font-size:22px;font-weight:700;color:var(--text);cursor:pointer;}
+.logo{font-family:'Inter',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:22px;font-weight:700;color:var(--text);cursor:pointer;}
 .logo span{color:var(--orange);}
 .hero{background:var(--text);padding:72px 32px;text-align:center;}
-.hero h1{font-family:'Syne',sans-serif;font-size:clamp(28px,4vw,48px);font-weight:700;color:#fff;letter-spacing:-1px;margin-bottom:12px;}
+.hero h1{font-family:'Inter',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:clamp(28px,4vw,48px);font-weight:700;color:#fff;letter-spacing:-1px;margin-bottom:12px;}
 .hero p{font-size:15px;color:rgba(255,255,255,0.5);max-width:500px;margin:0 auto;}
 .hero-date{display:inline-block;background:rgba(232,84,26,0.2);color:#ff9966;padding:4px 14px;border-radius:var(--r-pill);font-size:12px;margin-bottom:16px;}
 .main{max-width:780px;margin:0 auto;padding:60px 32px;}
@@ -23,7 +23,7 @@ nav{background:var(--surface);border-bottom:1px solid var(--border);padding:0 32
 .toc a{display:block;font-size:14px;color:var(--orange);padding:4px 0;text-decoration:none;}
 .toc a:hover{text-decoration:underline;}
 .section{margin-bottom:48px;}
-.section h2{font-family:'Syne',sans-serif;font-size:20px;font-weight:700;color:var(--text);margin-bottom:16px;padding-top:8px;}
+.section h2{font-family:'Inter',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:20px;font-weight:700;color:var(--text);margin-bottom:16px;padding-top:8px;}
 .section p{font-size:15px;color:var(--muted);margin-bottom:14px;}
 .section ul{margin:0 0 14px 20px;}
 .section ul li{font-size:15px;color:var(--muted);margin-bottom:8px;}
@@ -36,13 +36,51 @@ nav{background:var(--surface);border-bottom:1px solid var(--border);padding:0 32
 .right-title{font-weight:600;font-size:13px;margin-bottom:4px;}
 .right-text{font-size:12px;color:var(--muted);line-height:1.5;}
 footer{background:var(--text);padding:48px 32px;text-align:center;}
-.footer-logo{font-family:'Syne',sans-serif;font-size:20px;font-weight:700;color:#fff;margin-bottom:12px;}
+.footer-logo{font-family:'Inter',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:20px;font-weight:700;color:#fff;margin-bottom:12px;}
 .footer-logo span{color:var(--orange);}
 .footer-links{display:flex;justify-content:center;gap:24px;margin-bottom:16px;flex-wrap:wrap;}
 .footer-links a{font-size:13px;color:rgba(255,255,255,0.4);text-decoration:none;}
 .footer-links a:hover{color:#fff;}
 .footer-copy{font-size:12px;color:rgba(255,255,255,0.25);}
 @media(max-width:768px){.rights-grid{grid-template-columns:1fr;}nav{padding:0 16px;}.main{padding:40px 16px;}}
+</style>
+<style id="oglix-graphite-lime-theme">
+:root{
+  --orange:#84cc16!important;--orange-light:#a3e635!important;--orange-dim:#ecfccb!important;
+  --or:#84cc16!important;--or-l:#a3e635!important;--or-dim:#ecfccb!important;
+  --bg:#f5f6f3!important;--surface:#fff!important;--s:#fff!important;--border:#e3e7dc!important;
+  --text:#111827!important;--text-muted:#5f6875!important;--text-faint:#9aa3ad!important;
+  --t:#111827!important;--tm:#5f6875!important;--tf:#9aa3ad!important;
+  --green:#4d7c0f!important;--green-bg:#ecfccb!important;--green-dim:rgba(132,204,22,.14)!important;
+  --blue:#06b6d4!important;--blue-bg:#ecfeff!important;--blue-dim:rgba(6,182,212,.12)!important;
+  --gold:#ca8a04!important;--gold-dim:#fef9c3!important;--dark:#111827!important;
+  --graphite:#111827;--lime:#84cc16;--lime-soft:#ecfccb;--cyan:#06b6d4;
+}
+*,*::before,*::after{font-family:'Inter',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif!important;}
+body{background:#f5f6f3!important;color:#111827!important;letter-spacing:0!important;}
+.logo span,.logo em,.footer-logo span,.footer-logo em,.sidebar-logo span{color:#84cc16!important;}
+nav{background:rgba(255,255,255,.92)!important;border-color:#e3e7dc!important;backdrop-filter:blur(16px);}
+a{color:inherit;}
+.nav-btn,.btn-primary,.btn-orange,.btn-hero.btn-orange,.submit,.forma-submit,.save-btn,.lock-btn,.plan-btn-orange,.apply-btn,.nav-search-btn,.btn-primarni{background:#111827!important;color:#fff!important;border-color:#111827!important;box-shadow:0 12px 26px rgba(17,24,39,.14)!important;}
+.nav-btn:hover,.btn-primary:hover,.btn-orange:hover,.submit:hover,.forma-submit:hover,.save-btn:hover,.lock-btn:hover,.plan-btn-orange:hover,.apply-btn:hover,.nav-search-btn:hover,.btn-primarni:hover{background:#263244!important;color:#fff!important;}
+.btn-ghost,.btn-outline,.nav-ghost,.btn-sekundarni,.plan-btn-outline,.back-btn{background:#fff!important;color:#111827!important;border-color:#dfe5d7!important;}
+.btn-ghost:hover,.btn-outline:hover,.nav-ghost:hover,.btn-sekundarni:hover,.plan-btn-outline:hover,.back-btn:hover{border-color:#84cc16!important;color:#4d7c0f!important;}
+.hero,.problemi,.cijene,.features-section{background:linear-gradient(180deg,#ffffff 0%,#f5f6f3 100%)!important;color:#111827!important;}
+.hero-grid,.hero-glow,.hero-bg{opacity:.35!important;}
+.hero h1,.hero h1 em,.hero p,.section-title,.problem-naslov,.plan-cijena,.footer-logo,.forma-title{color:#111827!important;}
+.hero h1 em{color:#4d7c0f!important;}
+.hero-badge,.section-kicker,.feature-tag,.logo-biznis,.logo-tag,.card-badge.badge-orange,.badge-upgrade{color:#4d7c0f!important;background:#ecfccb!important;border-color:#d9f99d!important;}
+.hero-badge-dot,.pulse,.ai-dot,.ai-box-dot{background:#84cc16!important;}
+.feature-card,.test-card,.plan,.card,.profil-hero,.postavke-card,.nova-forma,.stat-card,.chart-card,.full-card,.kal-card,.tip-card,.alert-box,.content,.forma-kartica{background:#fff!important;border-color:#e3e7dc!important;box-shadow:0 16px 42px rgba(17,24,39,.06)!important;}
+.feature-card:hover,.plan.popular,.card:hover,.oglas-mini:hover,.slicni-kartica:hover{border-color:rgba(132,204,22,.55)!important;}
+.feature-ikona,.test-avatar,.alert-ikona,.avatar,.user-avatar,.konk-avatar{background:#ecfccb!important;color:#4d7c0f!important;border-color:#d9f99d!important;}
+.tab.active,.nav-link.active,.cat-item.active{color:#111827!important;border-color:#84cc16!important;background:#eef2e8!important;}
+input:focus,select:focus,textarea:focus{border-color:#84cc16!important;box-shadow:0 0 0 3px rgba(132,204,22,.12)!important;}
+.ai-box,.ai-poredi-box,.compare-ai-box,.ai-intel-box{background:#111827!important;border-color:#263244!important;}
+.ai-box-title,.ai-poredi-title,.ai-intel-title{color:#a3e635!important;}
+footer{background:#111827!important;color:#cbd5e1!important;}
+footer .footer-logo,footer .footer-logo span{color:#fff!important;}
+::selection{background:#d9f99d;color:#111827;}
 </style>
 </head>
 <body>

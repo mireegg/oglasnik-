@@ -4,24 +4,24 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Oglix Biznis — Dashboard</title>
-  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
   <style>
-    :root{--orange:#e65c00;--orange-dim:rgba(230,92,0,0.1);--bg:#080808;--surface:#111;--surface2:#181818;--border:rgba(255,255,255,0.06);--border-bright:rgba(255,255,255,0.12);--text:#f0f0f0;--text-muted:#888;--text-faint:#444;--green:#22c55e;--green-dim:rgba(34,197,94,0.1);--red:#ef4444;--red-dim:rgba(239,68,68,0.1);--blue:#3b82f6;--blue-dim:rgba(59,130,246,0.1);--gold:#f59e0b;--r:12px;--r-lg:20px;}
+    :root{--orange:#84cc16;--orange-dim:rgba(132,204,22,0.1);--bg:#080808;--surface:#111;--surface2:#181818;--border:rgba(255,255,255,0.06);--border-bright:rgba(255,255,255,0.12);--text:#f0f0f0;--text-muted:#888;--text-faint:#444;--green:#22c55e;--green-dim:rgba(34,197,94,0.1);--red:#ef4444;--red-dim:rgba(239,68,68,0.1);--blue:#3b82f6;--blue-dim:rgba(59,130,246,0.1);--gold:#f59e0b;--r:12px;--r-lg:20px;}
     *{box-sizing:border-box;margin:0;padding:0;}
-    body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;font-size:14px;line-height:1.5;}
+    body{font-family:'Inter',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;font-size:14px;line-height:1.5;}
     a{text-decoration:none;color:inherit;}
 
     .layout{display:grid;grid-template-columns:220px 1fr;min-height:100vh;}
 
     /* SIDEBAR */
     .sidebar{background:var(--surface);border-right:1px solid var(--border);padding:24px 16px;position:sticky;top:0;height:100vh;display:flex;flex-direction:column;gap:4px;}
-    .sidebar-logo{font-family:'Syne',sans-serif;font-size:18px;font-weight:800;padding:8px 12px 20px;border-bottom:1px solid var(--border);margin-bottom:12px;}
+    .sidebar-logo{font-family:'Inter',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:18px;font-weight:800;padding:8px 12px 20px;border-bottom:1px solid var(--border);margin-bottom:12px;}
     .sidebar-logo span{color:var(--orange);}
     .sidebar-logo small{display:block;font-size:10px;font-weight:500;color:var(--text-muted);letter-spacing:0.1em;text-transform:uppercase;margin-top:2px;}
     .nav-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:var(--r);font-size:13px;font-weight:500;color:var(--text-muted);cursor:pointer;transition:all .15s;border:1px solid transparent;}
     .nav-item:hover{background:var(--surface2);color:var(--text);}
-    .nav-item.active{background:var(--orange-dim);color:var(--orange);border-color:rgba(230,92,0,0.2);}
+    .nav-item.active{background:var(--orange-dim);color:var(--orange);border-color:rgba(132,204,22,0.2);}
     .nav-item .icon{font-size:16px;width:20px;text-align:center;}
     .nav-section{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:var(--text-faint);padding:16px 12px 6px;}
     .sidebar-bottom{margin-top:auto;padding-top:16px;border-top:1px solid var(--border);}
@@ -31,12 +31,12 @@
     /* MAIN */
     .main{padding:32px;overflow-x:hidden;}
     .topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:32px;}
-    .page-title{font-family:'Syne',sans-serif;font-size:24px;font-weight:800;}
+    .page-title{font-family:'Inter',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:24px;font-weight:800;}
     .page-sub{font-size:13px;color:var(--text-muted);margin-top:2px;}
     .topbar-right{display:flex;gap:10px;align-items:center;}
-    .btn-sm{padding:8px 16px;border-radius:var(--r);font-size:13px;font-weight:600;font-family:'DM Sans',sans-serif;cursor:pointer;border:none;}
+    .btn-sm{padding:8px 16px;border-radius:var(--r);font-size:13px;font-weight:600;font-family:'Inter',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;cursor:pointer;border:none;}
     .btn-orange{background:var(--orange);color:white;}
-    .btn-orange:hover{background:#ff7a1f;}
+    .btn-orange:hover{background:#a3e635;}
     .btn-ghost{background:var(--surface2);color:var(--text-muted);border:1px solid var(--border);}
     .btn-ghost:hover{color:var(--text);border-color:var(--border-bright);}
     .live-badge{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--green);background:var(--green-dim);padding:6px 12px;border-radius:100px;border:1px solid rgba(34,197,94,0.2);}
@@ -53,7 +53,7 @@
     .kpi.blue::before{background:var(--blue);}
     .kpi.gold::before{background:var(--gold);}
     .kpi-label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-muted);margin-bottom:10px;}
-    .kpi-value{font-family:'Syne',sans-serif;font-size:32px;font-weight:800;line-height:1;margin-bottom:8px;}
+    .kpi-value{font-family:'Inter',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:32px;font-weight:800;line-height:1;margin-bottom:8px;}
     .kpi-value.orange{color:var(--orange);}
     .kpi-value.green{color:var(--green);}
     .kpi-value.blue{color:var(--blue);}
@@ -66,10 +66,10 @@
     .charts-row{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px;}
     .card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:22px;}
     .card-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:18px;}
-    .card-title{font-family:'Syne',sans-serif;font-size:15px;font-weight:700;}
+    .card-title{font-family:'Inter',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:15px;font-weight:700;}
     .card-sub{font-size:12px;color:var(--text-muted);margin-top:2px;}
     .card-badge{font-size:11px;font-weight:600;padding:4px 10px;border-radius:100px;}
-    .badge-orange{background:var(--orange-dim);color:var(--orange);border:1px solid rgba(230,92,0,0.2);}
+    .badge-orange{background:var(--orange-dim);color:var(--orange);border:1px solid rgba(132,204,22,0.2);}
     .badge-green{background:var(--green-dim);color:var(--green);}
     .badge-blue{background:var(--blue-dim);color:var(--blue);}
     .chart-wrap{height:200px;position:relative;}
@@ -86,11 +86,11 @@
     .kal-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:24px;margin-bottom:24px;}
     .kal-grid{display:grid;grid-template-columns:repeat(4,1fr) auto;gap:12px;align-items:end;margin-top:16px;}
     .kal-field label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.07em;color:var(--text-faint);display:block;margin-bottom:6px;}
-    .kal-field select,.kal-field input{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);padding:10px 12px;font-size:13px;font-family:'DM Sans',sans-serif;color:var(--text);outline:none;}
+    .kal-field select,.kal-field input{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);padding:10px 12px;font-size:13px;font-family:'Inter',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:var(--text);outline:none;}
     .kal-field select:focus,.kal-field input:focus{border-color:var(--orange);}
     .kal-rezultat{margin-top:20px;padding:20px;background:var(--surface2);border-radius:var(--r-lg);border:1px solid var(--border);display:none;grid-template-columns:repeat(4,1fr);gap:20px;}
     .kal-stat label{font-size:11px;color:var(--text-faint);text-transform:uppercase;letter-spacing:0.07em;display:block;margin-bottom:6px;}
-    .kal-stat value{font-family:'Syne',sans-serif;font-size:24px;font-weight:800;color:var(--orange);display:block;}
+    .kal-stat value{font-family:'Inter',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:24px;font-weight:800;color:var(--orange);display:block;}
 
     /* ALERT */
     .alert-item{display:flex;align-items:center;gap:12px;padding:14px;background:var(--surface2);border-radius:var(--r);border:1px solid var(--border);margin-bottom:10px;}
@@ -102,12 +102,12 @@
 
     /* NOVA OGLAS KARTICA */
     .novi-oglas{display:flex;align-items:center;gap:12px;padding:12px;background:var(--surface2);border-radius:var(--r);border:1px solid var(--border);margin-bottom:8px;transition:border-color .15s;}
-    .novi-oglas:hover{border-color:rgba(230,92,0,0.3);}
+    .novi-oglas:hover{border-color:rgba(132,204,22,0.3);}
     .novi-oglas img{width:64px;height:48px;object-fit:cover;border-radius:8px;flex-shrink:0;}
     .novi-oglas-ph{width:64px;height:48px;background:#222;border-radius:8px;flex-shrink:0;}
     .novi-oglas-info{flex:1;}
     .novi-oglas-naziv{font-size:12px;font-weight:500;color:var(--text-muted);margin-bottom:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:280px;}
-    .novi-oglas-cijena{font-family:'Syne',sans-serif;font-size:15px;font-weight:700;color:var(--orange);}
+    .novi-oglas-cijena{font-family:'Inter',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:15px;font-weight:700;color:var(--orange);}
     .novi-oglas-meta{font-size:11px;color:var(--text-faint);margin-top:2px;}
 
     /* LOADING */
@@ -117,7 +117,7 @@
     /* LOGIN WALL */
     .login-wall{display:none;position:fixed;inset:0;background:var(--bg);z-index:999;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:32px;}
     .login-wall.show{display:flex;}
-    .login-wall h1{font-family:'Syne',sans-serif;font-size:40px;font-weight:800;margin-bottom:12px;}
+    .login-wall h1{font-family:'Inter',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:40px;font-weight:800;margin-bottom:12px;}
     .login-wall h1 span{color:var(--orange);}
 
     /* TAG */
@@ -130,27 +130,27 @@
     /* KONKURENCIJA */
     .konk-add-box{background:var(--surface2);border:1px solid var(--border);border-radius:var(--r-lg);padding:20px;margin-bottom:20px;}
     .konk-input-row{display:flex;gap:10px;align-items:flex-end;margin-top:14px;flex-wrap:wrap;}
-    .konk-input{flex:1;min-width:200px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:10px 14px;font-size:14px;font-family:'DM Sans',sans-serif;color:var(--text);outline:none;}
+    .konk-input{flex:1;min-width:200px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:10px 14px;font-size:14px;font-family:'Inter',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:var(--text);outline:none;}
     .konk-input:focus{border-color:var(--orange);}
     .konk-input::placeholder{color:var(--text-faint);}
     .konk-kartica{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:20px;margin-bottom:14px;transition:border-color .15s;}
     .konk-kartica:hover{border-color:var(--border-bright);}
     .konk-header{display:flex;align-items:center;gap:14px;margin-bottom:16px;}
-    .konk-avatar{width:44px;height:44px;border-radius:50%;background:var(--orange-dim);border:2px solid rgba(230,92,0,0.3);display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-size:16px;font-weight:800;color:var(--orange);flex-shrink:0;}
-    .konk-naziv{font-family:'Syne',sans-serif;font-size:15px;font-weight:700;}
+    .konk-avatar{width:44px;height:44px;border-radius:50%;background:var(--orange-dim);border:2px solid rgba(132,204,22,0.3);display:flex;align-items:center;justify-content:center;font-family:'Inter',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:16px;font-weight:800;color:var(--orange);flex-shrink:0;}
+    .konk-naziv{font-family:'Inter',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:15px;font-weight:700;}
     .konk-meta{font-size:12px;color:var(--text-muted);}
     .konk-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px;}
     .konk-stat{background:var(--surface2);border-radius:var(--r);padding:12px;text-align:center;}
-    .konk-stat-val{font-family:'Syne',sans-serif;font-size:18px;font-weight:700;color:var(--orange);}
+    .konk-stat-val{font-family:'Inter',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:18px;font-weight:700;color:var(--orange);}
     .konk-stat-label{font-size:11px;color:var(--text-faint);margin-top:3px;}
     .konk-oglasi{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px;margin-top:14px;}
     .konk-oglas{background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;display:block;transition:border-color .15s;color:inherit;}
-    .konk-oglas:hover{border-color:rgba(230,92,0,0.4);}
+    .konk-oglas:hover{border-color:rgba(132,204,22,0.4);}
     .konk-oglas img{width:100%;height:90px;object-fit:cover;}
     .konk-oglas-ph{width:100%;height:90px;background:#222;}
     .konk-oglas-body{padding:8px;}
     .konk-oglas-naslov{font-size:11px;color:var(--text-muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:3px;}
-    .konk-oglas-cijena{font-family:'Syne',sans-serif;font-size:13px;font-weight:700;color:var(--orange);}
+    .konk-oglas-cijena{font-family:'Inter',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:13px;font-weight:700;color:var(--orange);}
     .konk-empty{padding:40px;text-align:center;color:var(--text-faint);}
     .konk-badge-shop{background:rgba(34,197,94,0.1);color:var(--green);font-size:10px;font-weight:700;padding:2px 8px;border-radius:100px;display:inline-block;}
     .konk-badge-private{background:var(--blue-dim);color:var(--blue);font-size:10px;font-weight:700;padding:2px 8px;border-radius:100px;display:inline-block;}
@@ -162,7 +162,7 @@
 
     /* INTELLIGENCE FEATURES */
     .intel-tabs{display:flex;gap:6px;margin-bottom:20px;flex-wrap:wrap;}
-    .intel-tab{padding:8px 16px;border-radius:var(--r);border:1px solid var(--border);font-size:13px;font-weight:600;cursor:pointer;color:var(--text-muted);background:var(--surface2);font-family:'DM Sans',sans-serif;transition:all .15s;}
+    .intel-tab{padding:8px 16px;border-radius:var(--r);border:1px solid var(--border);font-size:13px;font-weight:600;cursor:pointer;color:var(--text-muted);background:var(--surface2);font-family:'Inter',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;transition:all .15s;}
     .intel-tab.active{background:var(--orange);color:white;border-color:var(--orange);}
     .intel-section{display:none;}
     .intel-section.active{display:block;}
@@ -172,32 +172,32 @@
     .slabost-item a{color:inherit;text-decoration:none;flex:1;}
     .slabost-naslov{font-size:13px;font-weight:500;color:var(--text-muted);margin-bottom:3px;}
     .slabost-detalj{font-size:12px;color:var(--red);}
-    .slabost-cijena{font-family:'Syne',sans-serif;font-size:14px;font-weight:700;color:var(--orange);white-space:nowrap;}
-    .ai-intel-box{background:#0a0a0a;border:1px solid rgba(230,92,0,0.2);border-radius:var(--r-lg);padding:22px;margin-bottom:20px;}
-    .ai-intel-title{font-family:'Syne',sans-serif;font-size:15px;font-weight:700;color:var(--orange);margin-bottom:14px;display:flex;align-items:center;gap:8px;}
+    .slabost-cijena{font-family:'Inter',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:14px;font-weight:700;color:var(--orange);white-space:nowrap;}
+    .ai-intel-box{background:#0a0a0a;border:1px solid rgba(132,204,22,0.2);border-radius:var(--r-lg);padding:22px;margin-bottom:20px;}
+    .ai-intel-title{font-family:'Inter',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:15px;font-weight:700;color:var(--orange);margin-bottom:14px;display:flex;align-items:center;gap:8px;}
     .ai-intel-tekst{font-size:13px;color:#bbb;line-height:1.85;}
     .slabost-stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px;}
     .slabost-stat{background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);padding:14px;text-align:center;}
-    .slabost-stat-val{font-family:'Syne',sans-serif;font-size:22px;font-weight:800;color:var(--red);}
+    .slabost-stat-val{font-family:'Inter',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:22px;font-weight:800;color:var(--red);}
     .slabost-stat-label{font-size:11px;color:var(--text-faint);margin-top:3px;}
 
     /* PREDICT */
     .predict-card{background:var(--surface2);border:1px solid var(--border);border-radius:var(--r-lg);padding:16px;margin-bottom:12px;display:flex;gap:16px;align-items:center;transition:border-color .15s;}
-    .predict-card:hover{border-color:rgba(230,92,0,0.3);}
+    .predict-card:hover{border-color:rgba(132,204,22,0.3);}
     .predict-img{width:100px;height:72px;object-fit:cover;border-radius:var(--r);flex-shrink:0;background:#222;}
     .predict-score{width:56px;height:56px;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;flex-shrink:0;border:3px solid;}
     .predict-score.high{border-color:var(--red);background:var(--red-dim);}
     .predict-score.med{border-color:var(--gold);background:rgba(245,158,11,0.1);}
     .predict-score.low{border-color:var(--border);background:var(--surface);}
-    .predict-score-num{font-family:'Syne',sans-serif;font-size:16px;font-weight:800;}
+    .predict-score-num{font-family:'Inter',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:16px;font-weight:800;}
     .predict-score-label{font-size:9px;color:var(--text-faint);text-transform:uppercase;}
     .predict-info{flex:1;min-width:0;}
     .predict-naslov{font-size:13px;font-weight:500;color:var(--text-muted);margin-bottom:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-    .predict-cijena{font-family:'Syne',sans-serif;font-size:16px;font-weight:700;color:var(--orange);margin-bottom:6px;}
+    .predict-cijena{font-family:'Inter',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:16px;font-weight:700;color:var(--orange);margin-bottom:6px;}
     .predict-razlozi{display:flex;flex-wrap:wrap;gap:4px;}
     .predict-razlog{font-size:10px;padding:2px 8px;border-radius:100px;background:rgba(239,68,68,0.1);color:var(--red);font-weight:500;}
     .predict-pad{text-align:right;flex-shrink:0;}
-    .predict-pad-iznos{font-family:'Syne',sans-serif;font-size:15px;font-weight:700;color:var(--red);}
+    .predict-pad-iznos{font-family:'Inter',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:15px;font-weight:700;color:var(--red);}
     .predict-pad-label{font-size:10px;color:var(--text-faint);}
     .predict-nova-cijena{font-size:12px;color:var(--green);margin-top:2px;}
 
@@ -205,30 +205,68 @@
     .import-card{background:var(--surface2);border:1px solid var(--border);border-radius:var(--r-lg);padding:20px;margin-bottom:14px;transition:border-color .15s;}
     .import-card:hover{border-color:rgba(34,197,94,0.3);}
     .import-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
-    .import-naziv{font-family:'Syne',sans-serif;font-size:16px;font-weight:700;}
+    .import-naziv{font-family:'Inter',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:16px;font-weight:700;}
     .import-zemlja{font-size:12px;color:var(--text-muted);margin-top:2px;}
-    .import-zarada{font-family:'Syne',sans-serif;font-size:22px;font-weight:800;color:var(--green);text-align:right;}
+    .import-zarada{font-family:'Inter',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:22px;font-weight:800;color:var(--green);text-align:right;}
     .import-zarada-label{font-size:11px;color:var(--text-faint);text-align:right;}
     .import-kalk{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;background:var(--surface);border-radius:var(--r);padding:14px;margin-bottom:12px;}
     .import-kalk-item{text-align:center;}
-    .import-kalk-val{font-family:'Syne',sans-serif;font-size:14px;font-weight:700;color:var(--text);}
+    .import-kalk-val{font-family:'Inter',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:14px;font-weight:700;color:var(--text);}
     .import-kalk-label{font-size:10px;color:var(--text-faint);margin-top:2px;}
     .import-kalk-item.total .import-kalk-val{color:var(--orange);}
     .import-kalk-item.profit .import-kalk-val{color:var(--green);}
     .import-links{display:flex;gap:8px;flex-wrap:wrap;}
     .import-link{font-size:12px;padding:6px 14px;border-radius:var(--r);border:1px solid var(--border);color:var(--text-muted);background:var(--surface);cursor:pointer;text-decoration:none;transition:all .15s;}
     .import-link:hover{border-color:var(--orange);color:var(--orange);}
-    .import-badge-posto{font-family:'Syne',sans-serif;font-size:12px;font-weight:700;padding:3px 10px;border-radius:100px;background:var(--green-dim);color:var(--green);}
+    .import-badge-posto{font-family:'Inter',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:12px;font-weight:700;padding:3px 10px;border-radius:100px;background:var(--green-dim);color:var(--green);}
 
     @media(max-width:1024px){.layout{grid-template-columns:1fr;}.sidebar{display:none;}.kpi-grid{grid-template-columns:1fr 1fr;}.charts-row{grid-template-columns:1fr;}.kal-grid{grid-template-columns:1fr 1fr;}.kal-rezultat{grid-template-columns:1fr 1fr;}}
     @media(max-width:768px){.main{padding:16px;}.kpi-grid{grid-template-columns:1fr 1fr;}.topbar{flex-direction:column;align-items:flex-start;gap:12px;}.page-title{font-size:20px;}}
   </style>
+<style id="oglix-graphite-lime-theme">
+:root{
+  --orange:#84cc16!important;--orange-light:#a3e635!important;--orange-dim:#ecfccb!important;
+  --or:#84cc16!important;--or-l:#a3e635!important;--or-dim:#ecfccb!important;
+  --bg:#f5f6f3!important;--surface:#fff!important;--s:#fff!important;--border:#e3e7dc!important;
+  --text:#111827!important;--text-muted:#5f6875!important;--text-faint:#9aa3ad!important;
+  --t:#111827!important;--tm:#5f6875!important;--tf:#9aa3ad!important;
+  --green:#4d7c0f!important;--green-bg:#ecfccb!important;--green-dim:rgba(132,204,22,.14)!important;
+  --blue:#06b6d4!important;--blue-bg:#ecfeff!important;--blue-dim:rgba(6,182,212,.12)!important;
+  --gold:#ca8a04!important;--gold-dim:#fef9c3!important;--dark:#111827!important;
+  --graphite:#111827;--lime:#84cc16;--lime-soft:#ecfccb;--cyan:#06b6d4;
+}
+*,*::before,*::after{font-family:'Inter',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif!important;}
+body{background:#f5f6f3!important;color:#111827!important;letter-spacing:0!important;}
+.logo span,.logo em,.footer-logo span,.footer-logo em,.sidebar-logo span{color:#84cc16!important;}
+nav{background:rgba(255,255,255,.92)!important;border-color:#e3e7dc!important;backdrop-filter:blur(16px);}
+a{color:inherit;}
+.nav-btn,.btn-primary,.btn-orange,.btn-hero.btn-orange,.submit,.forma-submit,.save-btn,.lock-btn,.plan-btn-orange,.apply-btn,.nav-search-btn,.btn-primarni{background:#111827!important;color:#fff!important;border-color:#111827!important;box-shadow:0 12px 26px rgba(17,24,39,.14)!important;}
+.nav-btn:hover,.btn-primary:hover,.btn-orange:hover,.submit:hover,.forma-submit:hover,.save-btn:hover,.lock-btn:hover,.plan-btn-orange:hover,.apply-btn:hover,.nav-search-btn:hover,.btn-primarni:hover{background:#263244!important;color:#fff!important;}
+.btn-ghost,.btn-outline,.nav-ghost,.btn-sekundarni,.plan-btn-outline,.back-btn{background:#fff!important;color:#111827!important;border-color:#dfe5d7!important;}
+.btn-ghost:hover,.btn-outline:hover,.nav-ghost:hover,.btn-sekundarni:hover,.plan-btn-outline:hover,.back-btn:hover{border-color:#84cc16!important;color:#4d7c0f!important;}
+.hero,.problemi,.cijene,.features-section{background:linear-gradient(180deg,#ffffff 0%,#f5f6f3 100%)!important;color:#111827!important;}
+.hero-grid,.hero-glow,.hero-bg{opacity:.35!important;}
+.hero h1,.hero h1 em,.hero p,.section-title,.problem-naslov,.plan-cijena,.footer-logo,.forma-title{color:#111827!important;}
+.hero h1 em{color:#4d7c0f!important;}
+.hero-badge,.section-kicker,.feature-tag,.logo-biznis,.logo-tag,.card-badge.badge-orange,.badge-upgrade{color:#4d7c0f!important;background:#ecfccb!important;border-color:#d9f99d!important;}
+.hero-badge-dot,.pulse,.ai-dot,.ai-box-dot{background:#84cc16!important;}
+.feature-card,.test-card,.plan,.card,.profil-hero,.postavke-card,.nova-forma,.stat-card,.chart-card,.full-card,.kal-card,.tip-card,.alert-box,.content,.forma-kartica{background:#fff!important;border-color:#e3e7dc!important;box-shadow:0 16px 42px rgba(17,24,39,.06)!important;}
+.feature-card:hover,.plan.popular,.card:hover,.oglas-mini:hover,.slicni-kartica:hover{border-color:rgba(132,204,22,.55)!important;}
+.feature-ikona,.test-avatar,.alert-ikona,.avatar,.user-avatar,.konk-avatar{background:#ecfccb!important;color:#4d7c0f!important;border-color:#d9f99d!important;}
+.tab.active,.nav-link.active,.cat-item.active{color:#111827!important;border-color:#84cc16!important;background:#eef2e8!important;}
+input:focus,select:focus,textarea:focus{border-color:#84cc16!important;box-shadow:0 0 0 3px rgba(132,204,22,.12)!important;}
+.ai-box,.ai-poredi-box,.compare-ai-box,.ai-intel-box{background:#111827!important;border-color:#263244!important;}
+.ai-box-title,.ai-poredi-title,.ai-intel-title{color:#a3e635!important;}
+footer{background:#111827!important;color:#cbd5e1!important;}
+footer .footer-logo,footer .footer-logo span{color:#fff!important;}
+::selection{background:#d9f99d;color:#111827;}
+</style>
 </head>
 <body>
 
 <!-- LOGIN WALL -->
 <div class="login-wall" id="loginWall">
-  <div style="font-family:'Syne',sans-serif;font-size:22px;font-weight:800;margin-bottom:32px;">oglix<span style="color:var(--orange);">.ba</span> <span style="font-size:12px;color:var(--orange);background:rgba(230,92,0,0.1);padding:4px 10px;border-radius:100px;vertical-align:middle;">BIZNIS</span></div>
+  <div style="font-family:'Inter',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:22px;font-weight:800;margin-bottom:32px;">oglix<span style="color:var(--orange);">.ba</span> <span style="font-size:12px;color:var(--orange);background:rgba(132,204,22,0.1);padding:4px 10px;border-radius:100px;vertical-align:middle;">BIZNIS</span></div>
   <h1>Pristup<br><span>ograničen</span></h1>
   <p style="font-size:16px;color:var(--text-muted);max-width:400px;margin-bottom:28px;">Oglix Biznis dashboard dostupan je samo registrovanim poslovnim korisnicima.</p>
   <div style="display:flex;gap:12px;">
@@ -239,10 +277,10 @@
 
 <!-- MOB NAV -->
 <nav id="mobNav" style="display:none;background:#111;border-bottom:1px solid rgba(255,255,255,0.06);padding:0 16px;height:56px;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;">
-  <div style="font-family:'Syne',sans-serif;font-size:18px;font-weight:800;color:white;">oglix<span style="color:#e65c00;">.ba</span> <small style="font-size:10px;color:#e65c00;background:rgba(230,92,0,0.1);padding:2px 8px;border-radius:100px;">BIZ</small></div>
+  <div style="font-family:'Inter',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:18px;font-weight:800;color:white;">oglix<span style="color:#84cc16;">.ba</span> <small style="font-size:10px;color:#84cc16;background:rgba(132,204,22,0.1);padding:2px 8px;border-radius:100px;">BIZ</small></div>
   <div style="display:flex;gap:8px;">
     <button onclick="window.location.href='/oglasi.html'" style="background:rgba(255,255,255,0.08);color:white;border:none;border-radius:8px;padding:8px 12px;font-size:12px;cursor:pointer;">Oglasi</button>
-    <button onclick="window.location.href='/profil.html'" style="background:#e65c00;color:white;border:none;border-radius:8px;padding:8px 12px;font-size:12px;cursor:pointer;">👤</button>
+    <button onclick="window.location.href='/profil.html'" style="background:#84cc16;color:white;border:none;border-radius:8px;padding:8px 12px;font-size:12px;cursor:pointer;">👤</button>
   </div>
 </nav>
 <style>@media(max-width:1024px){#mobNav{display:flex!important;}}</style>
@@ -540,10 +578,10 @@ function renderBrendovi(kategorije) {
     .sort(function(a,b){return parseInt(b.broj)-parseInt(a.broj);}).slice(0,10);
   var labels = brendovi.map(function(k){return k.kategorija.replace('vozila-','').toUpperCase();});
   var values = brendovi.map(function(k){return parseInt(k.broj);});
-  var boje = ['#e65c00','#ff7a1f','#f97316','#fb923c','#fdba74','#3b82f6','#60a5fa','#22c55e','#4ade80','#a78bfa'];
+  var boje = ['#84cc16','#a3e635','#f97316','#fb923c','#fdba74','#3b82f6','#60a5fa','#22c55e','#4ade80','#a78bfa'];
   new Chart(document.getElementById('chartBrendovi').getContext('2d'),{type:'bar',data:{labels,datasets:[{data:values,backgroundColor:boje,borderRadius:6,borderSkipped:false}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true,grid:{color:'rgba(255,255,255,0.04)'},ticks:{color:'#555'}},x:{grid:{display:false},ticks:{color:'#666',font:{size:10}}}}}});
   try{
-    new Chart(document.getElementById('chartTrzisteBrendovi').getContext('2d'),{type:'bar',data:{labels,datasets:[{data:values,backgroundColor:'#e65c00',borderRadius:6}]},options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{beginAtZero:true,grid:{color:'rgba(255,255,255,0.04)'},ticks:{color:'#555'}},y:{grid:{display:false},ticks:{color:'#888',font:{size:11}}}}}});
+    new Chart(document.getElementById('chartTrzisteBrendovi').getContext('2d'),{type:'bar',data:{labels,datasets:[{data:values,backgroundColor:'#84cc16',borderRadius:6}]},options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{beginAtZero:true,grid:{color:'rgba(255,255,255,0.04)'},ticks:{color:'#555'}},y:{grid:{display:false},ticks:{color:'#888',font:{size:11}}}}}});
   } catch(e){}
   // Top brend
   if(brendovi[0]) document.getElementById('trzTop').textContent = brendovi[0].kategorija.replace('vozila-','').charAt(0).toUpperCase()+brendovi[0].kategorija.replace('vozila-','').slice(1);
@@ -551,7 +589,7 @@ function renderBrendovi(kategorije) {
 
 function renderKategorije(kategorije) {
   var glavne = [
-    {label:'Vozila',kljuc:'vozila',boja:'#e65c00'},
+    {label:'Vozila',kljuc:'vozila',boja:'#84cc16'},
     {label:'Elektronika',kljuc:'elektronika',boja:'#3b82f6'},
     {label:'Nekretnine',kljuc:'nekretnine',boja:'#22c55e'},
     {label:'Moto',kljuc:'motocikl',boja:'#f59e0b'},
@@ -563,7 +601,7 @@ function renderKategorije(kategorije) {
   }).filter(function(d){return d.value>0;});
   new Chart(document.getElementById('chartKategorije').getContext('2d'),{type:'doughnut',data:{labels:podaci.map(function(d){return d.label;}),datasets:[{data:podaci.map(function(d){return d.value;}),backgroundColor:podaci.map(function(d){return d.boja;}),borderWidth:3,borderColor:'#111'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{font:{size:11},color:'#888',padding:12}}}}});
   try{
-    new Chart(document.getElementById('chartPlatforme').getContext('2d'),{type:'pie',data:{labels:['OLX.ba','Autobum.ba','Facebook'],datasets:[{data:[parseInt(document.getElementById('kpiUkupno').textContent.replace(/\D/g,''))-parseInt(document.getElementById('kpiAutobum').textContent.replace(/\D/g,''))-parseInt(document.getElementById('kpiFacebook').textContent.replace(/\D/g,''))||85,parseInt(document.getElementById('kpiAutobum').textContent.replace(/\D/g,''))||10,parseInt(document.getElementById('kpiFacebook').textContent.replace(/\D/g,''))||5],backgroundColor:['#22c55e','#e65c00','#3b82f6'],borderWidth:3,borderColor:'#111'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{font:{size:11},color:'#888'}}}}});
+    new Chart(document.getElementById('chartPlatforme').getContext('2d'),{type:'pie',data:{labels:['OLX.ba','Autobum.ba','Facebook'],datasets:[{data:[parseInt(document.getElementById('kpiUkupno').textContent.replace(/\D/g,''))-parseInt(document.getElementById('kpiAutobum').textContent.replace(/\D/g,''))-parseInt(document.getElementById('kpiFacebook').textContent.replace(/\D/g,''))||85,parseInt(document.getElementById('kpiAutobum').textContent.replace(/\D/g,''))||10,parseInt(document.getElementById('kpiFacebook').textContent.replace(/\D/g,''))||5],backgroundColor:['#22c55e','#84cc16','#3b82f6'],borderWidth:3,borderColor:'#111'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{font:{size:11},color:'#888'}}}}});
   } catch(e){}
 }
 
@@ -577,7 +615,7 @@ function renderTabelaBrendova(kategorije) {
     var udio = ukupno>0?(broj/ukupno*100).toFixed(1):0;
     var barW = Math.round(broj/maxBroj*100);
     var tag = i<3?'<span class="tag tag-orange">Top '+(i+1)+'</span>':i<7?'<span class="tag tag-green">Aktivan</span>':'<span style="font-size:11px;color:var(--text-faint);">Mali</span>';
-    return '<tr><td style="color:var(--text-faint);font-size:12px;">'+(i+1)+'</td><td style="font-weight:600;font-family:DM Mono,monospace;font-size:12px;">'+ime+'</td><td style="font-weight:600;">'+fmt(broj)+'</td><td><div style="display:flex;align-items:center;gap:8px;"><div style="width:80px;height:4px;background:rgba(255,255,255,0.06);border-radius:2px;"><div style="height:4px;border-radius:2px;background:var(--orange);width:'+barW+'%"></div></div><span style="font-size:12px;color:var(--text-muted);">'+udio+'%</span></div></td><td>'+tag+'</td><td><span style="width:8px;height:8px;border-radius:50%;background:var(--green);display:inline-block;margin-right:6px;"></span><span style="font-size:12px;color:var(--text-muted);">Aktivan</span></td></tr>';
+    return '<tr><td style="color:var(--text-faint);font-size:12px;">'+(i+1)+'</td><td style="font-weight:600;font-family:Inter,ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12px;">'+ime+'</td><td style="font-weight:600;">'+fmt(broj)+'</td><td><div style="display:flex;align-items:center;gap:8px;"><div style="width:80px;height:4px;background:rgba(255,255,255,0.06);border-radius:2px;"><div style="height:4px;border-radius:2px;background:var(--orange);width:'+barW+'%"></div></div><span style="font-size:12px;color:var(--text-muted);">'+udio+'%</span></div></td><td>'+tag+'</td><td><span style="width:8px;height:8px;border-radius:50%;background:var(--green);display:inline-block;margin-right:6px;"></span><span style="font-size:12px;color:var(--text-muted);">Aktivan</span></td></tr>';
   }).join('');
   // Konkurencija tabela
   document.getElementById('konkurencijaTabela').innerHTML = brendovi.map(function(k,i){
@@ -591,9 +629,9 @@ function renderTabelaBrendova(kategorije) {
 
 function renderKonkurencija(kategorije) {
   var brendovi = kategorije.filter(function(k){return k.kategorija&&k.kategorija.startsWith('vozila-');}).sort(function(a,b){return parseInt(b.broj)-parseInt(a.broj);}).slice(0,8);
-  try{new Chart(document.getElementById('chartKonkurencija').getContext('2d'),{type:'doughnut',data:{labels:brendovi.map(function(k){return k.kategorija.replace('vozila-','').toUpperCase();}),datasets:[{data:brendovi.map(function(k){return parseInt(k.broj);}),backgroundColor:['#e65c00','#3b82f6','#22c55e','#f59e0b','#8b5cf6','#ef4444','#06b6d4','#84cc16'],borderWidth:3,borderColor:'#111'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{font:{size:10},color:'#666'}}}}});}catch(e){}
+  try{new Chart(document.getElementById('chartKonkurencija').getContext('2d'),{type:'doughnut',data:{labels:brendovi.map(function(k){return k.kategorija.replace('vozila-','').toUpperCase();}),datasets:[{data:brendovi.map(function(k){return parseInt(k.broj);}),backgroundColor:['#84cc16','#3b82f6','#22c55e','#f59e0b','#8b5cf6','#ef4444','#06b6d4','#84cc16'],borderWidth:3,borderColor:'#111'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{font:{size:10},color:'#666'}}}}});}catch(e){}
   var ukupno = brendovi.reduce(function(s,k){return s+parseInt(k.broj);},0);
-  var boje = ['#e65c00','#3b82f6','#22c55e','#f59e0b','#8b5cf6'];
+  var boje = ['#84cc16','#3b82f6','#22c55e','#f59e0b','#8b5cf6'];
   document.getElementById('top5Brendovi').innerHTML = brendovi.slice(0,5).map(function(k,i){
     var ime = k.kategorija.replace('vozila-',''); ime = ime.charAt(0).toUpperCase()+ime.slice(1);
     var udio = ukupno>0?(parseInt(k.broj)/ukupno*100).toFixed(1):0;
@@ -638,7 +676,7 @@ async function ucitajTrziste(kategorije) {
     document.getElementById('cijenePoBrendu').innerHTML = brendPodaci.map(function(b){
       return '<div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);padding:16px;">' +
         '<div style="font-size:12px;color:var(--text-muted);margin-bottom:6px;text-transform:uppercase;letter-spacing:0.06em;">'+b.naziv.charAt(0).toUpperCase()+b.naziv.slice(1)+'</div>' +
-        '<div style="font-family:Syne,sans-serif;font-size:20px;font-weight:800;color:var(--orange);">'+(b.prosjek?fmt(b.prosjek)+' KM':'N/A')+'</div>' +
+        '<div style="font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:20px;font-weight:800;color:var(--orange);">'+(b.prosjek?fmt(b.prosjek)+' KM':'N/A')+'</div>' +
         '<div style="font-size:11px;color:var(--text-faint);margin-top:4px;">'+fmt(b.broj)+' oglasa</div>' +
       '</div>';
     }).join('');
@@ -703,7 +741,7 @@ async function ucitajOglaseBrenda() {
     if(data.uspjeh&&data.oglasi.length){
       container.innerHTML=data.oglasi.map(function(o){
         var meta=encodeURIComponent(JSON.stringify({naslov:o.naslov,cijena:o.cijena,slika:o.slika||'',link:o.link||'',platforma:o.platforma||'olx',kategorija:o.kategorija||''}));
-        return '<a href="/oglas.html?data='+meta+'" target="_blank" class="oglas-mini">'+(o.slika?'<img src="'+o.slika+'" style="width:100%;height:110px;object-fit:cover;" onerror=\"this.onerror=null\">':"<div style='width:100%;height:110px;background:#222;'></div>")+'<div style="padding:10px;"><div style="font-size:12px;font-weight:500;color:var(--text-muted);margin-bottom:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">'+o.naslov+'</div><div style="font-family:Syne,sans-serif;font-size:14px;font-weight:700;color:var(--orange);">'+o.cijena+'</div></div></a>';
+        return '<a href="/oglas.html?data='+meta+'" target="_blank" class="oglas-mini">'+(o.slika?'<img src="'+o.slika+'" style="width:100%;height:110px;object-fit:cover;" onerror=\"this.onerror=null\">':"<div style='width:100%;height:110px;background:#222;'></div>")+'<div style="padding:10px;"><div style="font-size:12px;font-weight:500;color:var(--text-muted);margin-bottom:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">'+o.naslov+'</div><div style="font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:14px;font-weight:700;color:var(--orange);">'+o.cijena+'</div></div></a>';
       }).join('');
     } else { container.innerHTML='<div style="color:var(--text-faint);padding:24px;grid-column:1/-1;">Nema oglasa.</div>'; }
   } catch(e){}
@@ -715,7 +753,7 @@ async function ucitajAlerte() {
     var res=await fetch('/api/alerti?email='+encodeURIComponent(korisnik.email));
     var data=await res.json();
     var lista=document.getElementById('alertiLista');
-    var boje=['#e65c00','#22c55e','#3b82f6','#f59e0b','#8b5cf6'];
+    var boje=['#84cc16','#22c55e','#3b82f6','#f59e0b','#8b5cf6'];
     if(!data.alerti||!data.alerti.length){lista.innerHTML='<div style="color:var(--text-faint);padding:24px;">Nemaš aktivnih alertā. <a href="/profil.html" style="color:var(--orange);">Kreiraj alert →</a></div>';return;}
     document.getElementById('alertBroj').textContent=data.alerti.length;
     document.getElementById('alertBroj').style.display='inline';

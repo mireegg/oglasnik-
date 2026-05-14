@@ -1,3 +1,4 @@
+﻿require('dotenv').config();
 const fetch2 = require('node-fetch');
 const axios = require('axios');
 const bcrypt = require('bcrypt');
@@ -212,7 +213,7 @@ initDB();
 
 app.get('/', (req, res) => res.sendFile(__dirname + '/public/index.html'));
 
-// ── AUTH ─────────────────────────────────────────────────
+// â”€â”€ AUTH â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 app.post('/prijava', async (req, res) => {
     const { ime, email, telefon } = req.body;
     await pool.query('INSERT INTO prijave (ime, email, telefon) VALUES ($1, $2, $3)', [ime, email, telefon]);
@@ -227,10 +228,10 @@ app.post('/register', async (req, res) => {
     try {
         const hash = await bcrypt.hash(lozinka, SALT_ROUNDS);
         const result = await pool.query('INSERT INTO korisnici (ime, email, lozinka) VALUES ($1, $2, $3) RETURNING ime, email', [ime, email, hash]);
-        transporter.sendMail({ from: process.env.EMAIL_USER, to: email, subject: 'Dobro došli na Oglix!', html: `<h2>Zdravo ${ime}!</h2><p>Vaš account je kreiran.</p>` }).catch(() => {});
+        transporter.sendMail({ from: process.env.EMAIL_USER, to: email, subject: 'Dobro doÅ¡li na Oglix!', html: `<h2>Zdravo ${ime}!</h2><p>VaÅ¡ account je kreiran.</p>` }).catch(() => {});
         res.json({ uspjeh: true, korisnik: result.rows[0] });
     } catch (e) {
-        res.json({ uspjeh: false, poruka: e.code === '23505' ? 'Email je već registrovan!' : 'Greška pri registraciji.' });
+        res.json({ uspjeh: false, poruka: e.code === '23505' ? 'Email je veÄ‡ registrovan!' : 'GreÅ¡ka pri registraciji.' });
     }
 });
 
@@ -239,14 +240,14 @@ app.post('/login', async (req, res) => {
     if (!email || !lozinka) return res.json({ uspjeh: false, poruka: 'Unesite email i lozinku!' });
     try {
         const result = await pool.query('SELECT * FROM korisnici WHERE email = $1', [email]);
-        if (!result.rows.length) return res.json({ uspjeh: false, poruka: 'Pogrešan email ili lozinka!' });
+        if (!result.rows.length) return res.json({ uspjeh: false, poruka: 'PogreÅ¡an email ili lozinka!' });
         const ok = await bcrypt.compare(lozinka, result.rows[0].lozinka);
         if (ok) res.json({ uspjeh: true, korisnik: { ime: result.rows[0].ime, email: result.rows[0].email } });
-        else res.json({ uspjeh: false, poruka: 'Pogrešan email ili lozinka!' });
-    } catch (e) { res.json({ uspjeh: false, poruka: 'Greška pri prijavi.' }); }
+        else res.json({ uspjeh: false, poruka: 'PogreÅ¡an email ili lozinka!' });
+    } catch (e) { res.json({ uspjeh: false, poruka: 'GreÅ¡ka pri prijavi.' }); }
 });
 
-// ── PRAĆENJA ─────────────────────────────────────────────
+// â”€â”€ PRAÄ†ENJA â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 app.post('/pracenje', async (req, res) => {
     const { email, pretraga, link, slika } = req.body;
     await pool.query('INSERT INTO pracenja (korisnik_email, pretraga, link, slika) VALUES ($1, $2, $3, $4)', [email, pretraga, link || null, slika || null]);
@@ -261,33 +262,25 @@ app.get('/moja-pracenja', async (req, res) => {
     res.json(result.rows);
 });
 
-// ── AI ANALIZA LISTE ──────────────────────────────────────
+// â”€â”€ AI ANALIZA LISTE â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 app.post('/ai-analiza', async (req, res) => {
     const { oglasi, pretraga } = req.body;
     const prompt = `Ti si iskusan savjetnik za kupovinu u Bosni i Hercegovini.
-Kupac traži: "${pretraga}"
+Kupac traÅ¾i: "${pretraga}"
 Oglasi:
-${oglasi.map((o, i) => `${i+1}. ${o.naslov} — ${o.cijenaStr}`).join('\n')}
+${oglasi.map((o, i) => `${i+1}. ${o.naslov} â€” ${o.cijenaStr}`).join('\n')}
 Za svaki oglas daj kratku OCJENU i AI SCORE (0-100). Na kraju ZAKLJUCAK koji je najisplativiji.
 Odgovaraj na bosanskom. Budi konkretan.`;
-    const body = JSON.stringify({ model: 'llama-3.3-70b-versatile', messages: [{ role: 'user', content: prompt }], max_tokens: 1500 });
-    const options = {
-        hostname: 'api.groq.com', path: '/openai/v1/chat/completions', method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + process.env.GROQ_API_KEY, 'Content-Length': Buffer.byteLength(body) }
-    };
-    const apiReq = https.request(options, apiRes => {
-        let data = '';
-        apiRes.on('data', chunk => data += chunk);
-        apiRes.on('end', () => {
-            try { res.json({ uspjeh: true, analiza: JSON.parse(data).choices[0].message.content }); }
-            catch(e) { res.json({ uspjeh: false, poruka: 'Greška pri analizi' }); }
-        });
-    });
-    apiReq.on('error', e => res.json({ uspjeh: false, poruka: e.message }));
-    apiReq.write(body); apiReq.end();
+    try {
+        const analiza = await groqAI(prompt, 1500);
+        if (!analiza) return res.json({ uspjeh: true, analiza: fallbackAnalizaListe(oglasi, pretraga), fallback: true });
+        res.json({ uspjeh: true, analiza });
+    } catch(e) {
+        res.json({ uspjeh: true, analiza: fallbackAnalizaListe(req.body?.oglasi || [], req.body?.pretraga), fallback: true, poruka: e.message || 'Greška pri analizi' });
+    }
 });
 
-// ── HELPER FUNKCIJE ───────────────────────────────────────
+// â”€â”€ HELPER FUNKCIJE â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function parseCijena(str) {
     if (!str) return 0;
     return parseFloat(str.toString().replace(/\./g,'').replace(',','.').replace(/[^0-9.]/g,'')) || 0;
@@ -303,17 +296,87 @@ async function dohvatiOlxDetalje(id) {
     return { data: det.data, attrs, images: det.data.images || [] };
 }
 
-async function groqAI(prompt, maxTokens = 500) {
-    const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+async function claudeAI(prompt, maxTokens = 600) {
+    if (!process.env.ANTHROPIC_API_KEY) {
+        throw new Error('ANTHROPIC_API_KEY nije postavljen.');
+    }
+
+    const response = await fetch2('https://api.anthropic.com/v1/messages', {
         method: 'POST',
-        headers: { 'Authorization': `Bearer ${process.env.GROQ_API_KEY}`, 'Content-Type': 'application/json' },
-        body: JSON.stringify({ model: 'llama-3.3-70b-versatile', messages: [{ role: 'user', content: prompt }], max_tokens: maxTokens, temperature: 0.4 })
+        headers: {
+            'x-api-key': process.env.ANTHROPIC_API_KEY,
+            'anthropic-version': '2023-06-01',
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            model: 'claude-sonnet-4-20250514',
+            max_tokens: maxTokens,
+            temperature: 0.3,
+            messages: [{ role: 'user', content: prompt }]
+        })
     });
+
     const data = await response.json();
-    return data.choices?.[0]?.message?.content || null;
+    if (!response.ok) {
+        throw new Error(data.error?.message || `Claude API greška ${response.status}`);
+    }
+    return data.content?.[0]?.text || null;
 }
 
-// ── OLX DETALJI OGLASA ────────────────────────────────────
+const groqAI = claudeAI; // alias za kompatibilnost sa postojecim endpointima
+
+function fallbackScoreOglas(o) {
+    const cijena = parseCijena(o.cijenaStr || o.cijena);
+    let score = 70;
+    if ((o.platforma || '').toLowerCase() === 'olx') score += 6;
+    if (o.cijena_pala || o.cijenaPala) score += 8;
+    if (cijena > 0 && cijena < 20000) score += 5;
+    if (/hitno|ostec|ošteć/i.test(o.naslov || '')) score -= 8;
+    return Math.max(45, Math.min(95, Math.round(score)));
+}
+
+function fallbackAnalizaListe(oglasi, pretraga) {
+    const rang = (oglasi || []).map((o, i) => ({
+        idx: i + 1,
+        naslov: o.naslov || 'Oglas',
+        cijena: o.cijenaStr || o.cijena || 'Na upit',
+        score: fallbackScoreOglas(o)
+    })).sort((a, b) => b.score - a.score);
+
+    if (!rang.length) return 'Nema dovoljno oglasa za analizu.';
+    const linije = [
+        `AI fallback analiza za: ${pretraga || 'oglasi'}`,
+        '',
+        ...rang.map(o => `OGLAS #${o.idx}: ${o.naslov}\nCijena: ${o.cijena}\nScore: ${o.score}/100`)
+    ];
+    linije.push('', `ZAKLJUCAK: Najbolje izgleda oglas #${rang[0].idx} jer ima najjaci odnos cijene, izvora i dostupnih signala.`);
+    return linije.join('\n');
+}
+
+function fallbackCompareAI(oglasi) {
+    const rang = (oglasi || []).map((o, idx) => ({
+        oglas_idx: idx,
+        naziv: (o.naslov || 'Oglas').substring(0, 35),
+        score: fallbackScoreOglas(o),
+        cijena: o.cijenaStr || o.cijena || 'Na upit'
+    })).sort((a, b) => b.score - a.score);
+
+    const analiza = [
+        'UKUPNA ANALIZA:',
+        'Claude trenutno nije dostupan, pa je prikazana brza Oglix procjena po cijeni, izvoru i osnovnim signalima.',
+        '',
+        ...rang.map((o, i) => `OGLAS #${o.oglas_idx + 1}: ${o.naziv}\nCijena: ${o.cijena}\nScore: ${o.score}/100\nRang: ${i + 1}`)
+    ];
+    if (rang[0]) analiza.push('', `PREPORUKA:\nKreni od oglasa #${rang[0].oglas_idx + 1}, jer trenutno ima najbolji Oglix odnos vrijednosti i rizika.`);
+
+    return {
+        analiza: analiza.join('\n'),
+        scores: rang,
+        verdict: rang[0] ? `Najbolji kandidat je oglas #${rang[0].oglas_idx + 1}.` : null
+    };
+}
+
+// â”€â”€ OLX DETALJI OGLASA â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 app.get('/api/oglas-detalji/:id', async (req, res) => {
     try {
         const { data, attrs } = await dohvatiOlxDetalje(req.params.id);
@@ -362,7 +425,7 @@ app.get('/api/oglas-detalji/:id', async (req, res) => {
     } catch(e) { res.json({ uspjeh: false, poruka: e.message }); }
 });
 
-// ── AUTOBUM DETALJI OGLASA ────────────────────────────────
+// â”€â”€ AUTOBUM DETALJI OGLASA â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 app.get('/api/autobum-detalji/:id', async (req, res) => {
     try {
         const id = req.params.id;
@@ -378,8 +441,8 @@ app.get('/api/autobum-detalji/:id', async (req, res) => {
         const brendovi = {
             'volkswagen':89,'vw':89,'audi':7,'bmw':11,'mercedes':56,
             'opel':47,'peugeot':65,'renault':71,'toyota':72,'honda':30,
-            'ford':20,'skoda':77,'škoda':77,'seat':57,'fiat':29,
-            'citroen':9,'citroën':9,'hyundai':35,'kia':39,'mazda':46,
+            'ford':20,'skoda':77,'Å¡koda':77,'seat':57,'fiat':29,
+            'citroen':9,'citroÃ«n':9,'hyundai':35,'kia':39,'mazda':46,
             'nissan':41,'suzuki':66,'volvo':90,'porsche':69,'jeep':22,
             'mitsubishi':64,'subaru':62,'dacia':15,'alfa romeo':2,'mini':36
         };
@@ -398,8 +461,8 @@ app.get('/api/autobum-detalji/:id', async (req, res) => {
                 slike: o.images || (o.image ? [o.image] : []),
                 godiste: attrs['Godina'] || attrs['year'] || o.year || null,
                 gorivo: attrs['Gorivo'] || attrs['fuel_type'] || o.fuel || o.fuel_type || null,
-                transmisija: attrs['Mjenjač'] || attrs['transmission'] || o.transmission || null,
-                km: attrs['Kilometraža'] || attrs['mileage'] || o.mileage || null,
+                transmisija: attrs['MjenjaÄ'] || attrs['transmission'] || o.transmission || null,
+                km: attrs['KilometraÅ¾a'] || attrs['mileage'] || o.mileage || null,
                 kubikaza: attrs['Zapremina motora'] || attrs['engine_displacement'] || o.engine_displacement || null,
                 kw: attrs['Snaga motora'] || attrs['engine_power'] || o.power_kw || o.engine_power || null,
                 boja: attrs['Boja'] || attrs['color'] || o.color || null,
@@ -410,7 +473,7 @@ app.get('/api/autobum-detalji/:id', async (req, res) => {
     } catch(e) { res.json({ uspjeh: false, poruka: e.message }); }
 });
 
-// ── SLIČNI OGLASI PO NAZIVU ───────────────────────────────
+// â”€â”€ SLIÄŒNI OGLASI PO NAZIVU â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 app.post('/api/slicni-po-nazivu', async (req, res) => {
     try {
         const { naslov, cijena, brand_id, gorivo, godiste, km } = req.body;
@@ -436,9 +499,9 @@ app.post('/api/slicni-po-nazivu', async (req, res) => {
                 slika: o.image || '',
                 link: `https://www.olx.ba/artikal/${o.id}`,
                 platforma: 'olx',
-                godiste: labels['Godište'] ? parseInt(labels['Godište']) : null,
+                godiste: labels['GodiÅ¡te'] ? parseInt(labels['GodiÅ¡te']) : null,
                 gorivo: labels['Gorivo'] || null,
-                km: labels['Kilometraža'] ? parseInt(String(labels['Kilometraža']).replace(/[^0-9]/g,'')) : null,
+                km: labels['KilometraÅ¾a'] ? parseInt(String(labels['KilometraÅ¾a']).replace(/[^0-9]/g,'')) : null,
             };
         });
         const godNum = parseInt(godiste) || 0;
@@ -453,26 +516,26 @@ app.post('/api/slicni-po-nazivu', async (req, res) => {
         let aiAnaliza = null;
         if (grupa1.length > 0) {
             const aiPrompt = `Ti si direktan savjetnik za kupovinu vozila u BiH.
-OGLAS: ${naslov} — ${cijena}
-Godište: ${godiste||'—'} | Gorivo: ${gorivo||'—'} | KM: ${km ? parseInt(km).toLocaleString()+' km' : '—'}
-SLIČNI OLX OGLASI:
+OGLAS: ${naslov} â€” ${cijena}
+GodiÅ¡te: ${godiste||'â€”'} | Gorivo: ${gorivo||'â€”'} | KM: ${km ? parseInt(km).toLocaleString()+' km' : 'â€”'}
+SLIÄŒNI OLX OGLASI:
 ${grupa1.map((o,i) => {
     const c = parseCijena(o.cijena);
-    const odnos = c && cijenaNum ? (c < cijenaNum ? ` (−${Math.round((cijenaNum-c)/cijenaNum*100)}% jeftiniji)` : c > cijenaNum ? ` (+${Math.round((c-cijenaNum)/cijenaNum*100)}% skuplji)` : ' (ista cijena)') : '';
-    return `#${i+1}: ${o.naslov} — ${o.cijena}${odnos} | KM: ${o.km||'—'} | God: ${o.godiste||'—'}`;
+    const odnos = c && cijenaNum ? (c < cijenaNum ? ` (âˆ’${Math.round((cijenaNum-c)/cijenaNum*100)}% jeftiniji)` : c > cijenaNum ? ` (+${Math.round((c-cijenaNum)/cijenaNum*100)}% skuplji)` : ' (ista cijena)') : '';
+    return `#${i+1}: ${o.naslov} â€” ${o.cijena}${odnos} | KM: ${o.km||'â€”'} | God: ${o.godiste||'â€”'}`;
 }).join('\n')}
-ZAKLJUČAK: [prosječna cijena, usporedba]
-PREPORUKA: [jedna rečenica]
+ZAKLJUÄŒAK: [prosjeÄna cijena, usporedba]
+PREPORUKA: [jedna reÄenica]
 Bosanski.`;
             aiAnaliza = await groqAI(aiPrompt, 400);
         }
-        res.json({ uspjeh: true, grupa1, grupa2, preciznost: 'Isti brend, slična cijena', aiAnaliza });
+        res.json({ uspjeh: true, grupa1, grupa2, preciznost: 'Isti brend, sliÄna cijena', aiAnaliza });
     } catch(e) {
         res.json({ uspjeh: false, grupa1: [], grupa2: [], poruka: e.message });
     }
 });
 
-// ── LIVE OGLASI ───────────────────────────────────────────
+// â”€â”€ LIVE OGLASI â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 app.post('/api/sacuvaj-oglase', async (req, res) => {
     const { oglasi } = req.body;
     if (!oglasi || !oglasi.length) return res.json({ uspjeh: false });
@@ -574,7 +637,7 @@ app.get('/api/kategorije', async (req, res) => {
     } catch(e) { res.json({ uspjeh: false, kategorije: [] }); }
 });
 
-// ── AI ANALIZA JEDNOG OGLASA ──────────────────────────────
+// â”€â”€ AI ANALIZA JEDNOG OGLASA â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 app.post('/api/analiza-jednog-oglasa', async (req, res) => {
     const { oglas } = req.body;
     const d = oglas.detalji || {};
@@ -582,30 +645,30 @@ app.post('/api/analiza-jednog-oglasa', async (req, res) => {
     let prompt = '';
     if (katTip === 'vozila') {
         prompt = `Ti si iskusan savjetnik za kupovinu vozila u BiH.
-Oglas: ${oglas.naslov} — ${oglas.cijenaStr}
-Godište: ${d.godiste||'—'} | Gorivo: ${d.gorivo||'—'} | KM: ${d.km ? Number(d.km).toLocaleString()+' km' : '—'}
-Kubikaža: ${d.kubikaza||'—'} | Snaga: ${d.kw ? d.kw+' kW' : '—'} | Transmisija: ${d.transmisija||'—'} | Boja: ${d.boja||'—'}
-Daj analizu: OCJENA: [ODLIČNO/FER/PREVISOKO/IZBJEGAVAJ] CIJENA: [komentar] SAVJET: [preporuka] SCORE: [0-100]`;
+Oglas: ${oglas.naslov} â€” ${oglas.cijenaStr}
+GodiÅ¡te: ${d.godiste||'â€”'} | Gorivo: ${d.gorivo||'â€”'} | KM: ${d.km ? Number(d.km).toLocaleString()+' km' : 'â€”'}
+KubikaÅ¾a: ${d.kubikaza||'â€”'} | Snaga: ${d.kw ? d.kw+' kW' : 'â€”'} | Transmisija: ${d.transmisija||'â€”'} | Boja: ${d.boja||'â€”'}
+Daj analizu: OCJENA: [ODLIÄŒNO/FER/PREVISOKO/IZBJEGAVAJ] CIJENA: [komentar] SAVJET: [preporuka] SCORE: [0-100]`;
     } else if (katTip === 'mobiteli') {
         prompt = `Ti si iskusan savjetnik za kupovinu mobitela u BiH.
-Oglas: ${oglas.naslov} — ${oglas.cijenaStr}
-OS: ${d.os||'—'} | Memorija: ${d.interna_memorija||'—'} | RAM: ${d.ram_mob||'—'}
-Daj analizu: OCJENA: [ODLIČNO/FER/PREVISOKO/IZBJEGAVAJ] CIJENA: [je li fer za ovaj model] SAVJET: [preporuka i šta fizički provjeriti] SCORE: [0-100]`;
+Oglas: ${oglas.naslov} â€” ${oglas.cijenaStr}
+OS: ${d.os||'â€”'} | Memorija: ${d.interna_memorija||'â€”'} | RAM: ${d.ram_mob||'â€”'}
+Daj analizu: OCJENA: [ODLIÄŒNO/FER/PREVISOKO/IZBJEGAVAJ] CIJENA: [je li fer za ovaj model] SAVJET: [preporuka i Å¡ta fiziÄki provjeriti] SCORE: [0-100]`;
     } else if (katTip === 'racunari') {
-        prompt = `Ti si iskusan savjetnik za kupovinu računara u BiH.
-Oglas: ${oglas.naslov} — ${oglas.cijenaStr}
-CPU: ${d.procesor||'—'} | RAM: ${d.ram_pc||'—'} | SSD: ${d.ssd ? d.ssd+'GB' : '—'} | GPU: ${d.graficka||'—'}
-Daj analizu: OCJENA: [ODLIČNO/FER/PREVISOKO/IZBJEGAVAJ] CIJENA: [vrijednost komponenti] SAVJET: [preporuka i šta provjeriti] SCORE: [0-100]`;
+        prompt = `Ti si iskusan savjetnik za kupovinu raÄunara u BiH.
+Oglas: ${oglas.naslov} â€” ${oglas.cijenaStr}
+CPU: ${d.procesor||'â€”'} | RAM: ${d.ram_pc||'â€”'} | SSD: ${d.ssd ? d.ssd+'GB' : 'â€”'} | GPU: ${d.graficka||'â€”'}
+Daj analizu: OCJENA: [ODLIÄŒNO/FER/PREVISOKO/IZBJEGAVAJ] CIJENA: [vrijednost komponenti] SAVJET: [preporuka i Å¡ta provjeriti] SCORE: [0-100]`;
     } else if (katTip === 'nekretnine') {
         const m2 = d.kvadrata && parseCijena(oglas.cijenaStr) ? Math.round(parseCijena(oglas.cijenaStr)/parseFloat(d.kvadrata)) : 0;
         prompt = `Ti si iskusan agent za nekretnine u BiH.
-Oglas: ${oglas.naslov} — ${oglas.cijenaStr} ${m2 ? '('+m2+' KM/m²)' : ''}
-Površina: ${d.kvadrata||'—'}m² | Sobe: ${d.broj_soba||'—'} | Sprat: ${d.sprat||'—'} | Namješteno: ${d.namjesten||'—'}
-Daj analizu: OCJENA: [ODLIČNO/FER/PREVISOKO/IZBJEGAVAJ] CIJENA: [cijena/m² komentar] SAVJET: [preporuka i šta pravno provjeriti] SCORE: [0-100]`;
+Oglas: ${oglas.naslov} â€” ${oglas.cijenaStr} ${m2 ? '('+m2+' KM/mÂ²)' : ''}
+PovrÅ¡ina: ${d.kvadrata||'â€”'}mÂ² | Sobe: ${d.broj_soba||'â€”'} | Sprat: ${d.sprat||'â€”'} | NamjeÅ¡teno: ${d.namjesten||'â€”'}
+Daj analizu: OCJENA: [ODLIÄŒNO/FER/PREVISOKO/IZBJEGAVAJ] CIJENA: [cijena/mÂ² komentar] SAVJET: [preporuka i Å¡ta pravno provjeriti] SCORE: [0-100]`;
     } else {
         prompt = `Ti si iskusan savjetnik za kupovinu u BiH.
-Oglas: ${oglas.naslov} — ${oglas.cijenaStr}
-Daj analizu: OCJENA: [ODLIČNO/FER/PREVISOKO/IZBJEGAVAJ] CIJENA: [komentar] SAVJET: [preporuka] SCORE: [0-100]`;
+Oglas: ${oglas.naslov} â€” ${oglas.cijenaStr}
+Daj analizu: OCJENA: [ODLIÄŒNO/FER/PREVISOKO/IZBJEGAVAJ] CIJENA: [komentar] SAVJET: [preporuka] SCORE: [0-100]`;
     }
     try {
         const tekst = await groqAI(prompt, 350);
@@ -616,7 +679,7 @@ Daj analizu: OCJENA: [ODLIČNO/FER/PREVISOKO/IZBJEGAVAJ] CIJENA: [komentar] SAVJ
 
 app.get('/api/slicni-oglasi', async (req, res) => res.json({ uspjeh: true, oglasi: [] }));
 
-// ── SLIČNI OGLASI — SVE KATEGORIJE ────────────────────────
+// â”€â”€ SLIÄŒNI OGLASI â€” SVE KATEGORIJE â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 app.post('/api/slicni-dvije-grupe', async (req, res) => {
     try {
         const d = req.body;
@@ -665,7 +728,7 @@ app.post('/api/slicni-dvije-grupe', async (req, res) => {
                 if (d.boja && o.boja && o.boja.toLowerCase() !== d.boja.toLowerCase()) return false;
                 return true;
             });
-            if (grupa1.length >= 2) preciznost = 'Isti motor, godište i boja';
+            if (grupa1.length >= 2) preciznost = 'Isti motor, godiÅ¡te i boja';
             if (grupa1.length < 2) {
                 grupa1 = svi.filter(o => {
                     if (d.gorivo && o.gorivo && o.gorivo.toLowerCase() !== d.gorivo.toLowerCase()) return false;
@@ -674,7 +737,7 @@ app.post('/api/slicni-dvije-grupe', async (req, res) => {
                     if (godNum && o.godiste !== null && Math.abs(o.godiste - godNum) > 1) return false;
                     return true;
                 });
-                if (grupa1.length >= 2) preciznost = 'Isti motor i godište';
+                if (grupa1.length >= 2) preciznost = 'Isti motor i godiÅ¡te';
             }
             if (grupa1.length < 2) {
                 grupa1 = svi.filter(o => {
@@ -683,7 +746,7 @@ app.post('/api/slicni-dvije-grupe', async (req, res) => {
                     if (godNum && o.godiste !== null && Math.abs(o.godiste - godNum) > 2) return false;
                     return true;
                 });
-                if (grupa1.length >= 2) preciznost = 'Isti motor, godište ±2';
+                if (grupa1.length >= 2) preciznost = 'Isti motor, godiÅ¡te Â±2';
             }
             if (grupa1.length < 2) {
                 grupa1 = svi.filter(o => {
@@ -698,15 +761,15 @@ app.post('/api/slicni-dvije-grupe', async (req, res) => {
             grupa2 = svi.filter(o => !g1ids.has(o.id) && (!d.gorivo || !o.gorivo || o.gorivo.toLowerCase()===d.gorivo.toLowerCase())).sort((a,b) => (a.km||999999)-(b.km||999999)).slice(0, 4);
             if (grupa1.length > 0) {
                 const aiPrompt = `Ti si direktan savjetnik za kupovinu vozila u BiH.
-OGLAS: ${d.cijena} | God: ${d.godiste||'—'} | Gorivo: ${d.gorivo||'—'} | KM: ${d.km ? parseInt(d.km).toLocaleString()+' km' : '—'} | Motor: ${d.kubikaza ? d.kubikaza+'L' : '—'} ${d.kw ? d.kw+'kW' : '—'}
-IDENTIČNI OGLASI (${preciznost}):
+OGLAS: ${d.cijena} | God: ${d.godiste||'â€”'} | Gorivo: ${d.gorivo||'â€”'} | KM: ${d.km ? parseInt(d.km).toLocaleString()+' km' : 'â€”'} | Motor: ${d.kubikaza ? d.kubikaza+'L' : 'â€”'} ${d.kw ? d.kw+'kW' : 'â€”'}
+IDENTIÄŒNI OGLASI (${preciznost}):
 ${grupa1.map((o,i) => {
     const c = parseCijena(o.cijena);
-    const odnos = c && cijenaNum ? (c < cijenaNum ? ` (−${Math.round((cijenaNum-c)/cijenaNum*100)}%)` : c > cijenaNum ? ` (+${Math.round((c-cijenaNum)/cijenaNum*100)}%)` : '') : '';
-    return `#${i+1}: ${o.naslov} — ${o.cijena}${odnos} | KM: ${o.km||'—'} | God: ${o.godiste||'—'}`;
+    const odnos = c && cijenaNum ? (c < cijenaNum ? ` (âˆ’${Math.round((cijenaNum-c)/cijenaNum*100)}%)` : c > cijenaNum ? ` (+${Math.round((c-cijenaNum)/cijenaNum*100)}%)` : '') : '';
+    return `#${i+1}: ${o.naslov} â€” ${o.cijena}${odnos} | KM: ${o.km||'â€”'} | God: ${o.godiste||'â€”'}`;
 }).join('\n')}
-ZAKLJUČAK: [prosječna cijena, usporedba sa tržištem]
-PREPORUKA: [jedna direktna rečenica]
+ZAKLJUÄŒAK: [prosjeÄna cijena, usporedba sa trÅ¾iÅ¡tem]
+PREPORUKA: [jedna direktna reÄenica]
 UPOZORENJE: [samo ako postoji razlog]
 Bosanski. Direktno.`;
                 aiAnaliza = await groqAI(aiPrompt, 400);
@@ -738,16 +801,16 @@ Bosanski. Direktno.`;
             grupa2 = svi.filter(o => !g1ids.has(o.id)).slice(0, 4);
             if (grupa1.length > 0) {
                 const aiPrompt = `Ti si savjetnik za kupovinu mobitela u BiH.
-MOBITEL: ${d.brand} ${d.model} — ${d.cijena} | OS: ${d.os||'—'} | Memorija: ${d.interna_memorija||'—'}
-IDENTIČNI OGLASI (${preciznost}):
+MOBITEL: ${d.brand} ${d.model} â€” ${d.cijena} | OS: ${d.os||'â€”'} | Memorija: ${d.interna_memorija||'â€”'}
+IDENTIÄŒNI OGLASI (${preciznost}):
 ${grupa1.map((o,i) => {
     const c = parseCijena(o.cijena);
-    const odnos = c && cijenaNum ? (c < cijenaNum ? ` (−${Math.round((cijenaNum-c)/cijenaNum*100)}%)` : c > cijenaNum ? ` (+${Math.round((c-cijenaNum)/cijenaNum*100)}%)` : '') : '';
-    return `#${i+1}: ${o.naslov} — ${o.cijena}${odnos} | Mem: ${o.interna_memorija||'—'}`;
+    const odnos = c && cijenaNum ? (c < cijenaNum ? ` (âˆ’${Math.round((cijenaNum-c)/cijenaNum*100)}%)` : c > cijenaNum ? ` (+${Math.round((c-cijenaNum)/cijenaNum*100)}%)` : '') : '';
+    return `#${i+1}: ${o.naslov} â€” ${o.cijena}${odnos} | Mem: ${o.interna_memorija||'â€”'}`;
 }).join('\n')}
-ZAKLJUČAK: [prosječna cijena, je li fer?]
+ZAKLJUÄŒAK: [prosjeÄna cijena, je li fer?]
 PREPORUKA: [kupi oglas #X ili pregovaraj]
-UPOZORENJE: [šta fizički provjeriti — baterija, ekran, oštećenja]
+UPOZORENJE: [Å¡ta fiziÄki provjeriti â€” baterija, ekran, oÅ¡teÄ‡enja]
 Bosanski.`;
                 aiAnaliza = await groqAI(aiPrompt, 400);
             }
@@ -769,7 +832,7 @@ Bosanski.`;
             const svi = (await Promise.all(detaljPromises)).filter(Boolean);
             if (d.procesor && d.ram_pc && d.graficka) {
                 grupa1 = svi.filter(o => o.procesor === d.procesor && o.ram === d.ram_pc && o.graficka === d.graficka);
-                if (grupa1.length >= 2) preciznost = 'Isti procesor, RAM i grafička';
+                if (grupa1.length >= 2) preciznost = 'Isti procesor, RAM i grafiÄka';
             }
             if (grupa1.length < 2 && d.procesor && d.ram_pc) {
                 grupa1 = svi.filter(o => o.procesor === d.procesor && o.ram === d.ram_pc);
@@ -779,22 +842,22 @@ Bosanski.`;
                 grupa1 = svi.filter(o => o.procesor === d.procesor);
                 if (grupa1.length >= 2) preciznost = 'Isti procesor';
             }
-            if (grupa1.length < 2) { grupa1 = svi; preciznost = 'Slična kategorija i cijena'; }
+            if (grupa1.length < 2) { grupa1 = svi; preciznost = 'SliÄna kategorija i cijena'; }
             grupa1 = grupa1.sort((a,b) => (a.cijena_num||999999)-(b.cijena_num||999999)).slice(0, 6);
             const g1ids = new Set(grupa1.map(o=>o.id));
             grupa2 = svi.filter(o => !g1ids.has(o.id)).slice(0, 4);
             if (grupa1.length > 0) {
-                const aiPrompt = `Ti si savjetnik za kupovinu računara u BiH.
-RAČUNAR: ${d.naslov||'—'} — ${d.cijena} | CPU: ${d.procesor||'—'} | RAM: ${d.ram_pc||'—'} | GPU: ${d.graficka||'—'}
-SLIČNI (${preciznost}):
+                const aiPrompt = `Ti si savjetnik za kupovinu raÄunara u BiH.
+RAÄŒUNAR: ${d.naslov||'â€”'} â€” ${d.cijena} | CPU: ${d.procesor||'â€”'} | RAM: ${d.ram_pc||'â€”'} | GPU: ${d.graficka||'â€”'}
+SLIÄŒNI (${preciznost}):
 ${grupa1.map((o,i) => {
     const c = parseCijena(o.cijena);
-    const odnos = c && cijenaNum ? (c < cijenaNum ? ` (−${Math.round((cijenaNum-c)/cijenaNum*100)}%)` : c > cijenaNum ? ` (+${Math.round((c-cijenaNum)/cijenaNum*100)}%)` : '') : '';
-    return `#${i+1}: ${o.naslov} — ${o.cijena}${odnos} | CPU: ${o.procesor||'—'} | RAM: ${o.ram||'—'} | GPU: ${o.graficka||'—'}`;
+    const odnos = c && cijenaNum ? (c < cijenaNum ? ` (âˆ’${Math.round((cijenaNum-c)/cijenaNum*100)}%)` : c > cijenaNum ? ` (+${Math.round((c-cijenaNum)/cijenaNum*100)}%)` : '') : '';
+    return `#${i+1}: ${o.naslov} â€” ${o.cijena}${odnos} | CPU: ${o.procesor||'â€”'} | RAM: ${o.ram||'â€”'} | GPU: ${o.graficka||'â€”'}`;
 }).join('\n')}
-ZAKLJUČAK: [vrijednost komponenti, usporedba]
+ZAKLJUÄŒAK: [vrijednost komponenti, usporedba]
 PREPORUKA: [direktna preporuka]
-UPOZORENJE: [šta provjeriti — GPU stabilnost, SSD, napajanje]
+UPOZORENJE: [Å¡ta provjeriti â€” GPU stabilnost, SSD, napajanje]
 Bosanski.`;
                 aiAnaliza = await groqAI(aiPrompt, 400);
             }
@@ -822,7 +885,7 @@ Bosanski.`;
                     if (kvadrati && o.kvadrata && Math.abs(o.kvadrata - kvadrati) > 15) return false;
                     return true;
                 });
-                if (grupa1.length >= 2) preciznost = `Isti tip (${d.broj_soba}), slična kvadratura`;
+                if (grupa1.length >= 2) preciznost = `Isti tip (${d.broj_soba}), sliÄna kvadratura`;
             }
             if (grupa1.length < 2 && d.broj_soba) {
                 grupa1 = svi.filter(o => o.broj_soba === d.broj_soba);
@@ -830,36 +893,36 @@ Bosanski.`;
             }
             if (grupa1.length < 2 && kvadrati) {
                 grupa1 = svi.filter(o => o.kvadrata && Math.abs(o.kvadrata - kvadrati) <= 20);
-                preciznost = `Slična kvadratura (${kvadrati}m² ±20)`;
+                preciznost = `SliÄna kvadratura (${kvadrati}mÂ² Â±20)`;
             }
-            if (grupa1.length < 2) { grupa1 = svi; preciznost = 'Slična cijena, isti tip'; }
+            if (grupa1.length < 2) { grupa1 = svi; preciznost = 'SliÄna cijena, isti tip'; }
             grupa1 = grupa1.sort((a,b) => (a.cijena_m2||999999)-(b.cijena_m2||999999)).slice(0, 6);
             const g1ids = new Set(grupa1.map(o=>o.id));
             grupa2 = svi.filter(o => !g1ids.has(o.id)).slice(0, 4);
             if (grupa1.length > 0) {
                 const aiPrompt = `Ti si agent za nekretnine u BiH.
-NEKRETNINA: ${d.naslov||'—'} — ${d.cijena} ${cijenaM2Trenutni > 0 ? '('+cijenaM2Trenutni+' KM/m²)' : ''} | ${d.kvadrata||'—'}m² | ${d.broj_soba||'—'} sobe | Grad: ${d.grad||'—'}
-SLIČNE (${preciznost}):
+NEKRETNINA: ${d.naslov||'â€”'} â€” ${d.cijena} ${cijenaM2Trenutni > 0 ? '('+cijenaM2Trenutni+' KM/mÂ²)' : ''} | ${d.kvadrata||'â€”'}mÂ² | ${d.broj_soba||'â€”'} sobe | Grad: ${d.grad||'â€”'}
+SLIÄŒNE (${preciznost}):
 ${grupa1.map((o,i) => {
     const c = parseCijena(o.cijena);
-    const odnos = c && cijenaNum ? (c < cijenaNum ? ` (−${Math.round((cijenaNum-c)/cijenaNum*100)}%)` : c > cijenaNum ? ` (+${Math.round((c-cijenaNum)/cijenaNum*100)}%)` : '') : '';
-    return `#${i+1}: ${o.naslov} — ${o.cijena}${odnos} ${o.cijena_m2 ? '| '+o.cijena_m2+' KM/m²' : ''} | ${o.kvadrata||'—'}m²`;
+    const odnos = c && cijenaNum ? (c < cijenaNum ? ` (âˆ’${Math.round((cijenaNum-c)/cijenaNum*100)}%)` : c > cijenaNum ? ` (+${Math.round((c-cijenaNum)/cijenaNum*100)}%)` : '') : '';
+    return `#${i+1}: ${o.naslov} â€” ${o.cijena}${odnos} ${o.cijena_m2 ? '| '+o.cijena_m2+' KM/mÂ²' : ''} | ${o.kvadrata||'â€”'}mÂ²`;
 }).join('\n')}
-ZAKLJUČAK: [prosječna cijena/m², usporedba]
+ZAKLJUÄŒAK: [prosjeÄna cijena/mÂ², usporedba]
 PREPORUKA: [direktna preporuka]
-UPOZORENJE: [uknjiženo/ZK, instalacije, vlaga — uvijek napiši ovo]
+UPOZORENJE: [uknjiÅ¾eno/ZK, instalacije, vlaga â€” uvijek napiÅ¡i ovo]
 Bosanski.`;
                 aiAnaliza = await groqAI(aiPrompt, 400);
             }
         }
         res.json({ uspjeh: true, grupa1, grupa2, preciznost, aiAnaliza });
     } catch(e) {
-        console.log('Dvije grupe greška:', e.message);
+        console.log('Dvije grupe greÅ¡ka:', e.message);
         res.json({ uspjeh: false, grupa1: [], grupa2: [], poruka: e.message });
     }
 });
 
-// ── FIX KATEGORIJE PO BRAND_ID ────────────────────────────
+// â”€â”€ FIX KATEGORIJE PO BRAND_ID â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 app.get('/api/fix-kategorije-brand', async (req, res) => {
     const mapa = { 7:'vozila-audi',11:'vozila-bmw',20:'vozila-ford',29:'vozila-fiat',30:'vozila-honda',35:'vozila-hyundai',39:'vozila-kia',46:'vozila-mazda',55:'vozila-mazda',56:'vozila-mercedes',64:'vozila-mitsubishi',65:'vozila-peugeot',69:'vozila-porsche',71:'vozila-renault',77:'vozila-skoda',89:'vozila-volkswagen',90:'vozila-volvo',2:'vozila-alfaromeo',4:'vozila-chevrolet',9:'vozila-citroen',15:'vozila-dacia',22:'vozila-jeep',33:'vozila-landrover',36:'vozila-mini',41:'vozila-nissan',47:'vozila-opel',57:'vozila-seat',62:'vozila-subaru',66:'vozila-suzuki',72:'vozila-toyota' };
     let ukupno = 0;
@@ -870,7 +933,7 @@ app.get('/api/fix-kategorije-brand', async (req, res) => {
     res.json({ uspjeh: true, azurirano: ukupno });
 });
 
-// ── FIX KATEGORIJE ────────────────────────────────────────
+// â”€â”€ FIX KATEGORIJE â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 app.get('/api/fix-kategorije', async (req, res) => {
     const brendovi = [
         { kljuc: ['volkswagen','vw ','golf','passat','tiguan','polo'], kat: 'vozila-volkswagen' },
@@ -883,10 +946,10 @@ app.get('/api/fix-kategorije', async (req, res) => {
         { kljuc: ['toyota'], kat: 'vozila-toyota' },
         { kljuc: ['honda'], kat: 'vozila-honda' },
         { kljuc: ['ford'], kat: 'vozila-ford' },
-        { kljuc: ['skoda','škoda'], kat: 'vozila-skoda' },
+        { kljuc: ['skoda','Å¡koda'], kat: 'vozila-skoda' },
         { kljuc: ['seat'], kat: 'vozila-seat' },
         { kljuc: ['fiat'], kat: 'vozila-fiat' },
-        { kljuc: ['citroen','citroën'], kat: 'vozila-citroen' },
+        { kljuc: ['citroen','citroÃ«n'], kat: 'vozila-citroen' },
         { kljuc: ['hyundai'], kat: 'vozila-hyundai' },
         { kljuc: ['kia'], kat: 'vozila-kia' },
         { kljuc: ['mazda'], kat: 'vozila-mazda' },
@@ -912,7 +975,7 @@ app.get('/api/fix-kategorije', async (req, res) => {
     res.json({ uspjeh: true, azurirano: ukupno });
 });
 
-// ── OLX FETCH ─────────────────────────────────────────────
+// â”€â”€ OLX FETCH â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 async function fetchOLXKategorija(categoryId, kategorija) {
     try {
         const prvaStrana = await axios.get(`https://olx.ba/api/search?category_id=${categoryId}&per_page=40&page=1`, { headers: { 'User-Agent': 'Mozilla/5.0', 'Accept': 'application/json', 'Referer': 'https://www.olx.ba/' }, timeout: 15000 });
@@ -933,8 +996,8 @@ async function fetchOLXKategorija(categoryId, kategorija) {
                 if (e.response?.status === 429) { await new Promise(r => setTimeout(r, 30000)); stranica--; }
             }
         }
-        console.log(`OLX: ${kategorija} ZAVRŠENA`);
-    } catch(e) { console.log(`OLX greška za ${kategorija}:`, e.message); }
+        console.log(`OLX: ${kategorija} ZAVRÅ ENA`);
+    } catch(e) { console.log(`OLX greÅ¡ka za ${kategorija}:`, e.message); }
 }
 
 async function autobumGet(page, katId) {
@@ -946,14 +1009,14 @@ async function autobumGet(page, katId) {
 }
 
 async function fetchAutobum() {
-    console.log('Autobum: počinjem fetch svih oglasa...');
+    console.log('Autobum: poÄinjem fetch svih oglasa...');
     try {
         let sacuvano = 0, page = 1, imaSljedece = true, greskeBrojac = 0;
         while (imaSljedece) {
             try {
                 const r = await autobumGet(page, 1);
                 const oglasi = r.data || [];
-                if (!oglasi.length) { console.log('Autobum: nema više oglasa.'); break; }
+                if (!oglasi.length) { console.log('Autobum: nema viÅ¡e oglasa.'); break; }
                 greskeBrojac = 0;
                 for (const o of oglasi) {
                     try {
@@ -971,17 +1034,17 @@ async function fetchAutobum() {
                 await new Promise(resolve => setTimeout(resolve, 800));
             } catch(e) {
                 greskeBrojac++;
-                console.log(`Autobum stranica ${page} greška (${greskeBrojac}/5):`, e.message);
+                console.log(`Autobum stranica ${page} greÅ¡ka (${greskeBrojac}/5):`, e.message);
                 await new Promise(resolve => setTimeout(resolve, 5000));
-                if (greskeBrojac >= 5) { console.log('Autobum: previše grešaka, zaustavljam.'); break; }
+                if (greskeBrojac >= 5) { console.log('Autobum: previÅ¡e greÅ¡aka, zaustavljam.'); break; }
             }
         }
-        console.log(`Autobum ZAVRŠENO: ${sacuvano} novih oglasa, ${page} stranica`);
-    } catch(e) { console.log('Autobum greška:', e.message); }
+        console.log(`Autobum ZAVRÅ ENO: ${sacuvano} novih oglasa, ${page} stranica`);
+    } catch(e) { console.log('Autobum greÅ¡ka:', e.message); }
 }
 
 async function fetchSvaVozila() {
-    console.log('OLX vozila: počinjem fetch...');
+    console.log('OLX vozila: poÄinjem fetch...');
     try {
         const prvaStrana = await axios.get('https://olx.ba/api/search?category_id=18&per_page=40&page=1', { headers: { 'User-Agent': 'Mozilla/5.0', 'Accept': 'application/json', 'Referer': 'https://www.olx.ba/' }, timeout: 15000 });
         const lastPage = Math.min(prvaStrana.data.meta?.last_page || 1, 500);
@@ -1004,17 +1067,17 @@ async function fetchSvaVozila() {
                 if (e.response?.status === 429) { await new Promise(r => setTimeout(r, 30000)); stranica--; }
             }
         }
-        console.log('OLX vozila ZAVRŠENO. Novih: ' + sacuvano);
-    } catch(e) { console.log('OLX vozila greška:', e.message); }
+        console.log('OLX vozila ZAVRÅ ENO. Novih: ' + sacuvano);
+    } catch(e) { console.log('OLX vozila greÅ¡ka:', e.message); }
 }
 
-// ── EMAIL ─────────────────────────────────────────────────
+// â”€â”€ EMAIL â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function emailTemplate(naslov, sadrzaj) {
     return `<!DOCTYPE html><html><head><meta charset="UTF-8"></head><body style="margin:0;padding:0;background:#f7f5f2;font-family:'Helvetica Neue',Arial,sans-serif;"><div style="max-width:580px;margin:0 auto;padding:32px 16px;"><div style="text-align:center;margin-bottom:24px;"><span style="font-size:24px;font-weight:800;color:#1a1a1a;">oglix<span style="color:#e65c00;">.ba</span></span></div><div style="background:white;border-radius:16px;padding:32px;border:1px solid rgba(0,0,0,0.08);"><h2 style="font-size:20px;font-weight:700;color:#1a1a1a;margin:0 0 16px 0;">${naslov}</h2>${sadrzaj}</div></div></body></html>`;
 }
 
 function posaljiEmail(to, subject, html) {
-    return transporter.sendMail({ from: `"Oglix.ba" <${process.env.EMAIL_USER}>`, to, subject, html }).catch(e => console.log('Email greška:', e.message));
+    return transporter.sendMail({ from: `"Oglix.ba" <${process.env.EMAIL_USER}>`, to, subject, html }).catch(e => console.log('Email greÅ¡ka:', e.message));
 }
 
 async function initAlerti() {
@@ -1027,10 +1090,10 @@ initAlerti();
 
 app.post('/api/alert', async (req, res) => {
     const { email, naziv, kljucna_rijec, kategorija, cijena_od, cijena_do } = req.body;
-    if (!email || !kljucna_rijec) return res.json({ uspjeh: false, poruka: 'Email i ključna riječ su obavezni!' });
+    if (!email || !kljucna_rijec) return res.json({ uspjeh: false, poruka: 'Email i kljuÄna rijeÄ su obavezni!' });
     try {
         const result = await pool.query(`INSERT INTO alerti (korisnik_email, naziv, kljucna_rijec, kategorija, cijena_od, cijena_do) VALUES ($1,$2,$3,$4,$5,$6) RETURNING id`, [email, naziv || kljucna_rijec, kljucna_rijec, kategorija || null, cijena_od || null, cijena_do || null]);
-        posaljiEmail(email, '✅ Alert kreiran — Oglix.ba', emailTemplate('Alert je aktiviran!', `<p>Obavijestit ćemo te čim se pojavi oglas: <strong>${kljucna_rijec}</strong></p>`));
+        posaljiEmail(email, 'âœ… Alert kreiran â€” Oglix.ba', emailTemplate('Alert je aktiviran!', `<p>Obavijestit Ä‡emo te Äim se pojavi oglas: <strong>${kljucna_rijec}</strong></p>`));
         res.json({ uspjeh: true, id: result.rows[0].id });
     } catch(e) { res.json({ uspjeh: false, poruka: e.message }); }
 });
@@ -1085,10 +1148,10 @@ async function provjeriAlerte(noviOglasi) {
             });
             if (!podudarni.length) continue;
             const oglasHtml = podudarni.slice(0, 5).map(o => `<a href="${o.link}" style="display:block;text-decoration:none;color:inherit;border:1px solid rgba(0,0,0,0.08);border-radius:10px;padding:14px;margin-bottom:10px;"><div style="font-weight:600;color:#1a1a1a;font-size:14px;">${o.naslov.substring(0,80)}</div><div style="color:#e65c00;font-weight:700;">${o.cijena}</div></a>`).join('');
-            await posaljiEmail(alert.korisnik_email, `🔔 ${podudarni.length} novi oglas za "${alert.naziv}" — Oglix.ba`, emailTemplate(`Pronađeno ${podudarni.length} novih oglasa!`, `<p>Novi oglasi za <strong>"${alert.naziv}"</strong>:</p>${oglasHtml}`));
+            await posaljiEmail(alert.korisnik_email, `ðŸ”” ${podudarni.length} novi oglas za "${alert.naziv}" â€” Oglix.ba`, emailTemplate(`PronaÄ‘eno ${podudarni.length} novih oglasa!`, `<p>Novi oglasi za <strong>"${alert.naziv}"</strong>:</p>${oglasHtml}`));
             await pool.query(`UPDATE alerti SET zadnje_slanje = NOW() WHERE id = $1`, [alert.id]);
         }
-    } catch(e) { console.log('Greška provjere alertā:', e.message); }
+    } catch(e) { console.log('GreÅ¡ka provjere alertÄ:', e.message); }
 }
 
 async function provjeriPadCijena() {
@@ -1104,14 +1167,14 @@ async function provjeriPadCijena() {
                 const staraCijena = parseFloat(p.cijena_trenutna) || 0;
                 if (res2.data.available === false) {
                     await pool.query(`UPDATE pracenje_cijena SET aktivan = false WHERE id = $1`, [p.id]);
-                    await posaljiEmail(p.korisnik_email, `❌ Oglas koji pratiš je prodan — Oglix.ba`, emailTemplate('Oglas je prodan', `<p>${p.oglas_naslov}</p>`));
+                    await posaljiEmail(p.korisnik_email, `âŒ Oglas koji pratiÅ¡ je prodan â€” Oglix.ba`, emailTemplate('Oglas je prodan', `<p>${p.oglas_naslov}</p>`));
                     continue;
                 }
                 if (novaCijena > 0 && staraCijena > 0 && novaCijena < staraCijena - 100) {
                     const razlika = Math.round(staraCijena - novaCijena);
                     const posto = Math.round(razlika / staraCijena * 100);
                     await pool.query(`UPDATE pracenje_cijena SET cijena_trenutna = $1 WHERE id = $2`, [novaCijena, p.id]);
-                    await posaljiEmail(p.korisnik_email, `📉 Cijena pala za ${razlika} KM — Oglix.ba`, emailTemplate(`Cijena snižena za ${razlika} KM (${posto}%)!`, `<p>${p.oglas_naslov}</p><a href="${p.oglas_link}" style="color:#e65c00;">Pogledaj oglas →</a>`));
+                    await posaljiEmail(p.korisnik_email, `ðŸ“‰ Cijena pala za ${razlika} KM â€” Oglix.ba`, emailTemplate(`Cijena sniÅ¾ena za ${razlika} KM (${posto}%)!`, `<p>${p.oglas_naslov}</p><a href="${p.oglas_link}" style="color:#e65c00;">Pogledaj oglas â†’</a>`));
                 } else if (novaCijena > 0 && novaCijena !== staraCijena) {
                     await pool.query(`UPDATE pracenje_cijena SET cijena_trenutna = $1 WHERE id = $2`, [novaCijena, p.id]);
                 }
@@ -1120,7 +1183,7 @@ async function provjeriPadCijena() {
                 if (e.response?.status === 404) await pool.query(`UPDATE pracenje_cijena SET aktivan = false WHERE id = $1`, [p.id]);
             }
         }
-    } catch(e) { console.log('Greška provjere cijena:', e.message); }
+    } catch(e) { console.log('GreÅ¡ka provjere cijena:', e.message); }
 }
 
 setInterval(provjeriPadCijena, 60 * 60 * 1000);
@@ -1135,12 +1198,12 @@ async function posaljiTjedniDigest() {
             for (const alert of alerti.rows.slice(0, 3)) {
                 const oglasi = await pool.query(`SELECT * FROM live_oglasi WHERE naslov ILIKE $1 AND datum > NOW() - INTERVAL '7 days' ORDER BY datum DESC LIMIT 3`, [`%${alert.kljucna_rijec}%`]);
                 if (!oglasi.rows.length) continue;
-                sadrzaj += `<h3>${alert.naziv}</h3>` + oglasi.rows.map(o => `<a href="${o.link}">${o.naslov} — ${o.cijena}</a>`).join('<br>');
+                sadrzaj += `<h3>${alert.naziv}</h3>` + oglasi.rows.map(o => `<a href="${o.link}">${o.naslov} â€” ${o.cijena}</a>`).join('<br>');
             }
             if (!sadrzaj) continue;
-            await posaljiEmail(k.korisnik_email, `📊 Tjedni pregled — Oglix.ba`, emailTemplate('Tvoj tjedni pregled', sadrzaj));
+            await posaljiEmail(k.korisnik_email, `ðŸ“Š Tjedni pregled â€” Oglix.ba`, emailTemplate('Tvoj tjedni pregled', sadrzaj));
         }
-    } catch(e) { console.log('Digest greška:', e.message); }
+    } catch(e) { console.log('Digest greÅ¡ka:', e.message); }
 }
 
 setInterval(() => {
@@ -1149,7 +1212,7 @@ setInterval(() => {
 }, 5 * 60 * 1000);
 
 async function fetchSveKategorije() {
-    console.log('Pokrećem fetch...');
+    console.log('PokreÄ‡em fetch...');
     await fetchSvaVozila();
     const ostale = [
         { id: '21', naziv: 'motocikli' }, { id: '22', naziv: 'bicikli' },
@@ -1169,7 +1232,7 @@ async function fetchSveKategorije() {
         await new Promise(r => setTimeout(r, 2000));
     }
     await fetchAutobum();
-    console.log('Fetch završen!');
+    console.log('Fetch zavrÅ¡en!');
 }
 
 app.get('/api/run-autobum', async (req, res) => {
@@ -1192,7 +1255,7 @@ app.get('/api/test-autobum', async (req, res) => {
     } catch(e) { res.json({ uspjeh: false, greska: e.message }); }
 });
 
-// ── PRAĆENJE PRODANIH OGLASA ──────────────────────────────
+// â”€â”€ PRAÄ†ENJE PRODANIH OGLASA â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 async function checkajProdaneOglase() {
     try {
         const aktivni = await pool.query(`SELECT id, link, datum FROM live_oglasi WHERE platforma = 'olx' AND available = true AND datum > NOW() - INTERVAL '90 days' LIMIT 500`);
@@ -1217,12 +1280,12 @@ async function checkajProdaneOglase() {
             }
         }
         console.log(`Prodani oglasi: ${prodano} detektovano`);
-    } catch(e) { console.log('Greška checkanja prodanih:', e.message); }
+    } catch(e) { console.log('GreÅ¡ka checkanja prodanih:', e.message); }
 }
 
 setInterval(checkajProdaneOglase, 60 * 60 * 1000);
 
-// ── STATISTIKE ────────────────────────────────────────────
+// â”€â”€ STATISTIKE â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 app.get('/api/statistike', async (req, res) => {
     try {
         const kategorija = req.query.kategorija || 'vozila';
@@ -1266,15 +1329,15 @@ app.get('/api/check-prodane', async (req, res) => {
     checkajProdaneOglase();
 });
 
-// ── OGLIX BIZNIS ──────────────────────────────────────────
+// â”€â”€ OGLIX BIZNIS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 app.post('/api/biznis-prijava', async (req, res) => {
     const { ime, firma, email, telefon, plan, poruka } = req.body;
     if (!ime || !email || !telefon) return res.json({ uspjeh: false });
     try {
         await pool.query(`CREATE TABLE IF NOT EXISTS biznis_prijave (id SERIAL PRIMARY KEY, ime VARCHAR(100), firma VARCHAR(100), email VARCHAR(100), telefon VARCHAR(50), plan VARCHAR(100), poruka TEXT, datum TIMESTAMP DEFAULT NOW())`);
         await pool.query(`INSERT INTO biznis_prijave (ime, firma, email, telefon, plan, poruka) VALUES ($1,$2,$3,$4,$5,$6)`, [ime, firma||null, email, telefon, plan||null, poruka||null]);
-        transporter.sendMail({ from: process.env.EMAIL_USER, to: process.env.EMAIL_USER, subject: `🎯 Nova Oglix Biznis prijava — ${ime}`, html: `<h2>Nova prijava!</h2><p>Ime: ${ime}<br>Email: ${email}<br>Telefon: ${telefon}<br>Plan: ${plan||'—'}</p>` }).catch(() => {});
-        transporter.sendMail({ from: `"Oglix Biznis" <${process.env.EMAIL_USER}>`, to: email, subject: '✅ Primili smo vašu prijavu — Oglix Biznis', html: `<h2>Zdravo ${ime}!</h2><p>Kontaktiramo vas u roku od 24 sata.</p>` }).catch(() => {});
+        transporter.sendMail({ from: process.env.EMAIL_USER, to: process.env.EMAIL_USER, subject: `ðŸŽ¯ Nova Oglix Biznis prijava â€” ${ime}`, html: `<h2>Nova prijava!</h2><p>Ime: ${ime}<br>Email: ${email}<br>Telefon: ${telefon}<br>Plan: ${plan||'â€”'}</p>` }).catch(() => {});
+        transporter.sendMail({ from: `"Oglix Biznis" <${process.env.EMAIL_USER}>`, to: email, subject: 'âœ… Primili smo vaÅ¡u prijavu â€” Oglix Biznis', html: `<h2>Zdravo ${ime}!</h2><p>Kontaktiramo vas u roku od 24 sata.</p>` }).catch(() => {});
         res.json({ uspjeh: true });
     } catch(e) { res.json({ uspjeh: false, poruka: e.message }); }
 });
@@ -1299,7 +1362,7 @@ app.post('/api/admin/promijeni-plan', async (req, res) => {
     } catch(e) { res.json({ uspjeh: false, poruka: e.message }); }
 });
 
-// ── OLX DETALJI POSTEPENO ────────────────────────────────
+// â”€â”€ OLX DETALJI POSTEPENO â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 async function popuniOlxDetalje() {
     try {
         const oglasi = await pool.query(`SELECT id, link FROM live_oglasi WHERE platforma = 'olx' AND kategorija LIKE 'vozila%' AND godiste IS NULL AND km IS NULL ORDER BY datum DESC LIMIT 200`);
@@ -1326,7 +1389,7 @@ async function popuniOlxDetalje() {
             }
         }
         console.log(`OLX detalji: popunjeno ${popunjeno} oglasa.`);
-    } catch(e) { console.log('OLX detalji greška:', e.message); }
+    } catch(e) { console.log('OLX detalji greÅ¡ka:', e.message); }
 }
 
 setInterval(popuniOlxDetalje, 2 * 60 * 60 * 1000 + 30 * 60 * 1000);
@@ -1337,10 +1400,10 @@ app.get('/api/popuni-olx-detalje', async (req, res) => {
     popuniOlxDetalje();
 });
 
-// ── AI USPOREDBA OGLASA ───────────────────────────────────
+// â”€â”€ AI USPOREDBA OGLASA â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 app.post('/api/compare-ai', async (req, res) => {
+    const { oglasi = [] } = req.body;
     try {
-        const { oglasi } = req.body;
         if (!oglasi || oglasi.length < 2) return res.json({ uspjeh: false, poruka: 'Minimum 2 oglasa!' });
 
         const detalji = await Promise.all(oglasi.map(async (o, idx) => {
@@ -1432,7 +1495,7 @@ UPOZORENJE:
 Budi konkretan. Koristi cijene i procente. Bosanski jezik.`;
 
         const aiTekst = await groqAI(prompt, 1200);
-        if (!aiTekst) return res.json({ uspjeh: false });
+        if (!aiTekst) return res.json({ uspjeh: true, ...fallbackCompareAI(oglasi), fallback: true });
 
         // Izvuci score-ove
         const scores = [];
@@ -1454,12 +1517,12 @@ Budi konkretan. Koristi cijene i procente. Bosanski jezik.`;
         res.json({ uspjeh: true, analiza: aiTekst, scores, verdict });
 
     } catch(e) {
-        console.log('Compare AI greška:', e.message);
-        res.json({ uspjeh: false, poruka: e.message });
+        console.log('Compare AI greÅ¡ka:', e.message);
+        res.json({ uspjeh: true, ...fallbackCompareAI(oglasi), fallback: true, poruka: e.message });
     }
 });
 
-// ── DEAL RATING ENDPOINT ─────────────────────────────────
+// â”€â”€ DEAL RATING ENDPOINT â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 app.get('/api/deal-rating/:id', async (req, res) => {
     try {
         const oglas = await pool.query('SELECT * FROM live_oglasi WHERE id = $1', [req.params.id]);
@@ -1493,7 +1556,7 @@ app.get('/api/deal-rating/:id', async (req, res) => {
     }
 });
 
-// ── SCAM DETECTION ENDPOINT ──────────────────────────────
+// â”€â”€ SCAM DETECTION ENDPOINT â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 app.post('/api/scam-check', async (req, res) => {
     try {
         const { id, naslov, cijena, platforma, kategorija } = req.body;
@@ -1517,7 +1580,7 @@ app.post('/api/scam-check', async (req, res) => {
         // 2. Kljucne rijeci prevare u naslovu
         const prevaraRijeci = ['inostranstvo', 'njemacka', 'austrija', 'uk', 'western union', 'avans', 'depozit', 'kurirska', 'pouzecem', 'garantujem'];
         const naslovLower = (naslov || '').toLowerCase();
-        prevaraRijeci.forEach(r => { if (naslovLower.includes(r)) { flags.push('Oglas spominje: "' + r + '" — cestacrvena zastavica prevare'); scamScore += 25; } });
+        prevaraRijeci.forEach(r => { if (naslovLower.includes(r)) { flags.push('Oglas spominje: "' + r + '" â€” cestacrvena zastavica prevare'); scamScore += 25; } });
 
         // 3. Preniska cijena apsolutno
         if (cijenaNum > 0 && cijenaNum < 50 && kategorija && kategorija.includes('vozila')) {
@@ -1527,7 +1590,7 @@ app.post('/api/scam-check', async (req, res) => {
 
         scamScore = Math.min(scamScore, 100);
         let rizik, boja, poruka;
-        if (scamScore >= 60) { rizik = 'visok'; boja = '#FCEBEB'; poruka = 'Visok rizik prevare — budi oprezan'; }
+        if (scamScore >= 60) { rizik = 'visok'; boja = '#FCEBEB'; poruka = 'Visok rizik prevare â€” budi oprezan'; }
         else if (scamScore >= 30) { rizik = 'srednji'; boja = '#FAEEDA'; poruka = 'Provjeri prodavaca prije kupovine'; }
         else { rizik = 'nizak'; boja = '#EAF3DE'; poruka = 'Bez ociglednih znakova prevare'; }
 
@@ -1537,7 +1600,109 @@ app.post('/api/scam-check', async (req, res) => {
     }
 });
 
-// ── AI PRETRAGA PRIRODNIM JEZIKOM ────────────────────────
+async function izracunajOglixScore(oglas) {
+    const cijenaNum = parseFloat(oglas.cijena_num) || parseCijena(oglas.cijena);
+    let score = 50;
+    const komponente = {};
+
+    if (cijenaNum > 0) {
+        const modelInfo = await getModelProsjekZaOglas(pool, oglas, 0);
+        if (modelInfo.avg > 0 && modelInfo.broj >= 3) {
+            const ratio = cijenaNum / modelInfo.avg;
+            const cijenaScore = ratio < 0.80 ? 40 : ratio < 0.90 ? 34 : ratio < 1.00 ? 27 : ratio < 1.10 ? 18 : ratio < 1.25 ? 8 : 0;
+            score = cijenaScore + 20;
+            komponente.cijena = { score: cijenaScore, prosjek: Math.round(modelInfo.avg), uzorak: modelInfo.broj };
+        }
+    }
+
+    const godiste = parseInt(oglas.godiste) || null;
+    const km = parseInt(String(oglas.km || '').replace(/[^0-9]/g, '')) || null;
+    if (godiste && km) {
+        const ocekivanaKm = Math.max(1, (new Date().getFullYear() - godiste) * 15000);
+        const ratioKm = km / ocekivanaKm;
+        const kmScore = ratioKm < 0.70 ? 25 : ratioKm < 0.95 ? 21 : ratioKm < 1.20 ? 15 : ratioKm < 1.50 ? 8 : 2;
+        score += kmScore;
+        komponente.kilometraza = { score: kmScore, km, ocekivanaKm };
+    } else {
+        score += 12;
+    }
+
+    const datum = oglas.datum_objave || oglas.datum;
+    if (datum) {
+        const dana = Math.max(0, Math.floor((Date.now() - new Date(datum).getTime()) / 86400000));
+        const danaScore = dana <= 3 ? 15 : dana <= 10 ? 12 : dana <= 30 ? 8 : dana <= 60 ? 4 : 1;
+        score += danaScore;
+        komponente.trziste = { score: danaScore, dana };
+    } else {
+        score += 7;
+    }
+
+    const platforma = (oglas.platforma || '').toLowerCase();
+    const platformaScore = platforma === 'olx' ? 10 : platforma === 'autobum' ? 8 : 6;
+    score += platformaScore;
+    komponente.platforma = { score: platformaScore, platforma: platforma || 'nepoznato' };
+
+    const naslovLower = (oglas.naslov || '').toLowerCase();
+    const scamMinus = /(hitno|unaprijed|depozit|western union|bez papira|samo danas)/i.test(naslovLower) ? 8 : 0;
+    score += 10 - scamMinus;
+    komponente.rizik = { score: 10 - scamMinus, rizik: scamMinus ? 'srednji' : 'nizak' };
+
+    score = Math.max(0, Math.min(100, Math.round(score)));
+    const label = score >= 85 ? 'Top prilika' : score >= 70 ? 'Dobra cijena' : score >= 55 ? 'Fer' : 'Provjeri';
+    return { score, label, komponente };
+}
+
+app.get('/api/oglix-score/:id', async (req, res) => {
+    try {
+        const result = await pool.query('SELECT * FROM live_oglasi WHERE id = $1', [req.params.id]);
+        if (!result.rows.length) return res.status(404).json({ uspjeh: false, poruka: 'Oglas nije pronađen.' });
+        const score = await izracunajOglixScore(result.rows[0]);
+        res.json({ uspjeh: true, ...score });
+    } catch(e) {
+        res.json({ uspjeh: false, poruka: e.message });
+    }
+});
+
+function fallbackAiPretraga(upit) {
+    const tekst = String(upit || '').trim();
+    const lower = tekst.toLowerCase();
+    const params = { q: tekst };
+
+    if (/(auto|golf|passat|audi|bmw|mercedes|opel|renault|peugeot|toyota|vozil)/i.test(tekst)) params.kategorija = 'vozila';
+    else if (/(stan|kuca|kuća|apartman|nekretnin|zemlji)/i.test(tekst)) params.kategorija = 'nekretnine';
+    else if (/(iphone|samsung|telefon|mobitel|laptop|racunar|računar|kompjuter)/i.test(tekst)) params.kategorija = 'elektronika';
+
+    const cijenaDo = lower.match(/(?:do|max|maksimalno)\s*([0-9][0-9\.\s]*)\s*(?:km|bam)?/);
+    if (cijenaDo) params.cijena_do = parseInt(cijenaDo[1].replace(/[^0-9]/g, '')) || null;
+
+    const cijenaOd = lower.match(/(?:od|min|minimalno)\s*([0-9][0-9\.\s]*)\s*(?:km|bam)?/);
+    if (cijenaOd) params.cijena_od = parseInt(cijenaOd[1].replace(/[^0-9]/g, '')) || null;
+
+    const godiste = lower.match(/\b(19[89][0-9]|20[0-2][0-9])\b/);
+    if (godiste) params.godiste_od = parseInt(godiste[1]);
+
+    const kmDo = tekst.match(/(?:do|max|maksimalno)\s*([0-9][0-9\.\s]*)\s*(?:km|kilometara|kilometra)\b/);
+    if (kmDo) params.km_do = parseInt(kmDo[1].replace(/[^0-9]/g, '')) || null;
+
+    if (/dizel|diesel|tdi|cdi|hdi|dci/i.test(tekst)) params.gorivo = 'Dizel';
+    else if (/benzin|tsi|fsi/i.test(tekst)) params.gorivo = 'Benzin';
+    else if (/hibrid|hybrid/i.test(tekst)) params.gorivo = 'Hibrid';
+    else if (/elektric|električ/i.test(tekst)) params.gorivo = 'Elektricni';
+
+    if (/najjeftin|jeftin/i.test(tekst)) params.sort = 'cijena_asc';
+    else if (/najskuplj|skuplj/i.test(tekst)) params.sort = 'cijena_desc';
+    else params.sort = 'novo';
+
+    params.q = tekst
+        .replace(/(?:do|max|maksimalno|od|min|minimalno)\s*[0-9][0-9\.\s]*\s*(?:km|bam|kilometara|kilometra)?/gi, '')
+        .replace(/\b(dizel|diesel|benzin|hibrid|hybrid|elektricni|električni|novo|najnoviji|najjeftiniji|najskuplji)\b/gi, '')
+        .replace(/\s+/g, ' ')
+        .trim() || tekst;
+
+    return params;
+}
+
+// â”€â”€ AI PRETRAGA PRIRODNIM JEZIKOM â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 app.post('/api/ai-pretraga', async (req, res) => {
     try {
         const { upit } = req.body;
@@ -1560,15 +1725,15 @@ Izvuci parametre pretrage i vrati SAMO JSON bez objasnjenja:
             const json = odgovor.replace(/```json|```/g, '').trim();
             params = JSON.parse(json);
         } catch(e) {
-            params = { q: upit };
+            params = fallbackAiPretraga(upit);
         }
         res.json({ uspjeh: true, params });
     } catch(e) {
-        res.json({ uspjeh: false, poruka: e.message });
+        res.json({ uspjeh: true, params: fallbackAiPretraga(req.body?.upit), fallback: true, poruka: e.message });
     }
 });
 
-// ── HISTORIJA CIJENE ─────────────────────────────────────
+// â”€â”€ HISTORIJA CIJENE â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 app.get('/api/historija-cijene/:id', async (req, res) => {
     try {
         // Uzmi trenutni oglas
@@ -1617,7 +1782,7 @@ app.get('/api/historija-cijene/:id', async (req, res) => {
     }
 });
 
-// ── JOBS AGREGACIJA (MojPosao) ───────────────────────────
+// â”€â”€ JOBS AGREGACIJA (MojPosao) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 app.get('/api/jobs', async (req, res) => {
     try {
         const q = req.query.q || '';
@@ -1655,10 +1820,10 @@ app.get('/api/jobs', async (req, res) => {
             const mockJobs = [
                 { naslov: 'Web Developer (React/Node.js)', link: 'https://www.mojposao.ba', opis: 'Trazimo iskusnog web developera za rad na SaaS platformi. Rad od kuce moguc.', grad: 'Sarajevo', plata: '2.500 - 4.000 KM', datum: new Date().toISOString(), platforma: 'mojposao', tip: 'posao' },
                 { naslov: 'Vozac C/E kategorije', link: 'https://www.mojposao.ba', opis: 'Potreban vozac za medjunarodne relacije. Iskustvo minimum 2 godine.', grad: 'Tuzla', plata: '2.000 - 3.000 KM', datum: new Date().toISOString(), platforma: 'mojposao', tip: 'posao' },
-                { naslov: 'Konobar/ica — sezona 2025', link: 'https://www.mojposao.ba', opis: 'Ugostitelsjki objekat u centru trazi konobare za ljetnu sezonu.', grad: 'Mostar', plata: '900 - 1.200 KM', datum: new Date().toISOString(), platforma: 'mojposao', tip: 'posao' },
-                { naslov: 'Racunovodja — certifikovani', link: 'https://www.mojposao.ba', opis: 'Potrebna osoba sa iskustvom u PDV prijavi i finansijskim izvjestajima.', grad: 'Banja Luka', plata: '1.800 - 2.500 KM', datum: new Date().toISOString(), platforma: 'mojposao', tip: 'posao' },
+                { naslov: 'Konobar/ica â€” sezona 2025', link: 'https://www.mojposao.ba', opis: 'Ugostitelsjki objekat u centru trazi konobare za ljetnu sezonu.', grad: 'Mostar', plata: '900 - 1.200 KM', datum: new Date().toISOString(), platforma: 'mojposao', tip: 'posao' },
+                { naslov: 'Racunovodja â€” certifikovani', link: 'https://www.mojposao.ba', opis: 'Potrebna osoba sa iskustvom u PDV prijavi i finansijskim izvjestajima.', grad: 'Banja Luka', plata: '1.800 - 2.500 KM', datum: new Date().toISOString(), platforma: 'mojposao', tip: 'posao' },
                 { naslov: 'Prodavac/ica u maloprodaji', link: 'https://www.mojposao.ba', opis: 'Lancani maloprodajni objekat prima radnike za rad u smjenama.', grad: 'Zenica', plata: '900 - 1.100 KM', datum: new Date().toISOString(), platforma: 'mojposao', tip: 'posao' },
-                { naslov: 'Graficki dizajner — freelance', link: 'https://www.mojposao.ba', opis: 'Agencija trazi dizajnera za projektnu saradnju. Adobe CC obavezan.', grad: 'Sarajevo', plata: 'Po dogovoru', datum: new Date().toISOString(), platforma: 'mojposao', tip: 'posao' },
+                { naslov: 'Graficki dizajner â€” freelance', link: 'https://www.mojposao.ba', opis: 'Agencija trazi dizajnera za projektnu saradnju. Adobe CC obavezan.', grad: 'Sarajevo', plata: 'Po dogovoru', datum: new Date().toISOString(), platforma: 'mojposao', tip: 'posao' },
             ];
             return res.json({ uspjeh: true, jobs: mockJobs, izvor: 'demo' });
         }
@@ -1669,7 +1834,7 @@ app.get('/api/jobs', async (req, res) => {
     }
 });
 
-// ── KONKURENTI — INICIJALIZACIJA TABELA ──────────────────
+// â”€â”€ KONKURENTI â€” INICIJALIZACIJA TABELA â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 async function initKonkurenti() {
     await pool.query(`CREATE TABLE IF NOT EXISTS konkurenti (
         id SERIAL PRIMARY KEY,
@@ -1710,7 +1875,7 @@ async function initKonkurenti() {
 }
 initKonkurenti().catch(e => console.log('Konkurenti init greska:', e.message));
 
-// ── DODAJ KONKURENTA ─────────────────────────────────────
+// â”€â”€ DODAJ KONKURENTA â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 app.post('/api/konkurent-dodaj', async (req, res) => {
     try {
         const { korisnik_email, olx_username } = req.body;
@@ -1726,7 +1891,7 @@ app.post('/api/konkurent-dodaj', async (req, res) => {
             }
         });
 
-        if (!olxRes.ok) return res.json({ uspjeh: false, poruka: 'Korisnik nije pronađen na OLX.ba. Provjeri username.' });
+        if (!olxRes.ok) return res.json({ uspjeh: false, poruka: 'Korisnik nije pronaÄ‘en na OLX.ba. Provjeri username.' });
 
         const olxData = await olxRes.json();
         const oglasi = olxData.data || [];
@@ -1796,15 +1961,15 @@ app.post('/api/konkurent-dodaj', async (req, res) => {
 
         res.json({
             uspjeh: true,
-            poruka: `Konkurent ${username} dodan! Praćenje ${ukupno} oglasa.`,
+            poruka: `Konkurent ${username} dodan! PraÄ‡enje ${ukupno} oglasa.`,
             konkurent: { id: konkurentId, username, userType, ukupno, prosjek }
         });
     } catch(e) {
-        res.json({ uspjeh: false, poruka: 'Greška: ' + e.message });
+        res.json({ uspjeh: false, poruka: 'GreÅ¡ka: ' + e.message });
     }
 });
 
-// ── LISTA KONKURENATA ────────────────────────────────────
+// â”€â”€ LISTA KONKURENATA â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 app.get('/api/konkurenti', async (req, res) => {
     try {
         const { email } = req.query;
@@ -1819,7 +1984,7 @@ app.get('/api/konkurenti', async (req, res) => {
     }
 });
 
-// ── OGLASI KONKURENTA ────────────────────────────────────
+// â”€â”€ OGLASI KONKURENTA â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 app.get('/api/konkurent-oglasi/:id', async (req, res) => {
     try {
         const { id } = req.params;
@@ -1863,12 +2028,12 @@ app.get('/api/konkurent-oglasi/:id', async (req, res) => {
     }
 });
 
-// ── REFRESH KONKURENTA ───────────────────────────────────
+// â”€â”€ REFRESH KONKURENTA â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 app.post('/api/konkurent-refresh/:id', async (req, res) => {
     try {
         const { id } = req.params;
         const konkurent = await pool.query('SELECT * FROM konkurenti WHERE id = $1', [id]);
-        if (!konkurent.rows.length) return res.json({ uspjeh: false, poruka: 'Nije pronađen' });
+        if (!konkurent.rows.length) return res.json({ uspjeh: false, poruka: 'Nije pronaÄ‘en' });
 
         const k = konkurent.rows[0];
         const username = k.olx_username;
@@ -1893,7 +2058,7 @@ app.post('/api/konkurent-refresh/:id', async (req, res) => {
                 if (existing.rows.length) {
                     const staraCijena = parseFloat(existing.rows[0].cijena_num);
                     if (Math.abs(staraCijena - cijenaNum) > 50) {
-                        // Cijena se promijenila — zabilježi
+                        // Cijena se promijenila â€” zabiljeÅ¾i
                         await pool.query(
                             'INSERT INTO konkurent_cijena_historija (olx_id, cijena_num) VALUES ($1, $2)',
                             [o.id, cijenaNum]
@@ -1921,7 +2086,7 @@ app.post('/api/konkurent-refresh/:id', async (req, res) => {
             await new Promise(r => setTimeout(r, 300));
         }
 
-        // Ažuriraj stats
+        // AÅ¾uriraj stats
         const prosjekRes = await pool.query(
             'SELECT AVG(cijena_num) as prosjek, COUNT(*) as ukupno FROM konkurent_oglasi WHERE konkurent_id = $1 AND status = $2 AND cijena_num > 100',
             [id, 'active']
@@ -1937,7 +2102,7 @@ app.post('/api/konkurent-refresh/:id', async (req, res) => {
     }
 });
 
-// ── UKLONI KONKURENTA ────────────────────────────────────
+// â”€â”€ UKLONI KONKURENTA â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 app.delete('/api/konkurent/:id', async (req, res) => {
     try {
         await pool.query('DELETE FROM konkurenti WHERE id = $1', [req.params.id]);
@@ -1948,11 +2113,11 @@ app.delete('/api/konkurent/:id', async (req, res) => {
 });
 
 
-// ════════════════════════════════════════════════════════
-// OGLIX INTELLIGENCE — 3 KILLER FEATUREA
-// ════════════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// OGLIX INTELLIGENCE â€” 3 KILLER FEATUREA
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 
-// ── 1. SLABOSTI KONKURENTA — AI analiza ──────────────────
+// â”€â”€ 1. SLABOSTI KONKURENTA â€” AI analiza â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 app.post('/api/konkurent-slabosti', async (req, res) => {
     try {
         const { konkurent_id } = req.body;
@@ -2008,21 +2173,21 @@ app.post('/api/konkurent-slabosti', async (req, res) => {
         // Izgradnja AI prompta
         const dugoCekaListaTxt = dugoCekaju.slice(0, 5).map(function(o) { return '- ' + o.naslov + ': ' + o.cijena + ' (' + Math.round(o.dana_na_trzistu) + ' dana)'; }).join('\n');
         const preVisListaTxt = previsoko.slice(0, 5).map(function(o) { return '- ' + o.naslov + ': ' + o.cijena; }).join('\n');
-        const prompt = 'Ti si ekspert za automobilsko tržište u Bosni i Hercegovini. Analiziraj konkurenta i pronađi njihove slabosti.\n\n' +
+        const prompt = 'Ti si ekspert za automobilsko trÅ¾iÅ¡te u Bosni i Hercegovini. Analiziraj konkurenta i pronaÄ‘i njihove slabosti.\n\n' +
             'Konkurent: ' + k.olx_username + '\n' +
             'Tip: ' + (k.user_type === 'shop' ? 'Salon' : 'Privatni') + '\n' +
             'Ukupno aktivnih oglasa: ' + oglasiData.length + '\n' +
-            'Prosječna cijena: ' + (k.prosjecna_cijena ? Math.round(k.prosjecna_cijena).toLocaleString() + ' KM' : 'N/A') + '\n' +
-            'Tržišni prosjek: ' + Math.round(avgTrziste).toLocaleString() + ' KM\n\n' +
+            'ProsjeÄna cijena: ' + (k.prosjecna_cijena ? Math.round(k.prosjecna_cijena).toLocaleString() + ' KM' : 'N/A') + '\n' +
+            'TrÅ¾iÅ¡ni prosjek: ' + Math.round(avgTrziste).toLocaleString() + ' KM\n\n' +
             'Oglasi koji stoje dugo (30+ dana): ' + dugoCekaju.length + ' vozila\n' + dugoCekaListaTxt + '\n\n' +
-            'Oglasi iznad tržišnog prosjeka: ' + previsoko.length + ' vozila\n' + preVisListaTxt + '\n\n' +
+            'Oglasi iznad trÅ¾iÅ¡nog prosjeka: ' + previsoko.length + ' vozila\n' + preVisListaTxt + '\n\n' +
             'Prodana vozila: ' + (prodana.rows[0]?.broj || 0) + '\n' +
-            'Prosječno dana do prodaje: ' + (prodana.rows[0]?.avg_dana ? Math.round(prodana.rows[0].avg_dana) : 'N/A') + '\n\n' +
+            'ProsjeÄno dana do prodaje: ' + (prodana.rows[0]?.avg_dana ? Math.round(prodana.rows[0].avg_dana) : 'N/A') + '\n\n' +
             'Na osnovu ovih podataka, daj mi:\n' +
             '1. SLABOSTI: 3 konkretne slabosti ovog konkurenta (kratko, direktno)\n' +
-            '2. PRILIKE: 3 konkretne tržišne prilike koje mogu iskoristiti dileri\n' +
+            '2. PRILIKE: 3 konkretne trÅ¾iÅ¡ne prilike koje mogu iskoristiti dileri\n' +
             '3. PREPORUKA: 1 konkretna akcija koju diler treba odmah poduzeti\n\n' +
-            'Odgovori kratko i konkretno. Svaka stavka max 2 rečenice.'
+            'Odgovori kratko i konkretno. Svaka stavka max 2 reÄenice.'
 
         const analiza = await groqAI(prompt, 600);
 
@@ -2060,7 +2225,7 @@ app.post('/api/konkurent-slabosti', async (req, res) => {
     }
 });
 
-// ── 2. OGLIX PREDICT™ — predviđanje pada cijene ──────────
+// â”€â”€ 2. OGLIX PREDICTâ„¢ â€” predviÄ‘anje pada cijene â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 app.get('/api/predict/:konkurent_id', async (req, res) => {
     try {
         const { konkurent_id } = req.params;
@@ -2115,9 +2280,9 @@ app.get('/api/predict/:konkurent_id', async (req, res) => {
             let score = 0;
             let razlozi = [];
 
-            // 1. Dugo na tržištu
-            if (dana > 45) { score += 35; razlozi.push('Na tržištu ' + Math.round(dana) + ' dana'); }
-            else if (dana > 30) { score += 20; razlozi.push('Na tržištu ' + Math.round(dana) + ' dana'); }
+            // 1. Dugo na trÅ¾iÅ¡tu
+            if (dana > 45) { score += 35; razlozi.push('Na trÅ¾iÅ¡tu ' + Math.round(dana) + ' dana'); }
+            else if (dana > 30) { score += 20; razlozi.push('Na trÅ¾iÅ¡tu ' + Math.round(dana) + ' dana'); }
             else if (dana > 15) { score += 8; }
 
             // 2. Cijena iznad prosjeka MODELA (ne globalnog!)
@@ -2127,20 +2292,20 @@ app.get('/api/predict/:konkurent_id', async (req, res) => {
             else if (odnosProsjeka > 1.10) { score += 15; razlozi.push('Cijena ' + Math.round((odnosProsjeka-1)*100) + '% iznad prosjeka'); }
 
             // 3. Prethodne promjene cijene
-            if (parseInt(o.broj_promjena) > 1) { score += 20; razlozi.push('Cijena već mijenjana ' + o.broj_promjena + 'x'); }
+            if (parseInt(o.broj_promjena) > 1) { score += 20; razlozi.push('Cijena veÄ‡ mijenjana ' + o.broj_promjena + 'x'); }
 
             // 4. Kraj mjeseca
-            if (krajMjesecaFaktor > 0) { score += krajMjesecaFaktor; razlozi.push('Kraj mjeseca — saloni imaju targete'); }
+            if (krajMjesecaFaktor > 0) { score += krajMjesecaFaktor; razlozi.push('Kraj mjeseca â€” saloni imaju targete'); }
 
             // 5. Pad od max cijene
             if (maxCijena > cijenaNum + 500) {
                 score += 15;
-                razlozi.push('Već sniženo za ' + Math.round(maxCijena - cijenaNum).toLocaleString('bs-BA') + ' KM');
+                razlozi.push('VeÄ‡ sniÅ¾eno za ' + Math.round(maxCijena - cijenaNum).toLocaleString('bs-BA') + ' KM');
             }
 
             score = Math.min(score, 99);
 
-            // Procjena iznosa sniženja
+            // Procjena iznosa sniÅ¾enja
             const procijenjeniPad = cijenaNum > 50000 ? Math.round(cijenaNum * 0.07) :
                 cijenaNum > 20000 ? Math.round(cijenaNum * 0.08) :
                 Math.round(cijenaNum * 0.10);
@@ -2167,7 +2332,7 @@ app.get('/api/predict/:konkurent_id', async (req, res) => {
     }
 });
 
-// ── 3. OGLIX IMPORT INTEL™ — uvozne prilike ──────────────
+// â”€â”€ 3. OGLIX IMPORT INTELâ„¢ â€” uvozne prilike â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 async function initImport() {
     await pool.query(`CREATE TABLE IF NOT EXISTS import_prilike (
         id SERIAL PRIMARY KEY,
@@ -2192,7 +2357,7 @@ async function initImport() {
 initImport().catch(e => console.log('Import init:', e.message));
 
 
-// ── DOHVATI SLIKU OGLASA ─────────────────────────────────
+// â”€â”€ DOHVATI SLIKU OGLASA â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 app.get('/api/oglas-slika/:olx_id', async (req, res) => {
     try {
         const { olx_id } = req.params;
@@ -2219,7 +2384,7 @@ app.get('/api/oglas-slika/:olx_id', async (req, res) => {
         }
         
         if (slika) {
-            // Spremi u bazu za sljedeći put
+            // Spremi u bazu za sljedeÄ‡i put
             await pool.query('UPDATE konkurent_oglasi SET slika = $1 WHERE olx_id = $2', [slika, olx_id]);
         }
         
@@ -2235,13 +2400,13 @@ app.get('/api/import-prilike', async (req, res) => {
     try {
         // Dohvati prosjecne cijene po modelima iz nase baze za kalkulaciju
         const modeli = [
-            { kljuc: 'golf', naziv: 'VW Golf', kw_od: 85, cijena_eur: 11500, godiste: 2016, km: 120000, zemlja: 'Njemačka', gorivo: 'Dizel' },
+            { kljuc: 'golf', naziv: 'VW Golf', kw_od: 85, cijena_eur: 11500, godiste: 2016, km: 120000, zemlja: 'NjemaÄka', gorivo: 'Dizel' },
             { kljuc: 'passat', naziv: 'VW Passat', kw_od: 110, cijena_eur: 14000, godiste: 2017, km: 150000, zemlja: 'Austrija', gorivo: 'Dizel' },
-            { kljuc: 'bmw+x5', naziv: 'BMW X5', kw_od: 140, cijena_eur: 28000, godiste: 2016, km: 160000, zemlja: 'Njemačka', gorivo: 'Dizel' },
+            { kljuc: 'bmw+x5', naziv: 'BMW X5', kw_od: 140, cijena_eur: 28000, godiste: 2016, km: 160000, zemlja: 'NjemaÄka', gorivo: 'Dizel' },
             { kljuc: 'mercedes+gle', naziv: 'Mercedes GLE', kw_od: 150, cijena_eur: 32000, godiste: 2017, km: 140000, zemlja: 'Slovenija', gorivo: 'Dizel' },
             { kljuc: 'audi+a6', naziv: 'Audi A6', kw_od: 130, cijena_eur: 18000, godiste: 2016, km: 130000, zemlja: 'Austrija', gorivo: 'Dizel' },
-            { kljuc: 'tiguan', naziv: 'VW Tiguan', kw_od: 110, cijena_eur: 16000, godiste: 2017, km: 110000, zemlja: 'Njemačka', gorivo: 'Dizel' },
-            { kljuc: 'skoda+octavia', naziv: 'Škoda Octavia', kw_od: 85, cijena_eur: 9500, godiste: 2016, km: 140000, zemlja: 'Češka', gorivo: 'Dizel' },
+            { kljuc: 'tiguan', naziv: 'VW Tiguan', kw_od: 110, cijena_eur: 16000, godiste: 2017, km: 110000, zemlja: 'NjemaÄka', gorivo: 'Dizel' },
+            { kljuc: 'skoda+octavia', naziv: 'Å koda Octavia', kw_od: 85, cijena_eur: 9500, godiste: 2016, km: 140000, zemlja: 'ÄŒeÅ¡ka', gorivo: 'Dizel' },
             { kljuc: 'ford+focus', naziv: 'Ford Focus', kw_od: 70, cijena_eur: 8500, godiste: 2016, km: 130000, zemlja: 'Austrija', gorivo: 'Dizel' },
         ];
 
@@ -2250,7 +2415,7 @@ app.get('/api/import-prilike', async (req, res) => {
         const PDV = 0.17;
 
         const prilike = await Promise.all(modeli.map(async (m) => {
-            // Dohvati realni tržišni prosjek iz naše baze
+            // Dohvati realni trÅ¾iÅ¡ni prosjek iz naÅ¡e baze
             const trziste = await pool.query(
                 `SELECT AVG(cijena_num) as avg, COUNT(*) as broj FROM live_oglasi
                  WHERE kategorija LIKE 'vozila%' AND cijena_num > 3000 AND cijena_num < 200000

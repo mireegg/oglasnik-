@@ -15,10 +15,10 @@
   <meta property="og:description" content="Pretražuj oglase sa OLX.ba, Autobum.ba i Facebook Marketplace.">
   <meta property="og:image" content="https://oglix.ba/og-image.png">
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔍</text></svg>">
-  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   <style>
     :root{
-      --or:#e65c00;--or-l:#ff7a1f;--or-dim:#fff3ed;
+      --or:#84cc16;--or-l:#a3e635;--or-dim:#fff3ed;
       --bg:#f4f4f2;--s:#fff;
       --b:rgba(0,0,0,0.09);--bh:rgba(0,0,0,0.2);
       --t:#111;--tm:#666;--tf:#aaa;
@@ -27,21 +27,21 @@
     @keyframes spin{to{transform:rotate(360deg);}}
     @keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
     *{box-sizing:border-box;margin:0;padding:0;}
-    body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--t);min-height:100vh;font-size:14px;line-height:1.5;}
+    body{font-family:'Inter',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--t);min-height:100vh;font-size:14px;line-height:1.5;}
     a{text-decoration:none;color:inherit;}
 
     /* ── NAV TOP BAR ── */
     .nav-top{background:var(--s);border-bottom:1px solid var(--b);padding:0 24px;height:52px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:200;}
-    .logo{font-family:'Syne',sans-serif;font-size:22px;font-weight:800;letter-spacing:-0.5px;white-space:nowrap;flex-shrink:0;}
+    .logo{font-family:'Inter',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:22px;font-weight:800;letter-spacing:-0.5px;white-space:nowrap;flex-shrink:0;}
     .logo em{color:var(--or);font-style:normal;}
     .nav-links{display:flex;align-items:center;gap:4px;}
-    .nav-link{font-size:13px;color:var(--tm);padding:6px 12px;border-radius:var(--r8);cursor:pointer;background:none;border:none;font-family:'DM Sans',sans-serif;text-decoration:none;transition:color .12s,background .12s;}
+    .nav-link{font-size:13px;color:var(--tm);padding:6px 12px;border-radius:var(--r8);cursor:pointer;background:none;border:none;font-family:'Inter',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;text-decoration:none;transition:color .12s,background .12s;}
     .nav-link:hover{color:var(--t);background:var(--bg);}
     .nav-link.active{color:var(--or);font-weight:500;}
     .nav-right-btns{display:flex;gap:8px;align-items:center;}
-    .nav-btn{background:var(--or);color:#fff;border:none;border-radius:var(--rpill);padding:8px 18px;font-size:13px;font-weight:500;font-family:'DM Sans',sans-serif;cursor:pointer;}
+    .nav-btn{background:var(--or);color:#fff;border:none;border-radius:var(--rpill);padding:8px 18px;font-size:13px;font-weight:500;font-family:'Inter',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;cursor:pointer;}
     .nav-btn:hover{background:var(--or-l);}
-    .nav-ghost{background:transparent;color:var(--tm);border:1px solid var(--b);border-radius:var(--rpill);padding:8px 18px;font-size:13px;font-family:'DM Sans',sans-serif;cursor:pointer;}
+    .nav-ghost{background:transparent;color:var(--tm);border:1px solid var(--b);border-radius:var(--rpill);padding:8px 18px;font-size:13px;font-family:'Inter',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;cursor:pointer;}
     .hamburger{display:none;flex-direction:column;gap:4px;cursor:pointer;padding:8px;background:none;border:none;}
     .hamburger span{width:20px;height:2px;background:var(--t);border-radius:2px;}
 
@@ -51,11 +51,11 @@
     .nav-search{display:flex;align-items:center;background:#fff;border:2px solid #e0ddd8;border-radius:var(--r8);overflow:hidden;transition:border-color .15s;height:50px;}
     .nav-search:focus-within{border-color:var(--or);}
     .nav-search svg{margin:0 10px 0 16px;color:var(--tf);flex-shrink:0;}
-    .nav-search input{flex:1;border:none;outline:none;font-size:15px;font-family:'DM Sans',sans-serif;color:var(--t);background:transparent;padding:0;}
+    .nav-search input{flex:1;border:none;outline:none;font-size:15px;font-family:'Inter',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:var(--t);background:transparent;padding:0;}
     .nav-search input::placeholder{color:var(--tf);}
-    .nav-search-btn{background:var(--or);color:#fff;border:none;padding:0 28px;height:100%;font-size:15px;font-weight:600;font-family:'DM Sans',sans-serif;cursor:pointer;white-space:nowrap;flex-shrink:0;display:flex;align-items:center;gap:8px;}
+    .nav-search-btn{background:var(--or);color:#fff;border:none;padding:0 28px;height:100%;font-size:15px;font-weight:600;font-family:'Inter',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;cursor:pointer;white-space:nowrap;flex-shrink:0;display:flex;align-items:center;gap:8px;}
     .nav-search-btn:hover{background:var(--or-l);}
-    .ai-btn{background:#111;color:#fff;border:none;border-radius:var(--r8);padding:0 18px;height:100%;font-size:13px;font-weight:500;font-family:'DM Sans',sans-serif;cursor:pointer;display:flex;align-items:center;gap:6px;white-space:nowrap;flex-shrink:0;}
+    .ai-btn{background:#111;color:#fff;border:none;border-radius:var(--r8);padding:0 18px;height:100%;font-size:13px;font-weight:500;font-family:'Inter',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;cursor:pointer;display:flex;align-items:center;gap:6px;white-space:nowrap;flex-shrink:0;}
     .ai-btn:hover{background:#333;}
     .ai-pulse{width:6px;height:6px;border-radius:50%;background:var(--or);}
 
@@ -76,8 +76,8 @@
     .sidebar::-webkit-scrollbar{width:4px;}
     .sidebar::-webkit-scrollbar-thumb{background:var(--b);border-radius:2px;}
     .side-head{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1px solid var(--b);}
-    .side-head-title{font-family:'Syne',sans-serif;font-size:14px;font-weight:700;}
-    .side-reset{font-size:12px;color:var(--or);background:none;border:none;cursor:pointer;font-family:'DM Sans',sans-serif;}
+    .side-head-title{font-family:'Inter',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:14px;font-weight:700;}
+    .side-reset{font-size:12px;color:var(--or);background:none;border:none;cursor:pointer;font-family:'Inter',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;}
     .side-sec{padding:14px 16px;border-bottom:1px solid var(--b);}
     .side-sec:last-child{border-bottom:none;}
     .side-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--tf);margin-bottom:10px;}
@@ -86,15 +86,15 @@
     .src-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
     .src-soon{font-size:10px;color:var(--tf);margin-left:auto;}
     .price-row{display:grid;grid-template-columns:1fr 1fr;gap:6px;}
-    .side-input{width:100%;border:1px solid var(--b);border-radius:var(--r8);padding:7px 10px;font-size:13px;font-family:'DM Sans',sans-serif;color:var(--t);background:var(--bg);outline:none;}
+    .side-input{width:100%;border:1px solid var(--b);border-radius:var(--r8);padding:7px 10px;font-size:13px;font-family:'Inter',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:var(--t);background:var(--bg);outline:none;}
     .side-input:focus{border-color:var(--or);}
-    .side-select{width:100%;border:1px solid var(--b);border-radius:var(--r8);padding:7px 10px;font-size:13px;font-family:'DM Sans',sans-serif;color:var(--t);background:var(--bg);outline:none;cursor:pointer;}
+    .side-select{width:100%;border:1px solid var(--b);border-radius:var(--r8);padding:7px 10px;font-size:13px;font-family:'Inter',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:var(--t);background:var(--bg);outline:none;cursor:pointer;}
     .chips{display:flex;flex-wrap:wrap;gap:5px;margin-top:2px;}
     .chip{font-size:11px;padding:4px 10px;border-radius:var(--rpill);border:1px solid var(--b);color:var(--tm);background:var(--bg);cursor:pointer;transition:all .12s;}
     .chip:hover{border-color:var(--or);color:var(--or);}
     .chip.on{background:var(--or);color:#fff;border-color:var(--or);}
     .sub-label{font-size:11px;color:var(--tf);margin-bottom:5px;margin-top:8px;}
-    .apply-btn{width:100%;background:var(--or);color:#fff;border:none;border-radius:var(--r8);padding:11px;font-size:13px;font-weight:500;font-family:'DM Sans',sans-serif;cursor:pointer;margin-top:4px;}
+    .apply-btn{width:100%;background:var(--or);color:#fff;border:none;border-radius:var(--r8);padding:11px;font-size:13px;font-weight:500;font-family:'Inter',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;cursor:pointer;margin-top:4px;}
     .apply-btn:hover{background:var(--or-l);}
     .sub-list{display:flex;flex-direction:column;gap:2px;max-height:200px;overflow-y:auto;}
     .sub-list::-webkit-scrollbar{width:3px;}
@@ -109,7 +109,7 @@
     .view-toggle{display:flex;border:1px solid var(--b);border-radius:var(--r8);overflow:hidden;}
     .view-btn{background:transparent;border:none;padding:6px 10px;cursor:pointer;color:var(--tf);display:flex;align-items:center;}
     .view-btn.on{background:var(--bg);color:var(--t);}
-    .sort-sel{border:1px solid var(--b);border-radius:var(--r8);padding:6px 10px;font-size:13px;font-family:'DM Sans',sans-serif;color:var(--t);background:var(--s);outline:none;cursor:pointer;}
+    .sort-sel{border:1px solid var(--b);border-radius:var(--r8);padding:6px 10px;font-size:13px;font-family:'Inter',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:var(--t);background:var(--s);outline:none;cursor:pointer;}
 
     /* ── AI BOX ── */
     .ai-box{background:#111;border-radius:var(--r12);padding:16px 18px;margin-bottom:14px;}
@@ -128,7 +128,7 @@
     .list-card-body{flex:1;padding:14px 16px;display:flex;flex-direction:column;min-width:0;}
     .list-card-top{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:6px;}
     .list-card-title{font-size:15px;font-weight:500;color:var(--t);line-height:1.35;flex:1;}
-    .list-card-price{font-family:'Syne',sans-serif;font-size:19px;font-weight:800;color:var(--or);white-space:nowrap;}
+    .list-card-price{font-family:'Inter',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:19px;font-weight:800;color:var(--or);white-space:nowrap;}
     .list-card-meta{font-size:12px;color:var(--tf);display:flex;align-items:center;gap:10px;margin-bottom:auto;}
     .list-card-footer{display:flex;align-items:center;justify-content:space-between;margin-top:10px;}
     .list-card-badges{display:flex;align-items:center;gap:6px;}
@@ -140,7 +140,7 @@
     .st-g{background:#EAF3DE;color:#27500A;}
     .st-w{background:#FAEEDA;color:#633806;}
     .st-b{background:#FCEBEB;color:#791F1F;}
-    .list-card-compare{background:transparent;border:1px solid var(--b);border-radius:var(--r8);padding:4px 10px;font-size:11px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;color:var(--tm);transition:all .12s;}
+    .list-card-compare{background:transparent;border:1px solid var(--b);border-radius:var(--r8);padding:4px 10px;font-size:11px;font-weight:600;cursor:pointer;font-family:'Inter',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:var(--tm);transition:all .12s;}
     .list-card-compare:hover{border-color:var(--or);color:var(--or);}
     .list-card-compare.added{background:var(--or);color:#fff;border-color:var(--or);}
     .badge-novo{position:absolute;top:8px;left:8px;background:#22c55e;color:#fff;font-size:9px;font-weight:700;padding:3px 8px;border-radius:var(--rpill);z-index:2;}
@@ -156,15 +156,15 @@
     .grid-card-body{padding:10px 12px 12px;}
     .grid-card-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:5px;}
     .grid-card-title{font-size:12px;font-weight:500;color:var(--t);line-height:1.35;margin-bottom:5px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
-    .grid-card-price{font-family:'Syne',sans-serif;font-size:16px;font-weight:800;color:var(--or);}
+    .grid-card-price{font-family:'Inter',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:16px;font-weight:800;color:var(--or);}
     .grid-card-meta{font-size:10px;color:var(--tf);margin-top:2px;}
-    .grid-compare-btn{position:absolute;top:7px;right:7px;background:rgba(0,0,0,0.65);color:#fff;border:none;border-radius:6px;padding:3px 8px;font-size:10px;font-weight:700;cursor:pointer;opacity:0;transition:opacity .12s;font-family:'DM Sans',sans-serif;}
+    .grid-compare-btn{position:absolute;top:7px;right:7px;background:rgba(0,0,0,0.65);color:#fff;border:none;border-radius:6px;padding:3px 8px;font-size:10px;font-weight:700;cursor:pointer;opacity:0;transition:opacity .12s;font-family:'Inter',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;}
     .grid-card:hover .grid-compare-btn{opacity:1;}
     .grid-compare-btn.added{background:var(--or);opacity:1;}
 
     /* ── LOAD MORE ── */
     .load-more{text-align:center;margin-top:20px;padding-bottom:20px;}
-    .load-btn{background:var(--s);border:1px solid var(--b);border-radius:var(--rpill);padding:11px 32px;font-size:13px;font-family:'DM Sans',sans-serif;color:var(--tm);cursor:pointer;}
+    .load-btn{background:var(--s);border:1px solid var(--b);border-radius:var(--rpill);padding:11px 32px;font-size:13px;font-family:'Inter',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:var(--tm);cursor:pointer;}
     .load-btn:hover{border-color:var(--bh);color:var(--t);}
 
     /* ── COMPARE BAR ── */
@@ -175,11 +175,11 @@
     .compare-slot img{width:100%;height:100%;object-fit:cover;}
     .slot-empty{color:rgba(255,255,255,0.2);font-size:16px;}
     .slot-remove{position:absolute;top:-2px;right:-2px;width:15px;height:15px;background:#ef4444;border-radius:50%;border:none;color:#fff;font-size:9px;cursor:pointer;line-height:1;}
-    .compare-count{font-family:'Syne',sans-serif;font-size:13px;font-weight:700;color:#fff;white-space:nowrap;}
-    .compare-go{background:var(--or);color:#fff;border:none;border-radius:var(--r8);padding:10px 20px;font-size:13px;font-weight:700;font-family:'DM Sans',sans-serif;cursor:pointer;}
+    .compare-count{font-family:'Inter',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:13px;font-weight:700;color:#fff;white-space:nowrap;}
+    .compare-go{background:var(--or);color:#fff;border:none;border-radius:var(--r8);padding:10px 20px;font-size:13px;font-weight:700;font-family:'Inter',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;cursor:pointer;}
     .compare-go:hover{background:var(--or-l);}
     .compare-go:disabled{opacity:.4;cursor:not-allowed;}
-    .compare-clr{background:transparent;color:rgba(255,255,255,0.4);border:1px solid rgba(255,255,255,0.1);border-radius:var(--r8);padding:10px 14px;font-size:12px;font-family:'DM Sans',sans-serif;cursor:pointer;}
+    .compare-clr{background:transparent;color:rgba(255,255,255,0.4);border:1px solid rgba(255,255,255,0.1);border-radius:var(--r8);padding:10px 14px;font-size:12px;font-family:'Inter',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;cursor:pointer;}
     .compare-clr:hover{color:#fff;}
 
     /* ── COMPARE MODAL ── */
@@ -187,7 +187,7 @@
     .compare-modal.open{display:block;}
     .compare-modal-inner{max-width:1100px;margin:0 auto;background:#0f0f0f;border-radius:20px;overflow:hidden;border:1px solid rgba(255,255,255,0.08);}
     .compare-modal-header{background:#111;padding:22px 26px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid rgba(255,255,255,0.06);}
-    .compare-modal-title{font-family:'Syne',sans-serif;font-size:18px;font-weight:800;color:#fff;}
+    .compare-modal-title{font-family:'Inter',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:18px;font-weight:800;color:#fff;}
     .compare-modal-close{background:rgba(255,255,255,0.08);border:none;color:#fff;width:34px;height:34px;border-radius:50%;cursor:pointer;font-size:17px;}
     .compare-modal-body{padding:24px;}
     .compare-oglasi-grid{display:grid;gap:14px;margin-bottom:24px;}
@@ -197,16 +197,16 @@
     .compare-oglas-body{padding:12px;}
     .compare-oglas-platforma{font-size:10px;font-weight:700;padding:2px 8px;border-radius:var(--rpill);display:inline-block;margin-bottom:5px;}
     .compare-oglas-naziv{font-size:12px;font-weight:500;color:#aaa;margin-bottom:5px;line-height:1.4;}
-    .compare-oglas-cijena{font-family:'Syne',sans-serif;font-size:18px;font-weight:800;color:var(--or);}
-    .compare-oglas-rank{margin-top:7px;padding:7px;background:rgba(230,92,0,0.08);border-radius:7px;font-size:11px;color:#aaa;border:1px solid rgba(230,92,0,0.15);}
+    .compare-oglas-cijena{font-family:'Inter',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:18px;font-weight:800;color:var(--or);}
+    .compare-oglas-rank{margin-top:7px;padding:7px;background:rgba(132,204,22,0.08);border-radius:7px;font-size:11px;color:#aaa;border:1px solid rgba(132,204,22,0.15);}
     .rank-1{background:rgba(34,197,94,0.08);border-color:rgba(34,197,94,0.2);}
     .rank-1 .rank-label{color:#22c55e;}
-    .rank-label{font-family:'Syne',sans-serif;font-size:12px;font-weight:700;color:var(--or);}
-    .compare-ai-box{background:#0a0a0a;border:1px solid rgba(230,92,0,0.2);border-radius:14px;padding:20px;margin-bottom:18px;}
+    .rank-label{font-family:'Inter',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:12px;font-weight:700;color:var(--or);}
+    .compare-ai-box{background:#0a0a0a;border:1px solid rgba(132,204,22,0.2);border-radius:14px;padding:20px;margin-bottom:18px;}
     .compare-ai-header{display:flex;align-items:center;gap:8px;margin-bottom:14px;}
     .compare-ai-dot{width:7px;height:7px;border-radius:50%;background:var(--or);animation:pulse2 2s infinite;}
     @keyframes pulse2{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(.8)}}
-    .compare-ai-title{font-family:'Syne',sans-serif;font-size:15px;font-weight:700;color:#fff;}
+    .compare-ai-title{font-family:'Inter',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:15px;font-weight:700;color:#fff;}
     .compare-ai-subtitle{font-size:11px;color:#555;margin-left:auto;}
     .compare-ai-tekst{font-size:13px;color:#bbb;line-height:1.85;}
     .compare-ai-loading{display:flex;align-items:center;gap:10px;color:#555;font-size:13px;}
@@ -217,7 +217,7 @@
     .score-item-naziv{font-size:11px;color:#888;width:190px;flex-shrink:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
     .score-bar-bg{flex:1;height:7px;background:rgba(255,255,255,0.06);border-radius:4px;overflow:hidden;}
     .score-bar-fill{height:7px;border-radius:4px;transition:width 1s ease;}
-    .score-val{font-family:'Syne',sans-serif;font-size:12px;font-weight:700;width:36px;text-align:right;flex-shrink:0;}
+    .score-val{font-family:'Inter',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:12px;font-weight:700;width:36px;text-align:right;flex-shrink:0;}
     .verdict-box{background:linear-gradient(135deg,rgba(34,197,94,0.08),rgba(34,197,94,0.03));border:1px solid rgba(34,197,94,0.2);border-radius:10px;padding:14px;margin-top:14px;}
     .verdict-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#22c55e;margin-bottom:5px;}
     .verdict-text{font-size:13px;color:#ddd;line-height:1.6;}
@@ -227,14 +227,14 @@
     .mob-meni.open{display:flex;}
     .mob-meni-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:28px;}
     .mob-meni-close{font-size:22px;cursor:pointer;background:none;border:none;color:var(--t);}
-    .mob-meni a{font-size:18px;font-weight:600;color:var(--t);padding:13px 0;border-bottom:1px solid var(--b);font-family:'Syne',sans-serif;display:block;}
-    .mob-filter-btn{display:none;position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--or);color:#fff;border:none;border-radius:var(--rpill);padding:13px 26px;font-size:14px;font-weight:600;font-family:'DM Sans',sans-serif;cursor:pointer;box-shadow:0 4px 20px rgba(230,92,0,0.4);z-index:99;}
+    .mob-meni a{font-size:18px;font-weight:600;color:var(--t);padding:13px 0;border-bottom:1px solid var(--b);font-family:'Inter',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;display:block;}
+    .mob-filter-btn{display:none;position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--or);color:#fff;border:none;border-radius:var(--rpill);padding:13px 26px;font-size:14px;font-weight:600;font-family:'Inter',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;cursor:pointer;box-shadow:0 4px 20px rgba(132,204,22,0.4);z-index:99;}
     .mob-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:149;}
     .mob-overlay.open{display:block;}
 
     /* ── FOOTER ── */
     footer{margin-top:48px;border-top:1px solid var(--b);background:var(--s);padding:28px;text-align:center;font-size:12px;color:var(--tf);}
-    .footer-logo{font-family:'Syne',sans-serif;font-size:17px;font-weight:700;color:var(--t);margin-bottom:7px;}
+    .footer-logo{font-family:'Inter',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:17px;font-weight:700;color:var(--t);margin-bottom:7px;}
     .footer-logo em{color:var(--or);font-style:normal;}
 
     /* ── RESPONSIVE ── */
@@ -255,8 +255,216 @@
       .hamburger{display:flex;}
       .nav-search{display:none;}
     }
+
+    /* OGLIX 2026 REDESIGN OVERRIDES */
+    :root{
+      --ink:#171512;--muted:#6f6a61;--faint:#a9a195;--line:#e7e0d7;
+      --paper:#fbfaf7;--panel:#ffffff;--panel2:#f2ede6;--orange:#84cc16;
+      --green:#16803a;--green-soft:#e9f5eb;--red:#c9342c;--red-soft:#fff0ee;
+      --blue:#2563eb;--blue-soft:#edf3ff;--gold:#a86307;--gold-soft:#fff5df;
+      --shadow:0 20px 55px rgba(42,31,18,.08);
+    }
+    body{background:var(--paper);color:var(--ink);}
+    .nav-top{height:68px;padding:0 34px;background:rgba(255,255,255,.9);backdrop-filter:blur(18px);border-bottom:1px solid var(--line);}
+    .logo{font-size:24px;letter-spacing:-.03em;}
+    .nav-link{color:var(--muted);font-weight:600;border-radius:10px;padding:8px 12px;}
+    .nav-link:hover,.nav-link.active{background:#f4eee7;color:var(--ink);}
+    .nav-link.active{color:var(--or);}
+    .nav-btn,.nav-search-btn,.apply-btn{background:var(--orange);box-shadow:0 10px 24px rgba(132,204,22,.22);}
+    .nav-ghost{background:#fff;border-color:var(--line);color:var(--muted);}
+
+    .search-zone{padding:28px 28px 24px;background:linear-gradient(180deg,#fff 0%,#fbfaf7 100%);border-bottom:1px solid var(--line);}
+    .search-zone-inner{max-width:1160px;}
+    .search-kicker{display:flex;gap:8px;align-items:center;color:var(--orange);font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.09em;margin-bottom:12px;}
+    .search-kicker::before{content:"";width:7px;height:7px;background:var(--orange);border-radius:50%;}
+    .search-title{font-family:'Inter',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:42px;line-height:1.03;letter-spacing:-.04em;margin-bottom:10px;max-width:720px;}
+    .search-sub{color:var(--muted);font-size:15px;max-width:640px;margin-bottom:20px;}
+    .nav-search{height:62px;border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow);background:#fff;}
+    .nav-search input{font-size:16px;}
+    .ai-btn{height:44px;margin-right:8px;border-radius:12px;background:#15120f;font-weight:700;}
+    .nav-search-btn{height:44px;margin-right:8px;border-radius:12px;padding:0 22px;}
+    .quick-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px;}
+    .quick-pill{border:1px solid var(--line);background:#fff;border-radius:999px;padding:7px 12px;color:var(--muted);font-size:12px;font-weight:700;cursor:pointer;}
+    .quick-pill:hover{border-color:var(--orange);color:var(--orange);}
+
+    .cat-bar{background:rgba(251,250,247,.88);backdrop-filter:blur(14px);border-bottom:1px solid var(--line);}
+    .cat-bar-inner{max-width:1180px;margin:0 auto;justify-content:flex-start;}
+    .cat-item{padding:13px 18px;font-weight:700;color:var(--muted);}
+    .cat-icon{display:none;}
+    .cat-item.active{color:var(--orange);border-bottom-color:var(--orange);}
+
+    .page{max-width:1240px;grid-template-columns:260px minmax(0,1fr) 310px;gap:18px;padding:22px 20px;align-items:start;}
+    .sidebar,.radar-panel,.list-card,.grid-card,.ai-box{background:var(--panel);border:1px solid var(--line);box-shadow:0 12px 34px rgba(41,31,20,.04);}
+    .sidebar{border-radius:18px;top:154px;max-height:calc(100vh - 170px);}
+    .side-head,.side-sec{border-color:var(--line);}
+    .side-head-title{font-size:16px;}
+    .side-label{color:var(--faint);letter-spacing:.1em;}
+    .side-input,.side-select{background:#fbfaf7;border-color:var(--line);border-radius:12px;}
+    .chip{border-color:var(--line);background:#fff;color:var(--muted);font-weight:700;}
+    .chip.on{background:#15120f;border-color:#15120f;color:#fff;}
+
+    .results-bar{background:transparent;margin-bottom:14px;}
+    .results-count{font-size:14px;color:var(--muted);}
+    .results-count strong{font-family:'Inter',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:20px;color:var(--ink);}
+    .sort-sel,.view-toggle{border-color:var(--line);background:#fff;border-radius:12px;}
+    .view-btn{height:34px;}
+
+    .grid-view{grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:14px;}
+    .grid-card,.list-card{border-radius:18px;overflow:hidden;transition:transform .16s,border-color .16s,box-shadow .16s;}
+    .grid-card:hover,.list-card:hover{transform:translateY(-2px);border-color:rgba(132,204,22,.35);box-shadow:0 20px 45px rgba(41,31,20,.1);}
+    .grid-card-img{aspect-ratio:16/10;background:#eee8df;}
+    .grid-card-body{padding:13px;}
+    .grid-card-title{font-size:14px;font-weight:800;line-height:1.35;min-height:38px;color:var(--ink);}
+    .grid-card-price{font-size:20px;color:var(--orange);margin-top:6px;}
+    .grid-card-meta{font-size:11px;color:var(--faint);margin-top:6px;}
+    .list-card-img{width:220px;min-width:220px;height:165px;background:#eee8df;}
+    .list-card-title{font-size:17px;font-weight:800;}
+    .list-card-price{font-size:22px;color:var(--orange);}
+    .plat-badge{font-size:10px;border-radius:999px;padding:3px 8px;}
+    .score-tag,.deal-chip{font-size:10px;font-weight:800;padding:4px 8px;border-radius:999px;white-space:nowrap;}
+    .st-g{background:var(--green-soft);color:var(--green);}
+    .st-w{background:var(--gold-soft);color:var(--gold);}
+    .st-b{background:var(--red-soft);color:var(--red);}
+    .deal-row{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin:10px 0 2px;}
+    .deal-metric{background:#fbfaf7;border:1px solid var(--line);border-radius:12px;padding:8px;}
+    .deal-label{font-size:9px;text-transform:uppercase;letter-spacing:.08em;color:var(--faint);font-weight:800;}
+    .deal-value{font-size:12px;font-weight:900;color:var(--ink);margin-top:2px;}
+    .score-orb{position:absolute;top:10px;right:10px;width:54px;height:54px;border-radius:50%;background:rgba(255,255,255,.94);border:3px solid var(--green);display:flex;flex-direction:column;align-items:center;justify-content:center;box-shadow:0 10px 24px rgba(0,0,0,.12);}
+    .score-orb strong{font-family:'Inter',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:15px;line-height:1;color:var(--green);}
+    .score-orb span{font-size:8px;text-transform:uppercase;color:var(--faint);font-weight:900;}
+    .grid-compare-btn{opacity:1;background:#15120f;border-radius:999px;padding:6px 10px;top:auto;right:10px;bottom:10px;}
+    .list-card-compare{border-radius:999px;font-weight:800;}
+
+    .radar-panel{position:sticky;top:154px;border-radius:18px;padding:16px;max-height:none;overflow:visible;}
+    .radar-title{font-family:'Inter',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:18px;font-weight:800;margin-bottom:4px;}
+    .radar-sub{font-size:12px;color:var(--muted);margin-bottom:14px;}
+    .radar-stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;}
+    .radar-stat{background:#fbfaf7;border:1px solid var(--line);border-radius:14px;padding:11px;}
+    .radar-stat strong{font-family:'Inter',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:20px;display:block;}
+    .radar-stat span{font-size:10px;color:var(--faint);font-weight:800;text-transform:uppercase;letter-spacing:.07em;}
+    .radar-card{border:1px solid var(--line);border-radius:16px;padding:14px;margin-top:10px;background:#fff;}
+    .radar-card.dark{background:#15120f;color:#fff;border-color:#15120f;}
+    .radar-card-title{font-size:12px;font-weight:900;text-transform:uppercase;letter-spacing:.07em;color:var(--orange);margin-bottom:8px;}
+    .radar-card.dark .radar-card-title{color:#ff9b55;}
+    .mini-chart{height:66px;display:flex;align-items:end;gap:6px;margin-top:8px;}
+    .mini-chart span{flex:1;border-radius:8px 8px 0 0;background:linear-gradient(180deg,#bef264,#84cc16);min-height:14px;}
+    .radar-alert{display:flex;justify-content:space-between;gap:8px;padding:9px 0;border-top:1px solid var(--line);font-size:12px;}
+    .radar-alert:first-child{border-top:0;}
+    .radar-alert b{color:var(--ink);}
+    .radar-alert em{font-style:normal;color:var(--green);font-weight:900;}
+
+    @media(max-width:1100px){
+      .page{grid-template-columns:240px minmax(0,1fr);}
+      .radar-panel{display:none;}
+    }
+    @media(max-width:900px){
+      .search-title{font-size:31px;}
+      .page{grid-template-columns:1fr;padding:14px;}
+      .sidebar{top:0;}
+      .cat-bar-inner{padding:0 12px;}
+    }
+    @media(max-width:620px){
+      .nav-top{padding:0 14px;height:58px;}
+      .search-zone{padding:20px 14px;}
+      .nav-search{display:flex;height:auto;flex-wrap:wrap;padding:8px;}
+      .nav-search input{min-width:100%;height:38px;padding-left:8px;}
+      .nav-search svg{display:none;}
+      .ai-btn,.nav-search-btn{flex:1;margin:0;height:42px;justify-content:center;}
+      .grid-view{grid-template-columns:1fr;}
+      .search-title{font-size:28px;}
+      .compare-bar{padding:10px;gap:8px;}
+    }
+
+    /* GRAPHITE LIME THEME */
+    :root{
+      --or:#84cc16;--or-l:#a3e635;--or-dim:#f0f9dc;
+      --ink:#111827;--muted:#5f6875;--faint:#9aa3ad;--line:#e3e7dc;
+      --paper:#f5f6f3;--panel:#ffffff;--panel2:#eef2e8;--orange:#84cc16;
+      --green:#4d7c0f;--green-soft:#eef8dc;--red:#dc2626;--red-soft:#fff1f2;
+      --blue:#06b6d4;--blue-soft:#ecfeff;--gold:#ca8a04;--gold-soft:#fef9c3;
+      --graphite:#111827;--lime:#84cc16;--lime-soft:#ecfccb;--cyan:#06b6d4;
+      --shadow:0 20px 55px rgba(17,24,39,.08);
+    }
+    body{background:var(--paper);}
+    .logo em,.footer-logo em{color:var(--lime);}
+    .nav-link:hover,.nav-link.active{background:#eef2e8;color:var(--graphite);}
+    .nav-link.active{color:var(--graphite);}
+    .nav-link[style]{color:var(--graphite)!important;}
+    .nav-btn,.nav-search-btn,.apply-btn{background:var(--graphite);color:#fff;box-shadow:0 12px 26px rgba(17,24,39,.16);}
+    .nav-btn:hover,.nav-search-btn:hover,.apply-btn:hover{background:#263244;}
+    .ai-btn{background:var(--graphite);}
+    .ai-pulse,.search-kicker::before{background:var(--lime);}
+    .search-kicker{color:var(--green);}
+    .quick-pill:hover{border-color:var(--lime);color:var(--green);background:var(--lime-soft);}
+    .cat-item.active{color:var(--graphite);border-bottom-color:var(--lime);}
+    .side-reset{color:var(--green);}
+    .check-row input[type=checkbox]{accent-color:var(--lime);}
+    .side-input:focus,.side-select:focus{border-color:var(--lime);}
+    .chip:hover{border-color:var(--lime);color:var(--green);}
+    .chip.on{background:var(--graphite);border-color:var(--graphite);color:#fff;}
+    .grid-card-price,.list-card-price{color:var(--graphite);}
+    .grid-card:hover,.list-card:hover{border-color:rgba(132,204,22,.55);box-shadow:0 20px 45px rgba(17,24,39,.1);}
+    .score-orb{border-color:var(--lime);background:rgba(255,255,255,.95);}
+    .score-orb strong{color:var(--green);}
+    .st-g{background:var(--lime-soft);color:var(--green);}
+    .st-w{background:var(--gold-soft);color:var(--gold);}
+    .badge-novo{background:var(--lime);color:var(--graphite);}
+    .grid-compare-btn,.ai-btn{background:var(--graphite);color:#fff;}
+    .grid-compare-btn.added,.list-card-compare.added,.compare-go{background:var(--lime);border-color:var(--lime);color:var(--graphite);}
+    .list-card-compare:hover{border-color:var(--lime);color:var(--green);}
+    .radar-card.dark{background:linear-gradient(135deg,#f3fce4,#ecfeff);color:var(--graphite);border-color:#d9efb8;}
+    .radar-card.dark .radar-card-title,.radar-card-title{color:var(--green);}
+    .radar-card.dark div[style*="color:#b8afa6"]{color:var(--muted)!important;}
+    .mini-chart span{background:linear-gradient(180deg,#bef264,#65a30d);}
+    .radar-alert em{color:var(--green);}
+    .mob-filter-btn{background:var(--graphite);box-shadow:0 4px 20px rgba(17,24,39,.24);}
+    body,button,input,select,textarea,a,span,div,p,h1,h2,h3,strong,small,label{font-family:'Inter',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif!important;}
+    .logo,.search-title,.side-head-title,.results-count strong,.grid-card-price,.list-card-price,
+    .deal-value,.score-orb strong,.radar-title,.radar-stat strong,.compare-count,
+    .compare-modal-title,.compare-oglas-cijena,.rank-label,.compare-ai-title,
+    .footer-logo{font-family:'Inter',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif!important;letter-spacing:-.03em;}
+    .search-title{font-weight:800;}
+    .grid-card-price,.list-card-price,.radar-stat strong{font-weight:900;}
   </style>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebSite","name":"Oglix.ba","url":"https://oglix.ba","potentialAction":{"@type":"SearchAction","target":"https://oglix.ba/oglasi.html?q={search_term_string}","query-input":"required name=search_term_string"}}</script>
+<style id="oglix-graphite-lime-theme">
+:root{
+  --orange:#84cc16!important;--orange-light:#a3e635!important;--orange-dim:#ecfccb!important;
+  --or:#84cc16!important;--or-l:#a3e635!important;--or-dim:#ecfccb!important;
+  --bg:#f5f6f3!important;--surface:#fff!important;--s:#fff!important;--border:#e3e7dc!important;
+  --text:#111827!important;--text-muted:#5f6875!important;--text-faint:#9aa3ad!important;
+  --t:#111827!important;--tm:#5f6875!important;--tf:#9aa3ad!important;
+  --green:#4d7c0f!important;--green-bg:#ecfccb!important;--green-dim:rgba(132,204,22,.14)!important;
+  --blue:#06b6d4!important;--blue-bg:#ecfeff!important;--blue-dim:rgba(6,182,212,.12)!important;
+  --gold:#ca8a04!important;--gold-dim:#fef9c3!important;--dark:#111827!important;
+  --graphite:#111827;--lime:#84cc16;--lime-soft:#ecfccb;--cyan:#06b6d4;
+}
+*,*::before,*::after{font-family:'Inter',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif!important;}
+body{background:#f5f6f3!important;color:#111827!important;letter-spacing:0!important;}
+.logo span,.logo em,.footer-logo span,.footer-logo em,.sidebar-logo span{color:#84cc16!important;}
+nav{background:rgba(255,255,255,.92)!important;border-color:#e3e7dc!important;backdrop-filter:blur(16px);}
+a{color:inherit;}
+.nav-btn,.btn-primary,.btn-orange,.btn-hero.btn-orange,.submit,.forma-submit,.save-btn,.lock-btn,.plan-btn-orange,.apply-btn,.nav-search-btn,.btn-primarni{background:#111827!important;color:#fff!important;border-color:#111827!important;box-shadow:0 12px 26px rgba(17,24,39,.14)!important;}
+.nav-btn:hover,.btn-primary:hover,.btn-orange:hover,.submit:hover,.forma-submit:hover,.save-btn:hover,.lock-btn:hover,.plan-btn-orange:hover,.apply-btn:hover,.nav-search-btn:hover,.btn-primarni:hover{background:#263244!important;color:#fff!important;}
+.btn-ghost,.btn-outline,.nav-ghost,.btn-sekundarni,.plan-btn-outline,.back-btn{background:#fff!important;color:#111827!important;border-color:#dfe5d7!important;}
+.btn-ghost:hover,.btn-outline:hover,.nav-ghost:hover,.btn-sekundarni:hover,.plan-btn-outline:hover,.back-btn:hover{border-color:#84cc16!important;color:#4d7c0f!important;}
+.hero,.problemi,.cijene,.features-section{background:linear-gradient(180deg,#ffffff 0%,#f5f6f3 100%)!important;color:#111827!important;}
+.hero-grid,.hero-glow,.hero-bg{opacity:.35!important;}
+.hero h1,.hero h1 em,.hero p,.section-title,.problem-naslov,.plan-cijena,.footer-logo,.forma-title{color:#111827!important;}
+.hero h1 em{color:#4d7c0f!important;}
+.hero-badge,.section-kicker,.feature-tag,.logo-biznis,.logo-tag,.card-badge.badge-orange,.badge-upgrade{color:#4d7c0f!important;background:#ecfccb!important;border-color:#d9f99d!important;}
+.hero-badge-dot,.pulse,.ai-dot,.ai-box-dot{background:#84cc16!important;}
+.feature-card,.test-card,.plan,.card,.profil-hero,.postavke-card,.nova-forma,.stat-card,.chart-card,.full-card,.kal-card,.tip-card,.alert-box,.content,.forma-kartica{background:#fff!important;border-color:#e3e7dc!important;box-shadow:0 16px 42px rgba(17,24,39,.06)!important;}
+.feature-card:hover,.plan.popular,.card:hover,.oglas-mini:hover,.slicni-kartica:hover{border-color:rgba(132,204,22,.55)!important;}
+.feature-ikona,.test-avatar,.alert-ikona,.avatar,.user-avatar,.konk-avatar{background:#ecfccb!important;color:#4d7c0f!important;border-color:#d9f99d!important;}
+.tab.active,.nav-link.active,.cat-item.active{color:#111827!important;border-color:#84cc16!important;background:#eef2e8!important;}
+input:focus,select:focus,textarea:focus{border-color:#84cc16!important;box-shadow:0 0 0 3px rgba(132,204,22,.12)!important;}
+.ai-box,.ai-poredi-box,.compare-ai-box,.ai-intel-box{background:#111827!important;border-color:#263244!important;}
+.ai-box-title,.ai-poredi-title,.ai-intel-title{color:#a3e635!important;}
+footer{background:#111827!important;color:#cbd5e1!important;}
+footer .footer-logo,footer .footer-logo span{color:#fff!important;}
+::selection{background:#d9f99d;color:#111827;}
+</style>
 </head>
 <body>
 
@@ -346,14 +554,23 @@
 <!-- SEARCH ZONE -->
 <div class="search-zone">
   <div class="search-zone-inner">
+    <div class="search-kicker">AI marketplace radar za BiH</div>
+    <h1 class="search-title">Nađi oglas koji se stvarno isplati</h1>
+    <p class="search-sub">Oglix poredi cijene, prati sniženja i pokazuje gdje ima prostora za pregovaranje prije nego što otvoriš oglas.</p>
     <div class="nav-search">
       <svg width="18" height="18" viewBox="0 0 16 16" fill="none"><circle cx="7" cy="7" r="4.5" stroke="currentColor" stroke-width="1.4"/><line x1="10.5" y1="10.5" x2="14" y2="14" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
-      <input id="searchInput" type="text" placeholder="Pretraži oglase — Golf 7, iPhone, stan Sarajevo...">
-      <button class="ai-btn" onclick="aiAnaliza()"><div class="ai-pulse"></div>AI Analiza</button>
+      <input id="searchInput" type="text" placeholder="Golf 7 dizel do 15.000 KM, Sarajevo">
+      <button class="ai-btn" onclick="aiPretraga()"><div class="ai-pulse"></div>AI Pretraga</button>
       <button class="nav-search-btn" onclick="pretrazi()">
         <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="7" cy="7" r="4.5" stroke="white" stroke-width="1.5"/><line x1="10.5" y1="10.5" x2="14" y2="14" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg>
         Traži
       </button>
+    </div>
+    <div class="quick-row">
+      <button class="quick-pill" onclick="quickSearch('Golf 7')">Golf 7 do 15k</button>
+      <button class="quick-pill" onclick="quickSearch('BMW 320')">BMW 320d automatik</button>
+      <button class="quick-pill" onclick="quickSearch('iPhone 15 Pro')">iPhone 15 Pro</button>
+      <button class="quick-pill" onclick="quickSearch('stan Sarajevo')">Stan Sarajevo</button>
     </div>
   </div>
 </div>
@@ -401,7 +618,7 @@
     <div class="side-sec">
       <div class="side-label">Izvor</div>
       <label class="check-row"><input type="checkbox" id="filterOlx" checked onchange="primijeniFiltre()"><span class="src-dot" style="background:#43a047;"></span>OLX.ba</label>
-      <label class="check-row"><input type="checkbox" id="filterAutobum" checked onchange="primijeniFiltre()"><span class="src-dot" style="background:#e65c00;"></span>Autobum.ba</label>
+      <label class="check-row"><input type="checkbox" id="filterAutobum" checked onchange="primijeniFiltre()"><span class="src-dot" style="background:#84cc16;"></span>Autobum.ba</label>
       <label class="check-row"><input type="checkbox" id="filterFacebook" onchange="primijeniFiltre()"><span class="src-dot" style="background:#1565c0;"></span>Facebook</label>
       <label class="check-row" style="opacity:.4;"><input type="checkbox" disabled><span class="src-dot" style="background:#f57c00;"></span>Njuškalo<span class="src-soon">Uskoro</span></label>
       <label class="check-row" style="opacity:.4;"><input type="checkbox" disabled><span class="src-dot" style="background:#8e24aa;"></span>Halooglasi<span class="src-soon">Uskoro</span></label>
@@ -510,6 +727,33 @@
     <div id="oglasiContainer"></div>
     <div class="load-more"><button class="load-btn" onclick="ucitajJos()">Učitaj još oglasa</button></div>
   </div>
+
+  <aside class="radar-panel">
+    <div class="radar-title">Market Radar</div>
+    <div class="radar-sub">Brzi signali iz Oglix baze za odluku, cijenu i pregovaranje.</div>
+    <div class="radar-stat-grid">
+      <div class="radar-stat"><strong id="radarTotal">--</strong><span>oglasa</span></div>
+      <div class="radar-stat"><strong id="radarDeals">24</strong><span>top prilike</span></div>
+      <div class="radar-stat"><strong>4.8k</strong><span>sniženja</span></div>
+      <div class="radar-stat"><strong>3</strong><span>izvora</span></div>
+    </div>
+    <div class="radar-card dark">
+      <div class="radar-card-title">Preporuka danas</div>
+      <div style="font-size:22px;font-weight:800;line-height:1.1;">Kupi sada ako je score 85+</div>
+      <div style="font-size:12px;color:#b8afa6;margin-top:8px;">Oglasi ispod tržišta nestaju najbrže u prva 24 sata.</div>
+    </div>
+    <div class="radar-card">
+      <div class="radar-card-title">Trend cijena</div>
+      <div style="font-size:13px;color:var(--muted);">Vozila srednje klase zadnjih 7 dana</div>
+      <div class="mini-chart"><span style="height:38%"></span><span style="height:52%"></span><span style="height:42%"></span><span style="height:64%"></span><span style="height:56%"></span><span style="height:76%"></span><span style="height:68%"></span></div>
+    </div>
+    <div class="radar-card">
+      <div class="radar-card-title">Pametni alerti</div>
+      <div class="radar-alert"><b>Golf 7 dizel</b><em>+12 novih</em></div>
+      <div class="radar-alert"><b>BMW 320d</b><em>3 sniženja</em></div>
+      <div class="radar-alert"><b>iPhone 15 Pro</b><em>ispod prosjeka</em></div>
+    </div>
+  </aside>
 </div>
 
 <footer>
@@ -529,6 +773,10 @@ var ukupnoOglasa = 0;
 var aktivniSort = 'novo';
 var compareOglasi = [];
 var aktivniView = 'grid';
+
+function formatBroj(n) {
+  return (parseInt(n) || 0).toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+}
 
 var podkategorije = {
   vozila:[{kat:'vozila-volkswagen',naziv:'Volkswagen'},{kat:'vozila-mercedes',naziv:'Mercedes'},{kat:'vozila-bmw',naziv:'BMW'},{kat:'vozila-audi',naziv:'Audi'},{kat:'vozila-opel',naziv:'Opel'},{kat:'vozila-peugeot',naziv:'Peugeot'},{kat:'vozila-renault',naziv:'Renault'},{kat:'vozila-skoda',naziv:'Škoda'},{kat:'vozila-ford',naziv:'Ford'},{kat:'vozila-citroen',naziv:'Citroën'},{kat:'vozila-toyota',naziv:'Toyota'},{kat:'vozila-hyundai',naziv:'Hyundai'},{kat:'vozila-kia',naziv:'Kia'},{kat:'vozila-seat',naziv:'Seat'},{kat:'vozila-fiat',naziv:'Fiat'},{kat:'vozila-honda',naziv:'Honda'},{kat:'vozila-mazda',naziv:'Mazda'},{kat:'vozila-nissan',naziv:'Nissan'},{kat:'vozila-suzuki',naziv:'Suzuki'},{kat:'vozila-volvo',naziv:'Volvo'},{kat:'vozila-landrover',naziv:'Land Rover'},{kat:'vozila-porsche',naziv:'Porsche'},{kat:'vozila-jeep',naziv:'Jeep'},{kat:'vozila-mitsubishi',naziv:'Mitsubishi'},{kat:'vozila-dacia',naziv:'Dacia'},{kat:'vozila-alfaromeo',naziv:'Alfa Romeo'},{kat:'vozila-mini',naziv:'Mini'},{kat:'vozila-chevrolet',naziv:'Chevrolet'}],
@@ -585,7 +833,13 @@ function mapOglas(o) {
   var datumObjekta = new Date(o.datum);
   var sada = new Date();
   var jeNov = (sada - datumObjekta) < 24 * 60 * 60 * 1000;
-  return { id: o.id, naslov: o.naslov, cijena: cijena, cijenaStr: o.cijena, lokacija: 'BiH', platforma: o.platforma || 'olx', slika: o.slika, link: o.link, datum: datumObjekta.toLocaleDateString('bs-BA'), score: 75, aiTag: 'good', aiLabel: 'Live oglas', kategorija: o.kategorija || 'ostalo', jeNov: jeNov, cijenaPala: !!o.cijena_pala, cijenaStara: o.cijena_stara };
+  var score = 72;
+  if (jeNov) score += 7;
+  if (o.cijena_pala) score += 10;
+  if ((o.platforma || '') === 'olx') score += 3;
+  if (cijena > 0 && cijena < 20000) score += 4;
+  score = Math.max(48, Math.min(96, score));
+  return { id: o.id, naslov: o.naslov, cijena: cijena, cijenaStr: o.cijena, lokacija: o.grad || 'BiH', platforma: o.platforma || 'olx', slika: o.slika, link: o.link, datum: datumObjekta.toLocaleDateString('bs-BA'), score: score, aiTag: 'good', aiLabel: 'Live oglas', kategorija: o.kategorija || 'ostalo', jeNov: jeNov, cijenaPala: !!o.cijena_pala, cijenaStara: o.cijena_stara };
 }
 
 function updateNavbar() {
@@ -602,11 +856,22 @@ function renderCard(o) {
   var oglasStranica = '/oglas.html?data=' + metaData;
   var platNaziv = o.platforma === 'facebook' ? 'FACEBOOK' : o.platforma === 'autobum' ? 'AUTOBUM' : 'OLX';
   var pbClass = o.platforma === 'facebook' ? 'pb-facebook' : o.platforma === 'autobum' ? 'pb-autobum' : 'pb-olx';
-  var scoreTag = o.score >= 75 ? '<span class="score-tag st-g">Dobra cijena</span>' : o.score >= 50 ? '<span class="score-tag st-w">Provjeri cijenu</span>' : '<span class="score-tag st-b">Visoka cijena</span>';
+  var scoreTag = o.score >= 84 ? '<span class="score-tag st-g">Top prilika</span>' : o.score >= 70 ? '<span class="score-tag st-g">Dobra cijena</span>' : o.score >= 55 ? '<span class="score-tag st-w">Provjeri cijenu</span>' : '<span class="score-tag st-b">Visoka cijena</span>';
   var isAdded = compareOglasi.some(function(c) { return c.id === o.id; });
   var compareDataStr = JSON.stringify(o).replace(/&/g, '&amp;').replace(/"/g, '&quot;');
   var imgHtml = o.slika ? '<img src="' + o.slika + '" alt="" loading="lazy" onerror="this.style.display=\'none\'">' : '';
-  var imgPh = o.slika ? '' : (aktivniView === 'list' ? '<div class="list-card-img-ph">&#x1F4F7;</div>' : '<div class="grid-card-img-ph">&#x1F4F7;</div>');
+  var imgPh = o.slika ? '' : (aktivniView === 'list' ? '<div class="list-card-img-ph">Foto</div>' : '<div class="grid-card-img-ph">Foto</div>');
+  var scoreOrb = '<div class="score-orb"><strong>' + o.score + '</strong><span>Score</span></div>';
+  var preg = o.cijena > 0 ? Math.max(50, Math.round(o.cijena * (o.score >= 84 ? 0.06 : 0.035) / 50) * 50) : 0;
+  var pregText = preg ? '-' + preg.toLocaleString('bs-BA') + ' KM' : 'Procjena';
+  var trzisteText = o.score >= 84 ? 'ispod tržišta' : o.score >= 70 ? 'fer cijena' : 'provjeri';
+  var rizikText = o.score >= 60 ? 'nizak' : 'srednji';
+  var dealMetrics = '<div class="deal-row">' +
+    '<div class="deal-metric"><div class="deal-label">Tržište</div><div class="deal-value">' + trzisteText + '</div></div>' +
+    '<div class="deal-metric"><div class="deal-label">Pregovaranje</div><div class="deal-value">' + pregText + '</div></div>' +
+    '<div class="deal-metric"><div class="deal-label">Rizik</div><div class="deal-value">' + rizikText + '</div></div>' +
+    '<div class="deal-metric"><div class="deal-label">Izvor</div><div class="deal-value">' + platNaziv + '</div></div>' +
+  '</div>';
   var badgeHtml = '';
   if (o.jeNov) badgeHtml = '<span class="badge-novo">NOVO</span>';
   else if (o.cijenaPala && o.cijenaStara) {
@@ -616,29 +881,31 @@ function renderCard(o) {
 
   if (aktivniView === 'list') {
     return '<a href="' + oglasStranica + '" target="_blank" class="list-card">' +
-      '<div class="list-card-img">' + badgeHtml + imgHtml + imgPh + '</div>' +
+      '<div class="list-card-img">' + badgeHtml + scoreOrb + imgHtml + imgPh + '</div>' +
       '<div class="list-card-body">' +
         '<div class="list-card-top">' +
           '<div class="list-card-title">' + o.naslov + '</div>' +
           '<div class="list-card-price">' + o.cijenaStr + '</div>' +
         '</div>' +
-        '<div class="list-card-meta">&#x1F4CD; ' + o.lokacija + ' &bull; ' + o.datum + '</div>' +
+        '<div class="list-card-meta">' + o.lokacija + ' &bull; ' + o.datum + '</div>' +
+        dealMetrics +
         '<div class="list-card-footer">' +
           '<div class="list-card-badges"><span class="plat-badge ' + pbClass + '">' + platNaziv + '</span>' + scoreTag + '</div>' +
-          '<button class="list-card-compare' + (isAdded ? ' added' : '') + '" onclick="toggleCompare(event,' + compareDataStr + ')">' + (isAdded ? '&#x2713; Dodano' : '+ Usporedi') + '</button>' +
+          '<button class="list-card-compare' + (isAdded ? ' added' : '') + '" onclick="toggleCompare(event,' + compareDataStr + ')">' + (isAdded ? 'Dodano' : 'Usporedi') + '</button>' +
         '</div>' +
       '</div>' +
     '</a>';
   } else {
     return '<a href="' + oglasStranica + '" target="_blank" class="grid-card">' +
-      '<div class="grid-card-img">' + badgeHtml + imgHtml + imgPh +
-        '<button class="grid-compare-btn' + (isAdded ? ' added' : '') + '" onclick="toggleCompare(event,' + compareDataStr + ')">' + (isAdded ? '&#x2713;' : '+ Usporedi') + '</button>' +
+      '<div class="grid-card-img">' + badgeHtml + scoreOrb + imgHtml + imgPh +
+        '<button class="grid-compare-btn' + (isAdded ? ' added' : '') + '" onclick="toggleCompare(event,' + compareDataStr + ')">' + (isAdded ? 'Dodano' : 'Usporedi') + '</button>' +
       '</div>' +
       '<div class="grid-card-body">' +
         '<div class="grid-card-top"><span class="plat-badge ' + pbClass + '">' + platNaziv + '</span>' + scoreTag + '</div>' +
         '<div class="grid-card-title">' + o.naslov + '</div>' +
         '<div class="grid-card-price">' + o.cijenaStr + '</div>' +
-        '<div class="grid-card-meta">&#x1F4CD; ' + o.lokacija + ' &bull; ' + o.datum + '</div>' +
+        dealMetrics +
+        '<div class="grid-card-meta">' + o.lokacija + ' &bull; ' + o.datum + '</div>' +
       '</div>' +
     '</a>';
   }
@@ -648,7 +915,11 @@ function prikaziOglase(oglasi) {
   trenutnoFiltrirani = oglasi;
   var container = document.getElementById('oglasiContainer');
   var broj = document.getElementById('rezultatiBroj');
-  broj.textContent = ukupnoOglasa || oglasi.length;
+  broj.textContent = formatBroj(ukupnoOglasa || oglasi.length || 0);
+  var radarTotal = document.getElementById('radarTotal');
+  if (radarTotal) radarTotal.textContent = formatBroj(ukupnoOglasa || oglasi.length || 0);
+  var radarDeals = document.getElementById('radarDeals');
+  if (radarDeals) radarDeals.textContent = Math.max(0, oglasi.filter(function(o){ return o.score >= 84; }).length || 24);
   if (oglasi.length === 0) {
     container.innerHTML = '<div style="padding:48px;text-align:center;color:var(--tf);">Nema rezultata.<br><br><a href="https://www.olx.ba/pretraga?keywords=' + encodeURIComponent(document.getElementById('searchInput').value) + '" target="_blank" style="color:var(--or);">Pretraži na OLX.ba &#x2192;</a></div>';
     return;
@@ -738,6 +1009,60 @@ async function pretrazi() {
 
 function quickSearch(q) { document.getElementById('searchInput').value = q; pretrazi(); }
 function sortirajSelect(tip) { aktivniSort = tip; trenutnaStrana = 0; primijeniFiltre(); }
+
+async function aiPretraga() {
+  var input = document.getElementById('searchInput');
+  var upit = input.value.trim();
+  var box = document.getElementById('ai-analiza-box');
+  var tekst = document.getElementById('ai-analiza-tekst');
+  if (!upit) {
+    input.focus();
+    return;
+  }
+
+  box.style.display = 'block';
+  tekst.textContent = 'AI razumije upit i postavlja filtere...';
+
+  try {
+    var res = await fetch('/api/ai-pretraga', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ upit: upit })
+    });
+    var data = await res.json();
+    var p = data.params || {};
+
+    if (p.q) input.value = p.q;
+    if (p.cijena_od) document.getElementById('cijenaOd').value = p.cijena_od;
+    if (p.cijena_do) document.getElementById('cijenaDo').value = p.cijena_do;
+    if (p.godiste_od) document.getElementById('godOd').value = p.godiste_od;
+    if (p.km_do) document.getElementById('kmDo').value = p.km_do;
+
+    if (p.kategorija) {
+      var cat = document.querySelector('.cat-item[data-kat="' + p.kategorija + '"]');
+      if (cat) filterGlavna(p.kategorija, cat);
+    }
+
+    if (p.gorivo) {
+      document.querySelectorAll('#filterGorivo .chip').forEach(function(chip) {
+        chip.classList.toggle('on', chip.textContent.toLowerCase().indexOf(String(p.gorivo).toLowerCase().slice(0, 5)) > -1);
+      });
+    }
+
+    if (p.sort) {
+      aktivniSort = p.sort;
+      var sortSel = document.querySelector('.sort-sel');
+      if (sortSel) sortSel.value = p.sort;
+    }
+
+    var chips = Object.keys(p).filter(function(k) { return p[k] !== null && p[k] !== undefined && p[k] !== ''; })
+      .map(function(k) { return k + ': ' + p[k]; }).join(' | ');
+    tekst.textContent = (data.fallback ? 'Brza Oglix pretraga: ' : 'AI filteri: ') + chips;
+    primijeniFiltre();
+  } catch(e) {
+    tekst.textContent = 'Nisam mogao procitati AI filtere. Pokusaj obicnu pretragu.';
+  }
+}
 
 async function primijeniFiltre() {
   try {

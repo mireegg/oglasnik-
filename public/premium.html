@@ -4,20 +4,20 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Oglix Premium — Za pametne kupce</title>
-  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   <style>
-    :root{--orange:#e65c00;--orange-light:#ff7a1f;--orange-dim:#fff0e6;--bg:#f7f5f2;--dark:#0a0a0a;--surface:#fff;--border:rgba(0,0,0,0.07);--text:#1a1a1a;--text-muted:#777;--text-faint:#aaa;--r:12px;--r-lg:20px;--r-pill:100px;--green:#16a34a;--green-bg:#dcfce7;}
+    :root{--orange:#84cc16;--orange-light:#a3e635;--orange-dim:#fff0e6;--bg:#f7f5f2;--dark:#0a0a0a;--surface:#fff;--border:rgba(0,0,0,0.07);--text:#1a1a1a;--text-muted:#777;--text-faint:#aaa;--r:12px;--r-lg:20px;--r-pill:100px;--green:#16a34a;--green-bg:#dcfce7;}
     *{box-sizing:border-box;margin:0;padding:0;}
     html{scroll-behavior:smooth;}
-    body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);font-size:15px;line-height:1.6;}
+    body{font-family:'Inter',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);font-size:15px;line-height:1.6;}
     a{text-decoration:none;color:inherit;}
 
     nav{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(10,10,10,0.9);backdrop-filter:blur(16px);border-bottom:1px solid rgba(255,255,255,0.06);padding:0 48px;height:64px;display:flex;align-items:center;justify-content:space-between;}
-    .logo{font-family:'Syne',sans-serif;font-size:22px;font-weight:800;color:white;}
+    .logo{font-family:'Inter',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:22px;font-weight:800;color:white;}
     .logo span{color:var(--orange);}
-    .logo-tag{font-size:11px;font-weight:700;color:var(--orange);background:rgba(230,92,0,0.12);border:1px solid rgba(230,92,0,0.25);padding:3px 10px;border-radius:var(--r-pill);margin-left:8px;letter-spacing:0.06em;text-transform:uppercase;}
+    .logo-tag{font-size:11px;font-weight:700;color:var(--orange);background:rgba(132,204,22,0.12);border:1px solid rgba(132,204,22,0.25);padding:3px 10px;border-radius:var(--r-pill);margin-left:8px;letter-spacing:0.06em;text-transform:uppercase;}
     .nav-right{display:flex;gap:10px;}
-    .btn{border:none;border-radius:var(--r-pill);padding:10px 22px;font-size:14px;font-weight:600;font-family:'DM Sans',sans-serif;cursor:pointer;transition:all .2s;}
+    .btn{border:none;border-radius:var(--r-pill);padding:10px 22px;font-size:14px;font-weight:600;font-family:'Inter',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;cursor:pointer;transition:all .2s;}
     .btn-orange{background:var(--orange);color:white;}
     .btn-orange:hover{background:var(--orange-light);transform:translateY(-1px);}
     .btn-outline{background:transparent;color:rgba(255,255,255,0.6);border:1px solid rgba(255,255,255,0.15);}
@@ -25,13 +25,13 @@
 
     /* HERO */
     .hero{background:var(--dark);padding:140px 24px 100px;text-align:center;position:relative;overflow:hidden;}
-    .hero-glow{position:absolute;top:-10%;left:50%;transform:translateX(-50%);width:700px;height:500px;background:radial-gradient(ellipse,rgba(230,92,0,0.18) 0%,transparent 65%);pointer-events:none;}
+    .hero-glow{position:absolute;top:-10%;left:50%;transform:translateX(-50%);width:700px;height:500px;background:radial-gradient(ellipse,rgba(132,204,22,0.18) 0%,transparent 65%);pointer-events:none;}
     .hero-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,0.025) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.025) 1px,transparent 1px);background-size:52px 52px;pointer-events:none;}
     .hero-content{position:relative;max-width:740px;margin:0 auto;}
-    .hero-badge{display:inline-flex;align-items:center;gap:8px;font-size:12px;font-weight:600;color:var(--orange);background:rgba(230,92,0,0.1);border:1px solid rgba(230,92,0,0.2);padding:6px 16px;border-radius:var(--r-pill);margin-bottom:24px;letter-spacing:0.08em;text-transform:uppercase;}
+    .hero-badge{display:inline-flex;align-items:center;gap:8px;font-size:12px;font-weight:600;color:var(--orange);background:rgba(132,204,22,0.1);border:1px solid rgba(132,204,22,0.2);padding:6px 16px;border-radius:var(--r-pill);margin-bottom:24px;letter-spacing:0.08em;text-transform:uppercase;}
     .pulse{width:6px;height:6px;border-radius:50%;background:var(--orange);animation:pulse 2s infinite;}
     @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
-    .hero h1{font-family:'Syne',sans-serif;font-size:62px;font-weight:800;line-height:1.05;letter-spacing:-2.5px;color:white;margin-bottom:18px;}
+    .hero h1{font-family:'Inter',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:62px;font-weight:800;line-height:1.05;letter-spacing:-2.5px;color:white;margin-bottom:18px;}
     .hero h1 em{font-style:normal;color:var(--orange);}
     .hero p{font-size:17px;color:rgba(255,255,255,0.45);max-width:500px;margin:0 auto 40px;line-height:1.7;font-weight:300;}
     .hero-btns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;}
@@ -41,21 +41,21 @@
     .plans-section{padding:80px 24px;background:var(--bg);}
     .plans-inner{max-width:900px;margin:0 auto;}
     .section-kicker{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:var(--orange);margin-bottom:10px;text-align:center;}
-    .section-title{font-family:'Syne',sans-serif;font-size:40px;font-weight:800;letter-spacing:-1.5px;text-align:center;margin-bottom:40px;}
+    .section-title{font-family:'Inter',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:40px;font-weight:800;letter-spacing:-1.5px;text-align:center;margin-bottom:40px;}
 
     .plans-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:48px;}
     .plan{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:28px;position:relative;}
-    .plan.highlight{border-color:var(--orange);background:white;box-shadow:0 0 0 4px rgba(230,92,0,0.08);}
+    .plan.highlight{border-color:var(--orange);background:white;box-shadow:0 0 0 4px rgba(132,204,22,0.08);}
     .plan-badge{position:absolute;top:-12px;left:50%;transform:translateX(-50%);background:var(--orange);color:white;font-size:11px;font-weight:700;padding:4px 14px;border-radius:var(--r-pill);white-space:nowrap;letter-spacing:0.05em;text-transform:uppercase;}
     .plan-tip{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-faint);margin-bottom:12px;}
-    .plan-cijena{font-family:'Syne',sans-serif;font-size:44px;font-weight:800;line-height:1;margin-bottom:4px;}
+    .plan-cijena{font-family:'Inter',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:44px;font-weight:800;line-height:1;margin-bottom:4px;}
     .plan-cijena small{font-size:16px;font-weight:400;color:var(--text-muted);}
     .plan-opis{font-size:13px;color:var(--text-muted);margin-bottom:20px;padding-bottom:20px;border-bottom:1px solid var(--border);line-height:1.6;}
     .plan-features{list-style:none;margin-bottom:24px;}
     .plan-features li{font-size:13px;color:var(--text-muted);padding:5px 0;display:flex;align-items:flex-start;gap:8px;line-height:1.5;}
     .plan-features li .check{color:var(--orange);font-weight:700;flex-shrink:0;margin-top:1px;}
     .plan-features li .x{color:var(--text-faint);flex-shrink:0;margin-top:1px;}
-    .plan-btn{width:100%;padding:13px;border-radius:var(--r);font-size:14px;font-weight:600;font-family:'DM Sans',sans-serif;cursor:pointer;border:none;transition:all .2s;}
+    .plan-btn{width:100%;padding:13px;border-radius:var(--r);font-size:14px;font-weight:600;font-family:'Inter',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;cursor:pointer;border:none;transition:all .2s;}
     .plan-btn-orange{background:var(--orange);color:white;}
     .plan-btn-orange:hover{background:var(--orange-light);}
     .plan-btn-outline{background:transparent;border:1px solid var(--border);color:var(--text-muted);}
@@ -66,30 +66,30 @@
     .features-inner{max-width:1000px;margin:0 auto;}
     .features-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:48px;}
     .feat{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:var(--r-lg);padding:28px;transition:border-color .2s;}
-    .feat:hover{border-color:rgba(230,92,0,0.3);}
+    .feat:hover{border-color:rgba(132,204,22,0.3);}
     .feat-icon{font-size:28px;margin-bottom:14px;}
-    .feat-title{font-family:'Syne',sans-serif;font-size:16px;font-weight:700;color:white;margin-bottom:8px;}
+    .feat-title{font-family:'Inter',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:16px;font-weight:700;color:white;margin-bottom:8px;}
     .feat-text{font-size:13px;color:rgba(255,255,255,0.4);line-height:1.7;}
-    .feat-tag{display:inline-block;font-size:11px;font-weight:600;color:var(--orange);background:rgba(230,92,0,0.1);border:1px solid rgba(230,92,0,0.2);padding:3px 10px;border-radius:var(--r-pill);margin-top:12px;}
+    .feat-tag{display:inline-block;font-size:11px;font-weight:600;color:var(--orange);background:rgba(132,204,22,0.1);border:1px solid rgba(132,204,22,0.2);padding:3px 10px;border-radius:var(--r-pill);margin-top:12px;}
 
     /* FAQ */
     .faq-section{padding:80px 24px;}
     .faq-inner{max-width:680px;margin:0 auto;}
     .faq-item{border-bottom:1px solid var(--border);padding:18px 0;}
-    .faq-q{font-family:'Syne',sans-serif;font-size:15px;font-weight:700;cursor:pointer;display:flex;justify-content:space-between;align-items:center;}
+    .faq-q{font-family:'Inter',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:15px;font-weight:700;cursor:pointer;display:flex;justify-content:space-between;align-items:center;}
     .faq-q span{color:var(--orange);font-size:20px;transition:transform .2s;}
     .faq-a{font-size:14px;color:var(--text-muted);line-height:1.7;margin-top:12px;display:none;}
     .faq-a.open{display:block;}
 
     /* CTA */
     .cta{background:var(--orange);padding:80px 24px;text-align:center;}
-    .cta h2{font-family:'Syne',sans-serif;font-size:44px;font-weight:800;color:white;letter-spacing:-1.5px;margin-bottom:12px;}
+    .cta h2{font-family:'Inter',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:44px;font-weight:800;color:white;letter-spacing:-1.5px;margin-bottom:12px;}
     .cta p{font-size:16px;color:rgba(255,255,255,0.75);margin-bottom:32px;}
-    .btn-white{background:white;color:var(--orange);border:none;border-radius:var(--r-pill);padding:16px 36px;font-size:16px;font-weight:700;font-family:'DM Sans',sans-serif;cursor:pointer;}
+    .btn-white{background:white;color:var(--orange);border:none;border-radius:var(--r-pill);padding:16px 36px;font-size:16px;font-weight:700;font-family:'Inter',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;cursor:pointer;}
     .btn-white:hover{background:#f5f5f5;transform:translateY(-1px);}
 
     footer{background:var(--dark);padding:40px 24px;text-align:center;color:rgba(255,255,255,0.3);font-size:13px;}
-    .footer-logo{font-family:'Syne',sans-serif;font-size:20px;font-weight:800;color:white;margin-bottom:8px;}
+    .footer-logo{font-family:'Inter',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:20px;font-weight:800;color:white;margin-bottom:8px;}
     .footer-logo span{color:var(--orange);}
 
     @media(max-width:768px){
@@ -101,6 +101,44 @@
       .cta h2{font-size:30px;}
     }
   </style>
+<style id="oglix-graphite-lime-theme">
+:root{
+  --orange:#84cc16!important;--orange-light:#a3e635!important;--orange-dim:#ecfccb!important;
+  --or:#84cc16!important;--or-l:#a3e635!important;--or-dim:#ecfccb!important;
+  --bg:#f5f6f3!important;--surface:#fff!important;--s:#fff!important;--border:#e3e7dc!important;
+  --text:#111827!important;--text-muted:#5f6875!important;--text-faint:#9aa3ad!important;
+  --t:#111827!important;--tm:#5f6875!important;--tf:#9aa3ad!important;
+  --green:#4d7c0f!important;--green-bg:#ecfccb!important;--green-dim:rgba(132,204,22,.14)!important;
+  --blue:#06b6d4!important;--blue-bg:#ecfeff!important;--blue-dim:rgba(6,182,212,.12)!important;
+  --gold:#ca8a04!important;--gold-dim:#fef9c3!important;--dark:#111827!important;
+  --graphite:#111827;--lime:#84cc16;--lime-soft:#ecfccb;--cyan:#06b6d4;
+}
+*,*::before,*::after{font-family:'Inter',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif!important;}
+body{background:#f5f6f3!important;color:#111827!important;letter-spacing:0!important;}
+.logo span,.logo em,.footer-logo span,.footer-logo em,.sidebar-logo span{color:#84cc16!important;}
+nav{background:rgba(255,255,255,.92)!important;border-color:#e3e7dc!important;backdrop-filter:blur(16px);}
+a{color:inherit;}
+.nav-btn,.btn-primary,.btn-orange,.btn-hero.btn-orange,.submit,.forma-submit,.save-btn,.lock-btn,.plan-btn-orange,.apply-btn,.nav-search-btn,.btn-primarni{background:#111827!important;color:#fff!important;border-color:#111827!important;box-shadow:0 12px 26px rgba(17,24,39,.14)!important;}
+.nav-btn:hover,.btn-primary:hover,.btn-orange:hover,.submit:hover,.forma-submit:hover,.save-btn:hover,.lock-btn:hover,.plan-btn-orange:hover,.apply-btn:hover,.nav-search-btn:hover,.btn-primarni:hover{background:#263244!important;color:#fff!important;}
+.btn-ghost,.btn-outline,.nav-ghost,.btn-sekundarni,.plan-btn-outline,.back-btn{background:#fff!important;color:#111827!important;border-color:#dfe5d7!important;}
+.btn-ghost:hover,.btn-outline:hover,.nav-ghost:hover,.btn-sekundarni:hover,.plan-btn-outline:hover,.back-btn:hover{border-color:#84cc16!important;color:#4d7c0f!important;}
+.hero,.problemi,.cijene,.features-section{background:linear-gradient(180deg,#ffffff 0%,#f5f6f3 100%)!important;color:#111827!important;}
+.hero-grid,.hero-glow,.hero-bg{opacity:.35!important;}
+.hero h1,.hero h1 em,.hero p,.section-title,.problem-naslov,.plan-cijena,.footer-logo,.forma-title{color:#111827!important;}
+.hero h1 em{color:#4d7c0f!important;}
+.hero-badge,.section-kicker,.feature-tag,.logo-biznis,.logo-tag,.card-badge.badge-orange,.badge-upgrade{color:#4d7c0f!important;background:#ecfccb!important;border-color:#d9f99d!important;}
+.hero-badge-dot,.pulse,.ai-dot,.ai-box-dot{background:#84cc16!important;}
+.feature-card,.test-card,.plan,.card,.profil-hero,.postavke-card,.nova-forma,.stat-card,.chart-card,.full-card,.kal-card,.tip-card,.alert-box,.content,.forma-kartica{background:#fff!important;border-color:#e3e7dc!important;box-shadow:0 16px 42px rgba(17,24,39,.06)!important;}
+.feature-card:hover,.plan.popular,.card:hover,.oglas-mini:hover,.slicni-kartica:hover{border-color:rgba(132,204,22,.55)!important;}
+.feature-ikona,.test-avatar,.alert-ikona,.avatar,.user-avatar,.konk-avatar{background:#ecfccb!important;color:#4d7c0f!important;border-color:#d9f99d!important;}
+.tab.active,.nav-link.active,.cat-item.active{color:#111827!important;border-color:#84cc16!important;background:#eef2e8!important;}
+input:focus,select:focus,textarea:focus{border-color:#84cc16!important;box-shadow:0 0 0 3px rgba(132,204,22,.12)!important;}
+.ai-box,.ai-poredi-box,.compare-ai-box,.ai-intel-box{background:#111827!important;border-color:#263244!important;}
+.ai-box-title,.ai-poredi-title,.ai-intel-title{color:#a3e635!important;}
+footer{background:#111827!important;color:#cbd5e1!important;}
+footer .footer-logo,footer .footer-logo span{color:#fff!important;}
+::selection{background:#d9f99d;color:#111827;}
+</style>
 </head>
 <body>
 
@@ -306,12 +344,12 @@
 <div id="modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:999;align-items:center;justify-content:center;padding:16px;">
   <div style="background:white;border-radius:var(--r-lg);padding:32px;max-width:440px;width:100%;position:relative;">
     <button onclick="zatvoriModal()" style="position:absolute;top:16px;right:16px;background:none;border:none;font-size:20px;cursor:pointer;color:var(--text-muted);">✕</button>
-    <div style="font-family:'Syne',sans-serif;font-size:20px;font-weight:800;margin-bottom:6px;">Aktiviraj Premium</div>
+    <div style="font-family:'Inter',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:20px;font-weight:800;margin-bottom:6px;">Aktiviraj Premium</div>
     <div style="font-size:13px;color:var(--text-muted);margin-bottom:20px;" id="modalPlan">7 dana besplatno, zatim 9 KM/mj</div>
-    <div style="margin-bottom:12px;"><label style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--text-faint);display:block;margin-bottom:5px;">Ime i prezime</label><input type="text" id="mIme" placeholder="Amir Mehmedović" style="width:100%;border:1px solid var(--border);border-radius:var(--r);padding:11px 14px;font-size:14px;font-family:'DM Sans',sans-serif;outline:none;"></div>
-    <div style="margin-bottom:12px;"><label style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--text-faint);display:block;margin-bottom:5px;">Email</label><input type="email" id="mEmail" placeholder="tvoj@email.com" style="width:100%;border:1px solid var(--border);border-radius:var(--r);padding:11px 14px;font-size:14px;font-family:'DM Sans',sans-serif;outline:none;"></div>
-    <div style="margin-bottom:16px;"><label style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--text-faint);display:block;margin-bottom:5px;">Telefon (opcionalno)</label><input type="tel" id="mTel" placeholder="+387 61 123 456" style="width:100%;border:1px solid var(--border);border-radius:var(--r);padding:11px 14px;font-size:14px;font-family:'DM Sans',sans-serif;outline:none;"></div>
-    <button onclick="posaljiPrijavu()" style="width:100%;background:var(--orange);color:white;border:none;border-radius:var(--r);padding:14px;font-size:15px;font-weight:700;font-family:'DM Sans',sans-serif;cursor:pointer;" id="modalBtn">Aktiviraj 7 dana besplatno →</button>
+    <div style="margin-bottom:12px;"><label style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--text-faint);display:block;margin-bottom:5px;">Ime i prezime</label><input type="text" id="mIme" placeholder="Amir Mehmedović" style="width:100%;border:1px solid var(--border);border-radius:var(--r);padding:11px 14px;font-size:14px;font-family:'Inter',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;outline:none;"></div>
+    <div style="margin-bottom:12px;"><label style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--text-faint);display:block;margin-bottom:5px;">Email</label><input type="email" id="mEmail" placeholder="tvoj@email.com" style="width:100%;border:1px solid var(--border);border-radius:var(--r);padding:11px 14px;font-size:14px;font-family:'Inter',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;outline:none;"></div>
+    <div style="margin-bottom:16px;"><label style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--text-faint);display:block;margin-bottom:5px;">Telefon (opcionalno)</label><input type="tel" id="mTel" placeholder="+387 61 123 456" style="width:100%;border:1px solid var(--border);border-radius:var(--r);padding:11px 14px;font-size:14px;font-family:'Inter',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;outline:none;"></div>
+    <button onclick="posaljiPrijavu()" style="width:100%;background:var(--orange);color:white;border:none;border-radius:var(--r);padding:14px;font-size:15px;font-weight:700;font-family:'Inter',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;cursor:pointer;" id="modalBtn">Aktiviraj 7 dana besplatno →</button>
     <div id="modalPoruka" style="font-size:13px;margin-top:10px;display:none;"></div>
     <p style="font-size:11px;color:var(--text-faint);text-align:center;margin-top:12px;">Kontaktiramo te u roku od 24 sata za aktivaciju.</p>
   </div>
