@@ -378,6 +378,58 @@ function sortExactVehicles(target, oglasi) {
     });
 }
 
+function dedupeOglasi(oglasi) {
+    const seen = new Set();
+    return oglasi.filter(o => {
+        const key = String(o.link || o.id || o.naslov || '');
+        if (!key || seen.has(key)) return false;
+        seen.add(key);
+        return true;
+    });
+}
+
+async function slicnaVozilaIzBaze(target) {
+    const kub = normKubikaza(target.kubikaza);
+    if (!target.brand_id || !target.model_id || kub === null) return [];
+    const olxLink = target.olx_id ? `https://www.olx.ba/artikal/${target.olx_id}` : null;
+    const result = await pool.query(
+        `SELECT id, naslov, cijena, cijena_num, slika, link, platforma, brand_id, model_id,
+                godiste, gorivo, transmisija, km, kubikaza, kw, boja, grad
+         FROM live_oglasi
+         WHERE available = true
+           AND kategorija LIKE 'vozila%'
+           AND brand_id = $1
+           AND model_id = $2
+           AND gorivo IS NOT NULL
+           AND transmisija IS NOT NULL
+           AND boja IS NOT NULL
+           AND kubikaza BETWEEN $3 AND $4
+           AND ($5::text IS NULL OR link <> $5)
+         ORDER BY datum DESC
+         LIMIT 80`,
+        [target.brand_id, target.model_id, kub - 0.11, kub + 0.11, olxLink]
+    );
+    return result.rows.map(o => ({
+        id: o.id,
+        naslov: o.naslov,
+        cijena: o.cijena || 'Na upit',
+        cijena_num: parseFloat(o.cijena_num) || parseCijena(o.cijena),
+        slika: o.slika || '',
+        link: o.link,
+        platforma: o.platforma || 'olx',
+        brand_id: o.brand_id,
+        model_id: o.model_id,
+        godiste: o.godiste,
+        gorivo: o.gorivo,
+        transmisija: o.transmisija,
+        km: o.km,
+        kubikaza: o.kubikaza,
+        kw: o.kw,
+        boja: o.boja,
+        grad: o.grad
+    })).filter(o => isExactVehicleMatch(target, o));
+}
+
 function pickLabel(labels, names) {
     for (const [key, value] of Object.entries(labels || {})) {
         const nk = normSpec(key);
@@ -884,35 +936,40 @@ app.post('/api/slicni-dvije-grupe', async (req, res) => {
                     poruka: `Za identicno poredjenje nedostaje: ${missing.join(', ')}.`
                 });
             }
-            const cijenaOd = cijenaNum > 0 ? Math.round(cijenaNum * 0.55) : 0;
-            const cijenaDo = cijenaNum > 0 ? Math.round(cijenaNum * 1.55) : 999999;
-            let searchUrl = `https://olx.ba/api/search?category_id=18&per_page=40&brand=${d.brand_id}&brands=${d.brand_id}&models=${d.model_id}`;
-            if (cijenaOd > 0) searchUrl += `&price_from=${cijenaOd}&price_to=${cijenaDo}`;
-            const searchRes = await axios.get(searchUrl, { headers: { 'User-Agent': 'Mozilla/5.0', 'Accept': 'application/json', 'Referer': 'https://www.olx.ba/' }, timeout: 12000 });
-            const kandidati = (searchRes.data.data || []).filter(o => String(o.id) !== String(olx_id));
-            const detaljPromises = kandidati.slice(0, 20).map(async (o) => {
-                try {
-                    const { data, attrs, images } = await dohvatiOlxDetalje(o.id);
-                    return {
-                        id: o.id, naslov: o.title,
-                        cijena: o.display_price || 'Na upit',
-                        cijena_num: parseCijena(o.display_price),
-                        slika: o.image || images[0] || '',
-                        link: `https://www.olx.ba/artikal/${o.id}`,
-                        platforma: 'olx',
-                        brand_id: data.brand?.id || o.brand_id || d.brand_id || null,
-                        model_id: data.model?.id || o.model_id || d.model_id || null,
-                        godiste: attrs['godiste'] ? parseInt(attrs['godiste']) : null,
-                        gorivo: attrs['gorivo'] || null,
-                        transmisija: attrs['transmisija'] || null,
-                        km: attrs['kilometra-a'] ? parseInt(attrs['kilometra-a']) : null,
-                        kubikaza: attrs['kubikaza'] ? parseFloat(attrs['kubikaza']) : null,
-                        kw: attrs['kilovata-kw'] ? parseInt(attrs['kilovata-kw']) : null,
-                        boja: attrs['boja'] || null,
-                    };
-                } catch(e) { return null; }
-            });
-            const svi = (await Promise.all(detaljPromises)).filter(Boolean);
+            const izBaze = await slicnaVozilaIzBaze(d);
+            let izOlxApi = [];
+            if (izBaze.length < 6) {
+                const cijenaOd = cijenaNum > 0 ? Math.round(cijenaNum * 0.55) : 0;
+                const cijenaDo = cijenaNum > 0 ? Math.round(cijenaNum * 1.55) : 999999;
+                let searchUrl = `https://olx.ba/api/search?category_id=18&per_page=40&brand=${d.brand_id}&brands=${d.brand_id}&models=${d.model_id}`;
+                if (cijenaOd > 0) searchUrl += `&price_from=${cijenaOd}&price_to=${cijenaDo}`;
+                const searchRes = await axios.get(searchUrl, { headers: { 'User-Agent': 'Mozilla/5.0', 'Accept': 'application/json', 'Referer': 'https://www.olx.ba/' }, timeout: 12000 });
+                const kandidati = (searchRes.data.data || []).filter(o => String(o.id) !== String(olx_id));
+                const detaljPromises = kandidati.slice(0, 20).map(async (o) => {
+                    try {
+                        const { data, attrs, images } = await dohvatiOlxDetalje(o.id);
+                        return {
+                            id: o.id, naslov: o.title,
+                            cijena: o.display_price || 'Na upit',
+                            cijena_num: parseCijena(o.display_price),
+                            slika: o.image || images[0] || '',
+                            link: `https://www.olx.ba/artikal/${o.id}`,
+                            platforma: 'olx',
+                            brand_id: data.brand?.id || o.brand_id || d.brand_id || null,
+                            model_id: data.model?.id || o.model_id || d.model_id || null,
+                            godiste: attrs['godiste'] ? parseInt(attrs['godiste']) : null,
+                            gorivo: attrs['gorivo'] || null,
+                            transmisija: attrs['transmisija'] || null,
+                            km: attrs['kilometra-a'] ? parseInt(attrs['kilometra-a']) : null,
+                            kubikaza: attrs['kubikaza'] ? parseFloat(attrs['kubikaza']) : null,
+                            kw: attrs['kilovata-kw'] ? parseInt(attrs['kilovata-kw']) : null,
+                            boja: attrs['boja'] || null,
+                        };
+                    } catch(e) { return null; }
+                });
+                izOlxApi = (await Promise.all(detaljPromises)).filter(Boolean);
+            }
+            const svi = dedupeOglasi([...izBaze, ...izOlxApi]);
             preciznost = 'Isti brand, model, gorivo, transmisija, boja i kubikaza';
             grupa1 = sortExactVehicles(d, svi.filter(o => isExactVehicleMatch(d, o))).slice(0, 6);
             grupa2 = [];
