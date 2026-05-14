@@ -589,6 +589,10 @@ app.get('/api/live-oglasi', async (req, res) => {
         }
         if (req.query.cijena_od) { uvjeti.push(`cijena_num >= $${i++}`); params.push(parseFloat(req.query.cijena_od)); }
         if (req.query.cijena_do) { uvjeti.push(`cijena_num <= $${i++}`); params.push(parseFloat(req.query.cijena_do)); }
+        if (req.query.grad) {
+            uvjeti.push(`grad ILIKE $${i++}`);
+            params.push(`%${req.query.grad}%`);
+        }
         if (req.query.gorivo) {
             uvjeti.push(`(gorivo ILIKE $${i} OR naslov ILIKE $${i+1})`);
             params.push(`%${req.query.gorivo}%`, `%${req.query.gorivo}%`);

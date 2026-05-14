@@ -166,6 +166,20 @@
     .load-more{text-align:center;margin-top:20px;padding-bottom:20px;}
     .load-btn{background:var(--s);border:1px solid var(--b);border-radius:var(--rpill);padding:11px 32px;font-size:13px;font-family:'Inter',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:var(--tm);cursor:pointer;}
     .load-btn:hover{border-color:var(--bh);color:var(--t);}
+    .load-btn:disabled{opacity:.55;cursor:wait;}
+    .active-filters{display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin:-4px 0 14px;}
+    .filter-chip{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:#fff;border-radius:999px;padding:6px 10px;font-size:11px;font-weight:800;color:var(--muted);}
+    .filter-chip b{color:var(--ink);font-weight:900;}
+    .filter-chip button{border:0;background:transparent;color:var(--faint);font-weight:900;cursor:pointer;font-size:13px;line-height:1;padding:0;}
+    .state-card{background:#fff;border:1px solid var(--line);border-radius:18px;padding:34px;text-align:center;box-shadow:0 12px 34px rgba(41,31,20,.04);}
+    .state-card h3{font-size:18px;color:var(--ink);margin-bottom:8px;}
+    .state-card p{color:var(--muted);font-size:13px;max-width:460px;margin:0 auto 16px;}
+    .state-actions{display:flex;justify-content:center;gap:8px;flex-wrap:wrap;}
+    .state-btn{border:1px solid var(--line);background:#fff;color:var(--ink);border-radius:999px;padding:9px 14px;font-size:12px;font-weight:900;cursor:pointer;}
+    .state-btn.primary{background:var(--graphite);border-color:var(--graphite);color:#fff;}
+    .deal-signal{display:flex;align-items:flex-start;gap:7px;background:#f8faf5;border:1px solid var(--line);border-radius:12px;padding:8px;margin-top:9px;color:var(--muted);font-size:11px;line-height:1.35;}
+    .deal-signal strong{color:var(--ink);}
+    .signal-dot{width:8px;height:8px;border-radius:50%;margin-top:4px;background:var(--lime);flex-shrink:0;}
 
     /* ── COMPARE BAR ── */
     .compare-bar{position:fixed;bottom:0;left:0;right:0;background:#111;border-top:1px solid rgba(255,255,255,0.1);padding:12px 24px;display:none;align-items:center;gap:14px;z-index:300;box-shadow:0 -4px 30px rgba(0,0,0,0.5);}
@@ -639,7 +653,7 @@ footer .footer-logo,footer .footer-logo span{color:#fff!important;}
 
     <div class="side-sec">
       <div class="side-label">Lokacija</div>
-      <select class="side-select" id="filterLokacija">
+      <select class="side-select" id="filterLokacija" onchange="primijeniFiltre()">
         <option value="">Cijela BiH</option>
         <option value="Sarajevo">Sarajevo</option>
         <option value="Banja Luka">Banja Luka</option>
@@ -724,8 +738,9 @@ footer .footer-logo,footer .footer-logo span{color:#fff!important;}
       </div>
     </div>
 
+    <div class="active-filters" id="activeFilters"></div>
     <div id="oglasiContainer"></div>
-    <div class="load-more"><button class="load-btn" onclick="ucitajJos()">Učitaj još oglasa</button></div>
+    <div class="load-more"><button class="load-btn" id="loadMoreBtn" onclick="ucitajJos()">Učitaj još oglasa</button></div>
   </div>
 
   <aside class="radar-panel">
@@ -828,6 +843,31 @@ function filterGlavna(tip, el) {
   primijeniFiltre();
 }
 
+function escapeHtml(value) {
+  return String(value || '').replace(/[&<>"']/g, function(ch) {
+    return ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' })[ch];
+  });
+}
+
+function scoreInsight(o) {
+  if (o.score >= 86) return 'Jak signal: cijena i tržišni moment izgledaju povoljno za brzu odluku.';
+  if (o.score >= 74) return 'Dobar kandidat: vrijedi otvoriti oglas i provjeriti pregovarački prostor.';
+  if (o.score >= 58) return 'Fer signal: poredi sa sličnim oglasima prije kontakta prodavača.';
+  return 'Oprez: cijena ili dostupni signali traže dodatnu provjeru.';
+}
+
+function renderEmptyState(query) {
+  var q = escapeHtml(query || document.getElementById('searchInput').value || '');
+  return '<div class="state-card">' +
+    '<h3>Nema dovoljno dobrih poklapanja</h3>' +
+    '<p>Probaj širi pojam, ukloni dio filtera ili otvori OLX pretragu za isti upit.</p>' +
+    '<div class="state-actions">' +
+      '<button class="state-btn primary" onclick="resetujFiltre()">Resetuj filtere</button>' +
+      '<a class="state-btn" href="https://www.olx.ba/pretraga?keywords=' + encodeURIComponent(q) + '" target="_blank">Pretraži OLX</a>' +
+    '</div>' +
+  '</div>';
+}
+
 function mapOglas(o) {
   var cijena = parseFloat((o.cijena || '').replace(/\./g, '').replace(',', '.').replace(/[^0-9]/g, '')) || 0;
   var datumObjekta = new Date(o.datum);
@@ -866,6 +906,7 @@ function renderCard(o) {
   var pregText = preg ? '-' + preg.toLocaleString('bs-BA') + ' KM' : 'Procjena';
   var trzisteText = o.score >= 84 ? 'ispod tržišta' : o.score >= 70 ? 'fer cijena' : 'provjeri';
   var rizikText = o.score >= 60 ? 'nizak' : 'srednji';
+  var signalHtml = '<div class="deal-signal"><span class="signal-dot"></span><span><strong>Oglix signal:</strong> ' + escapeHtml(scoreInsight(o)) + '</span></div>';
   var dealMetrics = '<div class="deal-row">' +
     '<div class="deal-metric"><div class="deal-label">Tržište</div><div class="deal-value">' + trzisteText + '</div></div>' +
     '<div class="deal-metric"><div class="deal-label">Pregovaranje</div><div class="deal-value">' + pregText + '</div></div>' +
@@ -889,6 +930,7 @@ function renderCard(o) {
         '</div>' +
         '<div class="list-card-meta">' + o.lokacija + ' &bull; ' + o.datum + '</div>' +
         dealMetrics +
+        signalHtml +
         '<div class="list-card-footer">' +
           '<div class="list-card-badges"><span class="plat-badge ' + pbClass + '">' + platNaziv + '</span>' + scoreTag + '</div>' +
           '<button class="list-card-compare' + (isAdded ? ' added' : '') + '" onclick="toggleCompare(event,' + compareDataStr + ')">' + (isAdded ? 'Dodano' : 'Usporedi') + '</button>' +
@@ -905,10 +947,31 @@ function renderCard(o) {
         '<div class="grid-card-title">' + o.naslov + '</div>' +
         '<div class="grid-card-price">' + o.cijenaStr + '</div>' +
         dealMetrics +
+        signalHtml +
         '<div class="grid-card-meta">' + o.lokacija + ' &bull; ' + o.datum + '</div>' +
       '</div>' +
     '</a>';
   }
+}
+
+function updateActiveFilters() {
+  var el = document.getElementById('activeFilters');
+  if (!el) return;
+  var chips = [];
+  var q = document.getElementById('searchInput').value.trim();
+  var cijenaOd = document.getElementById('cijenaOd').value;
+  var cijenaDo = document.getElementById('cijenaDo').value;
+  var lokacija = document.getElementById('filterLokacija').value;
+  var af = getAutoFilteri();
+  if (q) chips.push(['Pretraga', q, "document.getElementById('searchInput').value='';primijeniFiltre();"]);
+  if (aktivnaGlavnaKat !== 'sve') chips.push(['Kategorija', aktivnaGlavnaKat, "filterGlavna('sve',document.querySelector('.cat-item[data-kat=sve]'));"]);
+  if (cijenaOd || cijenaDo) chips.push(['Cijena', (cijenaOd || '0') + ' - ' + (cijenaDo || 'bez limita') + ' KM', "document.getElementById('cijenaOd').value='';document.getElementById('cijenaDo').value='';primijeniFiltre();"]);
+  if (lokacija) chips.push(['Lokacija', lokacija, "document.getElementById('filterLokacija').value='';primijeniFiltre();"]);
+  if (af.gorivo) chips.push(['Gorivo', af.gorivo, "document.querySelectorAll('#filterGorivo .chip').forEach(function(c){c.classList.remove('on')});primijeniFiltre();"]);
+  if (af.transmisija) chips.push(['Mjenjač', af.transmisija, "document.querySelectorAll('#filterTransmisija .chip').forEach(function(c){c.classList.remove('on')});primijeniFiltre();"]);
+  el.innerHTML = chips.map(function(c) {
+    return '<span class="filter-chip"><b>' + escapeHtml(c[0]) + '</b> ' + escapeHtml(c[1]) + ' <button onclick="' + c[2] + '" title="Ukloni filter">×</button></span>';
+  }).join('');
 }
 
 function prikaziOglase(oglasi) {
@@ -916,12 +979,13 @@ function prikaziOglase(oglasi) {
   var container = document.getElementById('oglasiContainer');
   var broj = document.getElementById('rezultatiBroj');
   broj.textContent = formatBroj(ukupnoOglasa || oglasi.length || 0);
+  updateActiveFilters();
   var radarTotal = document.getElementById('radarTotal');
   if (radarTotal) radarTotal.textContent = formatBroj(ukupnoOglasa || oglasi.length || 0);
   var radarDeals = document.getElementById('radarDeals');
-  if (radarDeals) radarDeals.textContent = Math.max(0, oglasi.filter(function(o){ return o.score >= 84; }).length || 24);
+  if (radarDeals) radarDeals.textContent = Math.max(0, oglasi.filter(function(o){ return o.score >= 84; }).length);
   if (oglasi.length === 0) {
-    container.innerHTML = '<div style="padding:48px;text-align:center;color:var(--tf);">Nema rezultata.<br><br><a href="https://www.olx.ba/pretraga?keywords=' + encodeURIComponent(document.getElementById('searchInput').value) + '" target="_blank" style="color:var(--or);">Pretraži na OLX.ba &#x2192;</a></div>';
+    container.innerHTML = renderEmptyState();
     return;
   }
   var wrapClass = aktivniView === 'list' ? 'list-view' : 'grid-view';
@@ -969,10 +1033,12 @@ function buildUrl(offset) {
   var platforme = getAktivnePlatforme();
   var cijenaOd = document.getElementById('cijenaOd').value;
   var cijenaDo = document.getElementById('cijenaDo').value;
+  var lokacija = document.getElementById('filterLokacija').value;
   var url = '/api/live-oglasi?limit=' + OGLASI_PO_STRANI + '&offset=' + (offset || 0);
   if (query) url += '&q=' + encodeURIComponent(query);
   if (odabraneKat.length > 0) url += '&kategorija=' + encodeURIComponent(odabraneKat.join(','));
   if (platforme.length > 0) url += '&platforma=' + encodeURIComponent(platforme.join(','));
+  if (lokacija) url += '&grad=' + encodeURIComponent(lokacija);
   if (cijenaOd) url += '&cijena_od=' + cijenaOd;
   if (cijenaDo) url += '&cijena_do=' + cijenaDo;
   if (aktivniSort === 'cijena_asc') url += '&sort=cijena_asc';
@@ -1001,14 +1067,22 @@ async function pretrazi() {
     } else {
       ukupnoOglasa = 0;
       var q = document.getElementById('searchInput').value;
-      document.getElementById('oglasiContainer').innerHTML = '<div style="padding:48px;text-align:center;color:var(--tf);">Nema rezultata za &quot;' + q + '&quot;.<br><br><a href="https://www.olx.ba/pretraga?keywords=' + encodeURIComponent(q) + '" target="_blank" style="color:var(--or);">Pretraži na OLX.ba &#x2192;</a></div>';
+      document.getElementById('oglasiContainer').innerHTML = renderEmptyState(q);
       document.getElementById('rezultatiBroj').textContent = '0';
+      updateActiveFilters();
     }
   } catch(e) { console.log('Greška pretrage:', e.message); }
 }
 
 function quickSearch(q) { document.getElementById('searchInput').value = q; pretrazi(); }
 function sortirajSelect(tip) { aktivniSort = tip; trenutnaStrana = 0; primijeniFiltre(); }
+
+function setLoadMoreLoading(isLoading) {
+  var btn = document.getElementById('loadMoreBtn');
+  if (!btn) return;
+  btn.disabled = !!isLoading;
+  btn.textContent = isLoading ? 'Učitavam...' : 'Učitaj još oglasa';
+}
 
 async function aiPretraga() {
   var input = document.getElementById('searchInput');
@@ -1100,14 +1174,16 @@ function resetujFiltre() {
 
 async function ucitajJos() {
   trenutnaStrana++;
+  setLoadMoreLoading(true);
   try {
     var res = await fetch(buildUrl(trenutnaStrana * OGLASI_PO_STRANI));
     var data = await res.json();
     if (data.uspjeh && data.oglasi.length > 0) {
       trenutnoFiltrirani = trenutnoFiltrirani.concat(data.oglasi.map(mapOglas));
       prikaziOglase(trenutnoFiltrirani);
-    } else { alert('Nema više oglasa!'); trenutnaStrana--; }
-  } catch(e) { console.log('Greška:', e.message); }
+      setLoadMoreLoading(false);
+    } else { showToast('Nema više oglasa za ove filtere', '#111827'); trenutnaStrana--; setLoadMoreLoading(false); }
+  } catch(e) { trenutnaStrana--; setLoadMoreLoading(false); console.log('Greška:', e.message); }
 }
 
 async function aiAnaliza() {
