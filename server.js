@@ -388,6 +388,31 @@ function dedupeOglasi(oglasi) {
     });
 }
 
+function izracunajMarketSnapshot(target, oglasi) {
+    const cijene = (oglasi || []).map(o => parseFloat(o.cijena_num) || parseCijena(o.cijena)).filter(c => c > 100);
+    const trenutna = parseCijena(target.cijena);
+    if (!cijene.length || !trenutna) return null;
+    const sum = cijene.reduce((a, b) => a + b, 0);
+    const prosjek = Math.round(sum / cijene.length);
+    const najniza = Math.min(...cijene);
+    const najvisa = Math.max(...cijene);
+    const razlika = trenutna - prosjek;
+    const razlikaPct = prosjek ? Math.round((razlika / prosjek) * 100) : 0;
+    let signal = 'fer';
+    if (razlikaPct <= -8) signal = 'ispod_trzista';
+    else if (razlikaPct >= 8) signal = 'iznad_trzista';
+    return {
+        broj: cijene.length,
+        prosjek,
+        najniza,
+        najvisa,
+        trenutna,
+        razlika,
+        razlika_pct: razlikaPct,
+        signal
+    };
+}
+
 async function slicnaVozilaIzBaze(target) {
     const kub = normKubikaza(target.kubikaza);
     if (!target.brand_id || !target.model_id || kub === null) return [];
@@ -730,12 +755,14 @@ PREPORUKA: [jedna reÄenica]
 Bosanski.`;
             aiAnaliza = await groqAI(aiPrompt, 400);
         }
+        const marketSnapshot = izracunajMarketSnapshot(target, grupa1);
         res.json({
             uspjeh: true,
             grupa1,
             grupa2,
             preciznost: 'Isti brand, model, gorivo, transmisija, boja i kubikaza',
             aiAnaliza,
+            marketSnapshot,
             poruka: grupa1.length ? null : 'Nema oglasa sa istim brendom, modelom, gorivom, transmisijom, bojom i kubikazom.'
         });
     } catch(e) {
@@ -922,7 +949,7 @@ app.post('/api/slicni-dvije-grupe', async (req, res) => {
         const kategorija_tip = d.kategorija_tip || 'ostalo';
         const olx_id = d.olx_id;
         const cijenaNum = parseCijena(d.cijena);
-        let grupa1 = [], grupa2 = [], preciznost = '', aiAnaliza = null, poruka = null;
+        let grupa1 = [], grupa2 = [], preciznost = '', aiAnaliza = null, poruka = null, marketSnapshot = null;
 
         if (kategorija_tip === 'vozila') {
             if (!d.brand_id || !d.model_id) return res.json({ uspjeh: false, grupa1: [], grupa2: [], poruka: 'Nema brand/model za vozilo' });
@@ -973,10 +1000,12 @@ app.post('/api/slicni-dvije-grupe', async (req, res) => {
             preciznost = 'Isti brand, model, gorivo, transmisija, boja i kubikaza';
             grupa1 = sortExactVehicles(d, svi.filter(o => isExactVehicleMatch(d, o))).slice(0, 6);
             grupa2 = [];
+            marketSnapshot = izracunajMarketSnapshot(d, grupa1);
             if (!grupa1.length) poruka = 'Nema oglasa sa istim brendom, modelom, gorivom, transmisijom, bojom i kubikazom.';
             if (grupa1.length > 0) {
                 const aiPrompt = `Ti si direktan savjetnik za kupovinu vozila u BiH.
 OGLAS: ${d.cijena} | God: ${d.godiste||'â€”'} | Gorivo: ${d.gorivo||'â€”'} | Transmisija: ${d.transmisija||'â€”'} | Boja: ${d.boja||'â€”'} | KM: ${d.km ? parseInt(d.km).toLocaleString()+' km' : 'â€”'} | Motor: ${d.kubikaza ? d.kubikaza+'L' : 'â€”'} ${d.kw ? d.kw+'kW' : 'â€”'}
+TRZISTE: ${marketSnapshot ? `prosjek ${marketSnapshot.prosjek} KM, ovaj oglas ${marketSnapshot.razlika_pct}% u odnosu na prosjek` : 'nema dovoljno podataka'}
 IDENTIÄŒNI OGLASI (${preciznost}):
 ${grupa1.map((o,i) => {
     const c = parseCijena(o.cijena);
@@ -1130,7 +1159,7 @@ Bosanski.`;
                 aiAnaliza = await groqAI(aiPrompt, 400);
             }
         }
-        res.json({ uspjeh: true, grupa1, grupa2, preciznost, aiAnaliza, poruka });
+        res.json({ uspjeh: true, grupa1, grupa2, preciznost, aiAnaliza, poruka, marketSnapshot });
     } catch(e) {
         console.log('Dvije grupe greÅ¡ka:', e.message);
         res.json({ uspjeh: false, grupa1: [], grupa2: [], poruka: e.message });
