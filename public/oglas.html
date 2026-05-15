@@ -336,6 +336,77 @@ function parseCijenaJS(str) {
   return parseFloat(str.toString().replace(/\./g,'').replace(',','.').replace(/[^0-9.]/g,'')) || 0;
 }
 
+function normSpecKey(value) {
+  return String(value || '').toLowerCase()
+    .replace(/[čć]/g,'c').replace(/[š]/g,'s').replace(/[ž]/g,'z').replace(/[đ]/g,'d')
+    .replace(/[^a-z0-9]+/g,' ').trim();
+}
+
+function specValue(d, names) {
+  var specs = Array.isArray(d.originalne_specifikacije) ? d.originalne_specifikacije : [];
+  var wanted = names.map(normSpecKey);
+  for (var i = 0; i < specs.length; i++) {
+    var label = normSpecKey(specs[i].label || specs[i].code);
+    if (wanted.indexOf(label) !== -1 && specs[i].value !== undefined && specs[i].value !== null && specs[i].value !== '') return specs[i].value;
+  }
+  return null;
+}
+
+function firstValue() {
+  for (var i = 0; i < arguments.length; i++) {
+    if (arguments[i] !== undefined && arguments[i] !== null && arguments[i] !== '') return arguments[i];
+  }
+  return null;
+}
+
+function brojIzSpec(value) {
+  var n = parseInt(String(value || '').replace(/[^0-9]/g,''), 10);
+  return Number.isFinite(n) ? n : 0;
+}
+
+function formatKmSpec(value) {
+  var n = brojIzSpec(value);
+  return n ? n.toLocaleString('bs-BA') + ' km' : value;
+}
+
+function formatKubikazaSpec(value) {
+  var txt = String(value || '').trim();
+  return /l$/i.test(txt) ? txt : txt + 'L';
+}
+
+function formatSnagaSpec(kw, ks) {
+  var kwNum = brojIzSpec(kw);
+  if (kwNum) return kwNum + ' kW (' + Math.round(kwNum * 1.36) + ' ks)';
+  if (kw) return kw;
+  return ks ? ks + ' ks' : '';
+}
+
+function dopuniDetalje(d, meta) {
+  d = Object.assign({}, d || {});
+  d.brand = firstValue(d.brand, specValue(d, ['brand', 'proizvodac'])) || '';
+  d.model = firstValue(d.model, specValue(d, ['model'])) || '';
+  d.godiste = firstValue(d.godiste, specValue(d, ['godiste', 'godina', 'godina proizvodnje']));
+  d.gorivo = firstValue(d.gorivo, specValue(d, ['gorivo']));
+  d.transmisija = firstValue(d.transmisija, specValue(d, ['transmisija', 'mjenjac']));
+  d.km = firstValue(d.km, specValue(d, ['kilometraza', 'kilometra a', 'mileage']));
+  d.kubikaza = firstValue(d.kubikaza, specValue(d, ['kubikaza', 'zapremina motora']));
+  d.kw = firstValue(d.kw, specValue(d, ['snaga motora kw', 'kilovata kw', 'kw']));
+  d.ks = firstValue(d.ks, specValue(d, ['konjskih snaga', 'ks']));
+  d.boja = firstValue(d.boja, specValue(d, ['boja']));
+  d.tip_vozila = firstValue(d.tip_vozila, specValue(d, ['tip', 'tip vozila', 'karoserija']));
+  d.pogon = firstValue(d.pogon, specValue(d, ['pogon']));
+  d.broj_vrata = firstValue(d.broj_vrata, specValue(d, ['broj vrata']));
+  d.registrovan = firstValue(d.registrovan, specValue(d, ['registrovan', 'registrovan do']));
+  d.klima = firstValue(d.klima, specValue(d, ['klimatizacija']));
+  d.emisija = firstValue(d.emisija, specValue(d, ['emisioni standard']));
+  d.grad = firstValue(d.grad, specValue(d, ['lokacija', 'grad']), meta && meta.lokacija);
+  if (!d.godiste && meta && meta.naslov) {
+    var y = meta.naslov.match(/\b(19[89]\d|20[0-2]\d)\b/);
+    if (y) d.godiste = y[1];
+  }
+  return d;
+}
+
 function dealReport(meta, d) {
   d = d || {};
   var cijena = parseCijenaJS(meta.cijena || '');
@@ -359,7 +430,7 @@ function dealReport(meta, d) {
 }
 
 function renderOglasTop(meta, d) {
-  d = d || {};
+  d = dopuniDetalje(d || {}, meta);
   var badgeClass = {olx:'badge-olx',autobum:'badge-autobum',facebook:'badge-facebook'}[meta.platforma]||'badge-olx';
   var platformaNaziv = {olx:'OLX.ba',autobum:'Autobum.ba',facebook:'Facebook'}[meta.platforma]||'OLX.ba';
   var katTip = d.kategorija_tip || 'ostalo';
@@ -371,12 +442,17 @@ function renderOglasTop(meta, d) {
       d.godiste ? {i:'📅',l:'Godište',v:d.godiste} : null,
       d.gorivo ? {i:'⛽',l:'Gorivo',v:d.gorivo} : null,
       d.transmisija ? {i:'⚙️',l:'Transmisija',v:d.transmisija} : null,
-      d.km ? {i:'📍',l:'Kilometraža',v:Number(d.km).toLocaleString()+' km'} : null,
-      d.kubikaza ? {i:'🔧',l:'Kubikaža',v:d.kubikaza+'L'} : null,
-      d.kw ? {i:'⚡',l:'Snaga',v:d.kw+' kW ('+Math.round(d.kw*1.36)+' ks)'} : null,
+      d.km ? {i:'📍',l:'Kilometraža',v:formatKmSpec(d.km)} : null,
+      d.kubikaza ? {i:'🔧',l:'Kubikaža',v:formatKubikazaSpec(d.kubikaza)} : null,
+      d.kw ? {i:'⚡',l:'Snaga',v:formatSnagaSpec(d.kw, d.ks)} : null,
+      !d.kw && d.ks ? {i:'⚡',l:'Snaga',v:d.ks+' ks'} : null,
       d.boja ? {i:'🎨',l:'Boja',v:d.boja} : null,
       d.tip_vozila ? {i:'🏎️',l:'Tip',v:d.tip_vozila} : null,
       d.pogon ? {i:'🔄',l:'Pogon',v:d.pogon} : null,
+      d.broj_vrata ? {i:'🚪',l:'Vrata',v:d.broj_vrata} : null,
+      d.registrovan ? {i:'✅',l:'Registrovan',v:d.registrovan} : null,
+      d.klima ? {i:'❄️',l:'Klima',v:d.klima} : null,
+      d.emisija ? {i:'🌿',l:'Emisija',v:d.emisija} : null,
       d.grad ? {i:'📌',l:'Lokacija',v:d.grad} : null,
     ];
   } else if (katTip === 'mobiteli') {
