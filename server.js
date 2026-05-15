@@ -490,6 +490,73 @@ async function slicnaVozilaIzBaze(target) {
     })).filter(o => isExactVehicleMatch(target, o));
 }
 
+async function fallbackSlicnaVozila(target, limit = 8) {
+    const cijena = parseCijena(target.cijena);
+    const params = [];
+    let i = 1;
+    const where = [`available = true`, `kategorija LIKE 'vozila%'`];
+    if (target.olx_id) {
+        where.push(`link <> $${i++}`);
+        params.push(`https://www.olx.ba/artikal/${target.olx_id}`);
+    }
+    if (target.brand_id) {
+        where.push(`brand_id = $${i++}`);
+        params.push(parseInt(target.brand_id));
+    } else if (target.brand) {
+        where.push(`naslov ILIKE $${i++}`);
+        params.push(`%${target.brand}%`);
+    }
+    if (target.model_id) {
+        where.push(`(model_id = $${i} OR model_id IS NULL)`);
+        params.push(parseInt(target.model_id));
+        i++;
+    } else if (target.model) {
+        where.push(`naslov ILIKE $${i++}`);
+        params.push(`%${target.model}%`);
+    }
+    if (target.gorivo) {
+        where.push(`(gorivo ILIKE $${i} OR gorivo IS NULL)`);
+        params.push(`%${target.gorivo}%`);
+        i++;
+    }
+    if (cijena > 0) {
+        where.push(`(cijena_num BETWEEN $${i} AND $${i+1} OR cijena_num IS NULL)`);
+        params.push(Math.round(cijena * 0.55), Math.round(cijena * 1.65));
+        i += 2;
+    }
+    params.push(limit * 3);
+    const result = await pool.query(
+        `SELECT id, naslov, cijena, cijena_num, slika, link, platforma, brand_id, model_id,
+                godiste, gorivo, transmisija, km, kubikaza, kw, boja, grad
+         FROM live_oglasi
+         WHERE ${where.join(' AND ')}
+         ORDER BY
+            ABS(COALESCE(cijena_num, ${cijena || 0}) - ${cijena || 0}) ASC,
+            datum DESC
+         LIMIT $${i}`,
+        params
+    );
+    return result.rows.map(o => ({
+        id: o.id,
+        naslov: o.naslov,
+        cijena: o.cijena || 'Na upit',
+        cijena_num: parseFloat(o.cijena_num) || parseCijena(o.cijena),
+        slika: o.slika || '',
+        link: o.link,
+        platforma: o.platforma || 'olx',
+        brand_id: o.brand_id,
+        model_id: o.model_id,
+        godiste: o.godiste,
+        gorivo: o.gorivo,
+        transmisija: o.transmisija,
+        km: o.km,
+        kubikaza: o.kubikaza,
+        kw: o.kw,
+        boja: o.boja,
+        grad: o.grad
+    })).slice(0, limit);
+}
+
 function pickLabel(labels, names) {
     for (const [key, value] of Object.entries(labels || {})) {
         const nk = normSpec(key);
@@ -733,15 +800,7 @@ app.post('/api/slicni-po-nazivu', async (req, res) => {
         const { naslov, cijena, brand_id, brand, model, gorivo, transmisija, boja, kubikaza, godiste, km } = req.body;
         if (!naslov && !brand_id) return res.json({ uspjeh: false, grupa1: [], grupa2: [] });
         const missing = missingExactVehicleFields({ brand_id, brand, model, gorivo, transmisija, boja, kubikaza });
-        if (missing.length) {
-            return res.json({
-                uspjeh: true,
-                grupa1: [],
-                grupa2: [],
-                missingRequired: missing,
-                poruka: `Za identicno poredjenje nedostaje: ${missing.join(', ')}.`
-            });
-        }
+        const mozeStrict = missing.length === 0;
         const cijenaNum = parseCijena(cijena);
         const cijenaOd = cijenaNum > 0 ? Math.round(cijenaNum * 0.55) : 0;
         const cijenaDo = cijenaNum > 0 ? Math.round(cijenaNum * 1.55) : 999999;
@@ -772,8 +831,8 @@ app.post('/api/slicni-po-nazivu', async (req, res) => {
             };
         });
         const target = { naslov, cijena, brand_id, brand, model, gorivo, transmisija, boja, kubikaza, godiste, km };
-        const grupa1 = sortExactVehicles(target, mapirani.filter(o => isExactVehicleMatch(target, o))).slice(0, 6);
-        const grupa2 = [];
+        const grupa1 = mozeStrict ? sortExactVehicles(target, mapirani.filter(o => isExactVehicleMatch(target, o))).slice(0, 6) : [];
+        const grupa2 = mapirani.filter(o => !grupa1.some(g => String(g.id) === String(o.id))).slice(0, 6);
         let aiAnaliza = null;
         if (grupa1.length > 0) {
             const aiPrompt = `Ti si direktan savjetnik za kupovinu vozila u BiH.
@@ -795,10 +854,11 @@ Bosanski.`;
             uspjeh: true,
             grupa1,
             grupa2,
-            preciznost: 'Isti brand, model, gorivo, transmisija, boja i kubikaza',
+            preciznost: grupa1.length ? 'Isti brand, model, gorivo, transmisija, boja i kubikaza' : 'Najblizi oglasi sa OLX.ba po brandu/cijeni',
             aiAnaliza,
             marketSnapshot,
-            poruka: grupa1.length ? null : 'Nema oglasa sa istim brendom, modelom, gorivom, transmisijom, bojom i kubikazom.'
+            missingRequired: missing,
+            poruka: (grupa1.length || grupa2.length) ? null : 'Nema dovoljno slicnih oglasa za poredjenje.'
         });
     } catch(e) {
         res.json({ uspjeh: false, grupa1: [], grupa2: [], poruka: e.message });
@@ -987,23 +1047,17 @@ app.post('/api/slicni-dvije-grupe', async (req, res) => {
         let grupa1 = [], grupa2 = [], preciznost = '', aiAnaliza = null, poruka = null, marketSnapshot = null;
 
         if (kategorija_tip === 'vozila') {
-            if (!d.brand_id || !d.model_id) return res.json({ uspjeh: false, grupa1: [], grupa2: [], poruka: 'Nema brand/model za vozilo' });
+            if (!d.brand_id && !d.brand) return res.json({ uspjeh: false, grupa1: [], grupa2: [], poruka: 'Nema brand za vozilo' });
             const missing = missingExactVehicleFields(d);
-            if (missing.length) {
-                return res.json({
-                    uspjeh: true,
-                    grupa1: [],
-                    grupa2: [],
-                    missingRequired: missing,
-                    poruka: `Za identicno poredjenje nedostaje: ${missing.join(', ')}.`
-                });
-            }
+            const mozeStrict = missing.length === 0 && d.brand_id && d.model_id;
             const izBaze = await slicnaVozilaIzBaze(d);
             let izOlxApi = [];
             if (izBaze.length < 6) {
                 const cijenaOd = cijenaNum > 0 ? Math.round(cijenaNum * 0.55) : 0;
                 const cijenaDo = cijenaNum > 0 ? Math.round(cijenaNum * 1.55) : 999999;
-                let searchUrl = `https://olx.ba/api/search?category_id=18&per_page=40&brand=${d.brand_id}&brands=${d.brand_id}&models=${d.model_id}`;
+                let searchUrl = `https://olx.ba/api/search?category_id=18&per_page=40`;
+                if (d.brand_id) searchUrl += `&brand=${d.brand_id}&brands=${d.brand_id}`;
+                if (d.model_id) searchUrl += `&models=${d.model_id}`;
                 if (cijenaOd > 0) searchUrl += `&price_from=${cijenaOd}&price_to=${cijenaDo}`;
                 const searchRes = await axios.get(searchUrl, { headers: { 'User-Agent': 'Mozilla/5.0', 'Accept': 'application/json', 'Referer': 'https://www.olx.ba/' }, timeout: 12000 });
                 const kandidati = (searchRes.data.data || []).filter(o => String(o.id) !== String(olx_id));
@@ -1033,10 +1087,16 @@ app.post('/api/slicni-dvije-grupe', async (req, res) => {
             }
             const svi = dedupeOglasi([...izBaze, ...izOlxApi]);
             preciznost = 'Isti brand, model, gorivo, transmisija, boja i kubikaza';
-            grupa1 = sortExactVehicles(d, svi.filter(o => isExactVehicleMatch(d, o))).slice(0, 6);
-            grupa2 = [];
+            grupa1 = mozeStrict ? sortExactVehicles(d, svi.filter(o => isExactVehicleMatch(d, o))).slice(0, 6) : [];
+            const exactIds = new Set(grupa1.map(o => String(o.link || o.id)));
+            grupa2 = (await fallbackSlicnaVozila(d, 8)).filter(o => !exactIds.has(String(o.link || o.id))).slice(0, 6);
             marketSnapshot = izracunajMarketSnapshot(d, grupa1);
-            if (!grupa1.length) poruka = 'Nema oglasa sa istim brendom, modelom, gorivom, transmisijom, bojom i kubikazom.';
+            if (!grupa1.length && grupa2.length) {
+                preciznost = missing.length ? `Nedostaje za identicno: ${missing.join(', ')}. Prikazujemo najblize.` : 'Nema identicnih, prikazujemo najblize po brandu/modelu/cijeni';
+                poruka = null;
+            } else if (!grupa1.length) {
+                poruka = missing.length ? `Za identicno poredjenje nedostaje: ${missing.join(', ')}.` : 'Nema oglasa sa istim brendom, modelom, gorivom, transmisijom, bojom i kubikazom.';
+            }
             if (grupa1.length > 0) {
                 const aiPrompt = `Ti si direktan savjetnik za kupovinu vozila u BiH.
 OGLAS: ${d.cijena} | God: ${d.godiste||'â€”'} | Gorivo: ${d.gorivo||'â€”'} | Transmisija: ${d.transmisija||'â€”'} | Boja: ${d.boja||'â€”'} | KM: ${d.km ? parseInt(d.km).toLocaleString()+' km' : 'â€”'} | Motor: ${d.kubikaza ? d.kubikaza+'L' : 'â€”'} ${d.kw ? d.kw+'kW' : 'â€”'}

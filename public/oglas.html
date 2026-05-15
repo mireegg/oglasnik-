@@ -476,12 +476,23 @@ function renderOglasTop(meta, d) {
         '<div class="specs-grid">'+specsHtml+'</div>'+
         '<div class="akcije">'+
           '<a href="'+meta.link+'" target="_blank" class="btn-primarni">Pogledaj na '+platformaNaziv+' →</a>'+
-          '<button class="btn-sekundarni" onclick="ucitajPregovarackiPlan()">Pregovaraj</button>'+
+          '<button class="btn-sekundarni" onclick="ucitajPregovarackiPlan()">AI plan pregovora</button>'+
           '<button class="btn-sekundarni" onclick="pratiOglas()">🔔 Prati oglas</button>'+
         '</div>'+
       '</div>'+
     '</div>';
   document.title = meta.naslov+' — Oglix.ba';
+  prikaziPregovarackiTeaser(report);
+}
+
+function prikaziPregovarackiTeaser(report) {
+  var box = document.getElementById('pregovarackiBox');
+  if (!box || !report) return;
+  box.style.display = 'block';
+  box.innerHTML =
+    '<div class="deal-tool-title">Pregovaracki asistent</div>'+
+    '<div class="deal-tool-msg">Oglix moze sloziti prvu ponudu, ciljnu cijenu i kratku poruku prodavacu. Trenutni signal: '+escapeHtml(report.note || 'provjeri trziste prije ponude')+'</div>'+
+    '<div class="deal-tool-actions"><button class="deal-tool-btn" onclick="ucitajPregovarackiPlan()">Izracunaj plan</button></div>';
 }
 
 function promijeniSliku(el,src){
@@ -660,7 +671,7 @@ function kopirajPregPoruku() {
 
 function postaviTekstovePoKategoriji(katTip) {
   var naslovi = {
-    vozila: {g1:'?? Identicni oglasi',g1opis:'Isti brand, model, gorivo, transmisija, boja i kubikaza',g2:'?? Alternative',g2opis:'Sire poredjenje nije prikazano dok trazimo identicne oglase',ai:'?? AI procjena ovog vozila'},
+    vozila: {g1:'Identicni oglasi',g1opis:'Isti brand, model, gorivo, transmisija, boja i kubikaza',g2:'Slicni za poredjenje',g2opis:'Ako nema identicnih, prikazujemo najblize oglase po brandu, modelu i cijeni',ai:'AI procjena ovog vozila'},
     mobiteli: {g1:'🎯 Isti model',g1opis:'Identični model telefona',g2:'💡 Alternative',g2opis:'Isti brand, drugačiji model',ai:'🤖 Je li ovo dobar deal za ovaj mobitel?'},
     racunari: {g1:'🎯 Slične konfiguracije',g1opis:'Isti ili sličan procesor i RAM',g2:'💡 Alternative',g2opis:'Drugačija konfiguracija u sličnom cjenovnom rangu',ai:'🤖 Isplati li se ova konfiguracija?'},
     nekretnine: {g1:'🎯 Slične nekretnine',g1opis:'Isti tip, slična kvadratura i lokacija',g2:'💡 Alternative',g2opis:'Drugačija kvadratura ili lokacija',ai:'🤖 Je li ovo fer cijena za ovu nekretninu?'},
@@ -680,7 +691,7 @@ async function ucitajSlicne(d) {
   postaviTekstovePoKategoriji(katTip);
   function prikaziNemaSlicnih(poruka) {
     var box = document.getElementById('nemaSlichnih');
-    box.textContent = poruka || 'Nema oglasa sa istim brendom, modelom, gorivom, transmisijom, bojom i kubikazom.';
+    box.innerHTML = '<strong>Nema dovoljno podataka za identicne oglase.</strong><br><span style="font-size:13px;">' + (poruka || 'Probaj otvoriti drugi OLX oglas ili sacekaj da Oglix dopuni bazu detaljima.') + '</span>';
     box.style.display = 'block';
     renderMarketSnapshot(null);
     document.getElementById('grupa1Sekcija').style.display = 'none';
@@ -698,14 +709,15 @@ async function ucitajSlicne(d) {
         document.getElementById('preciznostBadge').textContent = '🎯 ' + (data.preciznost||'Slični oglasi sa OLX.ba');
         renderMarketSnapshot(data.marketSnapshot);
         if (data.aiAnaliza) { document.getElementById('aiPorediBox').style.display='block'; document.getElementById('aiPorediTekst').innerHTML=formatAiTekst(data.aiAnaliza); }
-        renderKartice(data.grupa1, 'grupa1Kartice', false, katTip);
+        if (data.grupa1 && data.grupa1.length) renderKartice(data.grupa1, 'grupa1Kartice', false, katTip);
+        else document.getElementById('grupa1Kartice').innerHTML = '<div style="grid-column:1/-1;color:var(--text-muted);font-size:14px;padding:10px 0;">Nema potpuno identicnih oglasa, ali ispod su najblizi za poredjenje.</div>';
         if (data.grupa2 && data.grupa2.length) { document.getElementById('grupa2Sekcija').style.display='block'; renderKartice(data.grupa2,'grupa2Kartice',true,katTip); }
       } else { prikaziNemaSlicnih(data.poruka); }
     } catch(e) { prikaziNemaSlicnih('Greska pri ucitavanju identicnih oglasa.'); }
     return;
   }
 
-  var mozePorediti = ((katTip==='vozila'&&d.brand_id&&d.model_id)||(katTip==='mobiteli'&&(d.brand_id||d.model_id))||(katTip==='racunari'&&d.category_id)||(katTip==='nekretnine'&&d.category_id));
+  var mozePorediti = ((katTip==='vozila'&&(d.brand_id||d.brand))||(katTip==='mobiteli'&&(d.brand_id||d.model_id))||(katTip==='racunari'&&d.category_id)||(katTip==='nekretnine'&&d.category_id));
   if (!mozePorediti) { prikaziNemaSlicnih('Nedostaje brand ili model za precizno poredjenje.'); return; }
 
   document.getElementById('grupa1Sekcija').style.display='block';
@@ -725,7 +737,13 @@ async function ucitajSlicne(d) {
       if (data.aiAnaliza) { document.getElementById('aiPorediBox').style.display='block'; document.getElementById('aiPorediTekst').innerHTML=formatAiTekst(data.aiAnaliza); }
       else document.getElementById('aiPorediBox').style.display='none';
       renderKartice(data.grupa1,'grupa1Kartice',false,katTip);
-    } else { document.getElementById('grupa1Sekcija').style.display='none'; }
+    } else {
+      document.getElementById('grupa1Sekcija').style.display='block';
+      document.getElementById('preciznostBadge').textContent = data.preciznost || 'Najblizi oglasi';
+      document.getElementById('grupa1Kartice').innerHTML = '<div style="grid-column:1/-1;color:var(--text-muted);font-size:14px;padding:10px 0;">Nema potpuno identicnih oglasa, ali ispod su najblizi za poredjenje.</div>';
+      document.getElementById('tabelaWrap').style.display='none';
+      document.getElementById('aiPorediBox').style.display='none';
+    }
     if (data.grupa2 && data.grupa2.length > 0) { document.getElementById('grupa2Sekcija').style.display='block'; renderKartice(data.grupa2,'grupa2Kartice',true,katTip); }
     if (!data.grupa1.length && !data.grupa2.length) document.getElementById('nemaSlichnih').style.display='block';
   } catch(e) { document.getElementById('grupa1Kartice').innerHTML='<div style="color:var(--text-muted);font-size:14px;padding:16px 0;">Greška pri učitavanju sličnih oglasa.</div>'; }
