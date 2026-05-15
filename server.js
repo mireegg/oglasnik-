@@ -413,6 +413,41 @@ function izracunajMarketSnapshot(target, oglasi) {
     };
 }
 
+function napraviPregovarackiPlan(oglas, detalji = {}, marketSnapshot = null) {
+    const cijena = parseCijena(oglas.cijena || oglas.cijenaStr);
+    const prosjek = marketSnapshot?.prosjek || 0;
+    const razlika = prosjek ? cijena - prosjek : 0;
+    const razlikaPct = prosjek ? Math.round((razlika / prosjek) * 100) : 0;
+    const dana = oglas.datum ? Math.max(0, Math.floor((Date.now() - new Date(oglas.datum).getTime()) / 86400000)) : null;
+    let popustPct = 0.04;
+    if (prosjek && cijena > prosjek * 1.12) popustPct = 0.10;
+    else if (prosjek && cijena > prosjek * 1.05) popustPct = 0.075;
+    else if (dana !== null && dana > 45) popustPct = 0.08;
+    else if (dana !== null && dana > 25) popustPct = 0.06;
+    if (detalji.km && parseInt(detalji.km) > 220000) popustPct += 0.015;
+    const prvaPonuda = cijena ? Math.round((cijena * (1 - popustPct)) / 50) * 50 : 0;
+    const ferMax = prosjek ? Math.round(Math.min(cijena, prosjek * 1.03) / 50) * 50 : Math.round(cijena * 0.97 / 50) * 50;
+    const cilj = prosjek ? Math.round(Math.min(prvaPonuda + (ferMax - prvaPonuda) * 0.45, cijena * 0.97) / 50) * 50 : prvaPonuda;
+    const argumenti = [];
+    if (prosjek) argumenti.push(`Identicni oglasi su u prosjeku oko ${prosjek.toLocaleString('bs-BA')} KM (${razlikaPct > 0 ? '+' : ''}${razlikaPct}% u odnosu na ovaj oglas).`);
+    if (marketSnapshot?.najniza) argumenti.push(`Najjeftiniji identican oglas je ${marketSnapshot.najniza.toLocaleString('bs-BA')} KM.`);
+    if (detalji.km) argumenti.push(`Kilometraza: ${parseInt(detalji.km).toLocaleString('bs-BA')} km.`);
+    if (dana !== null && dana > 20) argumenti.push(`Oglas je aktivan oko ${dana} dana, sto daje prostor za pregovor.`);
+    if (!argumenti.length) argumenti.push('Kreni kulturno, trazi servisnu historiju i koristi stanje vozila kao glavni argument.');
+    return {
+        cijena,
+        prosjek: prosjek || null,
+        razlika,
+        razlika_pct: prosjek ? razlikaPct : null,
+        prva_ponuda: prvaPonuda,
+        ciljna_cijena: cilj,
+        maksimalno_fer: ferMax,
+        usteda: cijena && prvaPonuda ? cijena - prvaPonuda : 0,
+        argumenti,
+        poruka: cijena ? `Pozdrav, zainteresovan sam za oglas. Vidim da slicni/identicni oglasi idu oko ${prosjek ? prosjek.toLocaleString('bs-BA') + ' KM' : 'nesto nize cijene'}, pa bih korektno ponudio ${prvaPonuda.toLocaleString('bs-BA')} KM ako je stanje kao opisano. Mogu doci pogledati i dogovoriti odmah ako odgovara.` : ''
+    };
+}
+
 async function slicnaVozilaIzBaze(target) {
     const kub = normKubikaza(target.kubikaza);
     if (!target.brand_id || !target.model_id || kub === null) return [];
@@ -1357,16 +1392,23 @@ function posaljiEmail(to, subject, html) {
 async function initAlerti() {
     await pool.query(`CREATE TABLE IF NOT EXISTS alerti (id SERIAL PRIMARY KEY, korisnik_email VARCHAR(100) NOT NULL, naziv VARCHAR(200), kljucna_rijec VARCHAR(200), kategorija VARCHAR(100), cijena_do NUMERIC, cijena_od NUMERIC, aktivan BOOLEAN DEFAULT true, zadnje_slanje TIMESTAMP, datum TIMESTAMP DEFAULT NOW())`);
     await pool.query(`ALTER TABLE alerti ADD COLUMN IF NOT EXISTS naziv VARCHAR(200)`);
+    await pool.query(`ALTER TABLE alerti ADD COLUMN IF NOT EXISTS min_score INTEGER DEFAULT 0`);
+    await pool.query(`ALTER TABLE alerti ADD COLUMN IF NOT EXISTS samo_top BOOLEAN DEFAULT false`);
+    await pool.query(`ALTER TABLE alerti ADD COLUMN IF NOT EXISTS pregovaranje_min NUMERIC`);
     await pool.query(`CREATE TABLE IF NOT EXISTS pracenje_cijena (id SERIAL PRIMARY KEY, korisnik_email VARCHAR(100) NOT NULL, oglas_link TEXT NOT NULL, oglas_naslov TEXT, oglas_slika TEXT, cijena_pocetna NUMERIC, cijena_trenutna NUMERIC, platforma VARCHAR(50), aktivan BOOLEAN DEFAULT true, datum TIMESTAMP DEFAULT NOW(), UNIQUE(korisnik_email, oglas_link))`);
     console.log('Alerti inicijalizovani!');
 }
 initAlerti();
 
 app.post('/api/alert', async (req, res) => {
-    const { email, naziv, kljucna_rijec, kategorija, cijena_od, cijena_do } = req.body;
+    const { email, naziv, kljucna_rijec, kategorija, cijena_od, cijena_do, min_score, samo_top, pregovaranje_min } = req.body;
     if (!email || !kljucna_rijec) return res.json({ uspjeh: false, poruka: 'Email i kljuÄna rijeÄ su obavezni!' });
     try {
-        const result = await pool.query(`INSERT INTO alerti (korisnik_email, naziv, kljucna_rijec, kategorija, cijena_od, cijena_do) VALUES ($1,$2,$3,$4,$5,$6) RETURNING id`, [email, naziv || kljucna_rijec, kljucna_rijec, kategorija || null, cijena_od || null, cijena_do || null]);
+        const result = await pool.query(
+            `INSERT INTO alerti (korisnik_email, naziv, kljucna_rijec, kategorija, cijena_od, cijena_do, min_score, samo_top, pregovaranje_min)
+             VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9) RETURNING id`,
+            [email, naziv || kljucna_rijec, kljucna_rijec, kategorija || null, cijena_od || null, cijena_do || null, parseInt(min_score) || 0, !!samo_top, pregovaranje_min || null]
+        );
         posaljiEmail(email, 'âœ… Alert kreiran â€” Oglix.ba', emailTemplate('Alert je aktiviran!', `<p>Obavijestit Ä‡emo te Äim se pojavi oglas: <strong>${kljucna_rijec}</strong></p>`));
         res.json({ uspjeh: true, id: result.rows[0].id });
     } catch(e) { res.json({ uspjeh: false, poruka: e.message }); }
@@ -1418,6 +1460,15 @@ async function provjeriAlerte(noviOglasi) {
                 const cijenaNum = parseCijena(o.cijena);
                 if (alert.cijena_do && cijenaNum > 0 && cijenaNum > parseFloat(alert.cijena_do)) return false;
                 if (alert.cijena_od && cijenaNum > 0 && cijenaNum < parseFloat(alert.cijena_od)) return false;
+                if (alert.min_score || alert.samo_top || alert.pregovaranje_min) {
+                    const scoreObj = fallbackScoreOglas(o);
+                    if (alert.min_score && scoreObj < parseInt(alert.min_score)) return false;
+                    if (alert.samo_top && scoreObj < 84) return false;
+                    if (alert.pregovaranje_min && cijenaNum > 0) {
+                        const preg = Math.max(50, Math.round(cijenaNum * (scoreObj >= 84 ? 0.06 : 0.035) / 50) * 50);
+                        if (preg < parseFloat(alert.pregovaranje_min)) return false;
+                    }
+                }
                 return true;
             });
             if (!podudarni.length) continue;
@@ -1874,6 +1925,55 @@ app.post('/api/scam-check', async (req, res) => {
         else { rizik = 'nizak'; boja = '#EAF3DE'; poruka = 'Bez ociglednih znakova prevare'; }
 
         res.json({ uspjeh: true, scamScore, rizik, boja, poruka, flags });
+    } catch(e) {
+        res.json({ uspjeh: false, poruka: e.message });
+    }
+});
+
+app.post('/api/pregovaracki-plan', async (req, res) => {
+    try {
+        const { oglas = {}, detalji = {}, marketSnapshot = null } = req.body || {};
+        const plan = napraviPregovarackiPlan(oglas, detalji, marketSnapshot);
+        res.json({ uspjeh: true, plan });
+    } catch(e) {
+        res.json({ uspjeh: false, poruka: e.message });
+    }
+});
+
+app.post('/api/seller-pricing', async (req, res) => {
+    try {
+        const d = req.body || {};
+        const cijena = parseCijena(d.cijena);
+        const fakeOglas = {
+            naslov: d.naslov || [d.brand, d.model].filter(Boolean).join(' '),
+            kategorija: d.kategorija || 'vozila',
+            brand_id: d.brand_id || null,
+            model_id: d.model_id || null,
+            godiste: d.godiste || null,
+            gorivo: d.gorivo || null,
+            transmisija: d.transmisija || null,
+            km: d.km || null,
+            kubikaza: d.kubikaza || null,
+            boja: d.boja || null,
+            cijena_num: cijena || null
+        };
+        const prosjek = await getModelProsjekZaOglas(pool, fakeOglas, cijena || 0);
+        const avg = Math.round(prosjek.avg || cijena || 0);
+        const brzo = avg ? Math.round(avg * 0.96 / 50) * 50 : null;
+        const fer = avg ? Math.round(avg / 50) * 50 : null;
+        const max = avg ? Math.round(avg * 1.06 / 50) * 50 : null;
+        const preview = {
+            naslov: fakeOglas.naslov,
+            uzorak: prosjek.broj || 0,
+            prosjek: avg || null,
+            brzo,
+            preporuceno: fer,
+            optimisticki: max,
+            savjet: prosjek.broj >= 3
+                ? `Za brzu prodaju kreni oko ${brzo?.toLocaleString('bs-BA')} KM. Za fer cijenu stavi ${fer?.toLocaleString('bs-BA')} KM i ostavi mali prostor za pregovor.`
+                : 'Nema dovoljno preciznog uzorka, koristi raspon kao grubu startnu procjenu i obavezno uporedi identicne oglase.'
+        };
+        res.json({ uspjeh: true, pricing: preview });
     } catch(e) {
         res.json({ uspjeh: false, poruka: e.message });
     }

@@ -355,6 +355,9 @@ function renderAlerti(alerti, jePremium) {
           '<div class="forma-field"><label>Naziv alerta</label><input id="fNaziv" type="text" placeholder="npr. Golf 7 do 12k"></div>' +
           '<div class="forma-field"><label>Cijena od (KM)</label><input id="fCijenaOd" type="number" placeholder="0"></div>' +
           '<div class="forma-field"><label>Cijena do (KM)</label><input id="fCijenaDo" type="number" placeholder="50000"></div>' +
+          '<div class="forma-field"><label>Min. Oglix score</label><input id="fMinScore" type="number" placeholder="npr. 80" min="0" max="100"></div>' +
+          '<div class="forma-field"><label>Min. pregovaranje (KM)</label><input id="fPregMin" type="number" placeholder="npr. 500"></div>' +
+          '<div class="forma-field full"><label>Pro filter</label><select id="fSamoTop"><option value="">Svi oglasi koji se poklapaju</option><option value="1">Samo top prilike</option></select></div>' +
         '</div>' +
         '<button class="forma-submit" onclick="kreirajAlert()">+ Aktiviraj alert</button>' +
         '<div class="forma-poruka" id="alertFormaPoruka"></div>') +
@@ -367,6 +370,9 @@ function renderAlerti(alerti, jePremium) {
         if (a.kategorija) detalji.push(a.kategorija);
         if (a.cijena_od) detalji.push('od ' + parseInt(a.cijena_od).toLocaleString() + ' KM');
         if (a.cijena_do) detalji.push('do ' + parseInt(a.cijena_do).toLocaleString() + ' KM');
+        if (a.min_score && parseInt(a.min_score) > 0) detalji.push('score ' + a.min_score + '+');
+        if (a.samo_top) detalji.push('samo top prilike');
+        if (a.pregovaranje_min) detalji.push('pregovaranje ' + parseInt(a.pregovaranje_min).toLocaleString() + '+ KM');
         var zadnje = a.zadnje_slanje ? 'Zadnji email: ' + new Date(a.zadnje_slanje).toLocaleDateString('bs-BA') : 'Čeka novi oglas';
         return '<div class="alert-kartica">' +
           '<div class="alert-ikona">🔔</div>' +
@@ -439,6 +445,20 @@ function renderStatistike() {
       '<div class="kal-stat"><label>Optimalni raspon</label><value id="kalRaspon" style="font-size:16px;">—</value></div>' +
       '<div class="kal-stat"><label>Prosjek dana do prodaje</label><value id="kalDana">—</value></div>' +
     '</div>' +
+  '</div>' +
+  '<div class="nova-forma">' +
+    '<div class="nova-forma-title">Seller Pricing AI</div>' +
+    '<div style="font-size:13px;color:var(--text-muted);margin-bottom:12px;">Izracunaj cijenu za brzu prodaju, fer oglas i optimisticku startnu cijenu.</div>' +
+    '<div class="forma-grid">' +
+      '<div class="forma-field"><label>Brand</label><input id="spBrand" placeholder="npr. Volkswagen"></div>' +
+      '<div class="forma-field"><label>Model</label><input id="spModel" placeholder="npr. Golf 7"></div>' +
+      '<div class="forma-field"><label>Godiste</label><input id="spGodiste" type="number" placeholder="2016"></div>' +
+      '<div class="forma-field"><label>Gorivo</label><select id="spGorivo"><option value="">Sve</option><option>Dizel</option><option>Benzin</option><option>Hibrid</option></select></div>' +
+      '<div class="forma-field"><label>Transmisija</label><select id="spTrans"><option value="">Sve</option><option>Manuelni</option><option>Automatski</option></select></div>' +
+      '<div class="forma-field"><label>Kilometraza</label><input id="spKm" type="number" placeholder="180000"></div>' +
+    '</div>' +
+    '<button class="forma-submit" onclick="sellerPricing()">Izracunaj cijenu prodaje</button>' +
+    '<div class="kal-rezultat" id="sellerPricingRez" style="display:none;"></div>' +
   '</div>';
 }
 
@@ -531,18 +551,53 @@ async function izracunajKal() {
   } catch(e) {}
 }
 
+async function sellerPricing() {
+  var rez = document.getElementById('sellerPricingRez');
+  rez.style.display = 'grid';
+  rez.innerHTML = '<div class="kal-stat"><label>Racunam</label><value>...</value></div>';
+  try {
+    var res = await fetch('/api/seller-pricing', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({
+        brand: document.getElementById('spBrand').value,
+        model: document.getElementById('spModel').value,
+        godiste: document.getElementById('spGodiste').value || null,
+        gorivo: document.getElementById('spGorivo').value || null,
+        transmisija: document.getElementById('spTrans').value || null,
+        km: document.getElementById('spKm').value || null,
+        kategorija: 'vozila'
+      })
+    });
+    var data = await res.json();
+    if (!data.uspjeh || !data.pricing) throw new Error(data.poruka || 'Nema podataka');
+    var p = data.pricing;
+    rez.innerHTML =
+      '<div class="kal-stat"><label>Brza prodaja</label><value>'+fmt(p.brzo)+' KM</value></div>'+
+      '<div class="kal-stat"><label>Preporuceno</label><value>'+fmt(p.preporuceno)+' KM</value></div>'+
+      '<div class="kal-stat"><label>Optimisticki</label><value>'+fmt(p.optimisticki)+' KM</value></div>'+
+      '<div class="kal-stat"><label>Uzorak</label><value>'+fmt(p.uzorak)+'</value></div>'+
+      '<div style="grid-column:1/-1;font-size:13px;color:var(--text-muted);line-height:1.7;">'+p.savjet+'</div>';
+  } catch(e) {
+    rez.innerHTML = '<div style="font-size:13px;color:var(--red);">Nije moguce izracunati cijenu za ove podatke.</div>';
+  }
+}
+
 async function kreirajAlert() {
   var kljuc = document.getElementById('fKljuc').value.trim();
   var naziv = document.getElementById('fNaziv').value.trim();
   var kat = document.getElementById('fKat').value;
   var cijenaOd = document.getElementById('fCijenaOd').value;
   var cijenaDo = document.getElementById('fCijenaDo').value;
+  var minScore = document.getElementById('fMinScore') ? document.getElementById('fMinScore').value : '';
+  var pregMin = document.getElementById('fPregMin') ? document.getElementById('fPregMin').value : '';
+  var samoTop = document.getElementById('fSamoTop') ? document.getElementById('fSamoTop').value === '1' : false;
   var poruka = document.getElementById('alertFormaPoruka');
   if (!kljuc) { poruka.textContent='Unesite ključnu riječ!'; poruka.className='forma-poruka err'; poruka.style.display='block'; return; }
   try {
     var res = await fetch('/api/alert', {
       method:'POST', headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({ email:korisnik.email, naziv:naziv||kljuc, kljucna_rijec:kljuc, kategorija:kat||null, cijena_od:cijenaOd||null, cijena_do:cijenaDo||null })
+      body: JSON.stringify({ email:korisnik.email, naziv:naziv||kljuc, kljucna_rijec:kljuc, kategorija:kat||null, cijena_od:cijenaOd||null, cijena_do:cijenaDo||null, min_score:minScore||0, samo_top:samoTop, pregovaranje_min:pregMin||null })
     });
     var data = await res.json();
     if (data.uspjeh) {

@@ -112,6 +112,15 @@
     .ai-poredi-title{font-family:'Inter',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:15px;font-weight:850;color:var(--text);}
     .ai-poredi-sub{font-size:11px;color:#555;margin-left:auto;}
     .ai-poredi-tekst{font-size:14px;color:var(--text-muted);line-height:1.85;}
+    .deal-tool{background:#111827;color:#e5e7eb;border:1px solid #263244;border-radius:18px;padding:20px;margin:18px 0;display:none;}
+    .deal-tool-title{font-size:15px;font-weight:900;color:#a3e635;margin-bottom:12px;}
+    .deal-tool-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px;}
+    .deal-tool-stat{background:#192234;border:1px solid #263244;border-radius:12px;padding:12px;}
+    .deal-tool-stat span{display:block;font-size:10px;text-transform:uppercase;letter-spacing:.07em;color:#9ca3af;font-weight:900;margin-bottom:5px;}
+    .deal-tool-stat strong{font-size:20px;color:#fff;}
+    .deal-tool-msg{background:#0f172a;border:1px solid #263244;border-radius:12px;padding:12px;font-size:13px;line-height:1.7;color:#d1d5db;margin-bottom:12px;}
+    .deal-tool-actions{display:flex;gap:8px;flex-wrap:wrap;}
+    .deal-tool-btn{border:1px solid #3f4b5f;background:#fff;color:#111827;border-radius:999px;padding:9px 14px;font-size:13px;font-weight:850;cursor:pointer;}
     .slicni-kartice{display:grid;grid-template-columns:repeat(auto-fill,minmax(175px,1fr));gap:14px;margin-top:4px;}
     .slicni-kartica{background:white;border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;transition:border-color .15s,transform .15s;position:relative;display:block;color:inherit;}
     .slicni-kartica:hover{border-color:var(--orange);transform:translateY(-2px);}
@@ -170,6 +179,7 @@
       .poredi-wrap{border-radius:var(--radius-sm);}
       .market-snapshot{grid-template-columns:1fr 1fr;}
       .ai-poredi-box{padding:16px;}
+      .deal-tool-grid{grid-template-columns:1fr;}
       .sekcija-naslov{font-size:17px;}
     }
   </style>
@@ -229,6 +239,7 @@ footer .footer-logo,footer .footer-logo span{color:#fff!important;}
     <div class="ai-box-header"><div class="ai-dot"></div><div class="ai-box-title" id="aiAnalizaTitle">Oglix AI — Analiza</div></div>
     <div id="aiAnalizaTekst" class="ai-box-text"><div class="loading-inline"><div class="spinner"></div> Analiziram oglas...</div></div>
   </div>
+  <div id="pregovarackiBox" class="deal-tool"></div>
 
   <div class="sekcija" id="grupa1Sekcija" style="display:none;">
     <div class="sekcija-header">
@@ -279,6 +290,8 @@ var oglasPlatforma = oglasMeta.platforma || 'olx';
 var oglasLink = oglasMeta.link || '';
 var oglasCijenaNum = parseCijenaJS(oglasMeta.cijena || '');
 var detaljiGlobal = null;
+var marketSnapshotGlobal = null;
+var zadnjaPregovarackaPoruka = '';
 
 function parseCijenaJS(str) {
   if (!str) return 0;
@@ -463,6 +476,7 @@ function renderOglasTop(meta, d) {
         '<div class="specs-grid">'+specsHtml+'</div>'+
         '<div class="akcije">'+
           '<a href="'+meta.link+'" target="_blank" class="btn-primarni">Pogledaj na '+platformaNaziv+' →</a>'+
+          '<button class="btn-sekundarni" onclick="ucitajPregovarackiPlan()">Pregovaraj</button>'+
           '<button class="btn-sekundarni" onclick="pratiOglas()">🔔 Prati oglas</button>'+
         '</div>'+
       '</div>'+
@@ -590,6 +604,7 @@ function formatAiTekst(tekst) {
 
 function renderMarketSnapshot(s) {
   var box = document.getElementById('marketSnapshot');
+  marketSnapshotGlobal = s || null;
   if (!box) return;
   if (!s || !s.broj) { box.style.display = 'none'; box.innerHTML = ''; return; }
   function km(n) { return Math.round(n || 0).toLocaleString('bs-BA') + ' KM'; }
@@ -602,6 +617,45 @@ function renderMarketSnapshot(s) {
     '<div class="market-tile"><div class="market-label">Najjeftiniji</div><div class="market-value">'+km(s.najniza)+'</div><div class="market-note">najbolja startna tacka</div></div>'+
     '<div class="market-tile"><div class="market-label">Raspon</div><div class="market-value">'+km(s.najniza)+' - '+km(s.najvisa)+'</div><div class="market-note">isti paket uslova</div></div>';
   box.style.display = 'grid';
+}
+
+async function ucitajPregovarackiPlan() {
+  var box = document.getElementById('pregovarackiBox');
+  box.style.display = 'block';
+  box.innerHTML = '<div class="loading-inline"><div class="spinner"></div> Racunam pregovaracki plan...</div>';
+  try {
+    var res = await fetch('/api/pregovaracki-plan', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ oglas: Object.assign({}, oglasMeta, {cijenaStr: oglasMeta.cijena}), detalji: detaljiGlobal || {}, marketSnapshot: marketSnapshotGlobal })
+    });
+    var data = await res.json();
+    if (!data.uspjeh || !data.plan) throw new Error(data.poruka || 'Nema plana');
+    var p = data.plan;
+    function km(n){ return n ? Math.round(n).toLocaleString('bs-BA') + ' KM' : '—'; }
+    zadnjaPregovarackaPoruka = p.poruka || '';
+    box.innerHTML =
+      '<div class="deal-tool-title">Pregovaracki asistent</div>'+
+      '<div class="deal-tool-grid">'+
+        '<div class="deal-tool-stat"><span>Prva ponuda</span><strong>'+km(p.prva_ponuda)+'</strong></div>'+
+        '<div class="deal-tool-stat"><span>Ciljna cijena</span><strong>'+km(p.ciljna_cijena)+'</strong></div>'+
+        '<div class="deal-tool-stat"><span>Max fer</span><strong>'+km(p.maksimalno_fer)+'</strong></div>'+
+      '</div>'+
+      '<div style="font-size:13px;line-height:1.7;margin-bottom:12px;color:#cbd5e1;">'+(p.argumenti||[]).map(function(a){return '• '+a;}).join('<br>')+'</div>'+
+      '<div class="deal-tool-msg" id="pregPoruka">'+zadnjaPregovarackaPoruka+'</div>'+
+      '<div class="deal-tool-actions"><button class="deal-tool-btn" onclick="kopirajPregPoruku()">Kopiraj poruku</button><button class="deal-tool-btn" onclick="document.getElementById(\'pregovarackiBox\').style.display=\'none\'">Sakrij</button></div>';
+    box.scrollIntoView({behavior:'smooth', block:'center'});
+  } catch(e) {
+    box.innerHTML = '<div class="deal-tool-title">Pregovaracki asistent</div><div style="color:#cbd5e1;">Nije moguce izracunati plan za ovaj oglas.</div>';
+  }
+}
+
+function kopirajPregPoruku() {
+  if (!zadnjaPregovarackaPoruka) return;
+  navigator.clipboard.writeText(zadnjaPregovarackaPoruka).then(function(){
+    var btn = event && event.target ? event.target : null;
+    if (btn) { var old = btn.textContent; btn.textContent = 'Kopirano'; setTimeout(function(){btn.textContent = old;}, 1200); }
+  }).catch(function(){ alert(zadnjaPregovarackaPoruka); });
 }
 
 function postaviTekstovePoKategoriji(katTip) {
