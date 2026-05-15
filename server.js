@@ -565,6 +565,47 @@ function pickLabel(labels, names) {
     return null;
 }
 
+function formatSpecValue(value) {
+    if (value === null || value === undefined || value === '') return null;
+    if (value === true || value === 'true') return 'Da';
+    if (value === false || value === 'false') return null;
+    if (Array.isArray(value)) return value.filter(Boolean).join(', ');
+    if (typeof value === 'object') return value.name || value.label || value.value || JSON.stringify(value);
+    return String(value);
+}
+
+function napraviOriginalneSpecifikacije(attributes = [], extra = {}) {
+    const skip = new Set(['id', 'listing_id']);
+    const specs = [];
+    for (const a of attributes || []) {
+        const label = a.name || a.label || a.attr_code;
+        const code = a.attr_code || a.code || label;
+        const value = formatSpecValue(a.value);
+        if (!label || !value || skip.has(String(code).toLowerCase())) continue;
+        specs.push({
+            label,
+            value,
+            code,
+            group: a.group_name || a.group || 'Specifikacije',
+            order: Number.isFinite(Number(a.order)) ? Number(a.order) : 999
+        });
+    }
+    for (const [label, valueRaw] of Object.entries(extra || {})) {
+        const value = formatSpecValue(valueRaw);
+        if (label && value) specs.push({ label, value, code: normSpec(label), group: 'Specifikacije', order: 999 });
+    }
+    const seen = new Set();
+    return specs
+        .sort((a, b) => (a.order || 999) - (b.order || 999))
+        .filter(s => {
+            const key = normSpec(s.label);
+            if (seen.has(key)) return false;
+            seen.add(key);
+            return true;
+        })
+        .slice(0, 80);
+}
+
 async function dohvatiOlxDetalje(id) {
     const det = await axios.get(`https://olx.ba/api/listings/${id}`, {
         headers: { 'User-Agent': 'Mozilla/5.0', 'Accept': 'application/json', 'Referer': 'https://www.olx.ba/' },
@@ -572,7 +613,8 @@ async function dohvatiOlxDetalje(id) {
     });
     const attrs = {};
     (det.data.attributes || []).forEach(a => { attrs[a.attr_code] = a.value; });
-    return { data: det.data, attrs, images: det.data.images || [] };
+    const originalneSpecifikacije = napraviOriginalneSpecifikacije(det.data.attributes || []);
+    return { data: det.data, attrs, images: det.data.images || [], originalneSpecifikacije };
 }
 
 async function sacuvajOlxDetaljeULiveOglase(data, attrs) {
@@ -699,7 +741,7 @@ function fallbackCompareAI(oglasi) {
 // â”€â”€ OLX DETALJI OGLASA â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 app.get('/api/oglas-detalji/:id', async (req, res) => {
     try {
-        const { data, attrs } = await dohvatiOlxDetalje(req.params.id);
+        const { data, attrs, originalneSpecifikacije } = await dohvatiOlxDetalje(req.params.id);
         sacuvajOlxDetaljeULiveOglase(data, attrs).catch(() => {});
         const categoryId = data.category_id;
         let kategorija_tip = 'ostalo';
@@ -741,6 +783,7 @@ app.get('/api/oglas-detalji/:id', async (req, res) => {
                 namjesten: attrs['namjesten'] || null,
                 grijanje: attrs['vrsta-grijanja'] || null,
                 vrsta_nekretnine: attrs['vrsta-nekretnine'] || null,
+                originalne_specifikacije: originalneSpecifikacije,
             }
         });
     } catch(e) { res.json({ uspjeh: false, poruka: e.message }); }
@@ -758,6 +801,20 @@ app.get('/api/autobum-detalji/:id', async (req, res) => {
         const attrs = {};
         if (o.attributes) o.attributes.forEach(a => { attrs[a.name] = a.value; });
         if (o.fields) o.fields.forEach(f => { attrs[f.name] = f.value; });
+        const originalneSpecifikacije = napraviOriginalneSpecifikacije(
+            [
+                ...((o.attributes || []).map(a => ({ name: a.name, value: a.value }))),
+                ...((o.fields || []).map(f => ({ name: f.name, value: f.value })))
+            ],
+            {
+                Godina: o.year,
+                Gorivo: o.fuel || o.fuel_type,
+                Transmisija: o.transmission,
+                Kilometraza: o.mileage,
+                Boja: o.color,
+                Pogon: o.drive_type
+            }
+        );
         const naslovLower = (o.title || '').toLowerCase();
         const brendovi = {
             'volkswagen':89,'vw':89,'audi':7,'bmw':11,'mercedes':56,
@@ -789,6 +846,7 @@ app.get('/api/autobum-detalji/:id', async (req, res) => {
                 boja: attrs['Boja'] || attrs['color'] || o.color || null,
                 tip_vozila: attrs['Tip vozila'] || o.body_type || null,
                 pogon: attrs['Pogon'] || o.drive_type || null,
+                originalne_specifikacije: originalneSpecifikacije,
             }
         });
     } catch(e) { res.json({ uspjeh: false, poruka: e.message }); }
