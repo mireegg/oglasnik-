@@ -121,6 +121,19 @@
     .deal-tool-msg{background:#0f172a;border:1px solid #263244;border-radius:12px;padding:12px;font-size:13px;line-height:1.7;color:#d1d5db;margin-bottom:12px;}
     .deal-tool-actions{display:flex;gap:8px;flex-wrap:wrap;}
     .deal-tool-btn{border:1px solid #3f4b5f;background:#fff;color:#111827;border-radius:999px;padding:9px 14px;font-size:13px;font-weight:850;cursor:pointer;}
+    .price-history{display:none;background:#fff;border:1px solid var(--border);border-radius:18px;padding:20px;margin-bottom:22px;box-shadow:0 12px 34px rgba(17,24,39,.04);}
+    .price-history-head{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;margin-bottom:16px;}
+    .price-history-title{font-size:18px;font-weight:900;color:var(--text);letter-spacing:-.02em;}
+    .price-history-sub{font-size:13px;color:var(--text-muted);margin-top:3px;}
+    .price-history-badge{font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:.06em;background:#ecfccb;color:#4d7c0f;border:1px solid #d9f99d;border-radius:999px;padding:6px 10px;white-space:nowrap;}
+    .price-history-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px;}
+    .price-history-stat{background:#fbfaf7;border:1px solid var(--border);border-radius:12px;padding:12px;}
+    .price-history-stat span{display:block;font-size:10px;text-transform:uppercase;letter-spacing:.07em;font-weight:900;color:var(--text-faint);margin-bottom:5px;}
+    .price-history-stat strong{font-size:18px;font-weight:900;color:var(--text);}
+    .price-history-chart{height:126px;border:1px solid var(--border);border-radius:14px;background:linear-gradient(180deg,#ffffff,#f8faf5);padding:14px;display:flex;align-items:flex-end;gap:8px;}
+    .price-history-bar{flex:1;min-width:10px;border-radius:9px 9px 3px 3px;background:linear-gradient(180deg,#84cc16,#4d7c0f);position:relative;}
+    .price-history-bar.is-current{background:linear-gradient(180deg,#06b6d4,#0891b2);}
+    .price-history-note{font-size:12px;color:var(--text-muted);margin-top:10px;line-height:1.55;}
     .slicni-kartice{display:grid;grid-template-columns:repeat(auto-fill,minmax(175px,1fr));gap:14px;margin-top:4px;}
     .slicni-kartica{background:white;border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;transition:border-color .15s,transform .15s;position:relative;display:block;color:inherit;}
     .slicni-kartica:hover{border-color:var(--orange);transform:translateY(-2px);}
@@ -178,6 +191,7 @@
       .ai-box{padding:14px 16px;}
       .poredi-wrap{border-radius:var(--radius-sm);}
       .market-snapshot{grid-template-columns:1fr 1fr;}
+      .price-history-grid{grid-template-columns:1fr 1fr;}
       .ai-poredi-box{padding:16px;}
       .deal-tool-grid{grid-template-columns:1fr;}
       .sekcija-naslov{font-size:17px;}
@@ -240,6 +254,24 @@ footer .footer-logo,footer .footer-logo span{color:#fff!important;}
     <div id="aiAnalizaTekst" class="ai-box-text"><div class="loading-inline"><div class="spinner"></div> Analiziram oglas...</div></div>
   </div>
   <div id="pregovarackiBox" class="deal-tool"></div>
+
+  <div id="priceHistoryBox" class="price-history">
+    <div class="price-history-head">
+      <div>
+        <div class="price-history-title">Historija cijene</div>
+        <div class="price-history-sub" id="priceHistorySub">Pratimo promjene i poredimo oglas sa kategorijom.</div>
+      </div>
+      <div class="price-history-badge" id="priceHistoryBadge">Oglix signal</div>
+    </div>
+    <div class="price-history-grid">
+      <div class="price-history-stat"><span>Trenutno</span><strong id="histTrenutno">--</strong></div>
+      <div class="price-history-stat"><span>Prva cijena</span><strong id="histPrva">--</strong></div>
+      <div class="price-history-stat"><span>Prosjek kat.</span><strong id="histProsjek">--</strong></div>
+      <div class="price-history-stat"><span>Na trzistu</span><strong id="histDani">--</strong></div>
+    </div>
+    <div class="price-history-chart" id="priceHistoryChart"></div>
+    <div class="price-history-note" id="priceHistoryNote"></div>
+  </div>
 
   <div class="sekcija" id="grupa1Sekcija" style="display:none;">
     <div class="sekcija-header">
@@ -669,6 +701,50 @@ function kopirajPregPoruku() {
   }).catch(function(){ alert(zadnjaPregovarackaPoruka); });
 }
 
+function formatKM(v) {
+  var n = parseFloat(v) || 0;
+  return n > 0 ? Math.round(n).toLocaleString('bs-BA') + ' KM' : '--';
+}
+
+async function ucitajHistorijuCijene() {
+  var box = document.getElementById('priceHistoryBox');
+  if (!box || !oglasMeta.id) return;
+  try {
+    var res = await fetch('/api/historija-cijene/' + encodeURIComponent(oglasMeta.id));
+    var data = await res.json();
+    if (!data.uspjeh) return;
+    var hist = (data.historija || []).filter(function(h){ return parseFloat(h.cijena_num) > 0; });
+    if (!hist.length && data.cijenaTrenutna) hist = [{ cijena_num: data.cijenaTrenutna, datum: new Date().toISOString() }];
+    if (!hist.length) return;
+
+    var cijene = hist.map(function(h){ return parseFloat(h.cijena_num) || 0; });
+    var prva = cijene[0] || data.cijenaTrenutna || 0;
+    var trenutna = data.cijenaTrenutna || cijene[cijene.length - 1] || parseCijenaJS(oglasMeta.cijena || '');
+    var razlika = prva && trenutna ? Math.round(prva - trenutna) : 0;
+    var min = Math.min.apply(null, cijene.concat([trenutna]));
+    var max = Math.max.apply(null, cijene.concat([trenutna]));
+    var raspon = Math.max(1, max - min);
+    var points = hist.length === 1 ? [hist[0], { cijena_num: trenutna, datum: new Date().toISOString() }] : hist;
+    document.getElementById('priceHistoryChart').innerHTML = points.map(function(h, idx) {
+      var val = parseFloat(h.cijena_num) || trenutna;
+      var hgt = 24 + Math.round(((val - min) / raspon) * 76);
+      var cls = idx === points.length - 1 ? 'price-history-bar is-current' : 'price-history-bar';
+      return '<div class="' + cls + '" style="height:' + hgt + '%" title="' + formatKM(val) + '"></div>';
+    }).join('');
+
+    document.getElementById('histTrenutno').textContent = formatKM(trenutna);
+    document.getElementById('histPrva').textContent = formatKM(prva);
+    document.getElementById('histProsjek').textContent = data.avgKat ? formatKM(data.avgKat) : '--';
+    document.getElementById('histDani').textContent = (parseInt(data.danaNaTrzistu) || 0) + ' dana';
+    document.getElementById('priceHistoryBadge').textContent = razlika > 0 ? 'Cijena pala' : (data.avgKat && trenutna < data.avgKat ? 'Ispod prosjeka' : 'Prati dalje');
+    document.getElementById('priceHistorySub').textContent = hist.length > 1 ? 'Ovaj oglas ima zabiljezene promjene cijene.' : 'Cijena je zabiljezena, Oglix nastavlja pratiti promjene.';
+    document.getElementById('priceHistoryNote').textContent = razlika > 0
+      ? 'Cijena je niza za ' + formatKM(razlika) + ' u odnosu na prvu zabiljezenu cijenu. Ovo je dobar trenutak za kontakt ili pregovor.'
+      : (data.avgKat && trenutna > data.avgKat ? 'Oglas je iznad prosjeka kategorije. Vrijedi sacekati pad cijene ili traziti jaci popust.' : 'Nema velikog pada cijene jos, ali historija pomaze da se prepozna pravi trenutak za kupovinu.');
+    box.style.display = 'block';
+  } catch(e) {}
+}
+
 function postaviTekstovePoKategoriji(katTip) {
   var naslovi = {
     vozila: {g1:'Identicni oglasi',g1opis:'Isti brand, model, gorivo, transmisija, boja i kubikaza',g2:'Slicni za poredjenje',g2opis:'Ako nema identicnih, prikazujemo najblize oglase po brandu, modelu i cijeni',ai:'AI procjena ovog vozila'},
@@ -849,6 +925,7 @@ async function init(){
     renderOglasTop(oglasMeta, d);
   }
   ucitajAiAnalizuJednog(d);
+  ucitajHistorijuCijene();
   ucitajSlicne(d);
   initRegKalkulator();
 }
