@@ -536,7 +536,15 @@ async function fallbackSlicnaVozila(target, limit = 8) {
          LIMIT $${i}`,
         params
     );
-    return result.rows.map(o => ({
+    return result.rows.map(o => {
+        let match_score = 0;
+        if (target.brand_id && o.brand_id && String(target.brand_id) === String(o.brand_id)) match_score += 25;
+        if (target.model_id && o.model_id && String(target.model_id) === String(o.model_id)) match_score += 25;
+        if (target.gorivo && o.gorivo && normSpec(target.gorivo) === normSpec(o.gorivo)) match_score += 15;
+        if (target.transmisija && o.transmisija && normSpec(target.transmisija) === normSpec(o.transmisija)) match_score += 15;
+        if (target.boja && o.boja && normSpec(target.boja) === normSpec(o.boja)) match_score += 10;
+        if (target.kubikaza && o.kubikaza && Math.abs(parseFloat(target.kubikaza) - parseFloat(o.kubikaza)) < 0.05) match_score += 10;
+        return {
         id: o.id,
         naslov: o.naslov,
         cijena: o.cijena || 'Na upit',
@@ -553,8 +561,10 @@ async function fallbackSlicnaVozila(target, limit = 8) {
         kubikaza: o.kubikaza,
         kw: o.kw,
         boja: o.boja,
-        grad: o.grad
-    })).slice(0, limit);
+        grad: o.grad,
+        match_score
+    };
+    }).sort((a, b) => (b.match_score || 0) - (a.match_score || 0)).slice(0, limit);
 }
 
 function pickLabel(labels, names) {

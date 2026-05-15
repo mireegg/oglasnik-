@@ -143,6 +143,10 @@
     .slicni-kartica-naslov{font-size:12px;font-weight:500;line-height:1.3;margin-bottom:6px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
     .slicni-kartica-cijena{font-family:'Inter',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:16px;font-weight:700;color:var(--orange);margin-bottom:3px;}
     .slicni-kartica-meta{font-size:11px;color:var(--text-faint);}
+    .match-line{display:flex;flex-wrap:wrap;gap:4px;margin:8px 0 2px;}
+    .match-chip{font-size:9px;font-weight:900;text-transform:uppercase;letter-spacing:.04em;border-radius:999px;padding:3px 6px;border:1px solid var(--border);background:#fff;color:var(--text-muted);}
+    .match-chip.ok{background:#ecfccb;border-color:#d9f99d;color:#4d7c0f;}
+    .match-chip.diff{background:#fff7ed;border-color:#fed7aa;color:#c2410c;}
     .preporuka-tag{position:absolute;top:8px;left:8px;font-size:10px;font-weight:700;padding:3px 8px;border-radius:var(--radius-pill);}
     .tag-bolji{background:var(--green);color:white;}
     .tag-skuplje{background:var(--red);color:white;}
@@ -705,6 +709,27 @@ function getKarticaMeta(o, katTip) {
   return parts.join(' · ');
 }
 
+function istiTekst(a, b) {
+  if (!a || !b) return false;
+  return normSpecKey(a) === normSpecKey(b);
+}
+
+function matchChip(label, ok) {
+  return '<span class="match-chip '+(ok ? 'ok' : 'diff')+'">'+escapeHtml(label)+'</span>';
+}
+
+function renderMatchLine(o, katTip, isAlt) {
+  if (katTip !== 'vozila' || !detaljiGlobal) return '';
+  var d = dopuniDetalje(detaljiGlobal || {}, oglasMeta);
+  var chips = [];
+  if (d.gorivo && o.gorivo) chips.push(matchChip(istiTekst(d.gorivo, o.gorivo) ? 'isto gorivo' : 'drugo gorivo', istiTekst(d.gorivo, o.gorivo)));
+  if (d.transmisija && o.transmisija) chips.push(matchChip(istiTekst(d.transmisija, o.transmisija) ? 'ista transmisija' : 'druga transmisija', istiTekst(d.transmisija, o.transmisija)));
+  if (d.boja && o.boja) chips.push(matchChip(istiTekst(d.boja, o.boja) ? 'ista boja' : 'druga boja', istiTekst(d.boja, o.boja)));
+  if (d.kubikaza && o.kubikaza) chips.push(matchChip(istiTekst(d.kubikaza, o.kubikaza) ? 'ista kubikaza' : 'druga kubikaza', istiTekst(d.kubikaza, o.kubikaza)));
+  if (!chips.length && isAlt) chips.push(matchChip('najblizi fallback', false));
+  return chips.length ? '<div class="match-line">'+chips.slice(0, 4).join('')+'</div>' : '';
+}
+
 function renderKartice(oglasi, containerId, isAlt, katTip) {
   var container=document.getElementById(containerId);
   if(!oglasi||!oglasi.length){container.innerHTML='';return;}
@@ -714,7 +739,8 @@ function renderKartice(oglasi, containerId, isAlt, katTip) {
     if(isAlt){tagClass='tag-alt';tagText='💡 Alternativa';}
     else { var cs=oglasCijenaNum&&c?(oglasCijenaNum-c)/oglasCijenaNum:0; var extra=0; if(katTip==='vozila'&&o.km&&parseInt(o.km)>0) extra=(200000-parseInt(o.km))/200000*0.3; if(katTip==='nekretnine'&&o.cijena_m2) { var tM2=detaljiGlobal&&detaljiGlobal.kvadrata&&oglasCijenaNum?Math.round(oglasCijenaNum/parseFloat(detaljiGlobal.kvadrata)):0; if(tM2) extra=(tM2-o.cijena_m2)/Math.max(tM2,1)*0.3; } var score=cs*0.5+extra; tagClass=score>0.08?'tag-bolji':score<-0.08?'tag-skuplje':'tag-slicno'; tagText=score>0.08?'✅ Bolji deal':score<-0.08?'❌ Skuplje':'≈ Slično'; }
     var meta=getKarticaMeta(o,katTip);
-    return '<a href="'+o.link+'" target="_blank" class="slicni-kartica">'+'<span class="preporuka-tag '+tagClass+'">'+tagText+'</span>'+(o.slika?'<img src="'+o.slika+'" alt="" loading="lazy" onerror="this.style.display=\'none\'">':'<div class="slicni-kartica-img-ph"><svg width="40" height="32" viewBox="0 0 40 32" fill="none"><rect x="2" y="2" width="36" height="28" rx="3" stroke="#ccc" stroke-width="1.5"/></svg></div>')+'<div class="slicni-kartica-body"><div class="slicni-kartica-naslov">'+o.naslov+'</div><div class="slicni-kartica-cijena">'+o.cijena+'</div><div class="slicni-kartica-meta">'+meta+'</div></div></a>';
+    var matchHtml = renderMatchLine(o, katTip, isAlt);
+    return '<a href="'+escapeHtml(o.link)+'" target="_blank" class="slicni-kartica">'+'<span class="preporuka-tag '+tagClass+'">'+tagText+'</span>'+(o.slika?'<img src="'+escapeHtml(o.slika)+'" alt="" loading="lazy" onerror="this.style.display=\'none\'">':'<div class="slicni-kartica-img-ph"><svg width="40" height="32" viewBox="0 0 40 32" fill="none"><rect x="2" y="2" width="36" height="28" rx="3" stroke="#ccc" stroke-width="1.5"/></svg></div>')+'<div class="slicni-kartica-body"><div class="slicni-kartica-naslov">'+escapeHtml(o.naslov)+'</div><div class="slicni-kartica-cijena">'+escapeHtml(o.cijena)+'</div>'+matchHtml+'<div class="slicni-kartica-meta">'+escapeHtml(meta)+'</div></div></a>';
   }).join('');
 }
 
