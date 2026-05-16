@@ -143,6 +143,10 @@
     .konk-stat{background:var(--surface2);border-radius:var(--r);padding:12px;text-align:center;}
     .konk-stat-val{font-family:'Inter',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:18px;font-weight:700;color:var(--orange);}
     .konk-stat-label{font-size:11px;color:var(--text-faint);margin-top:3px;}
+    .dealer-health{display:flex;align-items:center;justify-content:space-between;gap:10px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);padding:12px;margin-bottom:14px;}
+    .dealer-health-title{font-size:12px;font-weight:800;color:var(--text);margin-bottom:2px;}
+    .dealer-health-sub{font-size:11px;color:var(--text-faint);}
+    .dealer-health-score{font-family:'Inter',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:24px;font-weight:900;color:var(--green);white-space:nowrap;}
     .konk-oglasi{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px;margin-top:14px;}
     .konk-oglas{background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;display:block;transition:border-color .15s;color:inherit;}
     .konk-oglas:hover{border-color:rgba(132,204,22,0.4);}
@@ -741,7 +745,7 @@ async function ucitajTrziste(kategorije) {
     document.getElementById('cijenePoBrendu').innerHTML = brendPodaci.map(function(b){
       return '<div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);padding:16px;">' +
         '<div style="font-size:12px;color:var(--text-muted);margin-bottom:6px;text-transform:uppercase;letter-spacing:0.06em;">'+b.naziv.charAt(0).toUpperCase()+b.naziv.slice(1)+'</div>' +
-        '<div style="font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:20px;font-weight:800;color:var(--orange);">'+(b.prosjek?fmt(b.prosjek)+' KM':'N/A')+'</div>' +
+        '<div style="font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,Segoe UI,sans-serif;font-size:20px;font-weight:800;color:var(--orange);">'+(b.prosjek?fmt(b.prosjek)+' KM':'N/A')+'</div>' +
         '<div style="font-size:11px;color:var(--text-faint);margin-top:4px;">'+fmt(b.broj)+' oglasa</div>' +
       '</div>';
     }).join('');
@@ -806,7 +810,7 @@ async function ucitajOglaseBrenda() {
     if(data.uspjeh&&data.oglasi.length){
       container.innerHTML=data.oglasi.map(function(o){
         var meta=encodeURIComponent(JSON.stringify({naslov:o.naslov,cijena:o.cijena,slika:o.slika||'',link:o.link||'',platforma:o.platforma||'olx',kategorija:o.kategorija||''}));
-        return '<a href="/oglas.html?data='+meta+'" target="_blank" class="oglas-mini">'+(o.slika?'<img src="'+o.slika+'" style="width:100%;height:110px;object-fit:cover;" onerror=\"this.onerror=null\">':"<div style='width:100%;height:110px;background:#222;'></div>")+'<div style="padding:10px;"><div style="font-size:12px;font-weight:500;color:var(--text-muted);margin-bottom:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">'+o.naslov+'</div><div style="font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:14px;font-weight:700;color:var(--orange);">'+o.cijena+'</div></div></a>';
+        return '<a href="/oglas.html?data='+meta+'" target="_blank" class="oglas-mini">'+(o.slika?'<img src="'+o.slika+'" style="width:100%;height:110px;object-fit:cover;" onerror=\"this.onerror=null\">':"<div style='width:100%;height:110px;background:#222;'></div>")+'<div style="padding:10px;"><div style="font-size:12px;font-weight:500;color:var(--text-muted);margin-bottom:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">'+o.naslov+'</div><div style="font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,Segoe UI,sans-serif;font-size:14px;font-weight:700;color:var(--orange);">'+o.cijena+'</div></div></a>';
       }).join('');
     } else { container.innerHTML='<div style="color:var(--text-faint);padding:24px;grid-column:1/-1;">Nema oglasa.</div>'; }
   } catch(e){}
@@ -884,6 +888,7 @@ async function renderKonkurentKartica(k) {
       '<div class="konk-stat"><div class="konk-stat-val" id="konk-prodanih-' + k.id + '">—</div><div class="konk-stat-label">Prodano</div></div>' +
       '<div class="konk-stat"><div class="konk-stat-val" id="konk-novi-' + k.id + '">—</div><div class="konk-stat-label">Novih danas</div></div>' +
     '</div>' +
+    '<div class="dealer-health" id="dealer-health-' + k.id + '"><div><div class="dealer-health-title">Dealer health</div><div class="dealer-health-sub">Cekam aktivne oglase i tempo prodaje.</div></div><div class="dealer-health-score">--</div></div>' +
     '<div style="font-size:12px;font-weight:600;color:var(--text-faint);margin-bottom:10px;text-transform:uppercase;letter-spacing:0.06em;">Aktivni oglasi</div>' +
     '<div class="konk-oglasi" id="konk-oglasi-' + k.id + '"><div style="color:var(--text-faint);font-size:12px;">Učitavam...</div></div>';
   lista.appendChild(div);
@@ -903,6 +908,29 @@ function ucitajSlikuZaOglas(olxId, imgEl) {
     }).catch(function(){});
 }
 
+function updateDealerHealth(id, data) {
+  var box = document.getElementById('dealer-health-' + id);
+  if (!box) return;
+  var stats = data.stats || {};
+  var oglasi = data.oglasi || [];
+  var aktivnih = parseInt(stats.aktivnih || oglasi.length || 0);
+  var prodanih = parseInt(stats.prodanih || 0);
+  var prosjek = parseFloat(stats.prosjek_aktivnih || 0);
+  var stari = oglasi.filter(function(o) {
+    if (!o.datum_objave) return false;
+    return (Date.now() - new Date(o.datum_objave).getTime()) > 30 * 24 * 60 * 60 * 1000;
+  }).length;
+  var score = 60;
+  if (aktivnih > 20) score += 10;
+  if (prodanih > 0) score += Math.min(15, prodanih * 2);
+  if (prosjek > 0) score += 5;
+  score -= Math.min(20, stari * 2);
+  score = Math.max(20, Math.min(95, Math.round(score)));
+  var status = score >= 78 ? 'Jak profil: aktivan inventar i zdrav tempo.' : score >= 58 ? 'Stabilan profil: prati cijene i stare oglase.' : 'Ranjiv profil: dosta prostora za napad cijenom.';
+  var color = score >= 78 ? 'var(--green)' : score >= 58 ? 'var(--gold)' : 'var(--red)';
+  box.innerHTML = '<div><div class="dealer-health-title">Dealer health</div><div class="dealer-health-sub">' + status + ' Starih oglasa: ' + stari + '.</div></div><div class="dealer-health-score" style="color:' + color + ';">' + score + '</div>';
+}
+
 async function ucitajKonkurentOglase(id) {
   try {
     var res = await fetch('/api/konkurent-oglasi/' + id + '?status=active');
@@ -916,6 +944,7 @@ async function ucitajKonkurentOglase(id) {
       return new Date(o.datum_objave) > new Date(Date.now() - 24*60*60*1000);
     }).length;
     if (noviEl) noviEl.textContent = noviDanas;
+    updateDealerHealth(id, data);
     var container = document.getElementById('konk-oglasi-' + id);
     if (!container) return;
     if (!data.oglasi || !data.oglasi.length) {
