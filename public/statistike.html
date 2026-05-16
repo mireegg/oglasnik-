@@ -184,6 +184,21 @@
       </div>
     </section>
 
+    <section class="split">
+      <div class="panel">
+        <div class="card-head">
+          <div><div class="card-title">Aktivni cjenovni rangovi</div><div class="card-sub">Gdje trenutno ima najvise aktivnih oglasa.</div></div>
+        </div>
+        <div class="list" id="aktivniCijeneList"><div class="state loading">Ucitavam aktivne cijene...</div></div>
+      </div>
+      <div class="panel">
+        <div class="card-head">
+          <div><div class="card-title">Gdje ima najvise prilika</div><div class="card-sub">Kategorije sa aktivnim oglasima i padovima cijena.</div></div>
+        </div>
+        <div class="list" id="prilikeList"><div class="state loading">Ucitavam prilike...</div></div>
+      </div>
+    </section>
+
     <section class="insight-grid">
       <div class="insight">
         <div class="insight-tag">Premium ideja</div>
@@ -231,6 +246,16 @@
         { rang: '150-200k km', prosjek_dana: 24, prodano: 810 },
         { rang: '50-100k km', prosjek_dana: 28, prodano: 390 },
         { rang: '200k+ km', prosjek_dana: 36, prodano: 770 }
+      ],
+      aktivniCijenovni: [
+        { rang: '10-15k KM', ukupno: 820, prosjek: 12600, padovi: 14 },
+        { rang: '15-20k KM', ukupno: 760, prosjek: 17400, padovi: 12 },
+        { rang: '20-30k KM', ukupno: 690, prosjek: 24400, padovi: 9 }
+      ],
+      prilike: [
+        { kategorija: 'vozila-volkswagen', ukupno: 540, prosjek: 18200, padovi: 18 },
+        { kategorija: 'vozila-bmw', ukupno: 310, prosjek: 28600, padovi: 11 },
+        { kategorija: 'vozila-audi', ukupno: 280, prosjek: 31500, padovi: 9 }
       ]
     };
 
@@ -259,6 +284,24 @@
           <div class="rank-no">${i + 1}</div>
           <div><div class="rank-name">${name}</div><div class="rank-meta">${prodano} oglasa u uzorku</div></div>
           <div class="rank-value">${dana}<span>dana</span></div>
+        </div>`;
+      }).join('');
+    }
+
+    function renderMarketRows(el, rows, nameKey) {
+      if (!rows || !rows.length) {
+        el.innerHTML = '<div class="state">Nema dovoljno podataka za ovaj prikaz.</div>';
+        return;
+      }
+      el.innerHTML = rows.slice(0, 6).map((r, i) => {
+        const name = label(r[nameKey] || r.kategorija || r.rang);
+        const ukupno = fmt(r.ukupno || r.prodano);
+        const prosjek = fmt(r.prosjek);
+        const padovi = fmt(r.padovi);
+        return `<div class="rank-row">
+          <div class="rank-no">${i + 1}</div>
+          <div><div class="rank-name">${name}</div><div class="rank-meta">${ukupno} aktivnih · ${padovi} padova</div></div>
+          <div class="rank-value">${prosjek}<span>KM prosjek</span></div>
         </div>`;
       }).join('');
     }
@@ -323,6 +366,8 @@
       renderRows(document.getElementById('brziList'), brendovi, 'kategorija');
       renderRows(document.getElementById('gorivoList'), vozila.gorivo || fallbackVozila.gorivo, 'gorivo');
       renderRows(document.getElementById('kmList'), vozila.kilometraza || fallbackVozila.kilometraza, 'rang');
+      renderMarketRows(document.getElementById('aktivniCijeneList'), vozila.aktivniCijenovni || fallbackVozila.aktivniCijenovni, 'rang');
+      renderMarketRows(document.getElementById('prilikeList'), vozila.prilike || fallbackVozila.prilike, 'kategorija');
       renderChart(cijene);
     }
 
