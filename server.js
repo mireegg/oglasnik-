@@ -428,22 +428,38 @@ function napraviPregovarackiPlan(oglas, detalji = {}, marketSnapshot = null) {
     const prvaPonuda = cijena ? Math.round((cijena * (1 - popustPct)) / 50) * 50 : 0;
     const ferMax = prosjek ? Math.round(Math.min(cijena, prosjek * 1.03) / 50) * 50 : Math.round(cijena * 0.97 / 50) * 50;
     const cilj = prosjek ? Math.round(Math.min(prvaPonuda + (ferMax - prvaPonuda) * 0.45, cijena * 0.97) / 50) * 50 : prvaPonuda;
+    const drugaPonuda = prvaPonuda && cilj ? Math.round((prvaPonuda + (cilj - prvaPonuda) * 0.55) / 50) * 50 : cilj;
+    const walkAway = ferMax ? Math.round((ferMax * 1.02) / 50) * 50 : 0;
     const argumenti = [];
     if (prosjek) argumenti.push(`Identicni oglasi su u prosjeku oko ${prosjek.toLocaleString('bs-BA')} KM (${razlikaPct > 0 ? '+' : ''}${razlikaPct}% u odnosu na ovaj oglas).`);
     if (marketSnapshot?.najniza) argumenti.push(`Najjeftiniji identican oglas je ${marketSnapshot.najniza.toLocaleString('bs-BA')} KM.`);
     if (detalji.km) argumenti.push(`Kilometraza: ${parseInt(detalji.km).toLocaleString('bs-BA')} km.`);
     if (dana !== null && dana > 20) argumenti.push(`Oglas je aktivan oko ${dana} dana, sto daje prostor za pregovor.`);
     if (!argumenti.length) argumenti.push('Kreni kulturno, trazi servisnu historiju i koristi stanje vozila kao glavni argument.');
+    const pitanja = [
+        'Da li postoji servisna historija i kada je zadnji veliki servis?',
+        'Da li je cijena zadnja ili ima prostora ako se kupuje odmah?',
+        'Moze li se uraditi provjera u servisu prije dogovora?'
+    ];
+    if (detalji.godiste) pitanja.push(`Da li je vozilo registrovano i ima li ulaganja za godiste ${detalji.godiste}?`);
+    if (detalji.km) pitanja.push('Da li se kilometraza moze potvrditi servisnom knjigom ili racunima?');
+    const taktika = prosjek && cijena > prosjek * 1.08
+        ? 'Kreni sa jasnim poredjenjem trzista i ne dizi ponudu bez novog argumenta.'
+        : 'Kreni mirno, potvrdi stanje i ostavi prostor da prodavac prvi spusti cijenu.';
     return {
         cijena,
         prosjek: prosjek || null,
         razlika,
         razlika_pct: prosjek ? razlikaPct : null,
         prva_ponuda: prvaPonuda,
+        druga_ponuda: drugaPonuda,
         ciljna_cijena: cilj,
         maksimalno_fer: ferMax,
+        granica_odustajanja: walkAway,
         usteda: cijena && prvaPonuda ? cijena - prvaPonuda : 0,
         argumenti,
+        pitanja,
+        taktika,
         poruka: cijena ? `Pozdrav, zainteresovan sam za oglas. Vidim da slicni/identicni oglasi idu oko ${prosjek ? prosjek.toLocaleString('bs-BA') + ' KM' : 'nesto nize cijene'}, pa bih korektno ponudio ${prvaPonuda.toLocaleString('bs-BA')} KM ako je stanje kao opisano. Mogu doci pogledati i dogovoriti odmah ako odgovara.` : ''
     };
 }
