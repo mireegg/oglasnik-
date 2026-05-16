@@ -337,6 +337,9 @@
     .plat-badge{font-size:10px;border-radius:999px;padding:3px 8px;}
     .score-tag,.deal-chip{font-size:10px;font-weight:800;padding:4px 8px;border-radius:999px;white-space:nowrap;}
     .predict-mini{font-size:10px;font-weight:900;padding:4px 8px;border-radius:999px;background:#ecfeff;color:#0891b2;border:1px solid #bae6fd;white-space:nowrap;}
+    .predict-mini.drop{background:#fff7ed;color:#c2410c;border-color:#fed7aa;}
+    .predict-mini.win{background:#ecfccb;color:#4d7c0f;border-color:#d9f99d;}
+    .predict-mini.watch{background:#fef9c3;color:#a16207;border-color:#fde68a;}
     .pro-cta{display:block;margin-top:10px;background:#111827;color:#fff;border-radius:16px;padding:14px;border:1px solid #263244;text-decoration:none;}
     .pro-cta strong{display:block;color:#a3e635;font-size:13px;text-transform:uppercase;letter-spacing:.06em;margin-bottom:5px;}
     .pro-cta span{display:block;font-size:12px;color:#cbd5e1;line-height:1.45;}
@@ -860,6 +863,9 @@ function escapeHtml(value) {
 }
 
 function scoreInsight(o) {
+  if (o.cijenaPala) return 'Cijena je vec pala. Provjeri historiju i reaguj dok je oglas aktivan.';
+  if (o.predictLevel === 'drop') return 'Predict signal: slabiji score i visoka cijena znace da je moguc pad cijene.';
+  if (o.predictLevel === 'negotiate') return 'Pregovaracki signal: ima prostora za korektnu nizu ponudu.';
   if (o.score >= 86) return 'Jak signal: cijena i tržišni moment izgledaju povoljno za brzu odluku.';
   if (o.score >= 74) return 'Dobar kandidat: vrijedi otvoriti oglas i provjeriti pregovarački prostor.';
   if (o.score >= 58) return 'Fer signal: poredi sa sličnim oglasima prije kontakta prodavača.';
@@ -889,7 +895,8 @@ function mapOglas(o) {
   if ((o.platforma || '') === 'olx') score += 3;
   if (cijena > 0 && cijena < 20000) score += 4;
   score = Math.max(48, Math.min(96, score));
-  return { id: o.id, naslov: o.naslov, cijena: cijena, cijenaStr: o.cijena, lokacija: o.grad || 'BiH', platforma: o.platforma || 'olx', slika: o.slika, link: o.link, datum: datumObjekta.toLocaleDateString('bs-BA'), score: score, aiTag: 'good', aiLabel: 'Live oglas', kategorija: o.kategorija || 'ostalo', jeNov: jeNov, cijenaPala: !!o.cijena_pala, cijenaStara: o.cijena_stara };
+  var predictLevel = o.cijena_pala ? 'dropped' : (score < 64 && cijena > 1000 ? 'drop' : (score >= 84 ? 'deal' : (cijena > 8000 && !jeNov ? 'negotiate' : 'watch')));
+  return { id: o.id, naslov: o.naslov, cijena: cijena, cijenaStr: o.cijena, lokacija: o.grad || 'BiH', platforma: o.platforma || 'olx', slika: o.slika, link: o.link, datum: datumObjekta.toLocaleDateString('bs-BA'), score: score, aiTag: 'good', aiLabel: 'Live oglas', kategorija: o.kategorija || 'ostalo', jeNov: jeNov, cijenaPala: !!o.cijena_pala, cijenaStara: o.cijena_stara, predictLevel: predictLevel };
 }
 
 function updateNavbar() {
@@ -914,7 +921,11 @@ function renderCard(o) {
   var scoreOrb = '<div class="score-orb"><strong>' + o.score + '</strong><span>Score</span></div>';
   var preg = o.cijena > 0 ? Math.max(50, Math.round(o.cijena * (o.score >= 84 ? 0.06 : 0.035) / 50) * 50) : 0;
   var pregText = preg ? '-' + preg.toLocaleString('bs-BA') + ' KM' : 'Procjena';
-  var predictTag = o.cijenaPala ? '<span class="predict-mini">Cijena pala</span>' : (o.score >= 84 ? '<span class="predict-mini">Deal Alert Pro</span>' : (o.score < 64 && o.cijena > 1000 ? '<span class="predict-mini">Predict: moguc pad</span>' : '<span class="predict-mini">AI pregovor</span>'));
+  var predictTag = o.predictLevel === 'dropped' ? '<span class="predict-mini win">Cijena pala</span>' :
+    o.predictLevel === 'deal' ? '<span class="predict-mini win">Deal Alert Pro</span>' :
+    o.predictLevel === 'drop' ? '<span class="predict-mini drop">Predict: moguc pad</span>' :
+    o.predictLevel === 'negotiate' ? '<span class="predict-mini watch">Pregovaraj</span>' :
+    '<span class="predict-mini">Prati cijenu</span>';
   var trzisteText = o.score >= 84 ? 'ispod tržišta' : o.score >= 70 ? 'fer cijena' : 'provjeri';
   var rizikText = o.score >= 60 ? 'nizak' : 'srednji';
   var signalHtml = '<div class="deal-signal"><span class="signal-dot"></span><span><strong>Oglix signal:</strong> ' + escapeHtml(scoreInsight(o)) + '</span></div>';
