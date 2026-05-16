@@ -60,6 +60,15 @@
     .score-why-list{display:grid;gap:6px;}
     .score-why-item{display:flex;align-items:flex-start;gap:7px;font-size:12px;color:var(--text-muted);line-height:1.45;}
     .score-why-dot{width:7px;height:7px;border-radius:50%;background:var(--orange);margin-top:5px;flex-shrink:0;}
+    .seller-signal{background:#fff;border:1px solid var(--border);border-radius:14px;padding:14px;margin:0 0 14px;}
+    .seller-signal-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:10px;}
+    .seller-signal-title{font-size:12px;font-weight:900;text-transform:uppercase;letter-spacing:.08em;color:var(--text-faint);}
+    .seller-signal-badge{font-size:11px;font-weight:900;border-radius:999px;padding:5px 9px;background:#ecfccb;color:#4d7c0f;border:1px solid #d9f99d;white-space:nowrap;}
+    .seller-signal-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:10px;}
+    .seller-signal-stat{background:#fbfaf7;border:1px solid var(--border);border-radius:10px;padding:9px;}
+    .seller-signal-stat span{display:block;font-size:9px;text-transform:uppercase;letter-spacing:.07em;font-weight:900;color:var(--text-faint);margin-bottom:3px;}
+    .seller-signal-stat strong{font-size:14px;color:var(--text);}
+    .seller-signal-note{font-size:12px;line-height:1.55;color:var(--text-muted);}
     .specs-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:20px;}
     .spec-item{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px 12px;}
     .spec-label{font-size:10px;color:var(--text-faint);text-transform:uppercase;letter-spacing:.06em;margin-bottom:3px;}
@@ -193,6 +202,7 @@
       .oglas-top{grid-template-columns:1fr;gap:16px;}
       .price-score-row{align-items:flex-start;flex-direction:column;}
       .report-metrics{grid-template-columns:1fr;}
+      .seller-signal-grid{grid-template-columns:1fr 1fr;}
       .oglas-naslov{font-size:18px;}
       .oglas-cijena{font-size:26px;}
       .specs-grid{grid-template-columns:1fr 1fr;}
@@ -617,6 +627,7 @@ function renderOglasTop(meta, d) {
         '</div>'+
         '<div class="deal-note"><strong>Signal:</strong> '+report.note+' Lokacija: '+lokacijaText+'.</div>'+
         scoreWhyHtml+
+        '<div class="seller-signal" id="sellerSignalBox"><div class="seller-signal-head"><div class="seller-signal-title">Prodavac / trziste</div><div class="seller-signal-badge">Racunam...</div></div><div class="seller-signal-note">Poredim oglas sa slicnim aktivnim i prodanim oglasima.</div></div>'+
         '<div class="specs-grid">'+specsHtml+'</div>'+
         '<div class="akcije">'+
           '<a href="'+meta.link+'" target="_blank" class="btn-primarni">Pogledaj na '+platformaNaziv+' →</a>'+
@@ -629,6 +640,7 @@ function renderOglasTop(meta, d) {
     '</div>';
   document.title = meta.naslov+' — Oglix.ba';
   prikaziPregovarackiTeaser(report);
+  ucitajProdavacSignal(d);
 }
 
 function prikaziPregovarackiTeaser(report) {
@@ -660,6 +672,36 @@ function dealReportText() {
     'Signal: ' + r.note,
     'Link: ' + (oglasMeta.link || location.href)
   ].filter(Boolean).join('\n');
+}
+
+async function ucitajProdavacSignal(d) {
+  var box = document.getElementById('sellerSignalBox');
+  if (!box) return;
+  try {
+    var res = await fetch('/api/prodavac-signal', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ oglas: Object.assign({}, oglasMeta, {cijenaStr: oglasMeta.cijena}), detalji: dopuniDetalje(d || detaljiGlobal || {}, oglasMeta) })
+    });
+    var data = await res.json();
+    if (!data.uspjeh) throw new Error(data.poruka || 'Nema signala');
+    var prosjek = data.prosjek ? formatKM(data.prosjek) : '--';
+    var dana = data.prosjekDana ? data.prosjekDana + ' dana' : '--';
+    box.innerHTML =
+      '<div class="seller-signal-head">'+
+        '<div class="seller-signal-title">Prodavac / trziste</div>'+
+        '<div class="seller-signal-badge">'+escapeHtml(data.label)+' · '+escapeHtml(data.score)+'/100</div>'+
+      '</div>'+
+      '<div class="seller-signal-grid">'+
+        '<div class="seller-signal-stat"><span>Aktivni</span><strong>'+escapeHtml(data.aktivni)+'</strong></div>'+
+        '<div class="seller-signal-stat"><span>Prodani</span><strong>'+escapeHtml(data.prodani)+'</strong></div>'+
+        '<div class="seller-signal-stat"><span>Prosjek</span><strong>'+prosjek+'</strong></div>'+
+        '<div class="seller-signal-stat"><span>Prodaja</span><strong>'+dana+'</strong></div>'+
+      '</div>'+
+      '<div class="seller-signal-note">'+escapeHtml(data.napomena || 'Signal je izracunat iz Oglix baze oglasa.')+'</div>';
+  } catch(e) {
+    box.innerHTML = '<div class="seller-signal-head"><div class="seller-signal-title">Prodavac / trziste</div><div class="seller-signal-badge">Osnovno</div></div><div class="seller-signal-note">Nema dovoljno podataka za dodatni signal na ovom oglasu.</div>';
+  }
 }
 
 function kopirajDealReport() {

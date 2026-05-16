@@ -1780,6 +1780,103 @@ app.post('/api/kalkulator-vrijednosti', async (req, res) => {
     } catch(e) { res.json({ uspjeh: false, poruka: e.message }); }
 });
 
+app.post('/api/prodavac-signal', async (req, res) => {
+    try {
+        const { oglas = {}, detalji = {} } = req.body || {};
+        const kategorija = oglas.kategorija || detalji.kategorija || '';
+        const brand = detalji.brand || '';
+        const model = detalji.model || '';
+        const naslov = oglas.naslov || '';
+        const cijena = parseCijena(oglas.cijena || oglas.cijenaStr) || 0;
+
+        let uvjeti = [`cijena_num > 0`, `cijena_num < 500000`];
+        let params = [];
+        let i = 1;
+
+        if (kategorija) {
+            uvjeti.push(`kategorija LIKE $${i++}`);
+            params.push(kategorija.split('-')[0] + '%');
+        }
+        if (brand) {
+            uvjeti.push(`naslov ILIKE $${i++}`);
+            params.push('%' + brand + '%');
+        }
+        if (model) {
+            uvjeti.push(`naslov ILIKE $${i++}`);
+            params.push('%' + model + '%');
+        }
+        if (!brand && !model && naslov) {
+            const rijeci = naslov.split(/\s+/).filter(r => r.length > 2).slice(0, 2);
+            rijeci.forEach(r => {
+                uvjeti.push(`naslov ILIKE $${i++}`);
+                params.push('%' + r + '%');
+            });
+        }
+
+        const where = uvjeti.join(' AND ');
+        const stats = await pool.query(
+            `SELECT
+                COUNT(*) FILTER (WHERE available = true) as aktivni,
+                COUNT(*) FILTER (WHERE available = false) as prodani,
+                ROUND(AVG(cijena_num)) as prosjek,
+                ROUND(AVG(dana_do_prodaje)) as prosjek_dana,
+                COUNT(*) FILTER (WHERE datum_pada_cijene > NOW() - INTERVAL '30 days') as padovi
+             FROM live_oglasi
+             WHERE ${where}`,
+            params
+        );
+        const sample = await pool.query(
+            `SELECT naslov, cijena, link, slika, available, datum_pada_cijene
+             FROM live_oglasi
+             WHERE ${where}
+             ORDER BY datum DESC
+             LIMIT 4`,
+            params
+        );
+
+        const r = stats.rows[0] || {};
+        const aktivni = parseInt(r.aktivni) || 0;
+        const prodani = parseInt(r.prodani) || 0;
+        const padovi = parseInt(r.padovi) || 0;
+        const prosjek = parseInt(r.prosjek) || 0;
+        const prosjekDana = parseInt(r.prosjek_dana) || 0;
+        const uzorak = aktivni + prodani;
+        let score = 55;
+        if (uzorak >= 20) score += 12;
+        else if (uzorak >= 8) score += 7;
+        if (prodani >= 5) score += 10;
+        if (prosjekDana && prosjekDana <= 25) score += 8;
+        if (padovi >= 3) score -= 5;
+        if (cijena && prosjek) {
+            const ratio = cijena / prosjek;
+            if (ratio <= 0.92) score += 8;
+            else if (ratio >= 1.15) score -= 8;
+        }
+        score = Math.max(35, Math.min(92, Math.round(score)));
+
+        const label = score >= 80 ? 'Jak signal' : score >= 65 ? 'Solidan signal' : 'Provjeri detalje';
+        const napomena = uzorak >= 4
+            ? 'Oglix poredi ovaj oglas sa slicnim oglasima iz baze i prati brzinu prodaje, aktivne oglase i padove cijena.'
+            : 'Nema jos dovoljno slicnih oglasa za jak zakljucak, koristi ovo kao osnovni signal.';
+
+        res.json({
+            uspjeh: true,
+            score,
+            label,
+            aktivni,
+            prodani,
+            prosjek,
+            prosjekDana,
+            padovi,
+            uzorak,
+            napomena,
+            slicni: sample.rows
+        });
+    } catch(e) {
+        res.json({ uspjeh: false, poruka: e.message });
+    }
+});
+
 app.get('/api/check-prodane', async (req, res) => {
     res.json({ uspjeh: true, poruka: 'Checkanje prodanih pokrenuto!' });
     checkajProdaneOglase();
