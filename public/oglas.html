@@ -621,7 +621,8 @@ function renderOglasTop(meta, d) {
         '<div class="akcije">'+
           '<a href="'+meta.link+'" target="_blank" class="btn-primarni">Pogledaj na '+platformaNaziv+' →</a>'+
           '<button class="btn-sekundarni" onclick="ucitajPregovarackiPlan()">AI plan pregovora</button>'+
-          '<button class="btn-sekundarni" onclick="pratiOglas()">🔔 Prati oglas</button>'+
+          '<button class="btn-sekundarni" onclick="kreirajAlertIzOglasa()">Kreiraj alert</button>'+
+          '<button class="btn-sekundarni" id="pratiOglasBtn" onclick="pratiOglas()">🔔 Prati oglas</button>'+
         '</div>'+
       '</div>'+
     '</div>';
@@ -960,6 +961,49 @@ async function ucitajSlicne(d) {
 }
 
 // ── PRAĆENJE ──────────────────────────────────────────────
+function alertKljucnaRijec() {
+  var d = dopuniDetalje(detaljiGlobal || {}, oglasMeta);
+  if (d.brand && d.model) return (d.brand + ' ' + d.model).trim();
+  var naslov = (oglasMeta.naslov || '').replace(/[^\p{L}\p{N}\s-]/gu, ' ').replace(/\s+/g, ' ').trim();
+  return naslov.split(' ').slice(0, 4).join(' ') || 'Oglix alert';
+}
+
+function prikaziToast(text) {
+  var toast = document.createElement('div');
+  toast.style.cssText = 'position:fixed;bottom:24px;right:24px;background:#111827;color:white;padding:14px 18px;border-radius:12px;font-size:13px;font-weight:800;z-index:9999;box-shadow:0 12px 28px rgba(0,0,0,.22);';
+  toast.textContent = text;
+  document.body.appendChild(toast);
+  setTimeout(function(){ toast.remove(); }, 3500);
+}
+
+async function kreirajAlertIzOglasa() {
+  var k = JSON.parse(localStorage.getItem('korisnik') || 'null');
+  if (!k) { if (confirm('Moras biti prijavljen da kreiras alert. Idi na prijavu?')) window.location.href = '/login.html'; return; }
+  var kljuc = alertKljucnaRijec();
+  var cijena = parseCijenaJS(oglasMeta.cijena || '');
+  var cijenaDo = cijena ? Math.round(cijena * 1.10) : null;
+  var kat = (oglasMeta.kategorija || (detaljiGlobal && detaljiGlobal.kategorija_tip) || '').split('-')[0];
+  try {
+    var res = await fetch('/api/alert', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({
+        email: k.email,
+        naziv: kljuc + ' do ' + (cijenaDo ? cijenaDo.toLocaleString('bs-BA') + ' KM' : 'dogovora'),
+        kljucna_rijec: kljuc,
+        kategorija: kat,
+        cijena_do: cijenaDo,
+        min_score: 70
+      })
+    });
+    var data = await res.json();
+    if (!data.uspjeh) throw new Error(data.poruka || 'Alert nije kreiran');
+    prikaziToast('Alert kreiran: ' + kljuc);
+  } catch(e) {
+    alert('Nije moguce kreirati alert: ' + e.message);
+  }
+}
+
 async function pratiOglas(){
   var k=JSON.parse(localStorage.getItem('korisnik')||'null');
   if(!k){ if(confirm('Moraš biti prijavljen da pratiš oglas. Idi na prijavu?')) window.location.href='/login.html'; return; }
@@ -968,8 +1012,8 @@ async function pratiOglas(){
     var res = await fetch('/api/prati-oglas-cijenu',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:k.email,oglas_link:oglasMeta.link,oglas_naslov:oglasMeta.naslov,oglas_slika:oglasMeta.slika,cijena:oglasMeta.cijena,platforma:oglasMeta.platforma||'olx'})});
     var data = await res.json();
     if(data.uspjeh) {
-      var btn=document.querySelector('.btn-sekundarni'); if(btn){btn.textContent='✅ Pratiš ovaj oglas';btn.style.background='#dcfce7';btn.style.color='#16a34a';btn.style.borderColor='#16a34a';btn.disabled=true;}
-      var toast=document.createElement('div'); toast.style.cssText='position:fixed;bottom:24px;right:24px;background:#1a1a1a;color:white;padding:14px 20px;border-radius:12px;font-size:14px;z-index:9999;box-shadow:0 4px 20px rgba(0,0,0,0.3);'; toast.innerHTML='🔔 Pratiš ovaj oglas! Dobit ćeš email ako cijena padne.'; document.body.appendChild(toast); setTimeout(function(){ toast.remove(); }, 4000);
+      var btn=document.getElementById('pratiOglasBtn'); if(btn){btn.textContent='✅ Pratiš ovaj oglas';btn.style.background='#dcfce7';btn.style.color='#16a34a';btn.style.borderColor='#16a34a';btn.disabled=true;}
+      prikaziToast('Pratis ovaj oglas. Dobit ces email ako cijena padne.');
     }
   } catch(e) { alert('Oglas dodan u praćenja! 🔔'); }
 }
