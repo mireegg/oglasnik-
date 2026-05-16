@@ -1746,8 +1746,9 @@ app.get('/api/statistike', async (req, res) => {
         const prosjecno = await pool.query(`SELECT ROUND(AVG(dana_do_prodaje)) as prosjek, MIN(dana_do_prodaje) as min, MAX(dana_do_prodaje) as max FROM live_oglasi WHERE kategorija LIKE $1 AND dana_do_prodaje IS NOT NULL`, [kategorija + '%']);
         const poBrojevu = await pool.query(`SELECT TO_CHAR(datum_nestanka, 'YYYY-MM') as mjesec, COUNT(*) as prodano FROM live_oglasi WHERE kategorija LIKE $1 AND datum_nestanka IS NOT NULL GROUP BY mjesec ORDER BY mjesec DESC LIMIT 12`, [kategorija + '%']);
         const brendovi = await pool.query(`SELECT kategorija, ROUND(AVG(dana_do_prodaje)) as prosjek_dana, COUNT(*) as prodano FROM live_oglasi WHERE kategorija LIKE $1 AND dana_do_prodaje IS NOT NULL GROUP BY kategorija ORDER BY prosjek_dana ASC LIMIT 10`, [kategorija + '%']);
-        const cijene = await pool.query(`SELECT ROUND(AVG(cijena_num)) as prosjek, MIN(cijena_num) as min, MAX(cijena_num) as max, PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY cijena_num) as medijana FROM live_oglasi WHERE kategorija LIKE $1 AND available = false AND cijena_num > 0`, [kategorija + '%']);
-        res.json({ uspjeh: true, ukupno: parseInt(ukupno.rows[0].ukupno), prodano: parseInt(ukupno.rows[0].prodano), prosjekDana: prosjecno.rows[0], poBrojevu: poBrojevu.rows, brendovi: brendovi.rows, cijene: cijene.rows[0] });
+        const cijene = await pool.query(`SELECT ROUND(AVG(cijena_num)) as prosjek, MIN(cijena_num) as min, MAX(cijena_num) as max, PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY cijena_num) as medijana FROM live_oglasi WHERE kategorija LIKE $1 AND cijena_num > 0 AND cijena_num < 500000`, [kategorija + '%']);
+        const padovi = await pool.query(`SELECT COUNT(*) as ukupno, ROUND(AVG(cijena_stara - cijena_num)) as prosjek_pada FROM live_oglasi WHERE kategorija LIKE $1 AND datum_pada_cijene > NOW() - INTERVAL '7 days' AND cijena_stara > cijena_num`, [kategorija + '%']);
+        res.json({ uspjeh: true, ukupno: parseInt(ukupno.rows[0].ukupno), prodano: parseInt(ukupno.rows[0].prodano), prosjekDana: prosjecno.rows[0], poBrojevu: poBrojevu.rows, brendovi: brendovi.rows, cijene: cijene.rows[0], padovi: padovi.rows[0] });
     } catch(e) { res.json({ uspjeh: false, poruka: e.message }); }
 });
 

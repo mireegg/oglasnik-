@@ -150,7 +150,7 @@
       <div class="metric good"><div class="metric-label">Prosjecna cijena</div><div class="metric-value" id="mProsjek">--</div><div class="metric-note">za odabranu kategoriju</div></div>
       <div class="metric info"><div class="metric-label">Najbrzi segment</div><div class="metric-value" id="mNajbrzi">--</div><div class="metric-note">po danima na trzistu</div></div>
       <div class="metric warn"><div class="metric-label">Raspon cijena</div><div class="metric-value" id="mRaspon">--</div><div class="metric-note">min - max iz baze</div></div>
-      <div class="metric"><div class="metric-label">Uzorak</div><div class="metric-value" id="mUzorak">--</div><div class="metric-note">aktivni i zavrseni oglasi</div></div>
+      <div class="metric"><div class="metric-label">Padovi cijena</div><div class="metric-value" id="mPadovi">--</div><div class="metric-note" id="mPadoviNote">zadnjih 7 dana</div></div>
     </section>
 
     <section class="grid">
@@ -211,6 +211,7 @@
       prodano: 4800,
       prosjekDana: { prosjek: 24, min: 2, max: 120 },
       cijene: { prosjek: 24800, min: 3800, max: 89000, medijana: 21900 },
+      padovi: { ukupno: 0, prosjek_pada: 0 },
       brendovi: [
         { kategorija: 'vozila-volkswagen', prosjek_dana: 18, prodano: 421 },
         { kategorija: 'vozila-bmw', prosjek_dana: 23, prodano: 286 },
@@ -304,6 +305,7 @@
       const stats = await getJson('/api/statistike?kategorija=' + encodeURIComponent(kategorija), fallback);
       const vozila = await getJson('/api/statistike/vozila', fallbackVozila);
       const cijene = stats.cijene || fallback.cijene;
+      const padovi = stats.padovi || fallback.padovi;
       const prosjekDana = stats.prosjekDana || fallback.prosjekDana;
       const brendovi = stats.brendovi && stats.brendovi.length ? stats.brendovi : fallback.brendovi;
       const najbrzi = brendovi[0];
@@ -315,7 +317,8 @@
       document.getElementById('mProsjek').textContent = fmt(cijene.prosjek) + ' KM';
       document.getElementById('mNajbrzi').textContent = najbrzi ? label(najbrzi.kategorija).split(' ')[0] : '--';
       document.getElementById('mRaspon').textContent = fmt(cijene.min) + '-' + fmt(cijene.max);
-      document.getElementById('mUzorak').textContent = fmt(stats.ukupno);
+      document.getElementById('mPadovi').textContent = fmt(padovi.ukupno);
+      document.getElementById('mPadoviNote').textContent = padovi.prosjek_pada ? 'prosjek pada ' + fmt(padovi.prosjek_pada) + ' KM' : 'zadnjih 7 dana';
 
       renderRows(document.getElementById('brziList'), brendovi, 'kategorija');
       renderRows(document.getElementById('gorivoList'), vozila.gorivo || fallbackVozila.gorivo, 'gorivo');
