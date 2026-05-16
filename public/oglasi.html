@@ -361,6 +361,8 @@
     .radar-stat strong{font-family:'Inter',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:20px;display:block;}
     .radar-stat span{font-size:10px;color:var(--faint);font-weight:800;text-transform:uppercase;letter-spacing:.07em;}
     .radar-card{border:1px solid var(--line);border-radius:16px;padding:14px;margin-top:10px;background:#fff;}
+    .radar-card-link{display:block;transition:transform .15s,border-color .15s;}
+    .radar-card-link:hover{transform:translateY(-1px);border-color:var(--orange);}
     .radar-card.dark{background:#15120f;color:#fff;border-color:#15120f;}
     .radar-card-title{font-size:12px;font-weight:900;text-transform:uppercase;letter-spacing:.07em;color:var(--orange);margin-bottom:8px;}
     .radar-card.dark .radar-card-title{color:#ff9b55;}
@@ -761,11 +763,11 @@ footer .footer-logo,footer .footer-logo span{color:#fff!important;}
       <div style="font-size:22px;font-weight:800;line-height:1.1;">Kupi sada ako je score 85+</div>
       <div style="font-size:12px;color:#b8afa6;margin-top:8px;">Oglasi ispod tržišta nestaju najbrže u prva 24 sata.</div>
     </div>
-    <div class="radar-card">
+    <a class="radar-card radar-card-link" href="/statistike.html">
       <div class="radar-card-title">Trend cijena</div>
       <div style="font-size:13px;color:var(--muted);">Vozila srednje klase zadnjih 7 dana</div>
       <div class="mini-chart"><span style="height:38%"></span><span style="height:52%"></span><span style="height:42%"></span><span style="height:64%"></span><span style="height:56%"></span><span style="height:76%"></span><span style="height:68%"></span></div>
-    </div>
+    </a>
     <div class="radar-card">
       <div class="radar-card-title">Pametni alerti</div>
       <div class="radar-alert"><b>Golf 7 dizel</b><em>+12 novih</em></div>
