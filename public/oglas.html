@@ -621,6 +621,7 @@ function renderOglasTop(meta, d) {
         '<div class="akcije">'+
           '<a href="'+meta.link+'" target="_blank" class="btn-primarni">Pogledaj na '+platformaNaziv+' →</a>'+
           '<button class="btn-sekundarni" onclick="ucitajPregovarackiPlan()">AI plan pregovora</button>'+
+          '<button class="btn-sekundarni" onclick="kopirajDealReport()">Kopiraj report</button>'+
           '<button class="btn-sekundarni" onclick="kreirajAlertIzOglasa()">Kreiraj alert</button>'+
           '<button class="btn-sekundarni" id="pratiOglasBtn" onclick="pratiOglas()">🔔 Prati oglas</button>'+
         '</div>'+
@@ -638,6 +639,40 @@ function prikaziPregovarackiTeaser(report) {
     '<div class="deal-tool-title">Pregovaracki asistent</div>'+
     '<div class="deal-tool-msg">Oglix moze sloziti prvu ponudu, ciljnu cijenu i kratku poruku prodavacu. Trenutni signal: '+escapeHtml(report.note || 'provjeri trziste prije ponude')+'</div>'+
     '<div class="deal-tool-actions"><button class="deal-tool-btn" onclick="ucitajPregovarackiPlan()">Izracunaj plan</button></div>';
+}
+
+function dealReportText() {
+  var d = dopuniDetalje(detaljiGlobal || {}, oglasMeta);
+  var r = dealReport(oglasMeta, d);
+  var specs = [];
+  if (d.godiste) specs.push('Godiste: ' + d.godiste);
+  if (d.km) specs.push('KM: ' + formatKmSpec(d.km));
+  if (d.gorivo) specs.push('Gorivo: ' + d.gorivo);
+  if (d.transmisija) specs.push('Transmisija: ' + d.transmisija);
+  if (d.kubikaza) specs.push('Motor: ' + formatKubikazaSpec(d.kubikaza));
+  return [
+    'Oglix Deal Report',
+    oglasMeta.naslov || 'Oglas',
+    'Cijena: ' + (oglasMeta.cijena || 'Na upit'),
+    'Score: ' + r.score + '/100 (' + r.trziste + ')',
+    'Pregovaranje: ' + (r.preg ? '-' + r.preg.toLocaleString('bs-BA') + ' KM' : 'procjena'),
+    specs.join(' | '),
+    'Signal: ' + r.note,
+    'Link: ' + (oglasMeta.link || location.href)
+  ].filter(Boolean).join('\n');
+}
+
+function kopirajDealReport() {
+  var text = dealReportText();
+  if (navigator.share) {
+    navigator.share({ title: 'Oglix Deal Report', text: text, url: oglasMeta.link || location.href }).catch(function(){});
+    return;
+  }
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(text).then(function(){ prikaziToast('Deal report kopiran'); }).catch(function(){ alert(text); });
+  } else {
+    alert(text);
+  }
 }
 
 function promijeniSliku(el,src){
