@@ -351,6 +351,7 @@ var oglasCijenaNum = parseCijenaJS(oglasMeta.cijena || '');
 var detaljiGlobal = null;
 var marketSnapshotGlobal = null;
 var zadnjaPregovarackaPoruka = '';
+var zadnjiPregovarackiPlan = null;
 
 function escapeHtml(value) {
   return String(value == null ? '' : value).replace(/[&<>"']/g, function(c) {
@@ -903,6 +904,7 @@ async function ucitajPregovarackiPlan() {
     var argumentiHtml = (p.argumenti || []).map(function(a){ return '<div>'+escapeHtml(a)+'</div>'; }).join('');
     var pitanjaHtml = (p.pitanja || []).slice(0, 5).map(function(a){ return '<div>'+escapeHtml(a)+'</div>'; }).join('');
     zadnjaPregovarackaPoruka = p.poruka || '';
+    zadnjiPregovarackiPlan = p;
     box.innerHTML =
       '<div class="deal-tool-title">Pregovaracki asistent</div>'+
       '<div class="deal-tool-grid">'+
@@ -920,7 +922,7 @@ async function ucitajPregovarackiPlan() {
       '<div class="deal-tool-list"><strong>Argumenti</strong>'+argumentiHtml+'</div>'+
       '<div class="deal-tool-list"><strong>Pitaj prije dolaska</strong>'+pitanjaHtml+'</div>'+
       '<div class="deal-tool-msg" id="pregPoruka">'+zadnjaPregovarackaPoruka+'</div>'+
-      '<div class="deal-tool-actions"><button class="deal-tool-btn" onclick="kopirajPregPoruku()">Kopiraj poruku</button><button class="deal-tool-btn" onclick="document.getElementById(\'pregovarackiBox\').style.display=\'none\'">Sakrij</button></div>';
+      '<div class="deal-tool-actions"><button class="deal-tool-btn" onclick="kopirajPregPoruku()">Kopiraj poruku</button><button class="deal-tool-btn" onclick="kopirajPregPlan()">Kopiraj plan</button><button class="deal-tool-btn" onclick="document.getElementById(\'pregovarackiBox\').style.display=\'none\'">Sakrij</button></div>';
     box.scrollIntoView({behavior:'smooth', block:'center'});
   } catch(e) {
     box.innerHTML = '<div class="deal-tool-title">Pregovaracki asistent</div><div style="color:#cbd5e1;">Nije moguce izracunati plan za ovaj oglas.</div>';
@@ -933,6 +935,34 @@ function kopirajPregPoruku() {
     var btn = event && event.target ? event.target : null;
     if (btn) { var old = btn.textContent; btn.textContent = 'Kopirano'; setTimeout(function(){btn.textContent = old;}, 1200); }
   }).catch(function(){ alert(zadnjaPregovarackaPoruka); });
+}
+
+function kopirajPregPlan() {
+  var p = zadnjiPregovarackiPlan;
+  if (!p) return;
+  function km(n){ return n ? Math.round(n).toLocaleString('bs-BA') + ' KM' : '--'; }
+  var text = [
+    'Oglix pregovaracki plan',
+    oglasMeta.naslov || 'Oglas',
+    'Prva ponuda: ' + km(p.prva_ponuda),
+    'Druga ponuda: ' + km(p.druga_ponuda || p.ciljna_cijena),
+    'Ciljna cijena: ' + km(p.ciljna_cijena),
+    'Max fer: ' + km(p.maksimalno_fer),
+    'Odustani iznad: ' + km(p.granica_odustajanja),
+    'Ocekivana usteda: ' + km(p.usteda),
+    '',
+    'Taktika: ' + (p.taktika || ''),
+    '',
+    'Argumenti:',
+    (p.argumenti || []).map(function(a){ return '- ' + a; }).join('\n'),
+    '',
+    'Pitaj prije dolaska:',
+    (p.pitanja || []).map(function(a){ return '- ' + a; }).join('\n'),
+    '',
+    'Poruka prodavacu:',
+    p.poruka || ''
+  ].join('\n');
+  navigator.clipboard.writeText(text).then(function(){ prikaziToast('Pregovaracki plan kopiran'); }).catch(function(){ alert(text); });
 }
 
 function formatKM(v) {
