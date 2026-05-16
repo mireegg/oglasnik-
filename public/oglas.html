@@ -55,6 +55,11 @@
     .report-metric strong{font-size:13px;color:var(--text);}
     .deal-note{background:#f8faf5;border:1px solid var(--border);border-radius:12px;padding:12px;margin-bottom:14px;color:var(--text-muted);font-size:13px;line-height:1.55;}
     .deal-note strong{color:var(--text);}
+    .score-why{background:#fff;border:1px solid var(--border);border-radius:12px;padding:12px;margin:0 0 14px;}
+    .score-why-title{font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:.08em;color:var(--text-faint);margin-bottom:8px;}
+    .score-why-list{display:grid;gap:6px;}
+    .score-why-item{display:flex;align-items:flex-start;gap:7px;font-size:12px;color:var(--text-muted);line-height:1.45;}
+    .score-why-dot{width:7px;height:7px;border-radius:50%;background:var(--orange);margin-top:5px;flex-shrink:0;}
     .specs-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:20px;}
     .spec-item{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px 12px;}
     .spec-label{font-size:10px;color:var(--text-faint);text-transform:uppercase;letter-spacing:.06em;margin-bottom:3px;}
@@ -433,6 +438,23 @@ function dealReport(meta, d) {
   return { score: score, preg: preg, trziste: trziste, rizik: rizik, note: note };
 }
 
+function scoreRazlozi(meta, d, report) {
+  var razlozi = [];
+  var cijena = parseCijenaJS(meta.cijena || '');
+  if ((meta.platforma || 'olx') === 'olx') razlozi.push('OLX izvor ima najvise podataka za provjeru i poredjenje.');
+  if (cijena > 0 && cijena < 20000) razlozi.push('Cijena je u rangu gdje se oglasi brze porede i lakse pregovaraju.');
+  if (d.km) {
+    var km = brojIzSpec(d.km);
+    if (km && km < 130000) razlozi.push('Kilometraza je povoljna za godiste i trziste.');
+    else if (km && km > 240000) razlozi.push('Visoka kilometraza spusta score i trazi dodatnu provjeru.');
+    else razlozi.push('Kilometraza je dostupna, pa je procjena pouzdanija.');
+  }
+  if (d.godiste || d.gorivo || d.transmisija) razlozi.push('Ključne specifikacije su dostupne za kvalitetnije poredjenje.');
+  if (report && report.preg) razlozi.push('Procijenjen prostor za pregovor je oko ' + report.preg.toLocaleString('bs-BA') + ' KM.');
+  if (!razlozi.length) razlozi.push('Score je osnovna procjena jer oglas nema dovoljno javnih specifikacija.');
+  return razlozi.slice(0, 3);
+}
+
 function renderOglasTop(meta, d) {
   d = dopuniDetalje(d || {}, meta);
   var badgeClass = {olx:'badge-olx',autobum:'badge-autobum',facebook:'badge-facebook'}[meta.platforma]||'badge-olx';
@@ -514,6 +536,9 @@ function renderOglasTop(meta, d) {
   var pregHtml = report.preg ? '-' + report.preg.toLocaleString('bs-BA') + ' KM' : 'Procjena';
   var lokacijaText = d.grad || 'BiH';
   var confidenceText = (d.godiste || d.km || d.kvadrata || d.brand) ? 'Dobar uzorak' : 'Osnovni podaci';
+  var scoreWhyHtml = '<div class="score-why"><div class="score-why-title">Zasto ovaj score?</div><div class="score-why-list">' +
+    scoreRazlozi(meta, d, report).map(function(r){ return '<div class="score-why-item"><span class="score-why-dot"></span><span>'+escapeHtml(r)+'</span></div>'; }).join('') +
+    '</div></div>';
 
   document.getElementById('oglasSadrzaj').innerHTML =
     '<div class="oglas-top">'+
@@ -591,6 +616,7 @@ function renderOglasTop(meta, d) {
           '<div class="report-metric"><span>Podaci</span><strong>'+confidenceText+'</strong></div>'+
         '</div>'+
         '<div class="deal-note"><strong>Signal:</strong> '+report.note+' Lokacija: '+lokacijaText+'.</div>'+
+        scoreWhyHtml+
         '<div class="specs-grid">'+specsHtml+'</div>'+
         '<div class="akcije">'+
           '<a href="'+meta.link+'" target="_blank" class="btn-primarni">Pogledaj na '+platformaNaziv+' →</a>'+
